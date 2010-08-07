@@ -1,0 +1,641 @@
+2007-03-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Fixed a bug occurring due to updated automake
+	version.
+
+2004-03-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for <floss.h> in order to support the
+	nsr-tandem-nsk system.  Thanks to Tom Bates <tom.bates@hp.com>.
+	Changed header inclusion where necessary.
+
+2003-08-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Improvement and bug fixes in the build 
+	system.
+
+2003-07-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Partly reverted previous patch.  Use target,
+	build and host where appropriate.
+
+2003-06-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in, acinclude.m4: Proper use of the AC_CANONICAL_* 
+	macros.	 Using host_alias instead of host, build_alias instead
+	of build and target_alias instead of target.
+
+2003-06-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Removed the SVZ_ENABLE_CRYPT #define.
+	Simplified to SVZ_HAVE_CRYPT only.  Changed all callers/users.
+
+2003-06-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Corrected the AC_INIT() call.  Definition of
+	svz_c_const, SVZ_ENABLE_DEBUG, SVZ_ENABLE_CRYPT,
+	SVZ_ENABLE_FLOOD_PROTECTION, SVZ_HAVE_VARARGS_H,
+	SVZ_HAVE_PTHREAD_H, SVZ_HAVE_THREADS, SVZ_HAVE_SNPRINTF,
+	SVZ_HAVE_VSNPRINTF, svz_t_socket, svz_t_handle, svz_t_retsig,
+	svz_t_size, svz_t_off, SVZ_HAVE_CRYPT, svz_c_signed.  Thus we
+	avoid macro name clashes with other applications using the serveez
+	core library.  Changed *all* callers/users.  Renamed the
+	--enable-* and --disable-* options corresponding to its default
+	value.  Removed INVALID_SOCKET and inline definition.
+
+	* README-Win32, RELEASE, doc/serveez.en.html, doc/serveez.texi:
+	Replaced each occurrence of 'www.textsure.net' by 'www.lkcc.org'.
+
+2003-06-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.5' and bumped up to 
+	version `0.1.6'.
+
+2003-06-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* THANKS, NEWS, config.h.serveez, version.h.serveez, 
+	src/svzconfig.h.serveez: Updated these file for the upcoming
+	release.
+
+2003-05-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* Updated configure and build system to `libtool 1.4.2', 
+	`automake 1.7.5' and `autoconf 2.57'.
+
+	* autogen.sh: Patching libtool 1.5 code to build on MinGW32.
+
+	* acinclude.m4, configure.in: Modified to conform with 
+	Autoconf 2.57.
+
+	* README-cross: Clarified confusions about host and target 
+	system.
+
+	* COPYING, INSTALL, README, config.guess, config.sub, depcomp,
+	install-sh, ltmain.sh, mkinstalldirs, doc/mdate-sh: Updated.
+
+2003-01-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (have_threads): Checking for `pthread_create()'
+	in `-lc_r' for FreeBSD platforms.
+
+2003-01-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* README-Win32, svzconfig.h.serveez, version.h.serveez,
+	config.h.serveez: Updated Windows files.
+
+2003-01-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: New option `--with-thread-safety'.  Enables
+	support for some thread safety functionality.
+	Conditionalized the `-no-undefined' flag for libtool. 
+
+2002-12-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* debian.sh.in: Added `check' target and use of some 
+	standard variables.
+
+	* README: Propagated the CVS repository at 
+	<subversions.gnu.org>.
+
+2002-10-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.4' and bumped up to 
+	version `0.1.5'.
+
+2002-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.ap (PROJECTS): Added the `prog' and `mkpassword'
+	project.  Updated the project dependencies.
+
+	* configure.in: Fixed check for `getrpcent()'.
+
+	* config.h.serveez, version.h.serveez: Updated.
+
+	* config.guess, config.sub: Updated these files from the
+	GNU servers.
+	
+	* autodsp (create_dsp): Some more sane checks for certain
+	variable names.  Bumped up version number.
+
+	* vcgen.bat: Additionally copy `svzpath.h.serveez'.
+
+2002-09-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* Changed every occurrence of <ftp://ftp.gnu.org/...> into 
+	<http://ftp.gnu.org/...>.
+	
+	* Makefile.am: Added `config.cache' and `config.log' to the
+	DISTCLEANFILES.
+
+2002-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for `host_statistics()'.
+
+2002-07-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* README-cross: Added comment about the `HOST_CC' environment
+	variable for mingw32 host builds.
+
+2002-07-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* depcomp: New file.
+
+	* missing: Updated.
+
+	* configure.in, autogen.sh: Compatibility with Autoconf 2.5x 
+	for a possible change of the 'Auto*' tools.
+
+	* Makefile.am (EXTRA_DIST): Added 'depcomp' script.
+
+2002-07-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* README: Updated anonymous CVS instructions.
+
+	* configure.in: Better support for non GNU date	commands.
+	Checking for getrpcent() and alike systems calls in -lnsl.
+
+2002-06-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for <sys/ioctl.h>.
+
+	* BUGS: Added new bug related to out-of-band data on 
+	GNU/Linux and poll().
+
+2002-02-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.3' and bumped up to 
+	version `0.1.4'.
+
+2002-02-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* INSTALL: Added missing documentation for the `configure' 
+	options `--enable-iflist' and `--enable-heap-count'.
+
+	* Makefile.am (debian): Rule for running the Debian script.
+
+	* debian.sh.in: New file.  For automated Debian packaging.
+
+2002-02-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added some more checks for RPC capabilities.
+
+	* acinclude.m4: Fixed type when configuring Guile.
+
+2002-01-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* acinclude.m4: Let `--with-guile=DIR' override the results
+	from `guile-config'.
+
+	* README-cross: New file describing how to cross-compile
+	the Serveez package.
+
+2001-12-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* acinclude.m4: Widened pattern to allow Guile 1.3 
+	installations and above version.
+
+2001-12-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for more rpc functionality and 
+	headers.
+
+2001-12-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* acinclude.m4: New macro AC_LIBTOOL_SOLARIS.  Helps libtool
+	to cope with SunOS/Solaris when building shared libraries.
+	Also added a macro which checks the Guile configuration and
+	exits if necessary.
+
+2001-12-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checks now also for declaration of 
+	`alphasort()' in <dirent.h>.
+
+2001-12-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Solaris libtool/gcc/ld fix.  Adds the location
+	of libiberty.a and libgcc.a itself to the linker line.
+	Checks for the getrpc*() functions added to the Guile interface
+	of Serveez. 
+
+2001-12-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.2' and bumped up to 
+	version `0.1.3'.
+
+2001-11-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for working `signed' keyword for
+	pre-ANSI compilers.
+
+	* autodsp: Code cleanups.
+
+	* acinclude.m4: Some more magic, *sigh*, to detect a valid
+	Guile version (broken sed).
+	Enabling networking API in Guile source build.
+
+2001-11-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* autodsp: First draft of a perl script generating Workspace 
+	and Project files for MSVC from *.ap files.
+
+2001-10-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* Applied John Fitzgerald's patches for the top level 
+	directory.
+
+2001-10-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: New option `--enable-passthrough' enables 
+	the builtin program passthrough server.
+
+2001-10-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.1' and bumped up to 
+	version `0.1.2'.
+
+2001-09-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for NSAddImage() and the appropriate
+	header. This dynamic linker interface is Darwin (MacOS) 
+	specific.
+
+2001-09-24  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* redhat.sh.in: Added RPM command lines for version 3.0.0
+	and above.
+
+2001-09-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (MAKEINFO): Changed sed reg-expression for 
+	parsing the correct version number.
+
+	* configure.in: Updated to `libtool 1.4.2'.
+
+2001-09-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* BUGS: Removed bug id 0015. Declared the named pipe interface
+	under Windows to be ok.
+
+2001-09-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for strsignal() declaration.
+	Checking for hstrerror() declaration.
+
+2001-09-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Updated to `libtool 1.4.1'.
+	New configure option `--with-opt=FLAGS' introduced. Thus the 
+	user can pass additional compiler flags.
+
+2001-09-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (RPM): Checking for RPM builder version in
+	maintainer mode only.
+
+2001-09-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* redhat.sh.in: Changed file owner of the package files to
+	root.root which is the default for RPMs.
+	Also included directories.
+
+2001-08-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* autogen.sh: Let automake find "doc/serveez-api.texi".
+
+	* configure.in: Disable test for "-fschedule-insns2" on i386 and
+	i486 architectures.
+
+2001-07-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* redhat.sh.in: New file. Creates a source and binary RPM 
+	package. Make sure you can access REDHAT_TOPDIR defined in
+	`configure.in'. Type `make redhat' in the top level directory
+	in order to actually pack serveez.
+
+2001-07-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* acinclude.m4: Checking for proper Guile version and state
+	a warning if it failed.
+
+2001-07-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (MAKEINFO): Checking the version of `makeinfo'.
+	We require version >= 4.0 because texi files use @exampleindent.
+
+2001-07-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Released version `0.1.0' and bumped up to 
+	version `0.1.1'.
+
+2001-07-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Caching some more results.
+
+2001-07-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Conditionalized the use of sendfile().
+
+2001-07-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Fixed a bug for which the user could not disable
+	the sntp server.
+	(SERVERDIRS): The server sub directories. If you are going to 
+	disable one of the servers the build process will leave the
+	directories untouched. Thus if you want to `make dist' make sure
+	you enabled all servers.
+
+	* README: Added a paragraph about build problems due to
+	dynamic linking.
+
+2001-06-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: New option: `--disable-guile-server' can suppress
+	the support for guile servers since it is included by default. This
+	is yet experimental code.
+
+2001-06-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* INSTALL: Documented the `--with-guile-source=DIR' option.
+
+2001-06-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Use the below macros. Those we have a new
+	configure option: `--with-guile-source=DIR' specifying a guile
+	source tree (tested with Guile 1.4 only).
+
+	* acinclude.m4: New file containing three m4 macros: 
+	AC_GUILE, AC_GUILE_SOURCE and AC_GUILE_CONFIGURE.
+
+2001-05-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added checks for texi2dvi (requires tex)
+	and texi2html (version >= 1.64 required). Target "distcheck"
+	now successfully processing due to some changes to the
+	Makefile.am's in `doc/' and `test/' directory.
+
+2001-05-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* Wiped out all references to sizzle within the sources. 
+	Documentation is still waiting for that...
+	* Made a lot of changes in order to get the package compiled
+	under Win32 and GNU/Linux-ia64.
+
+2001-05-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Let the `configure' script create a 
+	`svzconfig.h' file which gets installed.
+
+2001-04-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Using `libtool 1.4'.
+
+2001-04-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Dropped everything related to sizzle.
+
+	* NEWS: Bumped up version to 0.1.0
+
+	* Makefile.am (EXTRA_DIST): Dropped sizzle specific files.
+
+	* INSTALL: Replaced `--with-sizzle' note with `--with-guile'
+	note.
+
+2001-04-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for -lmswsock library.
+	Included AC_TYPE_MODE_T. 
+
+2001-02-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Dropped configure options for the coservers. 
+	Always compiling them into the core library.
+
+2001-01-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (SERVERLIBS): If you add some additional library
+	here you can include static/shared server modules.
+
+	* configure.in: Checking for GNU libtool.
+
+2001-01-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for dl library and the `dlfcn.h' header
+	file for dynamic server loading.
+
+2001-01-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Bumped up version to 0.0.21
+
+2001-01-04  Raimund Jacob  <raimi@lkcc.org>
+
+	* configure.in: Configuring the `ENABLE_FAKEIDENT' define
+	for the Fake Ident Server.
+
+2001-01-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (dist-check): This target is derived from the
+	automatically created target `distcheck' and checks the
+	distribution. Changed `AM_CPPFLAGS = -I..' into 
+	`AM_CPPFLAGS = -I$(top_srcdir)/src'.
+
+2000-12-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* INSTALL: Documented newly available option 
+	`--enable-sntp-proto' and dropped `--enable-q3key-proto'.
+
+	* configure.in: Checking for gettimeofday() for the newly
+	created SNTP server.
+
+2000-12-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Bumped up version to 0.0.20
+
+	* Release of version 0.0.19: Last known to include the Quake III
+	license server which we are going to drop due to legacy reasons
+	and the support of commercial software which is not the aim
+	of the GNU project.
+
+2000-12-06  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* autogen.sh: Added `--enable-maintainer-mode' so that the
+	documentation builds after a CVS checkout without problems.
+
+2000-12-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for ws2_32.dll instead of wsock32.dll
+	because use of WSAStringToAddress().
+	Checking for `ws2tcpip.h' where IP_HDRINCL is defined.
+
+2000-11-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.dsp: From now on we are using the ws2_32.dll as socket
+	implementation. This is windoze's version 2. Maybe the support of
+	raw sockets is better like this...
+
+2000-10-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Replaced the AC_C_BIGENDIAN macro to keep the
+	configure script still usable for cross compilers.
+
+2000-10-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Check for `waitpid'.
+
+2000-09-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (SUBDIRS): Added the `data' directory and put
+	all data files from the `doc' directory there. Put sizzle cgi
+	example there, too.
+
+2000-09-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added some checks for the crypt() interface.
+
+2000-09-11  Raimund Jacob  <raimi@lkcc.org>
+
+	* configure.in (have_inet_aton): Stefan added check for broken
+	inet_ntoa. Workaround is in util.c.
+
+2000-08-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* README: Inserted a short description of what Serveez does
+	and what not. Should get "official" description.
+
+	* README-Win32: Updated documentation about the Win32
+	port.
+
+	* Makefile.am (EXTRA_DIST): Include the `version.h' files
+	for both projects for the M$ Visual C++ compiler port.
+
+	* configure.in: Added check for big endian architectures.
+
+2000-08-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Added files for building the
+	serveez project with M$ Visual C++ compiler including
+	the README-Win32 file.
+
+2000-08-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (define_enable_nut): With the new option
+	--enable-gnutella the user is allowed to compile in the
+	gnutella spider.
+
+2000-08-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* INSTALL: Added documentation for --enable-poll.
+
+	* configure.in (define_enable_poll): If you do not want to
+	use poll() instead of select() you might now --disable-poll.
+	Now always using full version numbers (no more pre's).
+
+2000-08-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Checking for the get-/setrlimit interface.
+	Also try finding the appropriate headers for that.
+	Check for netint/tcp.h (for TCP_CORK), sys/poll.h and poll()
+	itself for the alternative server loop and direct.h for Win32's
+	directory functions.
+
+	* configure.in: Added check for Quake license key server.
+
+2000-07-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added check for unistd.h,
+	sys/time.h and the AC_HEADER_DIRENT macro.
+
+	* configure.in: Checking for inet_aton in the
+	library "libresolv.so" on Solaris.
+
+2000-06-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added check for typedef off_t.
+	This is used with sendfile().
+
+2000-06-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Add check for sendfile(). The 
+	integrated http server might use it.
+
+2000-06-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Added detection of _vsprintf,
+	_vsnprintf and _snprintf.
+
+2000-06-16  Raimund Jacob  <raimi@lkcc.org>
+
+	* configure.in: We can now use either an already installed sizzle
+	[dynamically linked] or build our own from the source distribution
+	[statically linked]. If mgrabmue provides a 'sizzle-config link-static'
+	we can statically link against a already installed sizzle.
+
+2000-06-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in: Dropped AWCS_MASTER_PIPE feature because this is
+	now part of the general server concept.
+
+2000-04-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (define_enable_warn): Checking for -ansi compiler
+	option if Linux was detected.
+
+	* INSTALL: Detailed description of all the ./configure script
+	options.
+
+2000-03-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (enable_procstat): Checking for snprintf.
+
+2000-02-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* configure.in (CPPEXTRAFLAGS): AC_HEADER_SYS_WAIT checks
+	if the <sys/wait.h> is present and includes it, if necessary.
+
+	* configure.in (CPPEXTRAFLAGS): --enable-optimizations checks
+	for some compiler switches.
+
+	* configure.in : Checking for socklen_t, SOCKET, the library
+	wsock32 and the feature --enable-http-proto.
+
+1999-12-17  Raimund Jacob  <raimi@lkcc.org>
+
+	* configure.in: Bumped version number to 0.0.11a. The is tons
+	of stuff todo. mgrabmue should go from here...
+
+1999-12-16  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* configure.in: Bumped version number to 0.0.11.
+	Threw in Cygwin detection, but without consequences yet.
+
+1999-11-26  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* configure.in: Bumped version number to 0.0.10.
+
+1999-11-18  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* configure.in: Bumped version number to 0.0.9.
+
+1999-10-21  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* configure.in: Added configure switch --enable-debug to
+	enable/disable debugging output and wrapped up all callers to
+	log_printf() in #if/#endifs.
+	Added check for libnsl, which is needed on Solaris for
+	gethostbyname().
+	Fixed check for vsprintf() and vsnprintf().  Now configure does
+	abort if no vsprintf() is available, and give a warning if
+	vsnprintf() is emulated by the unsafe vsprintf().
+
+1999-10-19  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* INSTALL: Cleanup and minor corrections (refer to the AUTHORS
+	file for email addresses).
+
+	* configure.in: Added support for autoconf reverse host name
+	lookup support.  Added support for user specified CC and CPP
+	flags.
+
+1999-10-03  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* configure.in: Created this package.

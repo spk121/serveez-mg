@@ -1,0 +1,185 @@
+-- 
+-- NEWS
+-- 
+-- Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+-- Copyright (C) 2000, 2002 Raimund Jacob <raimi@lkcc.org>
+-- Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+-- 
+-- This is free software; you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation; either version 2, or (at your option)
+-- any later version.
+-- 
+-- This software is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+-- 
+-- You should have received a copy of the GNU General Public License
+-- along with this package; see the file COPYING.  If not, write to
+-- the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+-- Boston, MA 02111-1307, USA.  
+--
+
+This file lists user visible changes that were made between releases.  For
+more verbose descriptions of these and internal changes see the ChangeLog
+files.
+
+Version 0.1.7
+-------------
+
+ * minor bugfixes for newer GNU/Linux kernels
+
+Version 0.1.6
+-------------
+
+ * support for the nsr-tandem-nsk platform
+ * improvement and bug fixes in the build system
+ * prefixed the #define's in 'svzconfig.h' by 'SVZ_' or 'svz_' to avoid 
+   name space clashes with other applications
+
+Version 0.1.5
+-------------
+
+ * configurable types available through (instantiate-config-type!)
+ * bug fixes in core API and Guile interface
+ * minor enhancements of the core API and the Guile interface
+ * updated configure and build system to autoconf 2.57, automake 1.7.5 
+   and libtool 1.5
+ * support for Guile 1.7.x versions
+ * some thread safety functionality enabled via --with-thread-safety
+ * added `serveez-config' man page
+
+Version 0.1.4
+-------------
+
+ * Guile server documentation partly rewritten and updated
+ * support for HP-UX platforms
+ * support for urgent (out-of-band) data on stream-like network 
+   connections (i.e. TCP connections)
+ * introduced server reset and socket trigger callback
+ * simplified icecast Guile server added (also demonstrates coserver 
+   usage from Guile)
+ * use of zlib version 1.1.4 in the Win32 binary release
+ * command line switch for using standard input as configuration file
+ * fatal bug fixes in the coservers
+ * numerous bug fixes and additions in Guile server implementation
+
+Version 0.1.3
+-------------
+
+ * automated Debian packaging
+ * added basic coserver functionality to the Guile frontend
+ * HTTP partial content implemented
+ * Guile version 1.3 backward compatibility
+ * improved build-time behaviour (including cross compiling)
+ * allow INADDR_ANY bindings by the keyword `any' in network port 
+   configurations and appropriate mixtures of this binding with explicit
+   network interface bindings
+ * allow SO_BINDTODEVICE bindings by the `device' property of the
+   port configuration; allows a server to listen on a real
+   hardware device (network card, isdn dialup)
+ * inetd runs RPC services
+ * RPC (remote procedure call) capabilities exported to Guile
+ * shared build on MacOS X10.1 possible (libtool patch)
+ * some `configure' magic to support shared build on SunOS/Solaris
+
+Version 0.1.2
+-------------
+
+ * inetd replacement Guile script
+ * program passthrough server can be enabled via --enable-passthrough
+ * Mandelbrot server and client as an example Guile server added
+ * bzip2 codec implementation
+ * included codecs in the Win32 binary release
+
+Version 0.1.1
+-------------
+
+ * zlib codec implemented
+ * specification of a transparent codec interface
+ * working named pipe interface under M$-Windows
+ * package made available as relocatable RPM
+ * modified chat server master protocol (use textSure v1.3)
+ * virtually unlimited number of socket structures allowed
+ * faster HTTP file cache
+ * automatic coserver restart on buffer overrun or death
+ * Guile server examples and documentation
+ * Guile servers can be enabled via --enable-guile-server
+ * loadable server modules
+
+Version 0.1.0
+-------------
+
+ * semi-automatic creation of core API documentation added
+ * using Guile as configuration language, dropped Sizzle
+ * coservers are now integral part of the core library
+ * embeddable library created
+
+Version 0.0.20
+--------------
+
+ * enable the fake identd via --enable-fakeident
+ * HTTP server is able to produce the Common Log Format (CLF)
+ * enable the SNTP server via --enable-sntp-proto
+ * dropped the Quake III license key server for legal reasons
+ * Serveez becomes a GNU software package
+
+Version 0.0.19
+--------------
+
+ * allowing `~user' syntax for HTTP requests
+ * the HTTP server got a configurable access logfile
+ * port forwarder (Tunnel Server) can be enabled via --enable-tunnel
+ * basic support for ICMP servers
+ * package is available at www.freshmeat.net and www.sourceforge.net
+ * CGI application associations possible in the HTTP server
+ * daemon support via command line option
+
+Version 0.0.18
+--------------
+
+ * --enable-crypt option
+ * native Win32 port with M$ Visual C++ compiler
+ * Gnutella spider, enable via --enable-gnutella
+ * --disable-poll option
+ * sorted HTTP directory listing
+ * Quake III license key server, enable via --enable-q3key-proto
+ * support for UDP servers
+
+Version 0.0.17
+--------------
+
+ * server protocols via named pipes on Linux and Win32 systems
+ * TexInfo documentation
+ * multiple servers on a single port and servers on multiple ports
+ * server instantiating possible
+ * documentation on how to write servers and coservers for Serveez
+ * opened CVS repository
+
+Version 0.0.16
+--------------
+
+ * disable heap counters by --disable-heap-count if you want to
+   enable debug outputs but without these counters, this was a problem
+   with memory aligned architectures like IP32 or RS6000, they were
+   throwing bus errors
+ * possibility to connect aWCS-Master through two unidirectional named 
+   pipes within Linux's filesystem, configure it by --enable-awcs-pipe
+ * DNS lookup coserver supported via --enable-dns
+ * reverse DNS lookup supported via --enable-reverse-dns
+
+Version 0.0.15
+--------------
+
+ * integration of Sizzle as the configuration file language, new
+   configure option --with-sizzle[=DIR], the Serveez package now depends
+   on the GNU Sizzle package
+
+Version 0.0.14
+--------------
+
+ * speeding up the HTTP protocol server
+ * HTTP file cache
+ * HTTP/0.9 simple GET implemented
+ * Keep-Alive connections in HTTP

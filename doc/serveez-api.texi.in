@@ -1,0 +1,1004 @@
+\input texinfo @c -*-texinfo-*-
+@c %**start of header
+@setfilename serveez-api.info
+@settitle Serveez Embedding Manual and API Documentation
+@c %** end of header
+
+@exampleindent 2
+@include version1.texi
+
+@set PACKAGE Serveez
+@set s_PACKAGE serveez
+
+@dircategory Serveez - A server framework.
+@direntry
+* Serveez-API: (serveez-api).   Serveez Embedding Manual.
+@end direntry
+
+@titlepage
+@title Serveez, version @value{VERSION}
+@subtitle A server framework
+@subtitle Edition @value{EDITION},  @value{UPDATED}
+@author Stefan Jahn
+@author Raimund Jacob
+
+@page
+@vskip 0pt plus 1filll
+
+Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@@lkcc.org>@*
+Copyright @copyright{} 2000, 2001 Raimund Jacob <raimi@@lkcc.org>@*
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
+@end titlepage
+
+@node Top, Introduction, (dir), (dir)
+
+@ifinfo
+This file documents how to embed Serveez into C programs and describes
+all parts of the API it provides.
+
+It applies to version @value{VERSION} of the Serveez package.
+@end ifinfo
+
+@menu
+* Introduction::          About this manual 
+* Embedding Serveez::     How to embed Serveez into C programs
+* Embedding API::         Description of functions and data in the library
+* Index::                 Overall index
+@end menu
+
+@node Introduction, Embedding Serveez, Top, Top
+@chapter Introduction
+
+The Serveez core library provides all of the functionality necessary in
+order to write Internet protocol servers (currently TCP, UDP, ICMP and RAW
+sockets), pipe servers (connection oriented via a pair of named pipes) and 
+coservers in a portable way. All of the included servers coming with this
+package are based upon this library. It encapsulates the native network and 
+file system programming interface of different Unices and Windows systems.
+
+The Serveez embedding manual and the API documentation will give the reader
+an overview about how to use its core library.
+
+@node Embedding Serveez, Embedding API, Introduction, Top
+@chapter Embedding Serveez
+
+This chapter deals with embedding the Serveez core library into standalone
+C/C++ applications and using it in order to write additional servers.
+
+@menu
+* Compiling and linking::      How to compile and link against the library
+* A simple example::           A very small example showing the basics
+@end menu
+
+@node Compiling and linking, A simple example, , Embedding Serveez
+@section Compiling and linking
+
+When you have installed a version of Serveez passing the @file{configure}
+script the @code{$prefix} argument e.g. @samp{./configure --prefix=/usr/local}
+you will find the @file{libserveez} library in @file{/usr/local/lib} and the
+include headers in @file{/usr/local/include}. If you want to compile a C 
+program using the Serveez API and link against the Serveez core library 
+@code{libserveez}, which is @file{libserveez.so} at Unices and 
+@file{libserveez.dll} at Windows systems, you need to tell the compiler and
+linker where to find the headers and libraries.
+
+Most C compilers you can use will understand the following command line 
+options for this purpose. The @samp{-I} argument specifies the path to 
+additional include headers, the @samp{-L} argument the path to additional 
+libraries and the @samp{-l} argument the library itself to link against.
+
+@example
+$ cc svztest.c -I/usr/local/include -o svztest -L/usr/local/lib -lserveez
+@end example
+
+In order to obtain the correct compiler and linker flag you can also
+run the @samp{serveez-config} script which gets installed with the Serveez
+package.  The @samp{serveez-config} script can be invoked with the 
+following set of option.
+
+@table @code
+@item -h, --help
+Displays the usage information.
+@item -v, --version
+Displays installed Serveez version.
+@item -l, --ldflags
+Prints the linker flags (libraries to link with including path information).
+@item -c, --cflags
+Prints the compiler flags to compile with.
+@end table
+
+@node A simple example, , Compiling and linking, Embedding Serveez
+@section A simple example
+
+The following small example shows how to use the Serveez core library to
+print the list of known network interface. As you will notice there are three
+major steps to do: Include the library header with 
+@code{#include <libserveez.h>}, initialize the library via @code{svz_boot()} 
+and finalize it via @code{svz_halt()}. In between these calls you can use
+all of the API functions, variables and macros described in 
+@ref{Embedding API}. 
+
+@example
+#include <libserveez.h> /* Include the library header. */
+
+int
+main (int argc, char **argv)
+@{
+  svz_boot ();          /* Library initialization. */
+  svz_interface_list ();
+  svz_halt ();          /* Library finalization. */
+  return 0;
+@}
+@end example
+
+@node Embedding API, Index, Embedding Serveez, Top
+@chapter Embedding API
+
+In this chapter the reader will find a short description of each function,
+global variable and macro the core library of Serveez provides. The API can
+either be used to implement a new server or coserver module for use with
+Serveez or for supporting network and server functionality within your own
+applications without caring about the details and system programming.
+
+Most of the Serveez core library interface functionality should be
+prefixed with @code{svz_}. Small symbols will refer to functions and
+variables in most cases and big letter symbols refer to macros.
+
+@menu
+* Memory management::     How memory is managed in Serveez
+* Data structures::       Data structure helpers
+* Utility functions::     Miscellaneous helper functions
+* Thread safety::         Some thread-safety functionality
+* Core functions::        Network core implementations
+* Client connections::    Client connection functions
+* Socket::                Socket management functions
+* Coserver::              Coserver interface
+* Codec::                 Codec interface
+* Server types::          Server type implementations
+* Server::                Server object functions
+* Port configuration::    Port configuration functions
+* Booting::               Configuration and boot functions
+* Interface::             Network interface function implementation
+* Windoze::               Windows port implementations
+@end menu
+
+@node Memory management, Data structures, , Embedding API
+@section Memory management
+
+The core library of Serveez is able to keep track of the memory an 
+application or part of a program consumes and also controls itself in the
+same manner. When you are using this memory allocator interface you can
+determine and afterwards remove memory leaks. This is a very important
+feature if you consider servers being long term programs.
+
+The three allocator function pointers for @code{malloc()}, @code{realloc()}
+and @code{free()} make it possible to instruct Serveez to use different
+kinds of memory, which might be necessary if you want the library to work
+with shared memory arenas or any other underlying memory API.
+
+SVZ_MALLOC_FUNC_DEFVAR
+SVZ_REALLOC_FUNC_DEFVAR
+SVZ_FREE_FUNC_DEFVAR
+
+SVZ_MALLOC_DEFUN
+SVZ_CALLOC_DEFUN
+SVZ_REALLOC_DEFUN
+SVZ_FREE_DEFUN
+SVZ_FREE_AND_ZERO_DEFMAC
+SVZ_STRDUP_DEFUN
+
+SVZ_PMALLOC_DEFUN
+SVZ_PREALLOC_DEFUN
+SVZ_PSTRDUP_DEFUN
+
+SVZ_ALLOCATED_BYTES_DEFVAR
+SVZ_ALLOCATED_BLOCKS_DEFVAR
+SVZ_HEAP_DEFUN
+
+@node Data structures, Utility functions, Memory management, Embedding API
+@section Data structures
+
+Since most servers need to store information about its clients or want to
+keep track of data during runtime we implemented some of the most useful
+data pools. The actual aim was to provide higher level data structures which
+the programming language C does not support. Some of the included servers
+which come with Serveez make extensive use of them.
+
+@menu
+* Array::                 A growable array implementation
+* Hashtable::             Hashtable implementation
+* Sparsevector::          Sparsevector implementation
+* Vectorlist::            Vectorlist implementation
+@end menu
+
+@node Array, Hashtable, , Data structures
+@subsection Array functions
+
+The array data structure is a simple array implementation. Each array has got
+a size and capacity. The array indices range from zero to the arrays size 
+minus one. You can put any kind of data into this array which fits into the
+size of a pointer. The array automatically grows if necessary.
+
+SVZ_ARRAY_CREATE_DEFUN
+SVZ_ARRAY_CLEAR_DEFUN
+SVZ_ARRAY_DESTROY_DEFUN
+SVZ_ARRAY_DESTROY_ZERO_DEFUN
+SVZ_ARRAY_GET_DEFUN
+SVZ_ARRAY_SET_DEFUN
+SVZ_ARRAY_ADD_DEFUN
+SVZ_ARRAY_DEL_DEFUN
+SVZ_ARRAY_CAPACITY_DEFUN
+SVZ_ARRAY_SIZE_DEFUN
+SVZ_ARRAY_INS_DEFUN
+SVZ_ARRAY_IDX_DEFUN
+SVZ_ARRAY_CONTAINS_DEFUN
+SVZ_ARRAY_FOREACH_DEFMAC
+SVZ_ARRAY_STRDUP_DEFUN
+SVZ_ARRAY_DUP_DEFUN
+SVZ_ARRAY_VALUES_DEFUN
+
+@node Hashtable, Sparsevector, Array, Data structures
+@subsection Hashtable functions
+
+A hashtable associates keys of arbitrary size and content with values. 
+This data structure is also called associative array sometimes because you 
+use keys in order to access values instead of numbers. You cannot store 
+two values associated with the same key. The values can have any simple 
+C types like integers or pointers.
+
+SVZ_HASH_CREATE_DEFUN
+SVZ_HASH_DESTROY_DEFUN
+SVZ_HASH_CLEAR_DEFUN
+SVZ_HASH_DELETE_DEFUN
+SVZ_HASH_PUT_DEFUN
+SVZ_HASH_GET_DEFUN
+SVZ_HASH_VALUES_DEFUN
+SVZ_HASH_KEYS_DEFUN
+SVZ_HASH_SIZE_DEFUN
+SVZ_HASH_CAPACITY_DEFUN
+SVZ_HASH_CONTAINS_DEFUN
+SVZ_HASH_EXISTS_DEFUN
+SVZ_HASH_FOREACH_KEY_DEFMAC
+SVZ_HASH_FOREACH_VALUE_DEFMAC
+
+@node Sparsevector, Vectorlist, Hashtable, Data structures
+@subsection Sparsevector functions
+
+A sparse vector is a kind of data array which grows and shrinks on demand. 
+It unifies the advantages of chained lists (less memory usage than simple 
+arrays) and arrays (faster access to specific elements). This implementation 
+can handle gaps in between the array elements.
+
+SVZ_SPVEC_CREATE_DEFUN
+SVZ_SPVEC_DESTROY_DEFUN
+SVZ_SPVEC_ADD_DEFUN
+SVZ_SPVEC_CLEAR_DEFUN
+SVZ_SPVEC_CONTAINS_DEFUN
+SVZ_SPVEC_GET_DEFUN
+SVZ_SPVEC_INDEX_DEFUN
+SVZ_SPVEC_DELETE_DEFUN
+SVZ_SPVEC_DELETE_RANGE_DEFUN
+SVZ_SPVEC_SET_DEFUN
+SVZ_SPVEC_UNSET_DEFUN
+SVZ_SPVEC_SIZE_DEFUN
+SVZ_SPVEC_LENGTH_DEFUN
+SVZ_SPVEC_INSERT_DEFUN
+SVZ_SPVEC_VALUES_DEFUN
+SVZ_SPVEC_PACK_DEFUN
+
+@node Vectorlist, , Sparsevector, Data structures
+@subsection Vectorlist functions
+
+A vector list is an array of memory chunks with a fixed size. It
+holds copies of the values you added to the vector list. When deleting
+or inserting an element the indices of the following elements get
+either decremented or incremented. This data structure is especially useful
+if you actually want to forget about the pointers you put into it for it
+saves copies and not the pointers itself.
+
+SVZ_VECTOR_CREATE_DEFUN
+SVZ_VECTOR_DESTROY_DEFUN
+SVZ_VECTOR_CLEAR_DEFUN
+SVZ_VECTOR_ADD_DEFUN
+SVZ_VECTOR_GET_DEFUN
+SVZ_VECTOR_SET_DEFUN
+SVZ_VECTOR_DEL_DEFUN
+SVZ_VECTOR_INS_DEFUN
+SVZ_VECTOR_IDX_DEFUN
+SVZ_VECTOR_CONTAINS_DEFUN
+SVZ_VECTOR_LENGTH_DEFUN
+SVZ_VECTOR_FOREACH_DEFMAC
+
+@node Utility functions, Thread safety, Data structures, Embedding API
+@section Utility functions
+
+Within this section you will find some miscellaneous functionality and
+left overs of the C API.
+
+SVZ_LOG_DEFUN
+SVZ_LOG_SETFILE_DEFUN
+
+SVZ_OS_VERSION_DEFVAR
+@strong{Please note}:
+This variable is only available on Windows version of this API.
+SVZ_ERRNO_DEFVAR
+
+SVZ_INT16_DEFMAC
+SVZ_INT32_DEFMAC
+SVZ_INT64_DEFMAC
+SVZ_UINT16_DEFMAC
+SVZ_UINT32_DEFMAC
+SVZ_UINT64_DEFMAC
+SVZ_NUM2PTR_DEFMAC
+SVZ_PTR2NUM_DEFMAC
+
+SVZ_HEXDUMP_DEFUN
+SVZ_ITOA_DEFUN
+SVZ_ATOI_DEFUN
+SVZ_GETCWD_DEFUN
+SVZ_STRCASECMP_DEFUN
+SVZ_STRNCASECMP_DEFUN
+SVZ_OPENFILES_DEFUN
+SVZ_TIME_DEFUN
+SVZ_UPTIME_DEFUN
+SVZ_TOLOWER_DEFUN
+SVZ_SYS_VERSION_DEFUN
+SVZ_HSTRERROR_DEFUN
+SVZ_SYSERROR_DEFUN
+SVZ_SNPRINTF_DEFUN
+SVZ_ASPRINTF_DEFUN
+
+@node Thread safety, Core functions, Utility functions, Embedding API
+@section Thread safety
+
+The following macros and functions can be used to implement certain
+thread safety functionality inside applications using the core library
+(including Serveez itself).  The user must explicitly enable this
+functionality when configure'ing the Serveez package.  Otherwise the
+macros default to empty statements.
+
+SVZ_MUTEX_DEFINE_DEFMAC
+SVZ_MUTEX_DECLARE_DEFMAC
+SVZ_MUTEX_CREATE_DEFUN
+SVZ_MUTEX_DESTROY_DEFUN
+SVZ_MUTEX_LOCK_DEFUN
+SVZ_MUTEX_UNLOCK_DEFUN
+
+@node Core functions, Client connections, Thread safety, Embedding API
+@section Networking and other low level functions
+
+The following chapter deals with the basic networking and file systems
+functions. It encapsulates systems calls in a portable manner. These 
+functions should behave identical on Windows and Unices.
+
+SVZ_INET_NTOA_DEFUN
+SVZ_INET_ATON_DEFUN
+SVZ_SOCKET_CONNECT_DEFUN
+SVZ_SOCKET_CREATE_DEFUN
+SVZ_SOCKET_CREATE_PAIR_DEFUN
+SVZ_SOCKET_TYPE_DEFUN
+SVZ_FD_CLOEXEC_DEFUN
+SVZ_FD_NONBLOCK_DEFUN
+SVZ_FD_BLOCK_DEFUN
+SVZ_TCP_CORK_DEFUN
+SVZ_TCP_NODELAY_DEFUN
+SVZ_SENDFILE_DEFUN
+SVZ_OPEN_DEFUN
+SVZ_CLOSE_DEFUN
+SVZ_FSTAT_DEFUN
+SVZ_FOPEN_DEFUN
+SVZ_FCLOSE_DEFUN
+SVZ_FILE_PATH_DEFUN
+SVZ_FILE_CHECK_DEFUN
+
+@node Client connections, Socket, Core functions, Embedding API
+@section Client connections
+
+Serveez tries to handle all kinds of Internet protocols like TCP (connection
+oriented), UDP, ICMP and RAW (packet oriented) and communication across
+named pipes (also connection oriented) in the same way. Therefore it uses
+a structure called @code{svz_socket_t} which is the abstraction of any kind
+of communication endpoint (can be client or server or both together).
+
+@menu
+* TCP sockets::                   TCP socket functions
+* Pipe connections::              Named and anonymous pipe functions
+* UDP sockets::                   UDP socket functions
+* ICMP sockets::                  ICMP socket functions
+* Raw sockets::                   Raw socket functions
+* Passthrough connections::       Passthrough connections to child processes
+@end menu
+
+@node TCP sockets, Pipe connections, , Client connections
+@subsection TCP sockets
+
+TCP sockets provide a reliable, stream oriented, full duplex connection 
+between two sockets on top of the Internet Protocol (IP). TCP guarantees 
+that the data arrives in order and retransmits lost packets. It generates 
+and checks a per packet checksum to catch transmission errors. TCP does 
+not preserve record boundaries.
+
+SVZ_TCP_CONNECT_DEFUN
+SVZ_TCP_DEFAULT_CONNECT_DEFUN
+SVZ_TCP_READ_SOCKET_DEFUN
+SVZ_TCP_WRITE_SOCKET_DEFUN
+SVZ_TCP_RECV_OOB_DEFUN
+SVZ_TCP_SEND_OOB_DEFUN
+
+@node Pipe connections, UDP sockets, TCP sockets, Client connections
+@subsection Pipe connections
+
+The pipe implementations supports both named and anonymous pipes. Pipe
+servers are implemented as listeners on a file system FIFO on Unices or
+"Named Pipes" on Windows (can be shared over a Windows network).
+
+A FIFO special file is similar to a pipe, except that it is created in a 
+different way. Instead of being an anonymous communications channel,
+a FIFO special file is entered into the file system.
+
+Once you have created a FIFO special file in this way, any process can open 
+it for reading or writing, in the same way as an ordinary file. However, 
+it has to be open at both ends simultaneously before you can proceed to do
+any input or output operations on it.
+
+SVZ_PIPE_STARTUP_DEFUN
+SVZ_PIPE_CLEANUP_DEFUN
+SVZ_PIPE_ALLOC_DEFUN
+SVZ_PIPE_DESTROY_DEFUN
+SVZ_PIPE_VALID_DEFUN
+SVZ_PIPE_READ_SOCKET_DEFUN
+SVZ_PIPE_WRITE_SOCKET_DEFUN
+SVZ_PIPE_DISCONNECT_DEFUN
+SVZ_PIPE_CREATE_DEFUN
+SVZ_PIPE_CREATE_PAIR_DEFUN
+SVZ_PIPE_CONNECT_DEFUN
+SVZ_PIPE_LISTENER_DEFUN
+SVZ_PIPE_CHECK_USER_DEFUN
+SVZ_PIPE_CHECK_GROUP_DEFUN
+
+@node UDP sockets, ICMP sockets, Pipe connections, Client connections
+@subsection UDP sockets
+
+The UDP sockets implement a connectionless, unreliable datagram packet 
+service. Packets may be reordered or duplicated before they arrive. UDP 
+generates and checks checksums to catch transmission errors.
+
+SVZ_UDP_READ_SOCKET_DEFUN
+SVZ_UDP_LAZY_READ_SOCKET_DEFUN
+SVZ_UDP_WRITE_SOCKET_DEFUN
+SVZ_UDP_CHECK_REQUEST_DEFUN
+SVZ_UDP_CONNECT_DEFUN
+SVZ_UDP_WRITE_DEFUN
+SVZ_UDP_PRINTF_DEFUN
+
+@node ICMP sockets, Raw sockets, UDP sockets, Client connections
+@subsection ICMP sockets
+
+The ICMP socket implementation is currently used in the tunnel server which
+comes with the Serveez package. It implements a user protocol receiving and
+sending ICMP packets by opening a raw socket with the protocol IPPROTO_ICMP.
+
+The types of ICMP packets passed to the socket can be filtered using the 
+ICMP_FILTER socket option (or by software as done here). ICMP packets are 
+always processed by the kernel too, even when passed to a user socket.
+
+SVZ_ICMP_STARTUP_DEFUN
+SVZ_ICMP_CLEANUP_DEFUN
+SVZ_ICMP_READ_SOCKET_DEFUN
+SVZ_ICMP_LAZY_READ_SOCKET_DEFUN
+SVZ_ICMP_WRITE_SOCKET_DEFUN
+SVZ_ICMP_CHECK_REQUEST_DEFUN
+SVZ_ICMP_CONNECT_DEFUN
+SVZ_ICMP_SEND_CONTROL_DEFUN
+SVZ_ICMP_WRITE_DEFUN
+SVZ_ICMP_PRINTF_DEFUN
+
+@node Raw sockets, Passthrough connections, ICMP sockets, Client connections
+@subsection Raw sockets
+
+A raw socket receives or sends the raw datagram not including link 
+level headers. It is currently used by the ICMP socket implementation of
+the core library. The IPv4 layer generates an IP header when sending a packet 
+unless the IP_HDRINCL socket option is enabled on the socket. When it is 
+enabled, the packet must contain an IP header. For receiving the IP header
+is always included in the packet.
+
+Only processes with an effective userid of 0 (Administrator or root) or the
+CAP_NET_RAW capability are allowed to open raw sockets. All packets or errors
+matching the protocol number specified for the raw socket are passed to 
+this socket. A protocol of IPPROTO_RAW implies enabled IP_HDRINCL and
+receives all IP protocols. Sending is not allowed.
+
+SVZ_RAW_GET_IP_HEADER_DEFUN
+SVZ_RAW_PUT_IP_HEADER_DEFUN
+SVZ_RAW_IP_CHECKSUM_DEFUN
+SVZ_RAW_CHECK_IP_HEADER_DEFUN
+
+@node Passthrough connections, , Raw sockets, Client connections
+@subsection Passthrough connections
+
+The function subset described in the following section allows the user to
+passthrough client connections to the standard input (stdin) and standard
+output (stdout) handles of external programs.  Some of the routines deal
+with the management of program environments.  Basically there are two 
+methods how to passthrough a duplex connection: the Unix'ish @code{fork()}
+and @code{exec()} method and the shuffle method where the main process 
+keeps control over the communication on the original duplex connection and 
+passes this data through two pairs of pipes or yet another socket connection
+to the child process.  All of the three method are implemented calling them
+@code{SVZ_PROCESS_FORK}, @code{SVZ_PROCESS_SHUFFLE_PIPE} and 
+@code{SVZ_PROCESS_SHUFFLE_SOCK}.
+
+SVZ_SOCK_PROCESS_DEFUN
+
+SVZ_PROCESS_DISCONNECT_DEFUN
+SVZ_PROCESS_DISCONNECT_PASSTHROUGH_DEFUN
+SVZ_PROCESS_CHECK_REQUEST_DEFUN
+SVZ_PROCESS_IDLE_DEFUN
+SVZ_PROCESS_SEND_PIPE_DEFUN
+SVZ_PROCESS_RECV_PIPE_DEFUN
+SVZ_PROCESS_SEND_SOCKET_DEFUN
+SVZ_PROCESS_RECV_SOCKET_DEFUN
+
+SVZ_PROCESS_CREATE_CHILD_DEFUN
+@strong{Please note}:
+On M$-Windows platforms it is not possible to pass a socket connection 
+to a child process's stdin/stdout.  That is why this function creates an 
+inheritable version of the socket and puts the socket handle number 
+into the environment variables @code{SEND_HANDLE} and @code{RECV_HANDLE}. 
+A spawned child process can use these handles as if these were created 
+by itself.  After calling @code{WSAStartup()} the child process can 
+@code{send()} and @code{recv()} as usual.
+SVZ_PROCESS_SHUFFLE_DEFUN
+SVZ_PROCESS_FORK_DEFUN
+
+SVZ_PROCESS_CHECK_EXECUTABLE_DEFUN
+SVZ_PROCESS_SPLIT_USERGROUP_DEFUN
+SVZ_PROCESS_CHECK_ACCESS_DEFUN
+
+SVZ_ENVBLOCK_CREATE_DEFUN
+SVZ_ENVBLOCK_DEFAULT_DEFUN
+SVZ_ENVBLOCK_ADD_DEFUN
+SVZ_ENVBLOCK_FREE_DEFUN
+SVZ_ENVBLOCK_DESTROY_DEFUN
+SVZ_ENVBLOCK_GET_DEFUN
+SVZ_ENVBLOCK_SETUP_DEFMAC
+SVZ_ENVIRON_DEFVAR
+
+@node Socket, Coserver, Client connections, Embedding API
+@section Socket management
+
+The function subset described in the following section deals with the
+creation, destruction and other simple operations on socket structures
+called @code{svz_socket_t}. See for the details at the description of each 
+function which kind of socket it can handle and what they are for.
+
+SVZ_SOCK_CONNECTIONS_DEFVAR
+
+SVZ_SOCK_VALID_DEFUN
+SVZ_SOCK_ALLOC_DEFUN
+SVZ_SOCK_FREE_DEFUN
+SVZ_SOCK_CREATE_DEFUN
+SVZ_SOCK_DISCONNECT_DEFUN
+SVZ_SOCK_WRITE_DEFUN
+SVZ_SOCK_PRINTF_DEFUN
+SVZ_SOCK_RESIZE_BUFFERS_DEFUN
+SVZ_SOCK_INTERN_CONNECTION_INFO_DEFUN
+SVZ_SOCK_LOCAL_INFO_DEFUN
+SVZ_SOCK_ERROR_INFO_DEFUN
+SVZ_SOCK_UNIQUE_ID_DEFUN
+SVZ_SOCK_DETECT_PROTO_DEFUN
+SVZ_SOCK_CHECK_REQUEST_DEFUN
+SVZ_SOCK_IDLE_PROTECT_DEFUN
+SVZ_SOCK_FLOOD_PROTECT_DEFUN
+SVZ_SOCK_REDUCE_RECV_DEFMAC
+SVZ_SOCK_REDUCE_SEND_DEFMAC
+
+@node Coserver, Codec, Socket, Embedding API
+@section Coserver functions
+
+The following section describes the internal coserver interface of serveez. 
+Coservers are helper processes meant to perform blocking tasks. This is
+going to be necessary because serveez itself is single threaded. Each 
+coserver is connected via a pair of pipes to the main thread of serveez 
+communicating over a simple text line protocol. Each request/response is 
+separated by a newline character.
+
+If the user wants to use these processes you need to start the coserver
+interface by calling @code{svz_coserver_init()} once before entering the
+main server loop and shut it down afterwards by calling 
+@code{svz_coserver_finalize()}.
+
+SVZ_COSERVERTYPES_DEFVAR
+SVZ_COSERVERS_DEFVAR
+
+SVZ_COSERVER_CHECK_DEFUN
+SVZ_COSERVER_INIT_DEFUN
+SVZ_COSERVER_FINALIZE_DEFUN
+SVZ_COSERVER_DESTROY_DEFUN
+SVZ_COSERVER_CREATE_DEFUN
+SVZ_COSERVER_SEND_REQUEST_DEFUN
+
+SVZ_COSERVER_RDNS_INVOKE_DEFUN
+SVZ_COSERVER_RDNS_DEFMAC
+SVZ_COSERVER_DNS_INVOKE_DEFUN
+SVZ_COSERVER_DNS_DEFMAC
+SVZ_COSERVER_IDENT_INVOKE_DEFUN
+SVZ_COSERVER_IDENT_DEFMAC
+
+@node Codec, Server types, Coserver, Embedding API
+@section Codec functions
+
+The codec interface of the serveez core API supplies routines for setting up
+socket structures to perform encoding or decoding of its receive or send
+buffers. It is a transparent layer of buffer transition. The interface itself
+tries to unify different types of codecs. In order to add a new codec the
+programmer needs to write some wrapper functions around the actual 
+implementation to fulfil certain entry and exit semantics of this interface.
+
+SVZ_CODEC_LIST_DEFUN
+SVZ_CODEC_GET_DEFUN
+SVZ_CODEC_INIT_DEFUN
+SVZ_CODEC_FINALIZE_DEFUN
+SVZ_CODEC_RATIO_DEFUN
+SVZ_CODEC_REGISTER_DEFUN
+SVZ_CODEC_UNREGISTER_DEFUN
+SVZ_CODEC_SOCK_RECEIVE_SETUP_DEFUN
+SVZ_CODEC_SOCK_RECEIVE_DEFUN
+SVZ_CODEC_SOCK_SEND_SETUP_DEFUN
+SVZ_CODEC_SOCK_SEND_DEFUN
+SVZ_CODEC_SOCK_DISCONNECT_DEFUN
+SVZ_CODEC_SOCK_DETECT_DEFUN
+
+@node Server types, Server, Codec, Embedding API
+@section Server type functions
+
+As already noted in the main serveez manual a server type is the 
+main specification of the abilities and configuration items of a server
+which can be instantiated. It is represented by the C structure
+@code{svz_servertype_t} in serveez. It contains server specific members 
+like its name, different callbacks, a single default configuration and a 
+list of configuration items which determines what can be configured.
+
+@menu
+* Server setup::              Setting up a server type
+* General server type::       Server type implementation
+* Dynamic server::            Dynamic server type loading
+@end menu
+
+@node Server setup, General server type, , Server types
+@subsection Macros for setting up a new server type
+
+When specifying a server type you also need to define configuration items
+for it. These items refer to addresses in the example configuration of the
+server type. The following macros can be used to determine these items.
+
+SVZ_REGISTER_INT_DEFMAC
+SVZ_REGISTER_BOOL_DEFMAC
+SVZ_REGISTER_INTARRAY_DEFMAC
+SVZ_REGISTER_STR_DEFMAC
+SVZ_REGISTER_STRARRAY_DEFMAC
+SVZ_REGISTER_HASH_DEFMAC
+SVZ_REGISTER_PORTCFG_DEFMAC
+SVZ_REGISTER_END_DEFMAC
+SVZ_CONFIG_DEFINE_DEFMAC
+
+@node General server type, Dynamic server, Server setup, Server types
+@subsection General server type functionality
+
+The following set of functions are used to manage the list of known server
+types in the serveez core library. Serveez itself uses some of these functions
+to register its builtin server types. 
+
+SVZ_SERVERTYPES_DEFVAR
+SVZ_SERVERTYPE_ADD_DEFUN
+SVZ_SERVERTYPE_DEL_DEFUN
+SVZ_SERVERTYPE_GET_DEFUN
+SVZ_SERVERTYPE_FIND_DEFUN
+SVZ_SERVERTYPE_FINALIZE_DEFUN
+SVZ_SERVERTYPE_PRINT_DEFUN
+
+@node Dynamic server, , General server type, Server types
+@subsection Dynamic server loading
+
+The core API of serveez is able to register server types dynamically at 
+runtime. It uses the dynamic linker capabilities of the underlying operating
+system to load shared libraries (or DLLs on Win32). This has been 
+successfully tested on Windows and GNU/Linux. Other systems are supported
+but yet untested. Please tell us if noticing any misbehaviour.
+
+SVZ_DYNLOAD_INIT_DEFUN
+SVZ_DYNLOAD_FINALIZE_DEFUN
+SVZ_SERVERTYPE_LOAD_DEFUN
+SVZ_SERVERTYPE_UNLOAD_DEFUN
+SVZ_DYNLOAD_PATH_SET_DEFUN
+SVZ_DYNLOAD_PATH_GET_DEFUN
+
+@node Server, Port configuration, Server types, Embedding API
+@section Server functions
+
+A server in serveez is an instantiated (configured) server type. It is 
+merely a copy of a specific server type with a unique server name. It is
+represented by the C structure @code{svz_server_t} in the core library.
+
+@menu
+* General server::        General server instance implementations
+* Server configuration::  Server instance configuration
+* Server binding::        Server instance bindings
+* Server core::           Core functionality for servers
+* Server loop::           Server loop implementation
+* Server socket::         Using and creating server sockets
+@end menu
+
+@node General server, Server configuration, , Server
+@subsection General functionality
+
+The following section contains functions dealing with the list of known
+servers in the core library of serveez, also with the basics like creation 
+and destruction of such servers.
+
+SVZ_SERVERS_DEFVAR
+SVZ_SERVER_FIND_DEFUN
+SVZ_SERVER_CLIENTS_DEFUN
+SVZ_SERVER_ADD_DEFUN
+SVZ_SERVER_GET_DEFUN
+SVZ_SERVER_DEL_DEFUN
+SVZ_SERVER_INIT_DEFUN
+SVZ_SERVER_FINALIZE_DEFUN
+SVZ_SERVER_INSTANTIATE_DEFUN
+SVZ_SERVER_NOTIFIERS_DEFUN
+SVZ_SERVER_RESET_DEFUN
+SVZ_SERVER_INIT_ALL_DEFUN
+SVZ_SERVER_FINALIZE_ALL_DEFUN
+SVZ_SERVER_FREE_DEFUN
+
+@node Server configuration, Server binding, General server, Server
+@subsection Configuration
+
+These functions provide an interface for configuring a server. They are
+used to create and modify the default configuration of a server type in
+order to create a server configuration.
+
+SVZ_SERVER_CONFIGURE_DEFUN
+
+SVZ_CONFIG_TYPE_ADD_DEFUN
+SVZ_CONFIG_TYPE_INSTANTIATE_DEFUN
+SVZ_CONFIG_TYPE_INIT_DEFUN
+SVZ_CONFIG_TYPE_FINALIZE_DEFUN
+SVZ_CONFIG_PROTOTYPE_PRINT_DEFUN
+SVZ_CONFIG_FREE_DEFUN
+SVZ_CONFIG_INSTANTIATE_DEFUN
+SVZ_CONFIG_INTARRAY_CREATE_DEFUN
+SVZ_CONFIG_INTARRAY_DESTROY_DEFUN
+SVZ_CONFIG_INTARRAY_DUP_DEFUN
+SVZ_CONFIG_STRARRAY_CREATE_DEFUN
+SVZ_CONFIG_STRARRAY_DESTROY_DEFUN
+SVZ_CONFIG_STRARRAY_DUP_DEFUN
+SVZ_CONFIG_HASH_CREATE_DEFUN
+SVZ_CONFIG_HASH_DESTROY_DEFUN
+SVZ_CONFIG_HASH_DUP_DEFUN
+
+@node Server binding, Server core, Server configuration, Server
+@subsection Bindings
+
+The following functionality represents the relationship between port 
+configurations as described in @ref{Port configuration} and server 
+instances. When binding a server to a specific port configuration the 
+core library creates listeners as needed by itself.
+
+SVZ_SERVER_BIND_DEFUN
+SVZ_SERVER_UNBIND_DEFUN
+SVZ_SERVER_PORTCFGS_DEFUN
+SVZ_SERVER_BINDINGS_DEFUN
+SVZ_SERVER_LISTENERS_DEFUN
+SVZ_SERVER_SINGLE_LISTENER_DEFUN
+SVZ_SOCK_ADD_SERVER_DEFUN
+SVZ_SOCK_DEL_SERVER_DEFUN
+SVZ_SOCK_FIND_PORTCFG_DEFUN
+SVZ_SOCK_FIND_PORTCFGS_DEFUN
+SVZ_SOCK_BIND_PORT_DEFUN
+SVZ_SOCK_BINDINGS_DEFUN
+SVZ_SOCK_SERVERS_DEFUN
+SVZ_BINDING_CREATE_DEFUN
+SVZ_BINDING_DESTROY_DEFUN
+SVZ_BINDING_CONTAINS_DEFUN
+SVZ_BINDING_JOIN_DEFUN
+SVZ_BINDING_FIND_DEFUN
+SVZ_BINDING_FIND_SERVER_DEFUN
+SVZ_BINDING_CONTAINS_SERVER_DEFUN
+SVZ_BINDING_FILTER_PIPE_DEFUN
+SVZ_BINDING_FILTER_NET_DEFUN
+SVZ_BINDING_FILTER_DEFUN
+
+@node Server core, Server loop, Server binding, Server
+@subsection Server core
+
+SVZ_NUKE_HAPPENED_DEFVAR
+SVZ_CHILD_DIED_DEFVAR
+SVZ_NOTIFY_DEFVAR
+SVZ_EXECUTABLE_DEFUN
+SVZ_PERIODIC_TASKS_DEFUN
+
+SVZ_SOCK_ROOT_DEFVAR
+SVZ_SOCK_LAST_DEFVAR
+SVZ_SOCK_FIND_DEFUN
+SVZ_SOCK_SCHEDULE_FOR_SHUTDOWN_DEFUN
+SVZ_SOCK_ENQUEUE_DEFUN
+SVZ_SOCK_DEQUEUE_DEFUN
+SVZ_SOCK_SHUTDOWN_DEFUN
+SVZ_SOCK_SHUTDOWN_ALL_DEFUN
+SVZ_SOCK_SETPARENT_DEFUN
+SVZ_SOCK_GETPARENT_DEFUN
+SVZ_SOCK_SETREFERRER_DEFUN
+SVZ_SOCK_GETREFERRER_DEFUN
+SVZ_SOCK_PORTCFG_DEFUN
+SVZ_SOCK_FOREACH_DEFMAC
+SVZ_SOCK_FOREACH_LISTENER_DEFMAC
+SVZ_SOCK_CHECK_FREQUENCY_DEFUN
+SVZ_SOCK_CHECK_ACCESS_DEFUN
+SVZ_SOCK_TABLE_CREATE_DEFUN
+SVZ_SOCK_TABLE_DESTROY_DEFUN
+SVZ_SOCK_CHECK_BOGUS_DEFUN
+SVZ_SOCK_CHECK_CHILDREN_DEFUN
+SVZ_SOCK_CHILD_DIED_DEFUN
+
+SVZ_SIGNAL_UP_DEFUN
+SVZ_SIGNAL_DN_DEFUN
+SVZ_SIGNAL_HANDLER_DEFUN
+SVZ_STRSIGNAL_INIT_DEFUN
+SVZ_STRSIGNAL_DESTROY_DEFUN
+SVZ_STRSIGNAL_DEFUN
+
+@node Server loop, Server socket, Server core, Server
+@subsection Server loop
+
+This paragraph describes the main server loop functionality. There two modes
+of operation. The default mode as used in serveez is to jump into the loop
+and waiting until the core library drops out of it. The user can also tell
+the serveez core library to pass its socket chain once and return 
+immediately. Thus you are able to issue additional functionality in between
+each pass if you cannot handle this within the timers (notifiers) of servers
+and sockets.
+
+SVZ_CHECK_SOCKETS_DEFUN
+SVZ_LOOP_PRE_DEFUN
+SVZ_LOOP_POST_DEFUN
+SVZ_LOOP_DEFUN
+SVZ_LOOP_ONE_DEFUN
+
+@node Server socket, , Server loop, Server
+@subsection Server sockets
+
+The next section deals with creating and handling listeners. The functions
+below provide the default routines invoked when accepting a new connection
+on a listener. This is necessary for connection oriented protocols (TCP and 
+named pipes) only.
+
+SVZ_SERVER_CREATE_DEFUN
+SVZ_TCP_ACCEPT_DEFUN
+SVZ_PIPE_ACCEPT_DEFUN
+
+@node Port configuration, Booting, Server, Embedding API
+@section Port configurations
+
+A port configuration is a structure defining a network or file system
+configuration. Depending on the type of a server it can be bound to one
+or more port configurations. There are two major types of port 
+configurations: connection and packet oriented protocol port configurations.
+TCP and PIPE configurations are connection oriented and ICMP, UDP and 
+RAW configurations are packet oriented.
+
+Serveez holds a list of port configurations. Each configuration is 
+identified by its name. When you bind a server to a port configuration it
+does not get bound to a certain name but to its content. If there are two
+or more port configuration specifying the same network or file system 
+configuration just a single one gets actually used.
+
+SVZ_PORTCFG_CREATE_DEFUN
+SVZ_PORTCFG_EQUAL_DEFUN
+SVZ_PORTCFG_ADD_DEFUN
+SVZ_PORTCFG_DEL_DEFUN
+SVZ_PORTCFG_GET_DEFUN
+SVZ_PORTCFG_DESTROY_DEFUN
+SVZ_PORTCFG_FREE_DEFUN
+SVZ_PORTCFG_FINALIZE_DEFUN
+SVZ_PORTCFG_MKADDR_DEFUN
+SVZ_PORTCFG_PREPARE_DEFUN
+SVZ_PORTCFG_PRINT_DEFUN
+SVZ_PORTCFG_TEXT_DEFUN
+SVZ_PORTCFG_DUP_DEFUN
+SVZ_PORTCFG_EXPAND_DEFUN
+SVZ_PORTCFG_ADDR_DEFMAC
+SVZ_PORTCFG_PORT_DEFMAC
+SVZ_PORTCFG_IPADDR_DEFMAC
+SVZ_PORTCFG_DEVICE_DEFMAC
+SVZ_PORTCFG_SET_IPADDR_DEFUN
+SVZ_PORTCFG_DESTROY_ACCEPTED_DEFUN
+SVZ_PORTCFG_DESTROY_ACCESS_DEFUN
+
+@node Booting, Interface, Port configuration, Embedding API
+@section Boot functions
+
+This section contains the description of some runtime checkable flags 
+indicating the abilities of the running serveez core API and the underlying
+operating system. It also describes the most important functions 
+@code{svz_boot()} and @code{svz_halt()} which must be the first and the last
+call to the core API.
+
+SVZ_CONFIG_DEFVAR
+SVZ_LIBRARY_DEFVAR
+SVZ_VERSION_DEFVAR
+SVZ_BUILD_DEFVAR
+SVZ_HAVE_DEBUG_DEFVAR
+SVZ_HAVE_WIN32_DEFVAR
+SVZ_HAVE_FLOODPROTECT_DEFVAR
+
+SVZ_NET_STARTUP_DEFUN
+SVZ_NET_CLEANUP_DEFUN
+SVZ_INIT_CONFIG_DEFUN
+SVZ_BOOT_DEFUN
+SVZ_HALT_DEFUN
+
+@node Interface, Windoze, Booting, Embedding API
+@section Network interface functions
+
+The network interface functions of the serveez core API allow the access
+to the network devices on your system. The system administrator can setup
+these devices to be bound to different Internet addresses and thereby split
+the network configuration into different "domains". Thus the system is able
+to separate traffic of different networks. If setup correctly serveez can
+follow these rules.
+
+SVZ_INTERFACES_DEFVAR
+SVZ_INTERFACE_LIST_DEFUN
+SVZ_INTERFACE_COLLECT_DEFUN
+SVZ_INTERFACE_FREE_DEFUN
+SVZ_INTERFACE_ADD_DEFUN
+SVZ_INTERFACE_GET_DEFUN
+SVZ_INTERFACE_SEARCH_DEFUN
+SVZ_INTERFACE_CHECK_DEFUN
+SVZ_INTERFACE_FOREACH_DEFMAC
+
+@node Windoze, , Interface, Embedding API
+@section Useful Windows functions
+
+Serveez is meant to run on Windows systems as well (with some restrictions
+of course). The following functions come up with the Windows implementation
+of the serveez core API only. They allow access to the Windows registry 
+database and some other useful things.
+
+SVZ_WINDOZE_START_DAEMON_DEFUN
+SVZ_WINDOZE_STOP_DAEMON_DEFUN
+SVZ_WINDOZE_ASC2UNI_DEFUN
+SVZ_WINDOZE_UNI2ASC_DEFUN
+SVZ_WINDOZE_GET_REG_UNSIGNED_DEFUN
+SVZ_WINDOZE_SET_REG_UNSIGNED_DEFUN
+SVZ_WINDOZE_GET_REG_STRING_DEFUN
+SVZ_WINDOZE_SET_REG_STRING_DEFUN
+
+@node Index, , Embedding API, Top
+@chapter Index
+
+@menu
+* Function index::            All functions and macros of the C API
+* Variable index::            All variables in the C API
+@end menu
+
+@node Function index, Variable index, , Index
+@section Function index
+
+@printindex fn
+
+@node Variable index, , Function index, Index
+@section Variable index
+
+@printindex vr
+
+@contents
+@bye

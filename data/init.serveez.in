@@ -1,0 +1,54 @@
+#! /bin/sh
+#
+# @INSTDIR@/init.serveez
+#
+# Copyright (C) 2001 Raimund Jacob <raimi@lkcc.org>
+#
+# This is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+# 
+# This software is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this package; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.  
+#
+
+CFGFILE=/etc/serveez.conf
+LOGFILE=/var/log/serveez.log
+PIDFILE=/var/run/serveez.pid
+SERVEEZ=@BINDIR@/serveez
+VERBOSITY=0
+
+case "$1" in
+    start)
+	echo "Starting serveez"
+	${SERVEEZ} -f ${CFGFILE} -l ${LOGFILE} -v ${VERBOSITY} &
+	echo $? > ${PIDFILE}
+    ;;
+    stop)
+	echo "Stopping serveez"
+	PID=`/bin/cat ${PIDFILE} 2>/dev/null`
+	if [ "${PID}" = "" ]; then
+	    echo "$0: No pid file for ${SERVEEZ}"
+	    exit 1
+	fi
+	kill -TERM ${PID}
+	/bin/rm "${PIDFILE}"
+    ;;
+    restart|reload)
+	$0 stop
+	$0 start
+    ;;
+    *)
+	echo "Usage: $0 {start|stop|restart|reload}"
+	exit 1
+    ;;
+esac
+exit 0

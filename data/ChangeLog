@@ -1,0 +1,31 @@
+2003-05-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Removed `libtool-MacOS.diff' 
+	because it is not necessary anymore.
+
+2002-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* PLATFORMS: Added some more platforms to the list.
+
+2002-07-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): New file `libtool-MacOS.diff' 
+	added.  The patch should be applied after `configure'ing on
+	`powerpc-apple-darwin*' platforms.  It corrects generation of
+	shared libraries.
+
+2002-07-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* PLATFORMS: Added some more platforms.  Tested at Compaq
+	Testdrive accounts.
+
+2001-10-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (install-init): New install target.  Creates
+	init.serveez and installs it.  Also drops a note about init
+	script conventions.
+
+	* init.serveez.in: New file.  Input file for the init script
+	of Serveez.
+
+	* ChangeLog: File created.

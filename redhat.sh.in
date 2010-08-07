@@ -1,0 +1,133 @@
+#!/bin/sh
+# 
+# redhat.sh - RPM package builder
+# @configure_input@
+#
+# Copyright (C) 2001 Stefan Jahn <stefan@lkcc.org>
+#
+# This is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+version=@VERSION@
+topdir=@REDHAT_TOPDIR@
+installdir=$topdir/@PACKAGE@
+specdir=$topdir/SPECS
+sourcedir=$topdir/SOURCES
+specfile=@PACKAGE@.spec
+rcfile=rcfile
+macrofile=~/.rpmmacros
+source=@PACKAGE@-@VERSION@.tar.gz
+
+# Step 1 - Create directory structure
+
+test -d $topdir || mkdir -p $topdir || exit 1
+(cd $topdir && mkdir -p BUILD RPMS SOURCES SPECS SRPMS RPMS/i386)
+cp -p $source $sourcedir
+
+# Step 2 - Create first half of spec file
+
+cat <<EOF > $specdir/$specfile
+Summary: A server framework.
+Name: @PACKAGE@
+Version: @VERSION@
+Release: 1
+Copyright: GPL
+Group: Applications/Networking
+Source: http://ftp.gnu.org/gnu/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+URL: http://www.gnu.org/software/serveez/index.html
+Packager: Stefan Jahn <stefan@lkcc.org>
+Prefix: @REDHAT_TOPDIR@/@PACKAGE@
+
+%description
+Serveez is a server framework.  It provides routines and help for
+implementing IP based servers (currently TCP, UDP and ICMP).  It is also
+possible to use named pipes for all connection oriented protocols.
+
+We think it is worth the effort because many people need server functionality 
+within their applications.  However, many people experience problems 
+with select()- or poll()-loops, and with non-blocking operations.
+
+This application demonstrates various aspects of advanced network
+programming in a portable manner.  It is known to compile and run on 
+GNU/Linux systems, as well as on other 32-bit and 64-bit flavours of Unix 
+and on Microsoft Windows (9x/ME/NT/2000/XP).
+
+You can use it for implementing your own servers or for understanding how
+certain network services and operations work.
+
+The package includes a number of servers that work already: an HTTP server,
+an IRC server, a Gnutella spider and some others.  One of the highlights is
+that you can run all protocols on the same port.  The application itself is
+single threaded but it uses helper processes for concurrent name resolution
+and ident lookups.
+
+%prep
+if ! test -d "@REDHAT_TOPDIR@/@PACKAGE@" ; then
+%setup
+fi
+
+%build
+if ! test -d "@REDHAT_TOPDIR@/@PACKAGE@" ; then
+configure --enable-opt --prefix=@REDHAT_TOPDIR@/@PACKAGE@
+make
+fi
+
+%install
+if ! test -d "@REDHAT_TOPDIR@/@PACKAGE@" ; then
+make install
+su -c "chown -R root.root @REDHAT_TOPDIR@/@PACKAGE@"
+fi
+
+%files
+EOF
+
+# Step 3 - Create user defined rcfile or macrofile for RPM
+
+if test "@RPM3@" = "yes" ; then
+cat <<EOF > $macrofile
+%_topdir @REDHAT_TOPDIR@
+EOF
+else
+cat <<EOF > $topdir/$rcfile
+topdir: @REDHAT_TOPDIR@
+EOF
+fi
+
+# Step 4 - Rebuild the package and install it
+
+if test "@RPM3@" = "yes" ; then
+  (cd $specdir && @RPM@ -bi $specfile)
+else
+  (cd $specdir && @RPM@ --rcfile $topdir/$rcfile -bi $specfile)
+fi
+
+# Step 5 - Create the installed file list and append it to the spec file
+
+find $installdir -type d | sed 's/\(.*\)/\%dir \1/g' >> $specdir/$specfile
+find $installdir -type f >> $specdir/$specfile
+find $installdir -type l >> $specdir/$specfile
+
+# Step 6 - Rerun RPM to the full build
+
+if test "@RPM3@" = "yes" ; then
+  (cd $specdir && @RPM@ -ba $specfile)
+else
+  (cd $specdir && @RPM@ --rcfile $topdir/$rcfile -ba $specfile)
+fi
+
+# Step 7 - Save the RPM packages
+
+cp -p `find $topdir/RPMS/ -type f` .
+cp -p `find $topdir/SRPMS/ -type f` .
+
+# Step 8 - Delete all the crap
+
+(cd $topdir && rm -rf BUILD RPMS SOURCES SPECS SRPMS RPMS/i386)
+su -c "rm -rf $installdir"
+rm -f $topdir/$rcfile $macrofile

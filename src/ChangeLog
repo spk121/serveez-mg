@@ -1,0 +1,2783 @@
+2007-03-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cgi.c (http_cgi_exec): Fixed the same bug
+	for making the input handle blocking.
+
+2006-01-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cgi.c (http_cgi_exec): Fixed small bug in cgi
+	execution.
+
+2003-08-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.c (CTYPE_CHECK_RANGE): Correct usage of the
+	svz_c_signed keyword.
+
+2003-06-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c: Minor bug fix.
+
+	* guile-server.c: Using svz_asprintf() instead of svz_snprintf()
+	where appropriate.
+
+2003-06-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* svzconfig.h.in: Removed all of the remaining #define's which
+	are not prefixed by 'SVZ_' or 'svz_'.
+
+2003-06-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* mkpassword.ap (DEFS): Changed the SVZ_HAVE_CRYPT #define
+	appropriately.
+
+2003-06-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* svzconfig.h.in: Updated to the new macro definitions
+	made in the configure.in file.
+
+	* serveez.m4: Modified to conform with Autoconf 2.57.
+
+	* guile.c (guile_config_instantiate): Bug fixes.
+
+2003-06-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c: Some major bug fixes which have been unrevealed
+	by the new test file 'server-test.scm'.
+
+2003-05-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_server_clients): New Guile procedure.
+
+2003-05-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am: Removed the FIXME rule for MinGW32.  Works with
+	libtool 1.5.
+
+2003-04-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.h, guile-api.h, guile-server.c: Finally removed 
+	every occurrence of the gh interface.
+
+2003-03-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/icecast-server.scm: Added compatibility stuff
+	for Guile 1.6.x versions and later.
+
+2003-03-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c, guile-bin.c: Replaced scm_must_*() functions by
+	scm_gc_*() where appropriate.
+
+	* guile-api.h (guile_lookup): Bug fix.
+
+2003-01-05  Andreas Rottmann  <a.rottmann@gmx.at>
+
+	* guile.c, guile-api.h, guile-api.c, guile-server.c: Modified 
+	to work with Guile 1.7, too.
+	* guile-server.c: Fixed invalid GUILE_CONCAT2 invocation.
+
+2002-11-28  Andreas Rottmann  <a.rottmann@gmx.at>
+
+	* fakeident-server/ident-proto.c (fakeident_server_definition):
+	Use SVZ_DEFINE_CONFIG.
+
+2002-11-27  Andreas Rottmann  <a.rottmann@gmx.at>
+
+	* guile.c (guile_config_instantiate): New guile API function 
+	"instantiate-config-type!".
+	(guile_define_server): Use guile_config_instantiate(). 
+
+	* guile-server.c: Make it work with changed svz_servertype_t.
+	
+2002-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Added `mkpassword.dsp' and 
+	`mkpassword.ap'.
+
+2002-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_get_cpu_state): Added
+	support for MacOS cpu load via `host_statistics()'.
+
+	* guile-server/*.scm: Replaced every occurrence of 
+	`primitive-load' by `serveez-load'.
+
+	* guile-server.c (guile_server_state_set_x,
+	guile_server_state_ref): Bugfix: Was not able to store `0'.
+
+2002-07-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm (serveez-doc-add!): Add the documentation-files
+	for each loadpath entry.
+
+	* guile.c (guile_define_port, guile_define_server): Bugfix: 
+	Do not drop previously defined entities when detecting duplicate
+	definitions.
+
+	* guile-server.c (guile_define_servertype): Checking for
+	duplicate servertype definitions.
+
+	* Makefile.am (install-exec-hook): Workaround for mingw32 and
+	cygwin host builds.
+
+2002-07-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c (guile_serveez_load): New Guile procedure replacing
+	`(primitive-load)'.  Also looks for files in the load path.
+
+	* guile-bin.c: Numerous bug fixes.
+
+2002-07-26  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* irc-server/irc-event-2.c (irc_join_callback): Fixed a bug
+	occurring when a client tries to join an invalid channel name.
+	Returning the correct error message (ERR_NOSUCHCHANNEL) now.
+
+	* guile-bin.c (guile_string_to_bin, guile_bin_search): Handle 
+	empty strings correctly.
+
+2002-07-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm (serveez-doc-add!): New procedure.  Adds the
+	serveez documentation file to the help system of Guile.
+
+2002-07-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c (guile_to_integer): Added FUNC_NAME macro.
+	(guile_error): Fixed argument type.
+	(guile_eval_file): Use `scm_primitive_eval_x()' instead of
+	`scm_eval_x()' for future versions of Guile.
+
+	* guile-server.c (guile_func_*): Added the FUNC_NAME macro 
+	to each	of the Guile procedure wrappers.
+
+	* guile-bin.c: Bug fixes.
+
+	* guile-api.h (SCM_VERSION_15X): Compatibility macros for
+	Guile 1.5.6 added and tested.
+
+2002-06-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.c (guile_bin_set_x): Fixed a bug in argument 
+	handling (forgot to differentiate between char and exact 
+	number).
+
+	* guile-api.c (svz:sock:check-oob-request, svz:sock:send-oob):
+	New Guile procedures.
+
+2002-06-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/icecast-server.scm (icecast-id3-tag): 
+	Stripping ID3v1 tags from mp3 files.
+
+2002-05-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/icecast-server.scm (icecast-dns): Demonstrating
+	usage of coservers from Guile.
+
+2002-05-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/icecast-server.scm: Recurses into sub
+	directories while collecting mp3 files.
+
+2002-05-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/icecast-server.scm (icecast-server): New
+	icecast compatible guile server added.
+
+	* guile-server.c (guile_func_trigger_cond, 
+	guile_func_trigger_func): New wrappers for the additional
+	socket callbacks.
+
+	* guile-bin.c (guile_garbage_to_bin): Converts data buffer 
+	allocated by scm_must_malloc() into a binary smob.
+
+	* guile-api.c (svz:read-file, svz:sock:receive-buffer-size, 
+	svz:sock:send-buffer-size, svz:sock:trigger-condition, 
+	svz:sock:trigger): New Guile procedures.
+
+2002-05-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.c (main): Close stdin, stdout, stderr if these are 
+	tty's only.
+
+	* guile.c (guile_eval_file): Inhibit usage of the stdin file
+	descriptor for configuration input if it is actually closed.
+
+2002-03-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_send_buffer): New Guile procedure 
+	returning the send buffer of the given socket structure as
+	binary smob.
+
+	* option.c (handle_options): New command line switch (-c and
+	--stdin).  Forces standard input as configuration file.
+
+	* guile.c (guile_eval_file): Use the standard input stream as
+	configuration file when required and possible.
+
+2002-03-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_protocol): Returns the type of socket
+	structure.
+
+	* guile-bin.c (guile_bin_reverse_x, guile_bin_reverse): Two
+	new convenience functions for Guile servers.
+
+2002-03-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.h (guile_to_string): This macro segfaulted when passing
+	immediate values in Guile 1.3.4! Thanks for reporting this bug
+	go to <bosnjak@iskratel.si>. Fixed.
+
+	* guile-server.c (guile_define_servertype): Fixed memory leak
+	occuring when servertype definition fails.
+
+2002-02-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_find, guile_sock_ident): New 
+	functions for the Guile frontend dealing with socket structure
+	indentification.
+
+2002-02-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.c (MAKE_BIN_SET): Fixed range checking.
+
+2002-02-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.c (guile_bin_init): More converter functions for
+	binary smobs for long, int, short and char access.
+
+2002-02-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (scm_portmap_list): Now returns an empty list
+	if there are no RPC port mappings or an error occurred.
+
+	* guile-server/inetd.scm (check-rpc-portmapper): Applied
+	Martin Grabmueller's proposal.  Thanks!
+
+	* guile-api.c (guile_coserver_ident, guile_coserver_dns, 
+	guile_coserver_rdns): Three new functions being the Guile 
+	frontend to the internal coservers of Serveez.
+
+2002-02-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_connect_host): Also parses
+	Internet hostnames in the given `hosts' configuration item and
+	passes these to the DNS coserver.
+	(nut_config_prototype): Reintroduced `disable' configuration
+	item.
+	(nut_detect_proto): Consider the `disable' configuration item
+	and do not let clients connect if set.
+
+	* irc-server/irc-proto.c (irc_check_tcp_bindings): Checking
+	for the TCP bindings of a server instance and comparison with
+	the given `M-line'.
+
+2002-02-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/inetd.scm (check-rpc-portmapper): Uses the
+	below function (portmap-list) in order to check whether a
+	certain RPC mapping is already registered or not.
+
+	* guile-api.c (scm_portmap_list): New function.  Returns the
+	current list of RPC port mappings.
+
+2002-01-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm (bind-udp-port-range!): New function.
+
+2002-01-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_get_response): Considers
+	content range requests.  When the request is satisfiable the
+	HTTP server sends partial content.
+
+	* http-server/http-core.c (http_check_range): Validates
+	content range specifier send in a HTTP header.
+	(http_get_range): Parses a content range specifier.
+
+2001-12-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.h: Added some more backward compatibility 
+	definitions.  Also defined a pre-ansi C string concatinator
+	macro.
+
+2001-12-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/nut-transfer.c, http-server/http-dirlist.c: Do 
+	not include <dirent.h> with <sys/dirent.h> together to inhibit 
+	redeclaration of `struct dirent'.
+
+2001-12-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* prog-server/prog-server.c (prog_read_sock_drop): Dropping
+	unread data on failed ICMP and UDP sockets.
+
+	* guile.c (guile_define_port): Checking for network port 
+	range (0 .. 65535).
+
+2001-12-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* irc-server/irc-server.h, http-server/http-core.h, 
+	irc-server/irc-proto.h: Renamed __P into __PARAMS because the 
+	use of __P conflicts with some g++ versions.
+
+2001-12-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/inetd.scm (bind-rpc-service): RPC service
+	capabilities added.  Ready for testing.
+
+	* guile-api.c (guile_server_listeners): New Guile procedure
+	returning a list of listening server sockets for a given
+	server instance.
+	(scm_portmap): RPC port mapper interface for Guile.
+
+2001-12-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c (guile_define_port): Added `device' keyword for 
+	network	port configurations.
+
+2001-12-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm: Added Scheme procedures using the below new
+	Guile primitives.
+
+	* guile-api.c (scm_getrpc, scm_setrpc): New Guile 
+	primitives.
+
+2001-12-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/inetd.scm (lookup-service): Detect rpc services
+	and drop a `no support' note.
+
+2001-11-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/Makefile.am (pkgdata_DATA): Install
+	all `*.scm' files.
+
+	* Makefile.am (pkgdata_DATA): Install `serveez.scm'.
+
+	* serveez.c (main): Setup command line verbosity also before
+	evaluating the configuration file.
+
+2001-11-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* sntp-server/sntp-proto.c: Made the server TCP/PIPE-able.
+
+	* guile-server/inetd.scm (create-server): Setup the new
+	`thread-frequency' option if possible.
+	(translate-internal-server): Translates `internal' inetd 
+	services into Serveez server.
+
+	* prog-server/prog-server.c: Added new configuration
+	option `thread-frequency' determining the maximum number
+	of programs to spawn within a minute.
+
+	* guile-server/inetd.scm: Better error checking.
+
+	* guile.c: New Guile procedure: `(serveez-servertype?)'.  
+	Checks whether the given string is a servertype's short 
+	name.
+
+2001-11-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/inetd.scm: Inetd replacement script.  Reads a
+	configuration file and instantiates `prog-server's.
+
+2001-11-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* prog-server/prog-server.c: Also UDP and ICMP bindings
+	supported.  Added `single-threaded' option.
+
+2001-11-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* prog-server/prog-server.c (prog_connect_socket): Adapted
+	to new functions in `passthrough.c'.
+
+2001-11-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_func_kicked_socket): New kicked-
+	socket wrapper.
+	(guile_sock_boundary): More verbose documentation about this.
+
+	* guile-api.c (guile_sock_connect): Also allow specifying
+	hostnames to connect to.  These get automatically resolved.
+	(svz:sock:kicked): New Guile procedure allowing to set the
+	kicked-socket callback.
+	(guile_api_init): Defined KICK_QUEUE and KICK_FLOOD.
+
+2001-11-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.h: New file.  Contains compatibility code.
+
+	* guile-server.c, guile-bin.c, serveez.c, guile-api.c,
+	guile.c: Tried to drop most of the gh_*() functionality.  The
+	Guile people are going to deprecate this interface.  That is
+	why need to find proper replacements in the scm_*() interface.
+
+2001-11-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.h (SCM_STRING_UCHARS, SCM_STRING_CHARS): Defined
+	for Guile versions compatibility.  Changed all callers.
+
+2001-11-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_no_delay): New Guile procedure switching
+	TCP Nagle algorithm on or off.
+
+2001-11-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server/mandel-server.scm (mandel-palette): More
+	flexible colour palette generator.  Can handle any colour 
+	depth.
+
+2001-11-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_final_print): New Guile procedure.
+
+	* guile-server.c (guile_nuke_happened): New Guile procedure.
+
+	* guile-server/mandel-server.scm: New server implementation.
+	Completely in Guile.  Added the directory `guile-server' and put
+	all existing servers there.
+
+2001-11-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (guile_sock_server, guile_server_p): New
+	Guile procedures known as `svz:server?' and `svz:sock:server'.
+
+	* guile-server.c (guile_server_config_ref): Renamed 
+	`svz:server:config-get' into `svz:server:config-ref'.
+	(guile_server_state_ref, guile_server_state_set_x): New Guile
+	procedure known as `svz:server:state-ref' and 
+	`svz:server:state-set!'.  Both implementing server instance state
+	savings for Guile servers.
+
+2001-11-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (svz:sock:referrer, svz:sock:parent, svz:sock?): 
+	New Guile procedures.
+
+2001-11-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (svz:inet-ntoa, svz:inet-aton, svz:htons,
+	svz:ntohs, svz:htonl, svz:ntohl): New guile procedures.
+	(guile_sock_receive_buffer_reduce): New guile procedure named
+	`svz:sock:receive-buffer-reduce'.  Useful in check-request 
+	callbacks.
+	(guile_sock_remote_address, guile_sock_local_address): New Guile 
+	procedures: `svz:sock:remote-address' and 
+	`svz:sock:local-address'.
+
+2001-11-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c (svz:sock:disconnected): New callback setter/
+	getter for Guile.
+
+	* guile-server.c (MAKE_SOCK_CALLBACK): New macro defining a
+	setter/getter function exported to Guile.  The resulting 
+	procedure is for modifying socket structure callbacks.
+
+2001-10-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-api.c: New file.  Provides additional Serveez API
+	functionality for Guile.
+
+	* guile-server.c (guile_sock_print): Check for protocol flag
+	to differentiate TCP/UDP/ICMP/PIPE.
+
+2001-10-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_stat): Appended the
+	builtin program passthrough server to the feature list.
+
+	* cfgfile.c (init_server_definitions): Added program 
+	passthrough server definition.
+
+	* prog-server/prog-server.c: Framework for the upcoming 
+	program passthrough server added.
+
+2001-10-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_sock_data): Protect associated guile
+	object via scm_protect_object().  Unprotect these objects when
+	replacing them and socket disconnection.  This makes the gc 
+	marker function for <svz-socket> unnecessary.
+	(guile_sock_boundary): Fixed memory leak for packet boundaries
+	set by guile.
+	(guile_define_servertype): Protect servertype callbacks via
+	scm_protect_object().  Now all gc marker functions for
+	<svz-socket>, <svz-server> and <svz->servertype> are unnecessary.
+
+	* irc-server/irc-proto.h (struct irc_configuration): Made
+	the number of maximum channels per user configurable.
+
+2001-10-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_access_exceptions): New guile procedure.
+	Thus the user can determine the use of exception handlers as
+	needed.
+
+2001-09-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_svz_servertype_gc): Setup marker
+	functions for the guile garbage collection. This is necessary
+	if you are defining (lambda) expressions for callback functions.
+
+2001-09-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_call): Wrapper function for `scm_apply()'
+	catching exceptions within guile procedure calls if requested.
+	This behaviour can be disabled by setting `guile_use_exceptions'
+	to zero.
+
+2001-09-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_sock_data): Setting up a garbage 
+	collector marking function while referring to the scheme
+	object in `sock->data'.
+
+	* guile-bin.c (guile_list_to_bin): Checking argument range of 
+	given list items.
+
+	* guile-bin.c, guile.c, guile-server.c: Using `gh_eq_p()' and
+	`!gh_eq_p()' instead of C operators `==' and `!=' when comparing
+	scheme values wherever possible.
+
+2001-09-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* svzconfig.h.in: Reintroduced definition of `off_t'.
+
+2001-09-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-bin.h (scm_wrong_type_arg_msg): Defined some
+	backward compatibility macros with "Guile 1.3.4".
+
+	* guile.c (guile_exception): Replace `scm_simple_format' by
+	`scm_display_error_message'.
+	(guile_get_current_load_port): Checking for SCM_BOOL_P before
+	testing SCM_PORTP().
+
+2001-09-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* svzconfig.h.in: Added `size_t'.
+
+	* serveez-config.in: New file. Utility for compiling and linking
+	a program with Serveez.
+
+2001-09-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* libserveez.h: Including `array.h' explicitly.
+
+2001-09-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_sock_floodprotect): New setter and getter
+	for the flood protection bit accessible from guile scripts.
+
+	* guile-bin.c, guile-server.c, guile.c: Changed predicate checking
+	gh_number_p() into gh_exact_p() for integer values throughout 
+	these files.
+
+2001-09-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.c (guile_entry): Detect operating system before running
+	the configuration file.
+
+2001-08-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* awcs-server/awcs-proto.c: Slightly modified the client id
+	parsing everywhere in this file. The client id's are no more
+	limited to four byte numbers with leading '0'. Client id's
+	are by now simple numbers without specific size and without
+	leading characters.
+
+	* ctrl-server/control-proto.c (ctrl_idle): Print process state
+	also if cpu state should not be available.
+
+2001-08-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cgi.c (http_cgi_exec): Removed limit of
+	directory name lengths.
+
+	* http-server/http-core.c (http_absolute_file): Removed limit
+	for directory lengths.
+
+2001-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_stat_id): Output socket-
+	type-specific information only.
+
+2001-07-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cache.c (http_free_cache): Fixed segmentation
+	fault due to pure dumbness of mine.
+
+	* http-server/http-cgi.c (http_create_cgi_envp): Adapted
+	the code to the new svz_envblock_*() functions of the core API.
+	Thereby removed the restriction for the environment sizes of cgi
+	scripts.
+	
+2001-07-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cache.c (http_urgent_cache): LRU detection
+	algorithm has been changed: Using a double chained list for
+	detecting the least recent cache file.
+
+	* ctrl-server/control-proto.c (ctrl_stat_cache): Adapted
+	routine to changes in the http cache.
+
+	* eval-server.scm (prefix): Made prompt, quit command and
+	greeting message configurable.
+
+	* guile-bin.c (guile_bin_search): Returns #f on failure now.
+	(guile_bin_set_x): Allow numbers as "value" argument.
+	(guile_bin_concat): Renamed this procedure to "binary-concat!" 
+	because it has a side effect on the argument.
+	(guile_bin_subset): Made the "end" argument optional. The 
+	procedure returns all data until the end of the smob if this
+	argument is missing.
+
+2001-07-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_sock_check_request): Setter for
+	the check_request callback.
+	(guile_server_config_get): Returns a scheme cell for a
+	configuration item of a server.
+	(guile_sock_receive_buffer): Getter for the receive buffer
+	of a socket.
+	(guile_sock_data): Associate any kind of data with a socket.
+
+	* guile.c (guile_hash_to_guile): New function. Converts a
+	string hash into a scheme alist.
+
+	* guile-server.c (guile_sock_handle_request): New function for
+	setting up the check_request member of a socket structure.
+
+2001-07-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (guile_servertype_config): Manages the
+	parsing of the configuration items for a servertype defined
+	in Guile.
+	(guile_servertype_config_default): Handles the definition of
+	the default values of each item.
+
+	* guile-bin.c: Implementation of a binary smob for passing
+	data between C and Guile without copying it necessarily. It
+	also provides procedure for converting the smobs into strings
+	and lists.
+
+2001-07-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* echo-server.scm (echo-handle-request): Implemented this
+	function. Simply echos the input with a prefix and quits
+	at a certain command.
+
+	* guile-server.c: Some more work on guile servers completed.
+	Echo server even does something now.
+
+2001-07-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server.c (MAKE_SMOB_DEFINITION): Started to encapsulate
+	some of the data structures of the core library into a guile
+	representation called `smob' (small object).
+
+2001-07-03  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* nut-server/nut-route.c (nut_route): Fixed memory leak.
+
+	* nut-server/nut-transfer.c (nut_init_transfer): Bugfix: 
+	Corrected the test for valid file extensions.
+
+2001-06-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* echo-server.scm: An example server in guile.
+
+	* guile-server.c: New file containing some code for the full
+	implementation of servers with guile. Yet very experimental.
+
+2001-06-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm (create-tcp-port!, bind-tcp-port-range!): 
+	New functions. (by 'mgrabmue)
+
+2001-06-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm (bind-servers!): New function. Thanks 'mgrabmue.
+
+2001-06-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.scm: Put some convenience functions here.
+
+	* guile.c (guile_bind_server): Check the argument type for port
+	and server name.
+	(guile_init): Now using the arguments of `gh_new_procedure()' in 
+	the right context (Guile can check number arguments).
+	(guile_init): Two new functions exported: `serveez-port?' and
+	`serveez-server?' which check its argument being a valid port or
+	server.
+
+2001-06-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (aclocal_DATA): Added the `serveez.m4' autoconf
+	script.
+
+2001-06-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am ($(GUILE_RULE)): Now possible to create a static
+	guile library and link against it. This is especially useful
+	if a user wants to compile and run serveez without having a full
+	guile installation on its system.
+
+2001-05-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* svzconfig.h.in: New file.
+
+	* Makefile.am (EXTRA_DIST): Added `svzconfig.h.in'.
+
+2001-05-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* foo-server/foo-proto.c (foo_server_definition): Using new
+	DEFINE_CONFIG() macro in the definition of the server type.
+
+2001-05-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c (guile_define_server): Delete the server instance
+	if the configuration failed and return SCM_BOOL_F.
+
+	* ctrl-server/control-proto.c (ctrl_stat): Added "FOO" to the
+	server compile features.
+	(ctrl_stat): Corrected server name detection.
+
+	* foo-server/foo-proto.c: Implemented full featured 
+	configuration the new style. All other servers wait for the
+	same...
+
+2001-05-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/nut-transfer.c (nut_send_push): Using `svz_portcfg()'
+	for specifying push request.
+
+	* nut-server/nut-request.c: Used `svz_portcfg()' where necessary.
+
+	* nut-server/gnutella.c (nut_info_server): Printing
+	server bindings here.
+
+	* http-server/http-proto.c (http_info_server): Print server
+	bindings instead of the tcp port only.
+	(http_init): Resolve the ip address of the first server binding
+	only and use it as server name if there no such configured.
+
+2001-04-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c: Made all necessary changes for using
+	the new svz_portcfg_t... still some work needed.
+
+	* tunnel-server/tunnel.h: Using svz_portcfg_t now instead
+	of old portcfg_t.
+
+	* sntp-server/sntp-proto.c: Dropped default network port 
+	configuration.
+
+	* nut-server/gnutella.c: Dropped port configuration. Made
+	all changes required by this. Added lots of "FIXME"s.
+
+	* irc-server/irc-proto.c: Dropped port configuration.
+
+	* irc-server/irc-config.c (irc_parse_config_lines): Changed
+	data format of configuration lines (NULL terminated string
+	arrays -> svz_array_t).
+
+	* http-server/http-proto.c: Dropped network port 
+	configuration.
+	(http_init): Added some "FIXME"s.
+
+2001-04-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* foo-server/foo-proto.h: Dropped port configuration within
+	the server instance configuration.
+
+	* foo-server/foo-proto.c: Put all default values as needed
+	by server instance configuration into the configuration. Dropped
+	port configuration.
+	(foo_global_init): Default value creation here.
+	(foo_global_finalize): Default value destruction here.
+	(foo_init): Dropped call of `server_bind()' since this is 
+	completely handled outside the actual server.
+
+	* fakeident-server/ident-proto.c (fakeident_config): Dropped
+	port configuration.
+
+	* ctrl-server/control-proto.h: Dropped port configuration
+	in the server instance configuration.
+
+	* ctrl-server/control-proto.c (ctrl_config): No more
+	port configuration in the server configuration.
+	(ctrl_stat_id): Corrected listing of servers on each listening
+	socket (is now a svz_array_t).
+
+	* awcs-server/awcs-proto.h: Port configurations not in the
+	server instance configuration anymore.
+
+	* awcs-server/awcs-proto.c: Dropped definition of network
+	and filesystem port configuration.
+	(awcs_init): Dropped `server_bind()'.
+
+	* serveez.c (guile_entry): Dropped call of `server_start()'
+	and `sizzle_load_config()'. Variable modification from Guile
+	not yet possible (svz_config.max_sockets).
+
+	* guile.c (guile_init): Added definition of Guile variables
+	which should be read out afterwards. How can we do this ?
+
+	* cfgfile.c: Dropped sizzle part within this file.
+
+	* Makefile.am (serveez_SOURCES): Dropped `sizzle.[ch]'.
+
+2001-04-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile.c (define_port): Default for ICMP_TYPE is ICMP_SERVEEZ.
+	Using string constants from `portcfg.h'.
+	(guile_define_server): Basic server instantiating implemented.
+	Try dynamically load the server type if there is no such static
+	server type.
+
+2001-04-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* option.c (getopt): Reimplemented this function. Now 
+	understands `optopt', `opterr' and `optind'.
+	(handle_options): Moved this piece of code into `option.c'.
+
+2001-04-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cache.c (http_cache_read): Using ReadFile()
+	instead of read() for we are using CreateFile() in order to open
+	a file in Win32 instead of open().
+
+2001-03-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cgi.c (http_cgi_get_response): This piece
+	of code has been part of the http_get_response() function.
+	Moved it beneath the http_post_response() function.
+	(http_cgi_exec): Piping stderr of cgi script to its output
+	stream in the release target.
+
+2001-02-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_get_response): Closing
+	receiving end of a CGI pipe which got mistakenly inherited.
+
+2001-01-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (serveez_SOURCES): Added `dynload.c' and 
+	`dynload.h' files.
+
+	* dynload.c (dyn_load): Start writing dynamic server loading
+	capabilities. This function is a draft for loading a server
+	definition from a shared library.
+
+	* pipe-socket.c (pipe_listener): Check if the file descriptor
+	gained from open() is a pipe descriptor via fstat().
+
+2001-01-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am: Added rules for processing Windows resources
+	with `windres'. The VC++ compiler can do that as well.
+
+	* serveez.rc: File created. Defined both of the two icons
+	for Serveez.
+
+	* windoze.c (windoze_thread): Loading tiny taskbar icon from
+	a builtin resource now.
+
+2001-01-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist.c (alist_unset): Implemented this function which
+	is the opposite of alist_set().
+
+2001-01-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (server_accept_pipe): Calling here the
+	check_request() callback for greedy protocols on pipes.
+
+2001-01-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c (tnl_disconnect_target): Send
+	a disconnection message if the source port is ICMP.
+
+	* icmp-socket.c (icmp_send_control): This routine can send
+	control packets without packet load in order to signal
+	disconnects or connects on ICMP "connections".
+	(icmp_connect): When "connecting" to a host using the ICMP
+	protocol we send a special subcode in the header to signal
+	a connect (thus we have something like TCP's accept() and
+	shutdown() function).
+
+	* server-socket.c (server_accept_socket): Created a workaround
+	for so called "greedy" servers. These get their connection as
+	soon as it has been accept()ed.
+
+	* tunnel-server/tunnel.c (tnl_disconnect_target): Hopefully
+	fixed the problem with disconnecting referring pipe or tcp
+	connections.
+
+2001-01-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (icmp_request): Text definition of all known
+	ICMP type codes. Printed when received.
+
+2001-01-04  Raimund Jacob  <raimi@lkcc.org>
+
+	* socket.c (sock_write): Prevent serveez from sending empty
+	buffers.
+	(default_write): When setting `SOCK_FLAG_FINAL_WRITE' before
+	the final `sock_printf' or `sock_write' then the connection
+	gets closed as soon the send buffer queue is empty.
+
+	* fakeident-server/Makefile.am: New server.
+
+2001-01-02  Raimund Jacob  <raimi@lkcc.org>
+
+	* server.h (portcfg): Renamed 'local-ip' and friends to some
+	generic name.
+
+2000-12-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_config_prototype): `ident'
+	is a new configuration item which enables the identfication
+	lookup for each http request.
+	(http_connect_socket): Here we invoke the identd request.
+	(http_config): The default log format is CLF now.
+
+	* http-server/http-core.c (http_identification): Added this
+	routine for identd result handling.
+	(http_clf_date): This routine produces a CLF date.
+
+2000-12-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* irc-server/irc-proto.c (irc_init): Reviewed A-line and M-line
+	configuration item handling. Eliminated clashes with other
+	parameters.
+
+2000-12-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/nut-transfer.c (nut_send_push): The keys in
+	the push request hash table now correspond when received/sent.
+
+	* nut-server/nut-transfer.c (nut_check_given): Fixed HTTP
+	request header format.
+
+	* nut-server/nut-transfer.c (nut_disconnect_transfer): Send
+	a push request here if the connection process itself has
+	been aborted (as is when connecting firewalls or gateways).
+
+2000-12-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* irc-core/irc-core.c (irc_string_regex): Fixed spelling
+	errors in documentation.
+
+	* coserver/coserver.c: Made a lot of changes concerning the
+	readability of the coserver code. Cleaned up the namespace.
+
+2000-12-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* sntp-server/Makefile.am: Created this file for building
+	the SNTP server library.
+
+	* server.c (all_server_definitions): Added the SNTP server
+	here and removed the Q3KEY license server.
+
+	* sntp-server/sntp-proto.c (sntp_handle_request): Added
+	a simple network time protocol packet processor which creates
+	time stamps according to RFC 868.
+
+2000-12-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (server_create): Print some error message if
+	IP_HDRINCL is not defined.
+
+2000-12-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (pipe_write): Using Overlapped I/O when writing
+	data to a pipe.
+	(pipe_connect): Initializing Overlapped structures here for
+	client pipes.
+
+	* util.h: Defined O_BINARY if not defined here.
+
+	* coserver/coserver.c (coserver_destroy): When kill()ing
+	coserver processes we are cleaning them up via waitpid().
+
+	* serveez.c (main): Starting network API under Win32 before
+	parsing the configuration file and server instantiating.
+
+	* server.c (set_port): Using WSAStringToAddress() in the Win32
+	port which is a full replacement of libiberty's inet_aton().
+
+	* pipe-socket.c (pipe_listener): If mkfifo() is not available
+	we are using mknod() in order to create a named pipe.
+
+2000-12-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-core.c: Added http_add_header, http_set_header,
+	http_send_header and http_reset_header for building a valid
+	http header. These are currently used within the GET response
+	routines.
+
+2000-12-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_get_response): Checking for
+	content range request. Not yet fulfilled...
+
+	* http-server/http-core.c (http_get_range): New routine which
+	parses a content range header line and saves its results in
+	a given http socket structure.
+
+2000-11-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (pipe_listener): Added a routine for creating
+	a pipe listener structure. Now we are even able to forward pipe
+	connections.
+
+	* tunnel-server/tunnel.c (tnl_disconnect_source): Separated
+	source and target disconnection routine.
+	Dismissed the usage of the referrer entry of the socket
+	structure for enabling the pipe forwarder.
+
+2000-11-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c (tnl_create_socket): Added routines and
+	definitions for the support of forwarding named pipes.
+
+	* pipe-socket.c (pipe_connect): This routine connects to a pair
+	of named pipes. It is the counterpart of the server_accept_pipe()
+	function.
+
+2000-11-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.h (PROTO_RAW): Added some definitions for latter support
+	of raw sockets which will be able to sent the ip header in front
+	of each packet. This is an extension to icmp sockets.
+
+	* server-socket.c: Including <ws2tcpip.h> for the IP_HDRINCL
+	on Win32 systems.
+	(server_create): When PROTO_RAW is set an additional ip header 
+	will be sent through raw sockets.
+
+	* raw-socket.c (raw_check_ip_header): Added the raw-socket.*
+	files to the CVS. There we find additional routines for raw
+	sockets.
+
+2000-11-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cgi.c (http_cgi_exec): Enhanced the 
+	behaviour of fork(). Under heavy load the http server retries
+	forking cgi scripts.
+	(http_cgi_disconnect): Cleanup zombie processes with waitpid()
+	if possible.
+
+2000-11-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (icmp_startup): This routine starts the ip
+	services on Win32 systems. It loads the ICMP.DLL, obtains
+	the appropriate functions and retrieves a single handle from
+	this DLL.
+
+2000-11-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-core.c (http_start_netapi): Here we load
+	the netapi32.dll to get some functions for handling user 
+	account information on Windows NT systems. This is used within
+	the http_userdir() routine for obtaining a user's home
+	directory. Not yet tested...
+
+	* windoze.c (windoze_asc2uni): Added two routines which convert
+	unicode to ascii strings and the other way around.
+
+	* tunnel-server/tunnel.c (tnl_disconnect): Fixed some of the
+	segmentation fault candidates due to invalid socket referers.
+
+2000-11-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_init): The user directory
+	path is configurable via "userdir" in each http instance.
+
+	* http-server/http-core.c (http_userdir): This routine checks
+	if a given request URI is a "~user" request and tries to 
+	replace it with this user's home directory and appends a
+	configurable path.
+	(http_log): '%c' gets replaced by the response code and '%l'
+	by the content length in the access logfile.
+
+2000-11-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist.c (alist_insert): Fixed another bug causing an invalid
+	array list length (off by one).
+
+	* tunnel-server/tunnel.c (tnl_disconnect): When a TCP connection
+	was invoked by an ICMP connection we send a disconnection subcode
+	via the referring ICMP socket.
+
+	* icmp-socket.c (icmp_check_packet): Using the subcode within
+	the ICMP header in order to determine new and disconnected
+	connections.
+	(icmp_read_socket): If the icmp_check_packet() returns the
+	disconnection subcode this function returns an error and causes
+	this sockets shutdown.
+
+	* alist.c (alist_delete): Fixed a bug in this function which
+	caused invalid array list lengths and array chunk sizes.
+
+2000-11-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-core.c (http_localhost): The local server
+	name is resolved at server startup if necessary.
+	(http_remotehost): When a new client connects to the http
+	server its remote address gets resolved and put to the access
+	logfile and cgi environment.
+
+2000-11-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.h: The following configuration items
+	have been added to the HTTP configuration:
+	`admin'     - the administrators email address
+	`host'      - the servers host name
+	`logfile'   - location of access logfile
+	`logformat' - format string for the access logfile lines
+
+	* http-server/http-core.c (http_log): Added simple logging
+	system. Each http request gets a line within a configurable
+	access logfile.
+
+2000-11-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (icmp_ip_checksum): Fixed ip checksum 
+	generation algorithm due to RFC 1071 (Computing the Internet 
+	Checksum). Checking the IP header checksum still fails if
+	the packet was fragmented and reassembled by the kernel.
+
+	* alist.c (alist_delete_range): The implementation of this
+	function is based on alist_delete with some additional 
+	previous checks. Now the array list functions are completed.
+
+	* nut-server/nut-core.c (nut_parse_addr): If there is no
+	port given in the form `ip:port' it defaults to NUT_PORT
+	which is 6346.
+
+2000-10-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (icmp_put_ip_header): Put a given IP header
+	structure into plain data. Could be used with IP_HDRINCL.
+
+	* nut-server/nut-core.c (nut_canonize_file): This routine
+	converts any filename to something printable.
+
+2000-10-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (icmp_connect): Each `connected' ICMP
+	sockets gets a unique remote port for identifying data
+	replies.
+
+	* icmp-socket.h (icmp_header_t): This structure contains
+	now an additional remote port information for filtering
+	dedicated ICMP connections.
+
+2000-10-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c (tnl_init): Assigning either UDP or
+	ICMP handle request routine to the server instance.
+
+	* udp-socket.c (udp_write): Splitting large UDP messages if
+	necessary.
+
+2000-10-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c: The port forwarder for UDP and TCP
+	is fully implemented but must be tested yet.
+
+	* tunnel-server/tunnel.c (tnl_handle_request_udp): 
+	Implemented port forwarder for TCP->UDP. Quake3 authorization
+	via TCP possible.
+
+	* socket.h (SOCK_FLAG_FIXED): This flag indicates the 
+	udp read- and write-callbacks to handle dedicated udp
+	connections.
+
+	* udp-socket.c (udp_write): Added this routine for sending
+	whole buffers via UDP connection.
+
+2000-10-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist.c (alist_delete): Optimized deletion and insertion
+	of fill bits.
+
+	* alist.h (struct array_chunk): Made the array list double 
+	chained. Thus accesses to specific elements can be optimized 
+	a bit.
+
+2000-10-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist.c: Most of the array list functions have been 
+	implemented and tested. This implementation can be used for
+	linear lists of values and prevents the processor from copying
+	large arrays in memory.
+
+2000-10-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/nut-transfer.c (nut_send_push): Checking
+	if a push request has already been sent. Fixed memory leak.
+
+	* alist.c: Defined all array list functions which need to
+	be implemented sometime.
+
+2000-10-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_stat): Stating
+	server uptime.
+
+	* socket.c (sock_error_info): This function prints a valid
+	error message if a socket has gone into the exception set
+	of poll() or select().
+
+2000-10-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* tunnel-server/tunnel.c (tnl_server_definition): Started to
+	setup a port forward server.
+	(tnl_check_request_tcp): TCP ports can be forwarded now. The
+	routine simply copies data from one connection to another.
+
+2000-10-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-cache.c (http_cache_consistency): This 
+	function pedanticly checks the consistency of the http
+	cache entries.
+
+2000-10-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/nut-request.c: Moved all gnutella request handlers
+	to this file. `gnutella.c' was going too big.
+
+	* nut-server/nut-transfer.c (nut_check_given): This request
+	checker evaluates the "GIV " line and assigns the appropriate
+	download callbacks if possible. Everything untested, yet.
+
+	* nut-server/gnutella.c (nut_detect_proto): Added detection
+	of push request replies (GIV).
+
+	* nut-server/nut-transfer.c (nut_send_push): This routine sends
+	a push request to a given transfer connection. It is used when
+	the download connection could not be established.
+
+	* nut-server/nut-transfer.c (nut_init_transfer): Saving
+	the push request data. This could be used if the connection
+	failed.
+
+	* http-server/http-proto.c (http_cgi_died): Additional check
+	for cgi's been died via `waitpid'.
+
+	* icmp-socket.c (icmp_printf): This function can be used to
+	send a formatted string via icmp connection. Header creation
+	inclusive.
+
+	* http-server/http-cgi.c (http_cgi_read): Prevent receiving
+	cgi pipes from shutting down the http connection if there
+	is currently no data to receive (MinGW32 port).
+
+	* server-loop.c (server_check_sockets_MinGW): Put read 
+	callback for pipes in front of any selection for writing.
+	This is why pipes cannot be select()ed, but are non-blocking
+	anyway (reading only).
+
+	* nut-server/nut-core.c (nut_parse_addr): Prevent serveez from
+	segfaulting if a given host string is empty.
+
+2000-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c: Modifications for compiling on AIX without unwanted
+	warnings.
+
+	* nut-server/gnutella.c (INADDR_NONE): Define this value if
+	it is not within <netinet/in.h> (Solaris).
+
+	* icmp-socket.c (icmp_read_socket): Started to implement
+	a reader for icmp sockets. Not yet working...
+
+2000-09-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (set_port): Prepared everything to support ICMP
+	sockets in the port configuration.
+
+	* http-server/http-cgi.c (http_cgi_exec): Find out the
+	system's executable association. It is not used by default
+	but could be put into the appropriate configuration hash
+	"cgi-application".
+
+	* server.c (hashtable_p): Added some #define's for backward
+	compatibility with older versions of the sizzle core library.
+
+	* http-server/http-cgi.c (http_cgi_exec): Fixed cgi execution
+	bug previously described in BUGS. Even large cgi output can
+	be passed on Win32 now.
+	(http_cgi_exec): Respond with "Forbidden" if there is no
+	cgi application association with the requested file extension.
+
+	* http-server/http-proto.c (http_config_prototype): Added
+	support for configurable cgi application associations.
+
+2000-09-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* windoze.c: Moved some functions to this file. That is
+	because there is now a lot of them in different source files.
+	Here we want to place all kind of porting stuff for Win32.
+	(windoze_set_taskbar): When the application gets invoked as
+	daemon under Win32 it is put into the taskbar.
+
+2000-09-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.c (main): Added new command line option `--daemon'
+	which tells the program to fork() into background and close
+	stdin/stdout/stderr.
+
+	* irc-server/irc-event-5.c (irc_who_callback): Output of
+	/WHO hash been fixed. Both the `irc_regex_channel' and
+	`irc_regex_nick' were bogus.
+
+	* irc-server/irc-event-1.c (irc_nick_callback): Fixed client
+	hash inconsistency.
+
+	* irc-server/irc-proto.c (irc_init): Both the client and
+	channel hash are case insensitive now.
+
+2000-09-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* serveez.c (main): Fixed arguments for getopt() and
+	getopt_long().
+
+	* http-server/http-cgi.c (http_cgi_read): Using PeekNamedPipe
+	to check if there is data within the receiving cgi pipe and
+	read via ReadFile as much bytes as stated.
+
+2000-09-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-loop.c (server_check_sockets_MinGW): Now we have
+	three different socket loops. poll(), select() and one
+	for the native MinGW32 port.
+
+	* pipe-socket.c (pipe_valid): Checking if a given socket
+	structure is valid. Both of these routines are now 
+	extensively used.
+	(pipe_disconnect): Because we have now a new code branch 
+	for the disconnection routine we use this function to 
+	disconnect pipes.
+
+	* socket.c (sock_valid): Checking if a given socket structure
+	is still valid.
+
+	* server-core.c (sock_shutdown): Differentiating between
+	pipe and socket disconnection routines.
+
+	* nut-server/gnutella.c (nut_info_client): Displaying current
+	up- and download rate. Fixed Division by zero bug.
+
+2000-09-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (util_openfiles): Because Win9x and ME do have 
+	their maximum open connections (socket) system limit
+	within the registry we try redefining them.
+
+	* alloc.c (heap_add): If you defined `DEBUG_MEMORY_LEAKS'
+	you will additionally get the caller address of unreleased
+	heap blocks.
+
+	* mkpassword.c (main): Made simple password generation
+	program.
+
+	* server-socket.c (server_accept_pipe): Setting unlimited
+	umask permissions to allow any users to connect to named
+	pipes.
+
+	* nut-server/gnutella.c (nut_detect_connect): This routine
+	detects the gnutella protocol for self connected sockets.
+	(nut_config_prototype): The configuration item `net-url'
+	is for the gnutella host list.
+
+2000-09-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (server_accept_pipe): Extra check if
+	mkfifo() really produced a named pipe.
+
+	* nut-server/gnutella.c (nut_query): Limiting the amount of
+	search reply records with the parameter `search-limit'.
+
+	* nut-server/nut-hostlist.c (nut_hosts_check): Moved
+	all functions for the html host list to this file.
+
+	* ctrl-server/control-proto.c (ctrl_stat): When giving a
+	certain server's name we stat this server instance only.
+	(ctrl_stat_coservers): Stating coserver instances here.
+	The command `stat coserver' will show information on coserver
+	instances only.
+
+2000-09-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_stat_id): Indicating
+	additional priority flag.
+
+	* awcs-server/awcs-proto.c (awcs_connect_socket): Marked
+	master server connection with priority flag.
+
+	* server-core.c (rechain_socket_list): Added a new socket
+	flag `SOCK_FLAG_PRIORITY'. Sockets marked with this flag
+	will be enqueued right after listeners.
+
+	* nut-server/gnutella.c (nut_hosts_check): Host list shows
+	the age of valid gnutella clients.
+	(nut_idle_searching): The `search property' is now a string
+	array. Each item will be searched for.
+
+	* awcs-server/awcs-proto.c (awcs_process_multicast): Modified
+	hash key creation and comparison. Now the server checks the
+	existence of aWCS clients everywhere.
+
+	* http-server/http-cgi.c (http_check_cgi): Fixed realloc ()
+	call. The result was omitted. Thus it was invalid afterwards.
+
+	* pipe-socket.c (pipe_disconnected): All the routine was
+	#undef'ed without ENABLE_DEBUG. Fixed.
+
+	* socket.c (sock_disconnect): Pipe clients' descriptors are
+	disconnected but not closed in Win32.
+
+	* server-socket.c (server_accept_pipe): Tried to fix the pipe
+	client connection detection.
+
+2000-09-11  Stefan Jahn  <s.jahn@q-bus.de>
+
+	* coserver/coserver.c (coserver_send_request): Fixed memory
+	leak in the coserver hash when one of these died.
+
+2000-09-11  Raimund Jacob  <raimi@lkcc.org>
+
+	* nut-server/gnutella.c (nut_connect_socket): `max-connections'
+	describes now how many overall connections we have (incoming
+	and outgoing).
+
+	* server-core.c (rechain_socket_list): Listeners are kept at
+	the beginning of the socket chain. Hopefully fixes problem
+	with very fast connects (backlog too small).
+
+2000-09-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_push_request): When receiving
+	a push request for ourselves we connect to the given host and
+	send the initial `GIV' line.
+	(nut_config_prototype): With the configuration item
+	`max-uploads' you define the maximum number of concurrent 
+	file uploads.
+
+	* nut-server/nut-transfer.c (nut_read_database_r): The share
+	directory will be recursed now.
+	(nut_file_write): The network transfer rate is throttled down
+	to a configurable value.
+
+	* nut-server/nut-core.c (nut_parse_property): Here we parse
+	a given gnutella (HTTP) header for certain properties case
+	insensitively.
+
+	* ctrl-server/control-proto.c (ctrl_stat): This function
+	show additionally the current heap allocator values.
+
+2000-09-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash.c (hash_analyse): Changed name conventions. A 
+	`node' is now a `bucket'.
+
+	* awcs-server/awcs-proto.h (AWCS_ID_SIZE): The aWCS servers
+	id length and format string is variable by #define's.
+
+	* http-server/http-proto.c (http_info_client): Fixed the
+	usage of the http property fields in this callback. These
+	can be empty sometimes.
+
+	* nut-server/nut-core.c: When including <sys/socket.h> 
+	we also have to include <sys/types.h> previously.
+
+2000-09-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_query): Fixed byte order of
+	the port property of the push request and header.
+
+	* nut-server/gnutella.c (nut_query): Theoretically the 
+	gnutella spider is able to respond to search queries within
+	its own database. Cannot send files, yet.
+
+	* nut-server/nut-transfer.c (nut_read_database): This function
+	will re-read the share directory and create a new database.
+
+	* cfgfile.c (load_config): Added `have_gnutella' variable to
+	sizzle context.
+
+2000-09-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_server_timer): Try to connect 
+	to as many gnutella hosts as necessary.
+
+	* nut-server/nut-route.c (nut_canonize_query): Unpatient
+	queries will be routed after a certain time only.
+
+	* nut-server/gnutella.h (nut_client_t): Included statistics
+	about each connections nodes, number and size of files.
+
+2000-09-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_disconnect): Every 
+	connections `files' and `size' property will be subtracted
+	from the overall values.
+
+	* nut-server/nut-transfer.c (nut_disconnect_transfer): If
+	the downloaded file is broken we remove it and could 
+	therefore try it again a bit later.
+
+	* nut-server/nut-core.c (nut_print_guid): This routine
+	delivers a text representation of a GUID.
+
+	* nut-server/gnutella.c (nut_push_request): Routing push
+	request correctly. Was: broadcast. Is: Sent to where the
+	original query reply came from.
+	(nut_reply): Saving replies for later push request routing.
+
+2000-09-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (util_inet_ntoa): Using old function instead
+	of `inet_ntoa' to get an ip address text representation.
+
+	* interface.c (list_local_interfaces): The `inet_ntoa'
+	network library functions seems to be broken on some systems.
+	Thus we leave it out.
+
+	* nut-server/gnutella.h: Gave up one byte memory alignment
+	for the binary gnutella packets and wrote some functions
+	which convert them to appropriate structures.
+
+	* nut-server/Makefile.am (libnut_a_SOURCES): Added the
+	file `nut-core.c' and `nut-core.h' to the gnutella source
+	tree.
+
+	* nut-server/nut-core.c (nut_get_header): Moved some
+	gnutella core functions to this file.
+
+	* nut-server/gnutella.h (__BSWAP_32): Added lots of conversion
+	macros for dealing with little endian data in gnutella packets.
+
+	* nut-server/gnutella.c (nut_server_timer): Removing old
+	entries from the query hash.
+
+	* nut-server/nut-route.c (nut_canonize_query): This 
+	function should save the gnutella network from unpatient 
+	users.
+
+2000-09-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_host_catcher): Canonizing ip
+	addresses and tcp ports for the host catcher.
+	(nut_server_timer): Forget about self sent packets after a
+	certain time.
+
+	* util.c (util_tolower): This routine converts a given string
+	to lower case.
+	(util_time): In this function a given time is converted into
+	its text representation without unwanted trailing characters.
+
+	* nut-server/nut-transfer.c (nut_string_regex): Added routine
+	to check search patterns against constant filenames.
+
+	* nut-server/nut-route.c (nut_validate_packet): Message
+	validation keeps the gnutella network clean and the client
+	stable.
+
+	* nut-server/gnutella.c (nut_info_client): Implemented
+	gnutella client information callback.
+
+	* nut-server/nut-route.c (nut_route): Moved all routing 
+	routines to this file.
+
+	* nut-server/Makefile.am (libnut_a_SOURCES): Added
+	`nut-route.c' and `nut-route.h' to the gnutella sources.
+
+	* nut-server/gnutella.c (nut_connect_timeout): This routine
+	returns an error if the connected socket has not been connected
+	within a certain time interval.
+
+2000-08-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.h (little2host): Defined some routines
+	to convert the little endian values in Gnutella packet. Sigh.
+
+	* nut-server/gnutella.c (nut_host_list): Check if the
+	send buffer queue overruns while sending gnutella host
+	catcher list.
+	(nut_info_server): Gnutella server informations callback
+	implemented. It simply states the current configurations
+	and some network statistics.
+
+	* alloc.h (__XALLOC_H__): Fixed #define clash with sizzle 
+	library.
+
+2000-08-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_server_timer): Added routine for
+	regularly reconnects.
+	(nut_connect_host): Use this routine to connect to other
+	gnutella hosts.
+	(nut_config_prototype): Added new configurations item
+	"connections" which is the number of connections you want
+	to keep up to the gnutella network.
+	(nut_config_prototype): New configuration item "force-ip"
+	can be used to force outgoing ping replies carry this as the 
+	host ip.
+
+	* ctrl-server/control-proto.c (ctrl_stat_id): Fixed the
+	double call of `util_inet_ntoa'. It delivers a static string.
+	Thus it showed the latter result only.
+
+2000-08-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_calc_guid): Using original
+	"CoCreateGuid" routine from ole32.dll if available in Win32.
+	(nut_connect_socket): Disabling flood protection for
+	gnutella clients.
+
+	* nut-server/nut-transfer.c (nut_init_transfer): In the
+	MinGW32 port we *NEED* O_BINARY when creating files.
+
+	* nut-server/gnutella.c: Including <direct.h>.
+
+	* nut-server/gnutella.h: record->file and reply->record
+	are arrays of unknown size. Thus they get 1 as initial 
+	size.
+
+	* nut-server/gnutella.c: Redefine mkdir() id necessary.
+
+	* nut-server/nut-transfer.c (nut_init_transfer): Checking
+	for certain file extensions.
+	(nut_check_transfer): Comparing original file size and
+	content length.
+
+	* nut-server/gnutella.c (nut_host_list): Added this routine
+	for nice HTML output of the current host catcher list.
+
+2000-08-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c (nut_route): Prevent native 
+	packets from further routing.
+
+	* http-server/http-proto.c (http_get_response): S_ISLNK
+	is checked if defined only.
+
+	* util.c: <sys/resource.h> only included if it is not a
+	__MINGW32__ compiler.
+
+	* nut-server/gnutella.c (nut_init_transfer): This routine 
+	will be called when invoking a new gnutella file transfer.
+
+2000-08-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* nut-server/gnutella.c: Sparely documented the gnutella
+	routines and data structures.
+	(nut_config_prototype): Added `max-ttl' and `ttl' for the
+	configuration file associations.
+	(nut_route): Made up a separate routine for packet routing.
+	(nut_ping_reply): Evaluating init responses.
+	(nut_idle_searching): Gnutella net search queries for each
+	connection is done separately.
+
+2000-08-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (SUBDIRS): Added the nut-server directory
+	with the files gnutella.c, gnutella.h and a new 
+	Makefile.am file.
+
+	* nut-server/gnutella.c: Basic gnutella spider specified.
+	Not yet fully implemented and documented. For now it can
+	connect to given servers, make regular search requests,
+	accept server connections and route plain queries.
+
+	* hash.c (hash_key_length): Added callback for the actual
+	hash key length. Useful for non-string keys.
+
+2000-08-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (rechain_socket_list): This routine cycles
+	the current socket list. It prevents the end of this list to
+	starve processing.
+
+2000-08-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_connect_socket): 
+	Resizing send and receive buffer. Was a problem for
+	the long list or `stat con'.
+
+	* socket.c: `socket_version' is the version counter for
+	socket structures. Thus we can validate socket structures
+	if these have been reinitialized.
+
+	* coserver/coserver.c (coserver_handle_request): The 
+	callback for coserver requests gets three arguments.
+	First the actual result and then two optional arguments.
+
+	* coserver/coserver.h: The coserver callbacks get one more
+	argument. These are stored in the callback hash as an array.
+
+	* socket.h (struct socket): Added `version', renamed 
+	`socket_id' to `id' and removed `ref'.
+
+2000-08-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (util_openfiles): Display the current and maximum 
+	open file limit via getrlimit() and try setting it via 
+	setrlimit() if necessary and possible.
+
+2000-08-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-dirlist.c (http_dirlist): Added ability
+	to sort the directory listing by scandir() and alphasort().
+
+	* q3key-server/q3key-proto.c (q3key_handle_request): Logfile
+	for quake 3 keys implemented.
+	(q3key_config_prototype): `logfile' is now configurable via
+	configuration file.
+
+2000-08-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-core.c (http_error_response): Added 
+	some routine which shows server and client errors as nice
+	HTML document.
+
+	* http-server/http-cgi.c (http_cgi_disconnect): Introduced
+	this function as separate (extended) callback for http
+	connections.
+
+2000-08-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_tcp_cork): Setting and
+	unsetting this socket option when using sendfile() to prevent
+	the system to send partial tcp frames.
+
+	* server-loop.c (check_sockets): Put this function into a 
+	separate file for later extensions by poll().
+	(check_sockets_poll): Added this function using poll() instead
+	of select(). Thus we beat the (g)libc's builtin file 
+	descriptor limit of select().
+
+2000-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* udp-socket.c (udp_connect): This routine creates a new socket
+	structure with a udp connection to some remote server.
+
+	* q3key-server/q3key-proto.c (q3key_server_definition): Partly
+	implemented the first udp server.
+
+	* coserver/dns.c (handle_dns_lookup): `memcpy' the delivered
+	inet address to the address field.
+
+	* udp-socket.c (udp_check_request): The default `check_request'
+	for udp servers calls all the `handle_request' callbacks of
+	each server.
+	(udp_printf): This function stores whole udp packets into the
+	send_buffer of the server socket structure.
+
+	* server-socket.c (server_create): Do listen only on TCP
+	sockets, not on UDP sockets.
+
+	* socket.h (struct socket): Tried to make all ip address
+	representations `unsigned long'. Thus we might be able to
+	switch to IPv6 somewhen easily.
+	(struct socket): Finally determined that ip addresses and ports
+	must be in network byte order everywhere.
+
+	* server.h (server_t): Added `handle_request' callback to
+	both the server definition and the server instance structures.
+	Thus we can handle udp servers.
+
+	* http-server/http-proto.c (http_info_server): Implemented
+	the info callback for the http server. This is currently
+	used to show the configuration representation. Dropped
+	initial messages when instantiating.
+
+	* ctrl-server/control-proto.c (ctrl_stat_id): Fixed 
+	differentiating between Co-Servers and unidentified pipe
+	connections.
+
+	* http-server/http-core.c (http_read_types): The content type
+	hash is now extendible by the configuration file.
+
+	* server.c (set_hash): Storing hash values of a newly created
+	hash as normal xmalloc()ed. Thus you MUST xfree() both the
+	values and the hash itself.
+	(set_hash): Handle default hash value `NULL'.
+
+	* foo-server/foo-proto.c (foo_info_server): Server info
+	callback implemented. This shows the server configuration.
+	(foo_finalize): Freeing hash values if necessary.
+
+	* server.c (all_server_definitions): Placed 
+	"#if ENABLE_xxx_PROTO" around server definitions.
+	(server_start): Using portcfg_equal to compare port 
+	configurations when binding server ports.
+
+	* util.h: Included <assert.h> where necessary.
+
+2000-07-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (sock_disconnect): Added solid behaviour if
+	a pipe server disconnects with having lingering children.
+
+	* ctrl-server/control-proto.c (ctrl_stat_con): Co-Server
+	identified by SOCK_FLAG_PIPE if there is no server for
+	socket structure, else we simply state "None".
+
+	* awcs-server/awcs-proto.c (awcs_connect_socket): Assign
+	awcs_kicked_socket callback only to clients.
+
+	* util.c (util_itoa): Optimized this function.
+
+	* http-server/http-proto.c (http_get_response): Do not
+	send irregular files like devices and pipes.
+
+	* http-server/http-cache.c (http_cache_read): Checking for
+	bogus files whose file size could not been read. Thus 
+	preventing a memory leak.
+
+	* http-server/http-cache.c (http_cache_disconnect): First
+	check if there is a cache entry.
+
+	* server.c (server_instantiate): Copy example configuration
+	definition to server instance config.
+
+2000-07-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* udp-socket.c (udp_read_socket): Default reader for
+	udp sockets.
+	(udp_write_socket): Default writer for udp sockets.
+
+	* util.c (util_hexdump): This hexdump function dumps any
+	kind of memory to a given file stream. It replaces the
+	for dump_request function.
+
+2000-07-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* alloc.c (xheap): Made up some routines that save all
+	xmalloc()ed pointers in a hash structure. Thus we can
+	debug memory leaks except within the hash implementation.
+	This is for development purposes only and can be switched
+	by the definition of DEBUG_MEMORY_LEAKS.
+
+	* http-server/http-cache.c (http_check_cache): Figured
+	out the main reason for memory leaks within the http
+	cache structures. This could happen because of not yet
+	fully read cache entries which got simply overwritten
+	and therefore lost.
+
+	* http-server/http-core.c: Put some of the basic http
+	function into this file to decrease the file sizes of
+	the http server.
+
+	* http-server/http-proto.c (http_info_client): Made up
+	the http client info callback. Here we show all the
+	information referring to a http client connection within
+	the control protocol.
+
+	* irc-server/irc-proto.c (irc_delete_client): Fixed irc
+	client hash memory leak.
+
+	* http-server/http-cache.c (http_free_cache): Fixed http
+	cache memory leak.
+
+	* http-server/http-dirlist.c (http_create_uri): Here we
+	create URIs as converted in the below routine. When having
+	special characters within file or directory names we have
+	to convert them to %XX sequences.
+
+	* http-server/http-proto.c (http_process_uri): Added URI
+	convert routine to convert URIs with %XX within file
+	requests.
+
+	* server.c (set_port): Use either inet_aton() or inet_addr()
+	for forming a valid Internet address.
+
+2000-07-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (default_flood_protect): This function should be
+	called whenever you want to use flood protection within
+	your read_socket callback. It is built in the default readers.
+
+	* server.c (server_find): Find a server instance by a given
+	server configuration structure. This routine is used by the
+	control protocol to determine a client connections server.
+	(server_run_timer): This routine is called by 
+	handle_periodic_tasks() in `server-core.c' for each server
+	instance.
+
+	* coserver/coserver.c (coserver_delete): Co-Server
+	instantiating is now possible via the `int_coserver'
+	array.
+
+	* ctrl-server/control-proto.c (ctrl_stat_id): Made the
+	client/server info available via new callbacks. Showing
+	server instances on listening ports.
+	(ctrl_stat_con): Dropped socket descriptor and added the
+	server instance name if available for clients. Displaying
+	"Listener" and "Co-Server" if so.
+	(ctrl_stat_all): Here we show all the server and coserver
+	instances and the information about them using the 
+	`server_info' callback and the instance arrays.
+	(ctrl_info_client): First implemented `info_client' callback
+	within serveez. Dummy implementation.
+	(ctrl_info_server): Displaying the tcp port as `info_server'
+	information, printed when listing the server instances.
+
+	* server.h (server_t): Added `info_client', `info_server' and
+	`timer' callback.
+
+	* irc-server/irc-proto.h (struct irc_channel): All the
+	IRC structures have now dynamic sizes.
+
+	* irc-server/irc-proto.h (struct irc_client): This 
+	structure is now fully dynamic. Thus we save a lot of
+	memory.
+
+	* irc-server/irc-event-1.c (irc_oper_callback): Implemented
+	/OPER command.
+
+2000-07-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* irc-server/irc-event-3.c (irc_stats_callback): Added all
+	the statistics referring ? lines.
+	(irc_info_callback): Added the /INFO command replies.
+
+	* irc-server/irc-config.c (irc_parse_config_lines): Added this
+	file. This routine is taking all the X-lines and converts them
+	into useful structures.
+	(irc_client_valid): Started to implement something like a
+	user authorization.
+
+	* irc-server/irc-event-3.c (irc_stats_callback): One more
+	/STATS command ('m') has now been implemented.
+
+	* irc-server/irc-event-7.c (irc_users_callback): /USERS
+	command fully implemented.
+
+	* util.h (S_ISDIR): Definition of those S_-macros if
+	necessary in the Win32 port.
+
+	* http-server/http-cache.c: Everywhere we are using file
+	I/O operations we #include <io.h> when building via 
+	__MINGW32__.
+
+	* util.c (util_strcasecmp): Added both `util_strcasecmp' and
+	`util_strncasecmp'. We are using either the libc version,
+	Win32's str(n)icmp() implementation or a fallback.
+
+2000-07-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* option.h: Declaring `optarg' if necessary.
+
+	* util.h (getcwd): Using native GetCurrentDirectory in Win32.
+	(chdir): Using native SetCurrentDirectory in Win32.
+	Made all declarations with variable argument list (...) 
+	available for non-std-c compiler.
+
+	* http-server/http-dirlist.c (http_dirlist): Replaced
+	opendir, readdir and closedir by native functions
+	FindFirstFile, FindNextFile and FindClose in Win32.
+
+	* coserver/coserver.c (coserver_send_request): If you have
+	more than one coserver of the same type instantiated the 
+	requests for these instance will be apportioned.
+
+2000-07-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* connect.c (default_connect): Moved this function to the
+	source file `connect.c'.
+
+	* http-server/http-cache.c (http_cache_create_entry): The 
+	http file cache is now a hash using the stored files's names
+	as key and the http_cache_entry_t structure as values. 
+	Maybe thus we speed up the cache lookup a bit.
+
+2000-07-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (default_connect): This function determines if
+	a connection process is still in progress and sets up the
+	socket structure if this has been completed.
+
+	* connect.c (sock_connect): Made connection routine to other
+	server non-blocking.
+
+	* serveez.c (usage): Dropped -p (--port) option.
+
+	* serveez.h (struct serveez_config): Dropped useless field
+	"port". This is now defined by the integrated servers.
+
+	* irc-server/irc-event.h: Went through all
+	the IRC server and cleared up naming conventions.
+
+	* socket.h (struct socket): Reference counter introduced.
+
+	* server-core.c (shutdown_socket): Reference counter postpones
+	socket shutdown. This is useful if a coserver is still having
+	a socket structure in its callback hash.
+
+2000-07-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (server_bind): Moved some of the server_* functions
+	from "server-socket.c" to "server.c".
+
+2000-07-04  Raimund Jacob  <raimi@lkcc.org>
+
+	* interface.c (list_local_interfaces): made work partly under AIX.
+	interfaces still get listed multiple times but they get listed.
+
+	(list_local_interfaces): fixed multiple device listings. removed
+	that ugly sa_data[] method of converting a sockaddr_in to the
+	dotted decimal representation. the cast is even uglier :)
+
+2000-07-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c (coserver_init): This routine is 
+	instantiating all coservers now. Thus you do not need to create
+	the coservers yourself.
+
+	* coserver/coserver.h (struct int_coserver_type): Added two more 
+	fields to this structure. These are the amount of coserver 
+	instances you want to create and an optional initializer 
+	routine which will be invoked on coserver startup.
+
+2000-06-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-dirlist.c (http_dirlist): BUGFIX:
+	localtime() could deliver a NULL pointer. That's why we need
+	to check for this. Occurred: stat()ing ".." when this refers
+	to the root directory in Win95.
+	(http_dirlist): BUGFIX: Off by one failure when resizing
+	dirlist buffer (dirdata).
+
+	* interface.c (list_local_interfaces): BUGFIX: Printing
+	"NET_LIST_STRING" in front of network interface list when
+	using the IP-Helper-API method.
+
+2000-06-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Added the appropriate headers
+	for the network interface listing in the "include" directory.
+
+	* interface.c (list_local_interfaces): Included the the IP
+	Helper API for getting interface information on WinNT4x and
+	such.
+
+2000-06-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (pipe_disconnected): Differentiate shutdown
+	of named pipe listeners in Win32: "CloseHandle" and Unices:
+	"unlink".
+
+2000-06-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* interface.c (list_local_interfaces): Made the list of
+	local interface under Win9x available via WsControl.
+
+	* Makefile.am (EXTRA_DIST): Added include headers for the
+	undocumented WsControl function in Win32.
+	(serveez_SOURCES): Added interface.h and interface.c for
+	network interface list.
+
+2000-06-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_config_prototype): The amount
+	of cache entries can now be configured via "cache-entries" 
+	within the configuration hash of each http server. When 
+	defining various values the largest will win. This because
+	the http cache is the same for all http servers, so we prevent
+	double caching.
+
+	* http-server/http-cache.c (http_alloc_cache): This function
+	must be called to use the http cache. This is usually done
+	within the global initializer of the http server. Now the
+	amount of cache entries could be configurable.
+
+2000-06-22  Raimund Jacob  <raimi@lkcc.org>
+
+	* http-server/http-proto.c (http_send_file): Made it work with
+	stefan on the phone. I typed what he said.
+
+2000-06-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_server_definition): Ported
+	control protocol to new server concept. This has been the last
+	missing server so far... not yet working all right.
+
+	* http-server/http-proto.c (http_get_response): Do not send
+	"Content-Length:" header for zero sized files. Keep cache 
+	untouched for those kind of files.
+
+	* socket.c (sock_disconnect): Now able to disconnect pipes also.
+	This was not available under Win32 yet.
+
+	* server-core.c (sock_enqueue): Both _enqueue and _dequeue are
+	available under Win32 also. So we could use named pipes in Win32
+	also.
+
+	* server-socket.c (server_accept_pipe): CreateNamedPipe is now
+	checked for invalid return values. Listener will be unqueued if
+	it is not implemented (on Win95).
+
+	* http-server/http-proto.h (struct http_socket): Added fileoffset
+	to this structure for sendfile() parameter.
+
+2000-06-21  Raimund Jacob  <raimi@lkcc.org>
+
+	* Makefile.am ($(SIZZLERULE)): When building our own sizzle from
+	source distribution the user doesn't need to make anymore. added
+	a makefile target and configure.in stuff to do so.
+
+2000-06-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_send_file): Added support
+	for sendfile() for sending large http file requests.
+
+	* server.c (set_port): Using inet_addr() instead of 
+	inet_aton in Win32, because it is not implemented there.
+
+	* server-socket.c (server_create): Named pipes in Win32 are
+	located in "\\.\pipe\". So we put the leading path to the
+	actual pipe's name.
+	(server_accept_pipe): Here we give ConnectNamedPipe a try
+	to listen for connected clients at this pipe.
+
+	* pipe-socket.c (pipe_create): Now we can also create pipe
+	sockets in Win32. Non-blocking I/O will be realized via
+	overlapped I/O.
+
+2000-06-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (pipe_write): Using overlapped I/O on Win32
+	systems for pipe reading and writing.
+
+	* coserver/coserver.c (start_internal_coserver): Do not set 
+	process priority class, but thread priority only.
+
+	* socket.c (default_check_request_byte): Added a array and one
+	byte packet delimiter check_request callback for optimizing 
+	speed.
+
+	* server.c (set_port): When creating a inet address via
+	inet_ntoa the whole structure seems to be destroyed except
+	the address. That is why we put in all other information 
+	afterwards (port and address family).
+
+	* server-socket.c (server_create): Made network server sockets
+	do not route and bind to specific ip addresses via portcfg.
+
+	* irc-server/irc-proto.c (irc_create_client): The miscellaneous
+	field sock->data is now used for a irc client structure. Thus
+	every socket knows about its associated irc client.
+	Various changes within the irc server. Everything untested...
+
+	* irc-server/irc-proto.h (struct irc_client): Channel and 
+	client lookup simplified.
+
+2000-06-19  Raimund Jacob  <raimi@lkcc.org>
+
+	* server.c (set_port): it's now possible to bind ip servers to
+	specific local interfaces. pipes can be read from cfgfile now, too.
+	the bad news is that it doesn't work and I don't know why...
+	
+2000-06-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* irc-server/irc-proto.c (irc_server_definition): IRC server
+	is now fully instantiatable. But might not be working, yet...
+
+	* irc-server/irc-server.c (irc_connect_server): IRC server
+	connections now non-blocking (using DNS coserver).
+
+	* serveez.c (main): Changed server/coserver initialization 
+	startup, to allow servers instances to use coserver requests 
+	within their initialization routines.
+
+2000-06-18  Raimund Jacob  <raimi@lkcc.org>
+
+	* http-server/http-dirlist.c (http_dirlist): changed display format
+	of listing. looks a bit strange now due to the underlining of links.
+	but is lynx-safe and loads faster because there are no tables in it
+	anymore.
+
+2000-06-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-dirlist.c (http_dirlist): Fixed the "Too many 
+	open files" bug for *many* http dirlists (missing closedir()).
+
+2000-06-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_get_response): POST and GET method
+	do work again. Whole http server is now quite ported to new server
+	concept and can be instantiated.
+	(http_free_socket): Made a cgi script die if the http connection is
+	lost by user abort.
+
+	* alloc.c (xmalloc): Made heap counters available on aligned
+	machines.
+
+	* socket.c (default_detect_proto): Fixed the detection fill problem.
+	Now using just 16 byte maximum detection fill.
+
+2000-06-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-server/http-proto.c (http_config): Freed most filed from 
+	ENABLE_HTTP_PROTO and put all http flags into sock->userflags.
+
+	* socket.h (struct socket): Dropped sock->http, now using 
+	miscellaneous field `data' for http connections.
+
+	* http-server/http-proto.c (http_server_definition): Started to
+	rewrite http server to new concept. Not yet working...
+
+2000-06-14  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (check_sockets): Depending on some new socket flags
+	this routine, which might be the most important within serveez, has
+	been fully rewritten. All this has been done to unify pipes, sockets
+	and files (all fds).
+
+	* socket.h (struct socket): Added sock->userflags for protocol 
+	specific flags which cannot be hold within the sock->cfg because
+	they are also socket specific.
+
+2000-06-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* awcs-server/awcs-proto.c: The ENABLE_AWCS_PROTO define is now in
+	"awcs-server" directory only (except ctrl-server).
+	(awcs_finalize): For now we delete newly created named pipes on 
+	the local file system by hand here (should be done in the 
+	disconnection routine of pipe servers).
+
+	* server-core.c (check_sockets): Made it possible to listen on 
+	named pipes via flags and a sock->read_socket callback for 
+	these (see below).
+
+	* server-socket.c (server_accept_pipe): Generic named pipe listener.
+	(server_create): Added creation of pipe servers.
+
+	* socket.c (sock_disconnect): When a pipe client which was created
+	by a pipe server, this client resets the pipe server. When this 
+	client has been disconnected the server can start listening again.
+	This is procedure indicated by the SOCK_FLAG_INITED flag of 
+	the server.
+
+	* socket.h (struct socket): Dropped sflags, is now proto just as it
+	comes from the server_t server definitions.
+	(struct socket): Added "parent" for listening pipe servers.
+
+	* pipe-socket.c: This file contains all pipe related functions.
+
+	* socket.c (sock_unique_id): This function creates a unique id for
+	a socket structure (checked via socket lookup table).
+
+	* util.c (list_local_interfaces): Fixed the signed/unsigned 
+	comparison (always compare sizes unsigned) and free/close resources
+	on return.
+
+2000-06-13  Raimund Jacob  <raimi@lkcc.org>
+
+	* util.c: Added a helper function that can list the local network
+	interfaces. It's pretty useless but may help a user or two.
+	Furthermore it is tested on Linux and Solaris only and I am not
+	sure if all headers included are available on all systems.
+
+	Completed the copyright-string review... hopefully
+
+2000-06-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (default_idle_func): Default idle function for not yet
+	identified connections (pipes and sockets). After a certain time
+	this socket structure gets discarded if not identifying.
+
+	* server-core.c (pipe_disconnected): Some default disconnection
+	routine for pipes.
+
+	* coserver/coserver.c (coserver_init): Global initializer for all
+	coservers.
+	(coserver_finalize): Global finalizer for all coservers.
+	(coserver_handle_request): Scanning coserver response ourselves 
+	without copying and using sscanf().
+	(coserver_handle_request): When a callback gets a NULL for the
+	second arg this indicates an error for the invoking coserver request.
+
+	* socket.h (struct socket): Dropped 'ident_func' and 
+	'nslookup_func'.
+
+	* coserver/dns.c (handle_dns_lookup): Dns coserver reviewed and
+	adapted to new concept. Writing a new coserver is now extremely
+	easy.
+
+	* coserver/ident.c (handle_ident): Ident coserver reviewed and
+	adapted to new concept.
+
+	* coserver/reverse-dns.c (handle_nslookup): Reverse dns coserver
+	reviewed and adapted to new concept.
+
+	* coserver/coserver.c (coserver_send_request): This function got
+	some wrappers for each coserver (coserver_???). You will not need
+	to '#ifdef' them. Now you're able to call any function with one
+	optional argument after getting any result from a coserver result.
+	(coserver_handle_request): Get some callback plus an argument from
+	some callback hash and call this when a coserver delivered some
+	result.
+
+2000-06-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (default_check_packets): This routine is a helper for
+	easy packet protocols. It is based on the socket's packet boundary 
+	and calls handle_request for each packet.
+
+	* server-socket.c (server_create): Finally fixed the SO_REUSEADDR
+	flag for server sockets. bind () will never ever return "address
+	already in use", sigh.
+
+2000-05-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* ctrl-server/control-proto.c (ctrl_idle): Fixed the NAN-error
+	within the cpu/process load display. Do not use floating point
+	arithmetics.
+
+2000-05-12  Raimund Jacob  <raimi@lkcc.org>
+
+	* Makefile.am: Program split into several parts: coservers and
+	several server modules. ar is our friend.
+	Need a good idea making server instances...
+
+2000-05-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (util_hstrerror): Was: _hstrerror. On IRIX this is a
+	libc symbol, thus we will not preempt it anymore.
+
+	* awcs-proto.c (awcs_check_pipe): If serveez is able to open
+	a special named pipe it connects the aWCS-Master through two of
+	them.
+
+2000-05-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* control-proto.c (get_cpu_state): Showing the serveez's process 
+	times via times() or clock().
+
+	* control-proto.c (ctrl_kill_id): Killing specific socket ids via
+	remote control protocol.
+	(ctrl_stat_id): Statistics for given socket ids via control protocol.
+	(ctrl_handle_request): The "/" just repeats the last given 
+	instruction. This might save some typing.
+
+2000-05-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-proto.c (http_content): Fixed the problem with javascript
+	file content. Unfortunately we did not noticed yet...
+
+	* dns.c (handle_dns_lookup): Implemented the DNS lookup
+	coserver.
+
+	* http-proto.c (http_read_types): Read content type definitions
+	from a given file (e.g. /etc/mime.types).
+
+	* server.c (server_signal_handler): Displaying signal messages.
+
+	* util.c (get_hstrerror): Some wrapper for h_errno error messages.
+
+	* socket.c (default_check_request): Both the HTTP and IRC protocol
+	can be instantiated via different configuration hashes.
+
+	* http-proto.c (http_check_keepalive): Fixed the meaning of the
+	"max=%d" value within the "Keep-Alive:" header information.
+	(http_asc_date): Using RFC822 compliant timestamps in "Date:" and
+	"Last-Modified:" header information fields.
+
+	* http-proto.c (http_get_response): Keep-Alive header not exactly 
+	matched, but searched within "Connection:".
+
+2000-04-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* option.c (getopt): Put all the getopt[_long]() functions and
+	definitions into separate files.
+
+	* util.c (get_version): Detecting Win2k and Win98.
+
+2000-04-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* cfgfile.c (load_config): Integration of sizzle, the configuration
+	file language.
+
+	* alloc.c (xfree): The allocated_bytes are now implemented at the
+	beginning of each alloc()ed block. So we save the last argument
+	in xfree() and xrealloc().
+
+	* serveez.c (main): Set maximum verbosity to LOG_DEBUG, not 3.
+	(main): Error message if allocated_bytes left is not zero.
+
+2000-04-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-cache.c (http_recent_cache): Hopefully fixed now the weird
+	recent counter of the HTTP cache file entries.
+
+	* http-cache.c (http_init_cache): The cache structures are now
+	also filename length independent.
+
+	* http-proto.c (http_check_keepalive): The HTTP 'Keep-Alive'
+	connections are now limited to a configurable timeout and amount
+	of successive requests.
+
+	* http-proto.c (http_get_response): Parsing If-Modified-Since
+	timestamp for network traffic savings.
+	(http_handle_request): HTTP/0.9 simple GET implemented.
+
+	* control-proto.c (ctrl_kill_cache): Killing all http cache entries
+	via control protocol.
+
+2000-04-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-proto.c (http_keep_alive): Implemented the HTTP/1.1 feature
+	Connection: Keep-Alive. So HTTP/1.1 clients spare time for 
+	establishing new connections and get delivered even faster.
+
+	* http-cgi.c (http_pre_exec): Dropped the length limitations of 
+	cgi script file names.
+
+	* http-proto.c: Whenever using strcasecmp() and we have <strings.h>
+	it is necessary to include this file.
+
+	* http-cgi.c (http_cgi_exec): Fixed the problem with non-blocking
+	cgi pipes -> cgi stdin/stdout MUST be blocking, they cannot handle
+	the EAGAIN error.
+
+	* http-proto.c (http_handle_request): No more limitations for
+	file lengths and GET method cgi requests.
+	(http_handle_request): Fixed the problem with spaces in file
+	requests.
+
+2000-04-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-proto.c (http_detect_proto): Call check_request here
+	because HTTP requests are *very* short. The socket will not
+	be selected() anymore. But thus there is no delay anymore,
+	sigh.
+
+	* http-cache.c: Set a limit for cache file sizes.
+
+	* irc-server.c (irc_connect_server): Include TimeStamp extension
+	for the IRC protocol.
+
+	* serveez.c: Declaring getopt_long ourselves if the headers do
+	not.
+
+2000-03-25  Raimund Jacob  <raimi@lkcc.org>
+
+	* http-dirlist.c (http_dirlist): Icons for dirs and files.
+
+2000-03-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (snprintf): If the system you want to compile the
+	serveez software does not implement this function this will
+	handle it.
+
+	* util.c (get_version): configure.in defines if the uname() 
+	function is implemented.
+
+	* irc-proto.c (irc_detect_proto): Started the implementation
+	of a real IRC server ...
+
+2000-03-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-cache.c (http_check_cache): Implemented a http file cache
+	for a maximum number of cache entries. It checks the last modification
+	timestamp for the cache strategy.
+
+	* control-proto.c (get_cpu_state): Depending on the host system
+	this functions gets called to determine the current cpu load.
+
+	* serveez.c (init_config): Now we have a real serveez
+	configuration structure, where every configurable value
+	can be stored.
+
+	* control-proto.c (ctrl_detect_proto): Made up something
+	like the control protocol implementation.
+
+2000-02-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-proto.c (http_get_response): Relocation gets completed
+	by the host http property if possible.
+
+	* server.c (check_sockets): connected_sockets is now the
+	counter of the real connected sockets.
+
+	* util.h: Fixed the vsnprintf() and snprintf() problem under
+	Win32.
+
+2000-02-27  Raimund Jacob  <raimi@lkcc.org>
+
+	* http-proto.c (http_get_response): Directory listing when 
+	accessing dirs without index.html. Redirects dirs without
+	the trailing slash.
+
+2000-02-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-cgi.c (insert_env): Made up a kind of wrapper for pasting
+	environment strings in Unices and Win32.
+	(http_cgi_exec): Give the current work directory parameter to
+	CreateProcess.
+	(http_cgi_exec): Finally we 'succeeded' in porting all the cgi
+	stuff to Windows 95. The only limitation is that there is no 
+	non-blocking IO with pipes possible. That's why it might occur
+	some strange things while executing cgi scripts.
+	(http_cgi_exec): Set uid and gid of the cgi script's owner.
+	
+	* http-cgi.c (http_cgi_read): Dropped the idea to read or write
+	non-blocking into pipes, because Win95 does not implement it.
+
+2000-02-16  Stefan Jahn  <stefan@lkcc.org>
+
+	* http-cgi.c (http_cgi_exec): Implemented the POST method of
+	the cgi interface rudimentary.
+
+	* http-proto.c (http_get_response): Detection of a CGI request
+	via GET causes the execution of the script if possible.
+
+	* server.c (check_sockets): Hmm.. why didn't we set the
+	CLOSE-ON-EXEC-Flag explicitly ?
+
+	* http-proto.c (http_post_response): This routine implements
+	basically the post method the CGI gateway interface uses. We
+	just wrote some routines which can react on a html form whose
+	action method is "post". It forks the cgi script identified by
+	a certain url which refers to some other path where all the
+	scripts need to reside, gives the http socket to stdout,
+	pipes the content of the document into the stdin and sets some
+	useful environment variables. Much work still to do. That part was
+	Unix, Windows follows soon...
+
+2000-02-06  Raimund Jacob  <raimi@lkcc.org>
+
+	* awcs-proto.c : Scheduled master for shutdown when master write
+	error occurred (lead to infinite loop).
+
+2000-02-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver.c (send_coserver_request): Check if sending a
+	request was successful, otherwise schedule the sock for
+	shutdown.
+
+	* awcs-proto.c (awcs_disconnect_clients): Whenever the master
+	has been lost we call this method instead of abort().
+
+	* server.c (sock_enqueue): Made up Raimi's request for better
+	uniqueness of textSure IDs. Now we have forthcoming IDs for
+	each connected socket.
+
+	* socket.c (default_write): Resource temporarily unavailable
+	implemented for both Unix and Win32.
+
+	* coserver.c (check_internal_coservers): Finish when all 
+	responses have been processed.
+
+	* ident.c (handle_ident): Check if it was a USERID response.
+
+	* ident.c (handle_ident): Read socket as long as there is data
+	in it.
+
+	* http-proto.c (http_get_response): Added Last-Modified
+	field to the HTTP header using the ancient ANSI C's asctime()
+	format.
+
+	* util.h : Introduced some wrapper #define's. These are
+	WRITE_SOCKET, READ_SOCKET and CLOSE_SOCKET for the socket
+	operation which differ in Unix and Win32 and SYS_ERROR and
+	NET_ERROR.
+
+	* util.c (GetWSAErrorMessage): This routine was introduced
+	because there is nothing like strerror() for network errors
+	in Win32.
+
+	* Makefile (CFLAGS): -O3 -fomit-frame-pointer -fforce-addr 
+	-fstrength-reduce -fexpensive-optimizations -m486
+
+	* socket.c (default_read): Detect receive buffer overflow
+	properly.
+
+	* server.c (check_sockets): Do not put a socket into the
+	write FD_SET if it was unavailable.
+
+2000-01-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* ident.c: Implemented ident requester as internal coserver.
+	(ident_handle_request): Get a request from the coserver and
+	call the appropriate ident_func.
+	(handle_ident): Connect to the ident server, send a request and
+	read out the response. Then return the user ident if successfully
+	done.
+
+	* coserver.c (coserver_check_request): This is the new frontend
+	for the server to evaluate coserver responses. Detects line.
+	(coserver_start): Write a line to one of the running coservers.
+	(coserver_loop): This routine is the new frontend for ALL kinds
+	of internal coservers in Win32 and Unix. It is the infinite loop
+	which permanently reads requests (invoked by coserver_start),
+	processed them (via the func) and return a line for the
+	server (caught by coserver_check_request).
+
+	* http-proto.c (get_content_type): Made up simplified content
+	determination.
+	(http_file_read): Set the flag SOCK_FLAG_HTTP_DONE if file has
+	been fully read.
+	(http_default_write): Shut down the socket if the above flag was set.
+	(http_disconnect): Close the http file descriptor if an error
+	occurred while sending the http file.
+	(http_get_response): Use this routine for both HEAD and GET requests.
+	This is controlled via the flag HTTP_FLAG_NOFILE.
+
+2000-01-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.h (struct socket): Defined the socket descriptor
+	as SOCKET.
+
+	* socket.c (default_check_request): Detection timeout and 
+	maximum detection receive buffer fill prevents invalid connects.
+
+	* nslookup.c
+ 	ENABLE_REVERSE_LOOKUP - ifdefs accordingly set.
+	(handle_nslookup): Return an error if the reverse nslookup 
+	failed by gethostbyaddr().
+
+	* server.c 
+	(check_sockets): Put a http file descriptor into the read and 
+	except FD_SET (Non-Win32, but Unix).
+	(server_signal_handler): Wait() for zombie'd coserver children
+	prevents reentrant signal handler for SIGCHLD under IRIX 6.x
+	Do not close() pipes previously fclose()d.
+	(validate_socket_list): Only compile this if ENABLE_DEBUG is
+	defined.
+
+2000-01-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* awcs client-master detection only once
+	* when master has been lost only the awcs clients are kicked
+	* read() and write() from sockets and pipes only if select()ed
+	* internal nslookup coserver implemented
+	* coserver concept determined (different in Unix and Win32)
+	* strerror replaced by FormatMessage in Win32 port
+	* serveez ported to IRIX 6.x
+	
+1999-12-17  Raimund Jacob  <raimi@lkcc.org>
+
+	* server.c (check_sockets): mmhh.. someone merged >= INVALID_SOCKET
+	into the accept call where != INVALID_SOCKET was correct...
+
+	* util.c (getopt): man... even this one can be implemented the
+	wrong way... shoot me
+
+	* serveez.c (main): Extra message removed, will be displayed later
+
+	* socket.c (sock_from_fd): fnctl replaced by ioctlsocket for Win32
+	(sock_from_pipe): null-function for win32... no pipe
+
+	* server.c (sock_server_loop): Win32 knows SIGBREAK but not
+	SIGHUP/SIGPIPE. Ifdefs set accordingly
+	(check_sockets): F_SETFD disabled for Win32... no fork/pipe anyway
+
+	* serveez.c / configure.in : HAVE_GETOPT_H split into HAVE_GETOPT and
+	HAVE_GETOPT_LONG. Cygwin has the header but native compile doesn't
+	have the function... 
+
+	* server.c (start_coserver): null-function in win32. just doesn't work
+
+	* Makefile.am: client.c connect.* deleted won't be used anyway
+
+1999-12-16  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* Makefile.am (EXTRA_DIST): Added echoserver, so that everyone can
+	see how great Guile is.
+	(bin_PROGRAMS): Added bla, which is a simple echo program which
+	can be used for testing the coserver feature.
+
+	* server.c, awcs-proto.c, awcs-proto.h, server.c, serveez.c,
+	connect.c, socket.c, socket.h, util.c, util.h: Merged changes I
+	made to 0.0.10 with the cygwin and solidifying stuff Stefan and 
+	Raimi did. ediff-merge-files-with-ancestor rules BIG time!
+
+1999-12-03  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* server.c (start_coserver): New function. Starts a separate
+	process connecting its stdin and stdout to a socket structure.
+
+	* echoserver: New file.  This guile script simply echoes its
+	standard input to standard output. It can be used as a co-server
+	for serveez.
+
+	* socket.c (sock_alloc): Only max_sockets - spare_sockets clients
+	are allowed to connect from now on.
+	(sock_write): Whenever a whole message fits into the send buffer
+	it is copied using memmove(). This spare copying by bytes (thanks
+	to stefan for suggesting).
+	(sock_from_pipe): New function. Creates a socket from a pair of
+	file descriptors.
+
+	* awcs-proto.c (status_connected): Using pre-loaded values for
+	remote address and port.
+	(internal_check_request): Created from
+	awcs_check_request. Function now takes an extra argument which
+	specifies whether requests are handled or only removed from the
+	queue.
+	(handle_master_request): Do not accept the "6 \0" message anymore.
+	(awcs_connect_socket): Send connected message for both client and
+	master now. Remove request, do not handle it.
+
+	* server.c (check_sockets): Do not write on sockets which have
+	been scheduled for shutdown in their read handler (thanks to 
+	stefan).
+
+	* Applied Raimis and Stefans patches.
+	
+	* server.c (sock_server_loop): Print out listening port number and
+	max. file descriptor count on startup.
+
+1999-11-18  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* server.c (check_sockets): Fixed a longstanding bug by passing
+	the correct client address size to accept().
+
+1999-11-16  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* awcs-proto.c (awcs_connect_socket): With last changes,
+	connection messages for the master server got lost. Fixed.
+
+	* serveez.c (main): Check the return value of sock_alloc().
+	(usage): Added option -m, --max-sockets to the help output.
+
+	* socket.c: Set max_sockets to the default value of 200.
+
+1999-10-26  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* server.c, server.h, connect.c, connect.h: Created.  Put in there
+	some functions from socket.{c,h} due to restructure.
+
+	* socket.c (default_check_request): Added support for protocol
+	detection.
+
+	* awcs-proto.c: Added support for protocol detection.
+	Added function documentation.
+
+	* socket.c: Added a lot of comments and cleaned the code up a
+	bit.
+
+1999-10-21  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* socket.c (sock_server_loop, server_signal_handler): Handle
+	SIGPIPE by printing a notice but otherwise ignore.
+
+1999-10-03  Martin Grabmueller  <mgrabmue@cs.tu-berlin.de>
+
+	* serveez.c: File created.

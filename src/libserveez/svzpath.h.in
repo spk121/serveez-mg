@@ -1,0 +1,3 @@
+#define SVZ_PKGDATADIR "@PKGDATADIR@"
+#define SVZ_BINDIR "@BINDIR@"
+#define SVZ_LIBDIR "@LIBDIR@"

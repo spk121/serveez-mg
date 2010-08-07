@@ -1,0 +1,1038 @@
+2004-03-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* mutex.c: Fixed a major typo regarding SVZ_HAVE_THREADS.
+
+2003-06-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* cfg.c: Include <string.h> for memcpy().
+
+2003-06-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* mutex.c: New file implementing the mutex API.  Some of the
+	macros in 'mutex.h' are now real library functions.  Changed
+	all callers.
+
+	* defines.h: Added some MinGW and CygWin specific stuff (taken 
+	from svzconfig.h.in).
+
+2003-06-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* snprintf.h: Removed the unnecessary check for HAVE__SNPRINTF 
+	and HAVE__VSNPRINTF.
+
+2003-06-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.c (svz_portcfg_mkaddr): Bug fixes due to 
+	uninitialized values.
+
+2003-05-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (svz_server_clients): New function.
+
+2003-05-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am: Removed the FIXME rule for MinGW32.  Works with
+	libtool 1.5.
+
+2003-01-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* asprintf.h: Included dependent header files here.
+
+2003-01-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-loop.c (SOCK_READABLE): Using this macro (taking 
+	the below flag into account) to determine whether a client 
+	connection can be read or not.
+
+	* socket.h (SOCK_FLAG_NOOVERFLOW): New socket flag.
+
+	* util.c (svz_log): Function is now thread safe.
+
+	* server-core.c (svz_signal_handler): Moved calls to 
+	`svz_log()' outside this function.  Thus it is reentrant now.
+
+	* boot.c (svz_boot, svz_halt): Creation and destruction of
+	the logging mutex.
+
+2002-12-19  Andreas Rottmann   <a.rottmann@gmx.at>
+
+	* coserver/coserver.c (svz_coserver_start): Initialize 
+	coserver->sock (was not initialized on non-MINGW platforms).
+
+	* socket.h (svz_sock_reduce_recv, svz_sock_reduce_send): Macros
+	arguments now correctly bracketed.
+
+2002-12-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.h, server.c, asprintf.h, asprintf.c, cfg.h, cfg.c:
+	Added appropriate documentation.
+	
+	* cfg.h (SVZ_CONFIG_DEFINE): Renamed from `SVZ_DEFINE_CONFIG'.
+	Changed all callers (in all server types).
+
+2002-11-27  Andreas Rottmann  <a.rottmann@gmx.at>
+
+	* cfg.c (svz_config_type_init): Add server configurable type.
+	
+	* server.h, server.c (svz_servertype_definition): New.
+	* server.c (svz_servertype_instantiate): New static function
+	(server	configurable type instantiator).
+	
+	* boot.c (svz_boot): Call svz_config_type_init().
+	(svz_halt): Call svz_config_type_finalize().
+	
+	* cfg.c (svz_config_type_add, svz_config_type_init)
+	(svz_config_type_finalize): New library functions.
+	* cfg.h (svz_config_type_t): New type, containing function 
+	pointer to instantiate a configurable type.
+	
+	* Makefile.am (libserveez_la_SOURCES): Added cfg.c and asprintf.c.
+	(libserveez_HEADERS): Added cfg.h and asprintf.h.
+	
+	* asprintf.h, asprintf.c: New; implementation of (v)asprintf.
+	(svz_asprintf, svz_vasprintf): New library functions.
+
+	* server.c (svz_server_free): Adapted for new svz_config_free().
+	(svz_server_configure): Use svz_config_instantiate().
+	(svz_servertype_print): Use svz_config_prototype_print().
+
+	* server.h (svz_servertype_t): Converted config prototype members
+	to svz_config_prototype_t config_prototype.
+	* server.h (svz_server_config_t): Typedef'd  svz_config_accessor_t.
+	* cfg.h (svz_server_config_t): Renamed to svz_config_accessor_t.
+	* server.h, cfg.h: Moved SVZ_REGISTER_ stuff and svz_server_config_t 
+	to cfg.h.
+	
+	* cfg.h (svz_config_prototype_t): New type.
+	* cfg.h, cfg.c (svz_config_free): Use svz_config_prototype_t 
+	instead of svz_servertype_t.
+	(svz_config_instantiate): New function, extracted from 
+	svz_server_configure().
+
+	* server.c, cfg.c (svz_config_intarray_create)
+	(svz_config_intarray_destroy, svz_config_intarray_dup)
+	(svz_config_strarray_create, svz_config_strarray_destroy)
+	(svz_config_strarray_dup, svz_config_hash_create)
+	(svz_config_hash_destroy, svz_config_hash_dup)
+	(svz_config_free, svz_config_clobber): Moved from `server.c'
+	to `cfg.c'.
+
+	* cfg.c (svz_config_prototype_print): New, extracted from
+	svz_servertype_print().
+	
+	* cfg.h, cfg.c: New. Implementation of configuration handling.
+	
+2002-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Added `svzpath.h.serveez'.
+	Added installation rules for `libserveez.dll.a'.
+
+2002-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash.c (svz_hash_exists): New library function.
+
+2002-07-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c (svz_dynload_path_get): Adding the paths located
+	in `svzpath.h' to the load path.
+
+	* core.c (svz_file_check, svz_file_path): New library 
+	functions (used in `dynload.c' and `guile.c').
+
+	* svzpath.h.in: New file.
+
+2002-07-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c: Initialize the 'svz_nuke_happened' variable
+	at definition only.
+
+2002-07-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.h (SVZ_INT64, SVZ_UINT64): Two new macros.
+
+2002-07-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c (DYNLOAD_SUFFIX): Added '.sl' shared library
+	suffix for HP-UX.
+	(dyn_get_library): Corrected call to shl_load().
+
+	* core.c (svz_sendfile): Support for HP-UX sendfile() added.
+
+2002-06-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-loop.c (svz_check_sockets_poll): Fixed the POLLPRI +
+	recv(..., MSG_OOB) bug by handling the POLLPRI event immediately
+	before POLLIN/POLLOUT.
+
+	* tcp-socket.c (svz_tcp_recv_oob): Disabled ioctl(SIOCATMARK)
+	work-around.
+
+2002-06-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-loop.c (svz_check_sockets_MinGW, 
+	svz_check_sockets_select, svz_check_sockets_poll): Adapted the
+	recognition of urgent data (out-of-band) to each of the server
+	loops.
+
+	* tcp-socket.c (svz_tcp_recv_oob, svz_tcp_send_oob): Two new
+	library function which handle urgent (out-of-band) data on TCP
+	sockets.
+
+2002-05-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.h (struct svz_servertype): Introduced reset callback.
+
+	* server-core.c (svz_reset): Running server reset callbacks
+	when SIGHUP has been detected.
+
+2002-05-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.h (struct svz_socket): Added trigger function and
+	trigger condition function callback to socket structure.
+
+	* socket.c (svz_sock_detect_proto): Checks whether the 
+	check_request callback has been modified in connect_socket or
+	detect_proto.
+
+	* server-loop.c (svz_check_sockets_select): Added trigger
+	functionality.
+
+2002-05-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c (svz_coserver_closeall): Fixed a segfault
+	bug while freeing socket structures.
+
+2002-05-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c (svz_coserver_closeall): Close file,
+	socket and pipe descriptors if these are not {0,1}.
+
+2002-03-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* tcp-socket.c (svz_tcp_connect): Setting up the `check_request'
+	callback (NULL).  Fixes problem when connecting a socket without
+	assigning an appropiate `check_request' callback.
+
+2002-02-14  Raimund Jacob  <raimi@lkcc.org>
+
+	* coserver/coserver.c (svz_coserver_check): Do not start too
+	many coservers if buffer is going to be full.
+
+2002-01-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* binding.c (svz_binding_find_server, 
+	svz_binding_contains_server): Two new functions which were still
+	necessary in order to allow all kinds of mixtures of 'any', 'all'
+	and 'specific' network binding.
+
+2002-01-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.c (svz_portcfg_equal): Return sane return values and
+	consider device bindings.
+	(svz_portcfg_mkaddr): Also setup device bindings.
+	(svz_portcfg_text): Returns a simple text representation of a 
+	port configuration.
+
+2002-01-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* interface.c (svz_interface_check): New function which 
+	detects network interface changes.
+
+2001-12-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c (RTLD_NOW): Define this constant to zero if it 
+	is not available.
+
+	* interface.c (svz_interface_collect): OpenBSD behaves like 
+	NetBSD here.
+
+2001-12-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c (svz_process_create_child): Put the passed 
+	receiving and sending connection end for a child process into
+	the environment on Win32.  Thus we can also pass socket 
+	connections on this platforms.
+	(svz_process_create_child): Close and replace the original handles 
+	which have been duplicated in order to make them inheritable on
+	Win32.
+
+2001-12-15  Stefan Jahn  <stefan@lkcc.org>
+
+	* udp-socket.c (svz_udp_check_request): Using the binding
+	filter functionality.
+
+	* socket.c (svz_sock_detect_proto): Using the binding
+	filter functionality.
+	(svz_sock_local_info): New function. Returns the local
+	network address and port for a socket.
+
+	* server.c (svz_server_init): Initializes a server instance.
+	New function grabbed from `svz_server_init_all()' now using
+	it.
+
+	* server-core.h (svz_sock_foreach_listener): New macro.
+
+	* server-core.c (svz_sock_shutdown): Export this function.
+
+	* icmp-socket.c (svz_icmp_check_request): Using the binding
+	filter functionality.
+
+	* binding.c: Implemented the `svz_binding_*()' functionality
+	which should allow INADDR_ANY bindings and appropiate mixtures
+	of "all", "any" and explicit network interface bindings by
+	filtering servers depending on port configurations.
+
+2001-12-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* tcp-socket.h, array.h, alloc.h, hash.h, icmp-socket.h, 
+	pipe-socket.h, raw-socket.h, server-core.h, server-loop.h,
+	snprintf.h, socket.h, udp-socket.h, util.h, windoze.h, 
+	interface.h, defines.h, coserver/coserver.h, coserver/dns.h,
+	coserver/ident.h, coserver/reverse-dns.h, boot.h, server.h,
+	server-socket.h, dynload.h, vector.h, core.h, sparsevec.h,
+	portcfg.h, binding.h, codec/codec.h, codec/gzlib.h, 
+	codec/bzip2.h, passthrough.h: Renamed __P into __PARAMS because
+	the use of __P conflicts with some g++ versions in typedefs.
+
+2001-12-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (svz_server_create): Modify the port 
+	configuration if needed.  Since we allow zero network ports it
+	can happen the system chooses one.  This choosen one is going
+	to be in the original port configuration then.
+
+	* portcfg.c (svz_portcfg_mkaddr): Also allow network port zero
+	which lets the system choose one of its own.
+
+	* passthrough.h: Moved the extern declaration of `environ'
+	here from `passthrough.c'.
+
+2001-12-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.h (svz_envblock_setup): New macro in order to 
+	setup the `environ' pointer of an application in the core 
+	library.  This change was necessary to allow the *very 
+	pedantic* linker of MacOS 10.1 to build a shared library, 
+	since `extern char **environ;' is an unresolved symbol somehow.
+
+2001-12-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash.c (svz_hash_create): Using an additional argument in 
+	order to pass a element destruction callback run for each
+	element on hash destruction.  Changed all callers.
+
+2001-12-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* binding.c: Code cleanups.  Better structured server bindings.
+	Also exported some more functions.
+
+2001-12-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (svz_server_create): Use of SO_BINDTODEVICE.
+	Add a FIXME here.
+
+	* portcfg.h (svz_portcfg_device): New macro returning a device
+	name for a given port configuration.
+
+2001-11-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c (svz_process_create_child): Memory leak fixes.
+	Also enabled `svz_process_fork()' for M$-Windows.
+
+2001-11-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/gzlib.c (zlib_encoder_init): Added warning 
+	inhibitors (reported on Solaris native ucbcc).
+
+2001-11-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (svz_sock_check_children): New function. 
+	Checks child pid's in all socket structures and runs `child_died'
+	callbacks.
+
+2001-11-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* array.c (svz_array_create): Added a further argument.  User
+	can supply a `clear' function called for each element when the
+	array is cleared.  Changed all callers.
+
+2001-11-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_socket_create_pair): New function. Creates an 
+	unnamed	pair of connected sockets.  Underlying system call is 
+	`socketpair()'.
+
+2001-11-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.h (struct svz_socket): New `pid' member.
+
+	* passthrough.h: Defined a bigger structure in order to reduce
+	the number of arguments passed down to underlying functions.
+
+	* passthrough.c (svz_process_check_access): Added functionality
+	for setting user and group depending on a given string or a 
+	executable file's owner.
+
+2001-11-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_socket_type): Returns the type (SOCK_STREAM, 
+	SOCK_DGRAM, etc.) of a given socket.
+	(svz_tcp_nodelay): Switching TCP Nagle algorithm on or off.
+
+2001-10-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-socket.c (svz_tcp_accept, svz_pipe_accept): 
+	Inherit protocol flag to children.
+
+2001-10-26  Stefan Jahn  <stefan@lkcc.org>
+
+	* defines.h (SERVEEZ_API): Cleaned up extern / __declspec() 
+	issue. Changed all appearance.
+
+2001-10-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c: Continued to implement the shuffle routines
+	for passthrough connections. Now we are ready to test this
+	functionality.
+
+2001-10-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/codec.c (svz_codec_sock_detect): New function. 
+	Detects codecs in the receive buffer of a socket structure.
+
+2001-10-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/bzip2.c: New codec implementation for the bzip2
+	block-sorting compression library.
+
+2001-10-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/codec.c (svz_codec_sock_disconnect): Fixed fatal bug
+	on disconnection.
+	(SVZ_CODEC_TYPE_TEXT): New macro. Returning a text 
+	representation for the type of a codec.
+
+2001-10-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/codec.c (svz_codec_list): New function. Lists all 
+	currently registered encoder and decoder.
+
+2001-10-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec/gzlib.c: First codec implementation.
+
+	* codec/codec.c: Basic implementation of a codec interface. This
+	is yet experimental and meant to be a draft.
+
+	* coserver/coserver.c (svz_coserver_closeall): Do not close 
+	stdin/stdout pipe descriptors.
+
+2001-09-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c: Added Darwin (MacOS) specific code for its 
+	dynamic linker interface.
+
+2001-09-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* interface.c (svz_interface_search): New library function.
+	Return the full network interface information for a given
+	interface name.
+
+	* portcfg.c (svz_portcfg_convert_addr): Convert either
+	dotted decimal form or network interface description into
+	ip address.
+
+2001-09-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c, udp-socket.c (svz_icmp_read_socket, 
+	svz_udp_read_socket): Checking access lists for a listening 
+	UDP and ICMP ports.
+
+	* server-core.c (svz_sock_check_access): Paranoidized 
+	validity of the given arguments.
+
+2001-09-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c: Added extern declaration of the variable
+	`environ' on Unices.
+
+2001-09-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.h (SVZ_NUM2PTR, SVZ_PTR2NUM): Converter macros between
+	integer and address values; platform independent. Used to hide
+	some ugly casts.
+
+2001-09-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c: Declare strsignal() here if it can be resolved
+	but is nowhere declared.
+
+	* alloc.h: Use `size_t' instead of `unsigned int' for allocator
+	functions.
+
+	* util.c: Put an extern declaration of hstrerror() here if it
+	can be resolved but is nowhere declared.
+
+	* interface.c (svz_interface_add): Deleting trailing white 
+	spaces from interface descriptions.
+
+2001-09-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.h: Added missing `__END_DECLS'.
+
+2001-09-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (svz_syserror): Do not let the system allocate error
+	message buffer; provide it instead.
+
+	* pipe-socket.c (svz_pipe_startup): New function. Tries
+	to load the CancelIo() symbol from `Kernel32.dll' under
+	Windows. This is necessary since it is available in Windows
+	NT 4.x and above only. Called from svz_boot().
+	(svz_pipe_disconnect): Call CancelIo() if there is any pending
+	operation in progress.
+
+2001-09-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (svz_pipe_read_socket): Set a limit for
+	the maximum number of transfer bytes on Win32.
+	(svz_pipe_write_socket): Apply the overlapped I/O code for
+	writing, too.
+	(svz_pipe_set_files): Allow "\\ComputerName\pipe\NameOfPipe"
+	syntax in named pipe files on Win32.
+
+	* libserveez.dsp: Added "Debug Memory Leaks" target.
+
+	* alloc.c (heap_caller): Verified StackWalk() interface.
+
+	* pipe-socket.c (svz_pipe_read_socket): Tried to fix the
+	overlapped I/O scheme.
+
+	* socket.h (SOCK_FLAG_READING): Two new socket flags 
+	indicating pending read and write operations.
+
+	* pipe-socket.c (svz_pipe_create): Do not try to make pipe
+	descriptors non-blocking under Win32.
+
+2001-08-17  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (libserveez_la_LDFLAGS): Added release information
+	onto the core library.
+
+	* server.c (svz_server_configure): Checking the validity of
+	the configuratiom item addresses. These must reside inside the
+	default configuration address range.
+
+2001-08-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* socket.c (svz_sock_check_request_size): New function. Checks
+	for fixed size packets if the boundary itself is NULL, but the
+	boundary size is valid.
+
+2001-08-12  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (svz_sock_table_create, 
+	svz_sock_table_destroy): New functions called from svz_boot()
+	and svz_halt().
+	(svz_sock_unique_id): Enlarges the socket lookup table if
+	necessary. Removed SOCK_MAX_ID limit.
+
+2001-08-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c (svz_process_shuffle): New function.
+
+	* util.c (svz_getcwd): New function. Wrapper for getcwd()
+	allocating successively memory to get the current directory.
+
+2001-08-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.h: Replaced definition of "byte" by "svz_uint8_t". 
+	Previous definition collided with Win32 headers. Changed all
+	callers.
+
+2001-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c (svz_coserver_check): Do not restart 
+	coservers to fast. Timeout of 3 seconds should be enough.
+
+2001-07-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c: Added a new subset of functions called 
+	svz_envblock_*() which can be used to setup environment blocks
+	system independent.
+
+	* coserver/coserver.c (svz_coserver_check): Coservers get 
+	automagically restarted if the number of instances decreases or
+	buffer overrun is in sight.
+
+2001-07-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_sendfile): Added quite a lot comments for weird
+	TransmitFile() on Win32.
+
+2001-07-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_sendfile): Using overlapped I/O when calling 
+	TransmitFile().
+
+2001-07-09  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* core.c (svz_sendfile): Fixed return value on Win32 systems.
+
+2001-07-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* passthrough.c: Renamed process.* into passthrough.* because
+	collisions with Windoze's headers.
+
+2001-07-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c (svz_dynload_path_get): Added documentation about
+	the environment variable `SERVEEZ_LOAD_PATH'.
+
+	* Eliminated some unused variables. 
+
+	* core.c (svz_sendfile): Partly figured out how sendfile()
+	works on OSF4.0g (True64).
+
+2001-07-03  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* server-core.c (svz_sock_setparent): Set the parent only if
+	both parent and child are valid.
+
+2001-06-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c (svz_coserver_start): Fixed memory leak
+	and segmentation fault due to the failure of that function 
+	(Too many open files).
+
+	* portcfg.c (svz_portcfg_create): This is a real function now.
+
+	* pipe-socket.c (svz_pipe_listener): Create fifo files with the
+	permissions and user/group as requested by the port configuration.
+	(svz_pipe_alloc, svz_pipe_destroy): New functions.
+
+	* pipe-socket.c (svz_pipe_connect): Using the given permissions
+	in order to connect to named pipes.
+
+2001-06-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.c (svz_pipe_check_group): Consistency check
+	for the given group name of a pipe.
+
+	* dynload.c (svz_dynload_path_get): Do not use duplicate path
+	information.
+
+2001-06-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* array.c: Modified all functions that they can handle NULL
+	arguments.
+
+	* array.h: Removed all inline functions and macros. The macros
+	would have never been working...
+
+2001-06-12  Raimund Jacob  <raimi@lkcc.org>
+
+	* util.c (svz_log): svz_logfile is checked for feof() or ferror()
+	before any output is done. You can now kill a process we pipe
+	log messages to without serveez going 'netscape' (using 100% cpu
+	while being inresponsive/unusable).
+
+	* server-core.c (svz_signal_handler): In case you didn't know:
+	signal handlers have to be reentrant, at least on my machine.
+	We received SIGCHLD while a SIGCHLD was running. Now, that
+	wouldn't have been a problem when strsignal(3) whouldn't
+	have caused a deadlock in the libc (read that again).
+
+	We added a mechanism to strsignal() all signals before the
+	server loop starts so that we can have a reentrant
+	svz_strsignal() function. on a related note: linux defines
+	64 signals in <bits/signum.h>. kill(1) however allows
+	0 to 64 to be command line arguments... which makes 65 total
+	signals :-).
+
+2001-06-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* array.h (svz_array_foreach): Fixed a bug in the iteration
+	macro.
+
+	* array.c (svz_array_dup, svz_array_strdup): New functions.
+
+2001-06-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c (svz_icmp_check_packet): Using configured
+	ICMP type field of the related port configuration.
+
+2001-06-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.c (svz_portcfg_destroy): Buf fix: Do not check
+	port configuration hash if not yet existing.
+
+	* dynload.c (dyn_load_library): Try to load a shared library
+	containing a server definition. Use the environment variable
+	SERVEEZ_LOAD_PATH with additional search paths.
+
+2001-06-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* interface.h (svz_interface_foreach): New macro.
+	(struct svz_interface): Renamed this structure.
+
+	* interface.c (svz_interface_get): New function.
+
+	* server-core.c (svz_sock_setreferrer, svz_sock_setreferrer): 
+	Two new functions replacing the `referrer' pointer in the
+	socket structure. Used by pipe server to identify child and
+	parent.
+	
+	* server.h (struct svz_servertype): Renamed `varname' to
+	`prefix' and `name' into `description' which describes the
+	usage a bit better.
+
+	* socket.h (struct svz_socket): New field: `port' specifies
+	the port configuration of a listener socket. This change was 
+	necessary because non-connection oriented protocols were using
+	the `sock->cfg' field for both server configuration and port
+	configuration.
+
+	* server.h: Renamed all `ITEM_' macros into `SVZ_ITEM_'. 
+	Changed all callers.
+
+2001-05-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* pipe-socket.h, core.h, util.h, snprintf.h, alloc.h: 
+	Replaced all occurences of size_t, mode_t, gid_t, uid_t, 
+	off_t etc. by its normal C types.
+
+2001-05-20  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (svz_server_configure): Added code for 
+	configuring a boolean value.
+
+	* boot.c: Moved runtime checkable flags from `util.c' here
+	and prefixed them with `svz_'.
+
+	* server.h (SVZ_REGISTER_BOOL): New macro for registering a
+	boolean value within a server type configuration.
+
+2001-05-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* Renamed a very lot functions in order to get the core library
+	into a defined namespace. Therefore also changed all the callers.
+
+	* raw-socket.c: Prefixed the functions. Changed callers.
+
+	* icmp-socket.c: Prefixed symbols.
+
+	* udp-socket.c: Prefixed all symbols. Changed callers.
+
+	* pipe-socket.c: Prefixed functions with `svz_'. Changed 
+	callers.
+
+	* tcp-socket.c: Added `svz_' prefix to each function. Changed
+	callers.
+
+	* util.h: Changed ?INT?? macros into SVZ_?INT?? macros.
+	Changed all callers, too.
+
+	* defines.h: Depending on the cpp flag __BUILD_SVZ_LIBRARY__
+	either `config.h' or `svzconfig.h' gets included here.
+
+	* Makefile.am (AM_CFLAGS): Added a flag indicating if the
+	library gets actually built or is used.
+
+2001-05-09  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.c (svz_portcfg_destroy_access,
+	svz_portcfg_destroy_accepted): New functions.
+
+	* server-socket.c (server_accept_socket): Checking access list 
+	and connect frequency.
+
+	* server-core.c (sock_check_frequency, sock_check_access):
+	New functions.
+
+2001-05-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (svz_servertype_del): Unbind, remove and finalize 
+	each server instance of the server type.
+
+	* binding.c (svz_server_unbind): New function.
+
+	* portcfg.c (svz_portcfg_finalize): Fixed memory leak due to
+	changes at `svz_portcfg_destroy'.
+
+	* binding.c (svz_server_bindings): Text representaion depending
+	on the types of port configurations.
+
+	* portcfg.c (svz_portcfg_destroy): Also `svz_free()' the given
+	port configuration itself. Changed all callers.
+
+2001-05-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.c (svz_portcfg_prepare): New function.
+	(svz_portcfg_dup): Renamed from `svz_portcfg_copy'.
+
+	* socket.c (sock_detect_proto): Using `detection_fill' value
+	of the parents port configuration.
+	(sock_idle_protect): Using `detection_wait' value of the parents 
+	port configuration.
+
+	* util.h: Documented the INT*() macros.
+
+	* alloc.h (svz_free_and_zero): Documented this macro.
+
+	* server.h (DEFINE_CONFIG): New macro. Addionally documented 
+	the REGISTER_*() macros.
+
+2001-05-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (svz_server_configure): Stating what kind of
+	default value is missing using the ITEM_TEXT macro.
+	(svz_config_clobber): New function. Used by 
+	`svz_server_configure()' in order to reverse changes on 
+	errors.
+
+	* server.h (ITEM_TEXT): New macro returning text representation
+	of a given ITEM_* constant.
+
+	* server.c (svz_server_configure): Fully implemented the
+	handling of default values for a server configuration using
+	the `svz_config_*' functions.
+	(svz_config_free): New function. Exported from `svz_server_free()'
+	and now used by it.
+
+	* portcfg.c (svz_portcfg_copy): Return NULL is the given
+	port configuration is NULL either.
+
+	* server.c (svz_config_intarray_create, 
+	svz_config_intarray_destroy, svz_config_intarray_dup,
+	svz_config_strarray_create, svz_config_strarray_destroy,
+	svz_config_strarray_dup, svz_config_hash_create,
+	svz_config_hash_destroy, svz_config_hash_dup):
+	New functions for server instance configuration.
+
+2001-05-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* binding.c (svz_server_portcfg): Return an array of port
+	configurations a given server is bound to.
+	(svz_server_bindings): Return text representaion of the bindings
+	of a server.
+
+	* server-core.c (sock_portcfg): New function returning the
+	parents port configuration of a given child socket.
+
+	* server-socket.c (server_accept_socket, server_accept_pipe): 
+	Set a new childs parent	structure.
+
+	* ChangeLog: Created this file.
+
+	* server-core.c (sock_setparent): New function.
+	(sock_getparent): New function.
+
+2001-04-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* udp-socket.c (udp_check_request): Go through
+	a svz_array_t of servers now.
+
+	* socket.c (sock_free): Freeing port configuration
+	and server array if necessary.
+
+	* server.h: Old `portcfg_t' completely 
+	eliminated.
+
+	* server.c: Dropped `server_portcfg_equal()'.
+
+	* server-socket.c: Replaced `server_ceate()' by
+	`svz_server_create()'.
+
+	* portcfg.h (svz_portcfg_ipaddr): New macro.
+	Gets the ip address string of a given port configuration.
+
+	* portcfg.c (svz_portcfg_set_ipaddr): New function.
+	Sets a given ip address string in a port configuration.
+
+	* icmp-socket.c (icmp_check_request): Array of 
+	servers is now a svz_array_t.
+
+	* boot.c (svz_halt): Added call to 
+	`svz_portcfg_finalize()'.
+
+	* binding.c: Finally deleted both the functions
+	`server_bind()' and `server_start()'.
+	These have been replaced by `svz_server_bind()'.
+
+2001-04-21  Stefan Jahn  <stefan@lkcc.org>
+
+	* server.c (svz_server_configure): Function for
+	generic server configuration. Read <server.[ch]> for more 
+	information.
+
+2001-04-19  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash.c (svz_hash_put): Return the old value if any.
+
+	* server.c (svz_server_instantiate): New function.
+
+	* vector.h (svz_vector_foreach): New iteration 
+	macro for svz_vector_t's.
+
+	* binding.c (svz_server_find_portcfg): New function.
+	(svz_server_bind): Fully implemented, using above function.
+
+	* portcfg.c (svz_portcfg_mkaddr): Also put network
+	family and port if necessary.
+	(svz_portcfg_copy): New function.
+	(svz_portcfg_expand): New function.
+
+	* server.c (svz_server_get): New function. Hides 
+	svz_hash_t structure from library user.
+
+2001-04-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* portcfg.h (PORTCFG_TYPE): Added some more string
+	constants for port configurations.
+
+2001-04-11  Stefan Jahn  <stefan@lkcc.org>
+
+	* coserver/coserver.c: Cleaned up namespace for the
+	coserver API.
+
+2001-04-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* binding.c (svz_server_bind): Added this file
+	into the CVS and moved some functions from serve.c here.
+
+	* array.h (svz_array_foreach): Iteration macro
+	for arrays defined.
+
+	* portcfg.c: Added this file for port configuration
+	maintainance.
+
+2001-04-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_sendfile): Using TransmitFile() in the
+	Win32 port.
+
+	* vector.c (svz_vector_contains): New function.
+
+2001-03-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* array.c: Added new data structure. Implemented
+	two version. One which is for debugging and another for
+	distribution which is a fully inlined thingie.
+
+2001-03-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash.h: Put the hash functions into the namespace
+	`svz_hash_'.
+
+	* core.c (svz_tcp_cork): Moved from `http-proto.c'.
+	(svz_sendfile): Also moved from `http-proto.c'.
+
+2001-03-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* core.c (svz_socket_connect): This function has
+	been introduced in order to have the `connect()' call just
+	once in the whole library.
+	(svz_socket_create): Creates a socket via `socket()'. It is
+	a wrapper for the Internet protocols UPD, TCP, ICMP and RAW.
+	(svz_inet_ntoa): Moved both the `inet_ntoa()' `and inet_aton()'
+	from `util.c' to `core.c' and renamed them.
+
+2001-03-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (server_signal_handler): Fixed
+	the problem with detaching and attaching the server on the
+	console via ^Z and job control.
+
+	* coserver/coserver.c (coserver_close_pipes): Close
+	all pipes of existing coservers within a new coserver process.
+
+	* core.c: Created this file.
+
+2001-02-28  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (svz_fd_cloexec): This and
+	the svz_fd_nonblock() function can be used to work on
+	file descriptors.
+
+2001-02-18  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.c (util_inet_aton): This function is a
+	platform wrapper for internet address conversion.
+
+2001-02-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (libserveez_la_SOURCES): Added
+	`vector.c' and `vector.h'.
+
+	* interface.c: The list of available network
+	interfaces `svz_interface' is now a `svz_vector'.
+
+	* vector.c: New file implementing vector lists.
+
+	* alist.h: Changed the name space from `alist' to
+	`svz_alist'.
+
+2001-02-05  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c (dyn_load_library): Added support for
+	GNU dld library and Beos's load_add_on() interface.
+
+2001-02-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* dynload.c: Stuffed the dynamic loading interface
+	into the serveez core library.
+	(dyn_load_library): The dynamic loading interface for shared
+	libraries saves all handles for better management. Thus it might
+	be possible to load and unload server modules without restarting
+	the main module.
+
+2001-02-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* interface.c: Pulled the network interface detection
+	into the core library.
+
+2001-02-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* alloc.c (heap_caller): Defined this macro for
+	calling it at the beginning of each function using 
+	__builtin_return_address() for debugging purposes. Using
+	StackWalk() in MS Visual C++.
+
+2001-01-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-core.c (server_loop_one): Took this piece
+	of code out of `server_loop'. Thus you should be able to run
+	the server loop yourself using the library only.
+
+	* interface.c (list_local_interfaces): Fixed list of local
+	network interfaces on FreeBSD version 3.2.
+
+2001-01-30  Stefan Jahn  <stefan@lkcc.org>
+
+	* icmp-socket.c: Cleaned up the name space and made
+	many of the functions static.
+
+2001-01-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist.c: Added a alot of necessary documentation
+	and changed the array list indexes's data type from `unsigned'
+	to `unsigned long'. Thus you can handle a bigger index range
+	on 64 bit architectures.
+
+2001-01-24  Stefan Jahn  <stefan@lkcc.org>
+
+	* util.h: Renamed `last_errno' to `svz_errno', `verbosity' to
+	`svz_verbosity' and `os_version' to `svz_os_version'.
+
+	* Makefile.am (libserveez_la_SOURCES): Wrote some Makefile
+	rules for creating a shared library called `libserveez.la'.
+	We are using libtool here.
+
+	* alloc.c: Created a namespace for the allocator functions 
+	malloc, free, etc. Gave a lot of functions and variables
+	the `svz_' prefix. Moreover you can now overwrite the default
+	allocator routine from libc (malloc, free, realloc). This is
+	especially useful if you want to use memory from a shared 
+	memory arena. The function pointers are `svz_malloc_func', 
+	`svz_free_func'	and `svz_realloc_func'.

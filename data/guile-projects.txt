@@ -1,0 +1,17 @@
+Documentation: http://www.glug.org/projects/protocol.txt
+To: guile-projects@glug.org
+Subject: Guile Project Submission
+
+((name "Serveez")
+ (location (url "http://www.gnu.org/software/serveez/"))
+ (category "Applications/Network")
+ (description "Serveez is a server framework; it provides routines "
+              "and help for IP-based servers (TCP, UDP and ICMP) as well "
+              "as \"named pipes\". It demonstrates portable network "
+	      "programming optimized for speed and reliability.")
+ (authors "Raimund Jacob, Martin Grabmueller and Stefan Jahn")
+ (maintainer (email "Stefan Jahn" "stefan@lkcc.org"))
+ (mailing-list (email "help-serveez" "help-serveez@gnu.org"))
+ (license "GPL")
+ (requires "GNU Guile version 1.3 or later")
+ (status "version 0.1.6 released 2004/xx/xx"))

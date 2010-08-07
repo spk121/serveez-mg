@@ -1,0 +1,80 @@
+.TH SERVEEZ "1" "September 2002" "Serveez" FSF
+.SH NAME
+Serveez \- A server framework.
+.SH SYNOPSIS
+\fBserveez\fR [OPTION]...
+.SH DESCRIPTION
+\fBServeez\fR is a server framework.  It provides routines and help for
+implementing IP based servers (currently TCP, UDP and ICMP).  It is also
+possible to use named pipes for all connection oriented protocols.
+
+We think it is worth the effort because many people need server functionality 
+within their applications.  However, many people experience problems 
+with select()- or poll()-loops, and with non-blocking operations.
+
+This application demonstrates various aspects of advanced network
+programming in a portable manner.  It is known to compile and run on 
+GNU/Linux systems, as well as on other 32-bit and 64-bit flavours of Unix 
+and on Microsoft Windows (9x/ME/NT/2000/XP).
+
+You can use it for implementing your own servers or for understanding how
+certain network services and operations work.
+
+The package includes a number of servers that work already: an HTTP server,
+an IRC server, a Gnutella spider and some others.  One of the highlights is
+that you can run all protocols on the same port.  The application itself is
+single threaded but it uses helper processes for concurrent name resolution
+and ident lookups.
+.SH OPTIONS
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+display this help and exit
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+display version information and exit
+.TP
+\fB\-i\fR, \fB\-\-iflist\fR
+list local network interfaces and exit
+.TP
+\fB\-f\fR, \fB\-\-cfg\-file\fR=\fIFILENAME\fR
+file to use as configuration file (serveez.cfg)
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR=\fILEVEL\fR
+set level of verbosity
+.TP
+\fB\-l\fR, \fB\-\-log\-file\fR=\fIFILENAME\fR
+use FILENAME for logging (default is stderr)
+.TP
+\fB\-P\fR, \fB\-\-password\fR=\fISTRING\fR
+set the password for control connections
+.TP
+\fB\-m\fR, \fB\-\-max\-sockets\fR=\fICOUNT\fR
+set the max. number of socket descriptors
+.TP
+\fB\-d\fR, \fB\-\-daemon\fR
+start as daemon in background
+.TP
+\fB\-c\fR, \fB\-\-stdin\fR
+use standard input as configuration file
+.SH AVAILABILITY
+The latest version of Serveez can always be obtained from 
+\fBwww.sourceforge.net\fR, \fBwww.freshmeat.net\fR or \fBftp.gnu.org\fR
+.SH BUGS
+.PP
+Known bugs are documented within the BUGS file. Please send Serveez bug
+reports to <bug-serveez@gnu.org>. 
+.SH "SEE ALSO"
+The full documentation for
+.B Serveez
+is maintained as a Texinfo manual.  If the
+.B info
+and
+.B serveez
+programs are properly installed at your site, the command
+.IP
+.B info serveez
+.PP
+should give you access to the complete manual.
+.SH AUTHORS
+Written by Martin Grabmueller <mgrabmue@cs.tu-berlin.de>, 
+Raimund Jacob <raimi@lkcc.org> and Stefan Jahn <stefan@lkcc.org>.

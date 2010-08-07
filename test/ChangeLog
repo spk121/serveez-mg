@@ -1,0 +1,145 @@
+2003-06-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* guile-server-test.scm: New test.  Tests the error conditions
+	of the Guile procedure (define-servertype!).
+
+	* Makefile.am (EXTRA_DIST): Added 'guile-server-test.scm'.
+
+2003-06-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* server-test.scm: New test. Basically tests the error conditions
+	of (define-port!) (define-server!) and (bind-server!).
+
+	* test-suite.scm, binary-test.scm: Hopefully fixed the 
+	Guile 1.6.x issue about	modules.
+
+2003-05-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* test-suite.scm (resolve-serveez-api): In Guile 1.6.x a post
+	versions the serveez API seems to be outside the scope of extra
+	Guile modules.  That is why we need some importing code.  Needs
+	to be fixed yet...
+
+2002-10-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* prog-test.c: Include <io.h> for MinGW32.
+
+	* Makefile.am (EXTRA_DIST): Added `prog.dsp' and `prog.ap'.
+
+2002-07-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash-test.c: Checking `svz_hash_exists()'.
+
+2002-07-27  Stefan Jahn  <stefan@lkcc.org>
+
+	* binary-test.scm: Some more tests added.
+
+2002-07-25  Stefan Jahn  <stefan@lkcc.org>
+
+	* binary-test.scm: Binary smob function test suite using the
+	test suite library.  This is a draft, to be continued...
+
+	* test-suite.scm: Test suite library.
+
+	* Makefile.am: New files: 'test-suite.scm' and 'binary-test.scm'
+	added.
+
+2002-07-23  Stefan Jahn  <stefan@lkcc.org>
+
+	* test.c (test_value): Fixed 'division by zero' bug.
+
+2002-01-02  Stefan Jahn  <stefan@lkcc.org>
+
+	* prog-test.c: New test program.  Can be used to test the
+	program passthrough server.
+
+2001-12-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash-test.c (main): Better hash iteration testing.  Reveals
+	the invalid code of gcc version 2.8.1 on IRIX.
+
+2001-10-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec.dsp: New file. Project file for the codec test under
+	Windows.
+
+2001-10-07  Stefan Jahn  <stefan@lkcc.org>
+
+	* codec-test.c: New test. Demonstrates both: using the serveez
+	core library and usage of the codec interface.
+
+2001-07-03  Stefan Jahn  <s.jahn@bit-side.com>
+
+	* test.c: Removed unnecessary functions `svz_log()' and
+	`svz_hexdump()'.
+
+2001-06-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* array-test.c (main): Two more checks for the replication
+	functions `svz_array_dup()' and `svz_array_strdup()' 
+	implemented.
+
+2001-05-03  Stefan Jahn  <stefan@lkcc.org>
+
+	* test.c (svz_hexdump): Added this as wrapper if 
+	DEBUG_MEMORY_LEAKS is defined.
+
+2001-04-04  Stefan Jahn  <stefan@lkcc.org>
+
+	* array-test.c (main): Added check for array iteration.
+
+2001-03-31  Stefan Jahn  <stefan@lkcc.org>
+
+	* vector-test.c: Implemented tests for the vector lists.
+
+2001-03-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* array-test.c (main): Added stress test for arrays.
+
+2001-03-10  Stefan Jahn  <stefan@lkcc.org>
+
+	* hash-test.c (main): Added tests for the iteration macros.
+
+	* spvec-test.c: Renamed array list to sparse vectors.
+
+	* array-test.c (test): Added new test suite for the array
+	functions.
+
+2001-02-06  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist-test.c: Made necessary changes since the array list's
+	name space has been changed.
+
+2001-01-29  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist-test.c (main): Added new stress test for alist_set()
+	and alist_unset() functions.
+
+2001-01-13  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist-test.c (main): Testing new function alist_unset().
+
+2000-11-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* Makefile.am (EXTRA_DIST): Added the alist-test and hash-test
+	project file for the MSVC compiler.
+
+2000-11-08  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist-test.c (main): The stress test includes now a delete 
+	range section, too. Thus it was possible to find another bug in
+	alist_delete().
+
+2000-11-01  Stefan Jahn  <stefan@lkcc.org>
+
+	* alist-test.c (main): Added `delete range' checking.
+
+	* ChangeLog: File created and committed into CVS.
+
+2000-10-22  Stefan Jahn  <stefan@lkcc.org>
+
+	* test.c: Helper functions for the test suites.
+
+	* hash-test.c: Hash function test suite.
+
+	* alist-test.c: Array list function test suite.

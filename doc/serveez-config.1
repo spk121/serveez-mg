@@ -1,0 +1,40 @@
+.TH SERVEEZ-CONFIG "1" "December 2002" "serveez-config" FSF
+.SH NAME
+serveez-config \- The Serveez configuration script.
+.SH SYNOPSIS
+\fBserveez-config\fR [OPTION]...
+.SH DESCRIPTION
+If a developer plans to embed the \fBServeez\fR core library into 
+standalone C/C++ applications and using it for writing additional servers
+it needs to tell the compiler and linker where to find the headers and 
+libraries.  In order to obtain the correct compiler and linker flag you can 
+run the \fBserveez-config\fR script which gets installed with the 
+\fBServeez\fR package.
+.SH OPTIONS
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+show installed Serveez version
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show usage info (this message)
+.TP
+\fB\-l\fR, \fB\-\-ldflags\fR
+print libraries to link with
+.TP
+\fB\-c\fR, \fB\-\-cflags\fR
+print C compiler flags to compile with
+.SH "SEE ALSO"
+The full documentation for
+.B serveez-config
+is maintained as a Texinfo manual.  If the
+.B info
+and
+.B serveez-config
+programs are properly installed at your site, the command
+.IP
+.B info serveez-api
+.PP
+should give you access to the complete manual.
+.SH AUTHORS
+Written by Martin Grabmueller <mgrabmue@cs.tu-berlin.de>, 
+Raimund Jacob <raimi@lkcc.org> and Stefan Jahn <stefan@lkcc.org>.

@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+guile-api.texi
+manual
+serveez-api.texi
+*.info
+*.sed
+stamp-*
+version*.texi
+serveez-procedures.txt

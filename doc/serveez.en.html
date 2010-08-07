@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<HTML>
+<HEAD>
+<TITLE>Serveez - GNU Project - Free Software Foundation (FSF)</TITLE>
+<LINK REV="made" HREF="mailto:webmasters@www.gnu.org">
+<META NAME="keywords" CONTENT="serveez">
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#1F00FF" ALINK="#FF0000" VLINK="#9900DD">
+<H3>Serveez - A server framework.</H3>
+<A HREF="http://www.gnu.org/graphics/agnuhead.html">
+<IMG SRC="logo.jpg"
+   ALT=" [Serveez logo] "
+   WIDTH="308" HEIGHT="187" BORDER="0"></A>
+
+[
+<!-- Please keep this list alphabetical -->
+<!-- PLEASE UPDATE THE LIST AT THE BOTTOM (OR TOP) OF THE PAGE TOO! -->
+  <A HREF="serveez.en.html">English</A>
+<!-- | A HREF="serveez.LG.html" LANGUAGE /A  -->
+]
+
+<P>
+<!-- Replace this list with the page's contents. -->
+<H4>Table of Contents</H4>
+<UL>
+  <LI><A HREF="#introduction" NAME="TOCintroduction">
+      Introduction to Serveez</A>
+  <LI><A HREF="#downloading" NAME="TOCdownloading">
+      Downloading Serveez</A>
+  <LI><A HREF="#documentation" NAME="TOCdocumentation">
+      Documentation</A>
+  <LI><A HREF="#requirements" NAME="TOCrequirements">
+      Requirements</A>
+  <LI><A HREF="#snapshot" NAME="TOCsnapshot">
+      Getting the latest CVS snapshot</A>
+  <LI><A HREF="#developers" NAME="TOCdevelopers">
+      Developers</A>
+</UL>
+
+<P>
+<HR>
+<P>
+<H4><A HREF="#TOCintroduction" NAME="introduction">
+    Introduction to Serveez</A></H4>
+<P>
+Serveez is a server framework.  It provides routines and help for
+implementing IP based servers (currently TCP, UDP and ICMP).  It is also
+possible to use named pipes for all connection oriented protocols.
+
+We think it is worth the effort because many people need server functionality 
+within their applications.  However, many people experience problems 
+with select()- or poll()-loops, and with non-blocking operations.
+
+This application demonstrates various aspects of advanced network
+programming in a portable manner.  It is known to compile and run on 
+GNU/Linux systems, as well as on other 32-bit and 64-bit flavours of Unix 
+and on Microsoft Windows (9x/ME/NT/2000/XP).
+
+You can use it for implementing your own servers or for understanding how
+certain network services and operations work.
+
+The package includes a number of servers that work already: an HTTP server,
+an IRC server, a Gnutella spider and some others.  One of the highlights is
+that you can run all protocols on the same port.  The application itself is
+single threaded but it uses helper processes for concurrent name resolution
+and ident lookups.
+<P>
+<H4><A HREF="#TOCdownloading" NAME="downloading">
+    Downloading Serveez</A></H4>
+<P>
+Serveez can be found on <A HREF="http://ftp.gnu.org/gnu/serveez/">
+http://ftp.gnu.org/gnu/serveez/</A>, on one of 
+<A HREF="http://www.gnu.org/prep/ftp.html">the mirrors</A> or at its 
+original location <A HREF="http://www.lkcc.org/~ela/download/">
+http://www.lkcc.org/~ela/download/</A>.
+<P>
+<H4><A HREF="#TOCdocumentation" NAME="documentation">
+    Documentation</A></H4>
+<P>
+The full user and developer documentation can be obtained at
+<A HREF="manual/index.html">
+http://www.gnu.org/software/serveez/manual/index.html</A>. There
+you will find news, the source ChangeLog and a lot more information about
+the package in general. There are three different mailing lists:
+<A HREF="http://mail.gnu.org/mailman/listinfo/bug-serveez">
+&lt;<EM>bug-serveez@gnu.org</EM>&gt;</A> for reporting bugs,
+<A HREF="http://mail.gnu.org/mailman/listinfo/help-serveez">
+&lt;<EM>help-serveez@gnu.org</EM>&gt;</A> for user support and help and
+<A HREF="http://mail.gnu.org/mailman/listinfo/dev-serveez">
+&lt;<EM>dev-serveez@gnu.org</EM>&gt;</A> for the developers involved in this
+project.
+<P>
+<H4><A HREF="#TOCrequirements" NAME="requirements">
+    Requirements</A></H4>
+<P>
+Serveez needs the GNU <A HREF="http://www.gnu.org/software/guile/">Guile</A>
+(Ubiquitous Intelligent Language for Extensions) language core library for 
+configuring purposes. Currently Serveez is known to work with Guile version 
+1.3 and above. You can download this package from 
+<A HREF="http://ftp.gnu.org/gnu/guile/">http://ftp.gnu.org/gnu/guile/</A>. The
+MinGW32 port is available at
+<A HREF="http://www.sourceforge.net/projects/mingwrep/">
+http://www.sourceforge.net/projects/mingwrep/</A> and a native version you can
+obtain at
+<A HREF="http://www.lkcc.org/~ela/devel.html#gnu">
+http://www.lkcc.org/~ela/devel.html</A>.
+<P>
+<H4><A HREF="#TOCsnapshot" NAME="snapshot">
+    Getting the latest CVS snapshot</A></H4>
+<P>
+You can always get the latest Serveez version from our CVS repository.
+Please use an official release if you want to work with Serveez.  The CVS
+version might not even compile.
+<PRE>
+    $ cvs -z3 -d:pserver:anoncvs@subversions.gnu.org:/cvsroot/serveez co serveez
+</PRE>
+Press 'Enter' when asked for a password.  Run `sh autogen.sh' and
+`configure' with the appropriate options.  Maintainance currently
+requires Autoconf version 2.57, GNU libtool 1.5 and GNU automake 1.7.5.
+<P>
+<H4><A HREF="#TOCdevelopers" NAME="developers">
+    Developers</A></H4>
+<P>
+Serveez was originally written by Martin Grabmueller
+<A HREF="mailto:mgrabmue@cs.tu-berlin.de">
+&lt;<EM>mgrabmue@cs.tu-berlin.de</EM>&gt;</A>.
+The maintainership has been shifted over to Raimund Jacob
+<A HREF="mailto:raimi@lkcc.org">
+&lt;<EM>raimi@lkcc.org</EM>&gt;</A> and Stefan Jahn
+<A HREF="mailto:stefan@lkcc.org">
+&lt;<EM>stefan@lkcc.org</EM>&gt;</A>.
+<P>
+
+<HR>
+
+[
+<!-- Please keep this list alphabetical -->
+<!-- PLEASE UPDATE THE LIST AT THE BOTTOM (OR TOP) OF THE PAGE TOO! -->
+  <A HREF="serveez.en.html">English</A>
+<!-- | A HREF="serveez.LG.html" LANGUAGE /A  -->
+]
+
+<HR>
+
+<P>
+Return to <A HREF="http://www.gnu.org/home.html">GNU's home page</A>.
+<P>
+
+Please send FSF &amp; GNU inquiries &amp; questions to 
+
+<A HREF="mailto:gnu@gnu.org"><EM>gnu@gnu.org</EM></A>.
+There are also <A HREF="http://www.gnu.org/home.html#ContactInfo">other ways 
+to contact</A> the FSF.
+<P>
+
+Please send comments on these web pages to
+
+<A HREF="mailto:webmasters@gnu.org"><EM>webmasters@gnu.org</EM></A>,
+send other questions to
+<A HREF="mailto:gnu@gnu.org"><EM>gnu@gnu.org</EM></A>.
+<P>
+Copyright (C) 1999, 2000, 2001 Martin Grabmueller 
+&lt;<EM>mgrabmue@cs.tu-berlin.de</EM>&gt;.<BR>
+Copyright (C) 2000, 2001, 2002, 2003 Raimund Jacob 
+&lt;<EM>raimi@lkcc.org</EM>&gt;.<BR>
+Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn 
+&lt;<EM>stefan@lkcc.org</EM>&gt;.<BR>
+<P>
+Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.
+<P>
+<!-- hhmts start --> Last modified: Sat Mar 20 03:25:07 CET 2004 <!-- hhmts end -->
+<HR>
+</BODY>
+</HTML>
