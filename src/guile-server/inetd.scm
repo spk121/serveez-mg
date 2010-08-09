@@ -276,7 +276,7 @@
 			  (run-rpc-portmapper (vector-ref rpc 0)
 					      (vector-ref rpc 2) version
 					      (rpc-ip-proto service-line)
-					      (svz:ntohs port)))
+					      (ntohs port)))
 			))
 		    ;; get the listening socket sructures
 		    (svz:server:listeners server))
@@ -286,13 +286,13 @@
 (define (rpc-service? service-line)
   (cdr (split-tuple (vector-ref service-line 2) #\/)))
 
-;; returns a service with fully qualified port, protocol, service 
-;; name and its aliases if there is such a service, otherwise the 
+;; returns a service with fully qualified port, protocol, service
+;; name and its aliases if there is such a service, otherwise the
 ;; procedure returns #f
 (define (lookup-service service-line)
   (catch #t
 	 (lambda ()
-	   (getservbyname (vector-ref service-line 0) 
+	   (getservbyname (vector-ref service-line 0)
 			  (vector-ref service-line 2)))
 	 (lambda key
 	   (display (string-append "inetd: no such service `"

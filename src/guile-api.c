@@ -218,58 +218,6 @@ guile_svz_inet_aton (SCM address)
 }
 #undef FUNC_NAME
 
-/* The @code{(svz:ntohl)} function converts the 32 bit long integer
-   @var{netlong} from network byte order to host byte order. */
-#define FUNC_NAME "svz:ntohl"
-static SCM
-guile_svz_ntohl (SCM netlong)
-{
-  SCM_ASSERT_TYPE (SCM_EXACTP (netlong),
-		   netlong, SCM_ARG1, FUNC_NAME, "exact");
-  return scm_ulong2num (ntohl (SCM_NUM2ULONG (SCM_ARG1, netlong)));
-}
-#undef FUNC_NAME
-
-/* The @code{(svz:htonl)} function converts the 32 bit long integer
-   @var{hostlong} from host byte order to network byte order. */
-#define FUNC_NAME "svz:htonl"
-static SCM
-guile_svz_htonl (SCM hostlong)
-{
-  SCM_ASSERT_TYPE (SCM_EXACTP (hostlong),
-		   hostlong, SCM_ARG1, FUNC_NAME, "exact");
-  return scm_ulong2num (htonl (SCM_NUM2ULONG (SCM_ARG1, hostlong)));
-}
-#undef FUNC_NAME
-
-/* The @code{(svz:ntohs)} function converts the 16 bit short integer 
-   @var{netshort} from network byte order to host byte order. */
-#define FUNC_NAME "svz:ntohs"
-static SCM
-guile_svz_ntohs (SCM netshort)
-{
-  long i;
-  SCM_ASSERT_TYPE (SCM_EXACTP (netshort),
-		   netshort, SCM_ARG1, FUNC_NAME, "exact");
-  VALIDATE_NETPORT (i, netshort, SCM_ARG1);
-  return scm_int2num (ntohs ((unsigned short) i));
-}
-#undef FUNC_NAME
-
-/* The @code{(svz:htons)} function converts the 16 bit short integer 
-   @var{hostshort} from host byte order to network byte order. */
-#define FUNC_NAME "svz:htons"
-static SCM
-guile_svz_htons (SCM hostshort)
-{
-  long i;
-  SCM_ASSERT_TYPE (SCM_EXACTP (hostshort),
-		   hostshort, SCM_ARG1, FUNC_NAME, "exact");
-  VALIDATE_NETPORT (i, hostshort, SCM_ARG1);
-  return scm_int2num (htons ((unsigned short) i));
-}
-#undef FUNC_NAME
-
 /* Return the receive buffer of the socket @var{sock} as a binary smob. */
 #define FUNC_NAME "svz:sock:receive-buffer"
 static SCM
@@ -1179,7 +1127,7 @@ guile_api_init (void)
 #if HAVE_PMAP_GETMAPS
   scm_c_define_gsubr ("portmap-list", 0, 1, 0, scm_portmap_list);
 #endif
-  
+
   scm_c_define ("PROTO_TCP", scm_int2num (PROTO_TCP));
   scm_c_define ("PROTO_UDP", scm_int2num (PROTO_UDP));
   scm_c_define ("PROTO_ICMP", scm_int2num (PROTO_ICMP));
@@ -1188,10 +1136,6 @@ guile_api_init (void)
   scm_c_define ("KICK_FLOOD", scm_int2num (0));
   scm_c_define ("KICK_QUEUE", scm_int2num (1));
   scm_c_define_gsubr ("svz:sock:connect", 2, 1, 0, guile_sock_connect);
-  scm_c_define_gsubr ("svz:htons", 1, 0, 0, guile_svz_htons);
-  scm_c_define_gsubr ("svz:ntohs", 1, 0, 0, guile_svz_ntohs);
-  scm_c_define_gsubr ("svz:htonl", 1, 0, 0, guile_svz_htonl);
-  scm_c_define_gsubr ("svz:ntohl", 1, 0, 0, guile_svz_ntohl);
   scm_c_define_gsubr ("svz:inet-aton", 1, 0, 0, guile_svz_inet_aton);
   scm_c_define_gsubr ("svz:inet-ntoa", 1, 0, 0, guile_svz_inet_ntoa);
   scm_c_define_gsubr ("svz:sock:parent", 1, 1, 0, guile_sock_parent);
