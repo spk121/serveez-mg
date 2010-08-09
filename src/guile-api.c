@@ -178,46 +178,6 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
 }
 #undef FUNC_NAME
 
-/* The @code{(svz:inet-ntoa)} function converts the Internet host address 
-   @var{address} given in network byte order to a string in standard
-   numbers-and-dots notation. */
-#define FUNC_NAME "svz:inet-ntoa"
-static SCM
-guile_svz_inet_ntoa (SCM address)
-{
-  char *str;
-  SCM_ASSERT_TYPE (SCM_EXACTP (address),
-		   address, SCM_ARG1, FUNC_NAME, "exact");
-  str = svz_inet_ntoa (SCM_NUM2ULONG (SCM_ARG1, address));
-  return scm_makfrom0str (str);
-}
-#undef FUNC_NAME
-
-/* Converts the Internet host address @var{address} from the standard 
-   numbers-and-dots notation into binary data in network byte order.
-   The @code{(svz:inet-aton)} function returns @code{#f} if the address is 
-   invalid. */
-#define FUNC_NAME "svz:inet-aton"
-static SCM
-guile_svz_inet_aton (SCM address)
-{
-  struct sockaddr_in addr;
-  char *str;
-
-  SCM_ASSERT_TYPE (SCM_STRINGP (address),
-		   address, SCM_ARG1, FUNC_NAME, "string");
-  str = guile_to_string (address);
-  if (svz_inet_aton (str, &addr) == -1)
-    {
-      guile_error ("%s: IP address in dotted decimals expected", FUNC_NAME);
-      scm_c_free (str);
-      return SCM_BOOL_F;
-    }
-  scm_c_free (str);
-  return scm_ulong2num (addr.sin_addr.s_addr);
-}
-#undef FUNC_NAME
-
 /* Return the receive buffer of the socket @var{sock} as a binary smob. */
 #define FUNC_NAME "svz:sock:receive-buffer"
 static SCM
@@ -1136,8 +1096,6 @@ guile_api_init (void)
   scm_c_define ("KICK_FLOOD", scm_int2num (0));
   scm_c_define ("KICK_QUEUE", scm_int2num (1));
   scm_c_define_gsubr ("svz:sock:connect", 2, 1, 0, guile_sock_connect);
-  scm_c_define_gsubr ("svz:inet-aton", 1, 0, 0, guile_svz_inet_aton);
-  scm_c_define_gsubr ("svz:inet-ntoa", 1, 0, 0, guile_svz_inet_ntoa);
   scm_c_define_gsubr ("svz:sock:parent", 1, 1, 0, guile_sock_parent);
   scm_c_define_gsubr ("svz:sock:referrer", 1, 1, 0, guile_sock_referrer);
   scm_c_define_gsubr ("svz:sock:server", 1, 1, 0, guile_sock_server);

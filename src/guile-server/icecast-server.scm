@@ -125,13 +125,13 @@
 	(addr (svz:sock:remote-address sock)))
     (if (and idx (= idx 0))
         (begin
-	  (println "icecast: client detected at " (svz:inet-ntoa (car addr)))
+	  (println "icecast: client detected at " (inet-ntop AF_INET (car addr)))
           -1)
         0)))
 
 ;; connecting a client
 (define (icecast-connect-socket server sock)
-  (let* ((reply (string-append 
+  (let* ((reply (string-append
 		 "HTTP/1.0 200 OK\r\n"
 		 "Content-Type: audio/x-mp3stream\r\n"
 		 "Cache-Control: no-cache\r\n"
@@ -212,7 +212,7 @@
 	  (hash-set! data "port" port)
 	  (icecast-id3-tag data)
 	  (if (not host)
-	      (set! host (svz:inet-ntoa (car addr))))
+	      (set! host (inet-ntop AF_INET  (car addr))))
 	  (if (and host user)
 	      (set! host (string-append user "@" host)))
 	  (println "icecast: uploading `" file "'"
