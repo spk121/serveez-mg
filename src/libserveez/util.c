@@ -109,7 +109,7 @@ svz_mutex_define (svz_log_mutex)
  * Print a message to the log system. @var{level} specifies the prefix.
  */
 void
-svz_log (int level, svz_c_const char *format, ...)
+svz_log (int level, const char *format, ...)
 {
   va_list args;
   time_t tm;
@@ -300,19 +300,19 @@ svz_tolower (char *str)
 
 /*
  * This is the system dependent case insensitive string compare. It
- * compares the strings @var{str1} and @var{str2} and returns zero if both 
+ * compares the strings @var{str1} and @var{str2} and returns zero if both
  * strings are equal.
  */
 int
-svz_strcasecmp (svz_c_const char *str1, svz_c_const char *str2)
+svz_strcasecmp (const char *str1, const char *str2)
 {
 #if HAVE_STRCASECMP
   return strcasecmp (str1, str2);
 #elif HAVE_STRICMP
   return stricmp (str1, str2);
 #else
-  svz_c_const char *p1 = str1;
-  svz_c_const char *p2 = str2;
+  const char *p1 = str1;
+  const char *p2 = str2;
   unsigned char c1, c2;
 
   if (p1 == p2)
@@ -337,11 +337,11 @@ svz_strcasecmp (svz_c_const char *str1, svz_c_const char *str2)
  * The @code{svz_strncasecmp()} function compares the two strings @var{str1}
  * and @var{str2}, ignoring the case of the characters. It returns an
  * integer less than, equal to, or greater than zero if @var{str1} is
- * found, respectively, to be less than, to match, or be greater than 
+ * found, respectively, to be less than, to match, or be greater than
  * @var{str2}. It only compares the first @var{n} characters of @var{str1}.
  */
 int
-svz_strncasecmp (svz_c_const char *str1, svz_c_const char *str2, 
+svz_strncasecmp (const char *str1, const char *str2,
 		 unsigned int n)
 {
 #if HAVE_STRNCASECMP

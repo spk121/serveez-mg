@@ -39,11 +39,11 @@ SERVEEZ_API int svz_udp_read_socket __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_udp_lazy_read_socket __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_udp_write_socket __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_udp_check_request __PARAMS ((svz_socket_t *));
-SERVEEZ_API svz_socket_t *svz_udp_connect __PARAMS ((unsigned long, 
+SERVEEZ_API svz_socket_t *svz_udp_connect __PARAMS ((unsigned long,
 						     unsigned short));
 SERVEEZ_API int svz_udp_write __PARAMS ((svz_socket_t *, char *, int));
-SERVEEZ_API int svz_udp_printf __PARAMS ((svz_socket_t *, 
-					  svz_c_const char *, ...));
+SERVEEZ_API int svz_udp_printf __PARAMS ((svz_socket_t *,
+					  const char *, ...));
 
 __END_DECLS
 
