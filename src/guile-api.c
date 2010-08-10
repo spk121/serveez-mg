@@ -60,11 +60,7 @@
 # include <io.h>
 #endif
 
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
+#include <libguile.h>
 
 #include "libserveez.h"
 
@@ -184,8 +180,12 @@ static SCM
 guile_sock_receive_buffer (SCM sock)
 {
   svz_socket_t *xsock;
+  SCM bytevector;
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return scm_c_take_bytevector (xsock->recv_buffer, xsock->recv_buffer_fill);
+  bytevector = scm_c_make_bytevector (xsock->recv_buffer_fill);
+  memcpy (SCM_BYTEVECTOR_CONTENTS (bytevector), xsock->recv_buffer,
+	  xsock->recv_buffer_fill);
+  return bytevector;
 }
 #undef FUNC_NAME
 
@@ -218,8 +218,12 @@ static SCM
 guile_sock_send_buffer (SCM sock)
 {
   svz_socket_t *xsock;
+  SCM bytevector;
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return scm_c_take_bytevector (xsock->send_buffer, xsock->send_buffer_fill);
+  bytevector = scm_c_make_bytevector (xsock->send_buffer_fill);
+  memcpy (SCM_BYTEVECTOR_CONTENTS (bytevector), xsock->send_buffer,
+	  xsock->send_buffer_fill);
+  return bytevector;
 }
 #undef FUNC_NAME
 
@@ -290,7 +294,7 @@ guile_sock_remote_address (SCM sock, SCM address)
   SCM pair;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  pair = scm_cons (scm_ulong2num (xsock->remote_addr),
+  pair = scm_cons (scm_from_ulong (xsock->remote_addr),
 		   scm_from_int ((int) xsock->remote_port));
   if (!SCM_UNBNDP (address))
     {
@@ -318,7 +322,7 @@ guile_sock_local_address (SCM sock, SCM address)
   SCM pair;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  pair = scm_cons (scm_ulong2num (xsock->local_addr),
+  pair = scm_cons (scm_from_ulong (xsock->local_addr),
 		   scm_from_int ((int) xsock->local_port));
   if (!SCM_UNBNDP (address))
     {
@@ -775,11 +779,10 @@ scm_portmap_list (SCM address)
   do
     {
       mapping = scm_c_make_vector (4, SCM_UNSPECIFIED);
-      ve = SCM_WRITABLE_VELTS (mapping);
-      ve[0] = scm_ulong2num ((unsigned long) map->pml_map.pm_prog);
-      ve[1] = scm_ulong2num ((unsigned long) map->pml_map.pm_vers);
-      ve[2] = scm_ulong2num ((unsigned long) map->pml_map.pm_prot);
-      ve[3] = scm_ulong2num ((unsigned long) map->pml_map.pm_port);
+      scm_c_vector_set_x (mapping, 0, scm_from_ulong (map->pml_map.pm_prog));
+      scm_c_vector_set_x (mapping, 1, scm_from_ulong (map->pml_map.pm_vers));
+      scm_c_vector_set_x (mapping, 2, scm_from_ulong (map->pml_map.pm_prot));
+      scm_c_vector_set_x (mapping, 3, scm_from_ulong (map->pml_map.pm_port));
       list = scm_cons (mapping ,list);
     }
   while ((map = map->pml_next) != NULL);
@@ -800,14 +803,14 @@ scm_portmap_list (SCM address)
 SCM
 scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
 {
-  SCM_ASSERT_TYPE (SCM_INUMP (prognum), prognum, SCM_ARG1,
-		   FUNC_NAME, "INUMP");
-  SCM_ASSERT_TYPE (SCM_INUMP (versnum), prognum, SCM_ARG2,
-		   FUNC_NAME, "INUMP");
+  SCM_ASSERT_TYPE (scm_is_integer (prognum), prognum, SCM_ARG1,
+		   FUNC_NAME, "integer");
+  SCM_ASSERT_TYPE (scm_is_integer (versnum), prognum, SCM_ARG2,
+		   FUNC_NAME, "integer");
 
   if (SCM_UNBNDP (protocol) && SCM_UNBNDP (port))
     {
-      if (!pmap_unset (SCM_INUM (prognum), SCM_INUM (versnum)))
+      if (!pmap_unset (scm_to_ulong (prognum), scm_to_ulong (versnum)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_unset ~A ~A",
 			  scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, SCM_UNDEFINED),
@@ -815,13 +818,13 @@ scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
     }
   else
     {
-      SCM_ASSERT_TYPE (SCM_INUMP (protocol), protocol, SCM_ARG3,
-		       FUNC_NAME, "INUMP");
-      SCM_ASSERT_TYPE (SCM_INUMP (port), port, SCM_ARG4,
-		       FUNC_NAME, "INUMP");
+      SCM_ASSERT_TYPE (scm_is_integer (protocol), protocol, SCM_ARG3,
+		       FUNC_NAME, "integer");
+      SCM_ASSERT_TYPE (scm_is_integer (port), port, SCM_ARG4,
+		       FUNC_NAME, "integer");
 
-      if (!pmap_set (SCM_INUM (prognum), SCM_INUM (versnum),
-		     SCM_INUM (protocol), (unsigned short) SCM_INUM (port)))
+      if (!pmap_set (scm_to_ulong (prognum), scm_to_ulong (versnum),
+		     scm_to_uint (protocol), scm_to_ushort (port)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_set ~A ~A ~A ~A",
 			  scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, protocol, port,
@@ -906,7 +909,7 @@ guile_coserver_rdns (SCM addr, SCM callback, SCM arg)
   unsigned long ip;
 
   /* Check argument list first. */
-  SCM_ASSERT_TYPE (SCM_INUMP (addr), addr, SCM_ARG1, FUNC_NAME, "INUMP");
+  SCM_ASSERT_TYPE (scm_is_integer (addr), addr, SCM_ARG1, FUNC_NAME, "INUMP");
   SCM_ASSERT_TYPE (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME,
 		   "procedure");
 
@@ -965,8 +968,8 @@ guile_sock_find (SCM ident)
   int version, id;
   svz_socket_t *sock;
 
-  SCM_ASSERT_TYPE (SCM_PAIRP (ident) && SCM_INUMP (SCM_CAR (ident)) &&
-		   SCM_INUMP (SCM_CDR (ident)), ident, SCM_ARG1,
+  SCM_ASSERT_TYPE (scm_is_pair (ident) && scm_is_integer (scm_car (ident)) &&
+		   scm_is_integer (scm_cdr (ident)), ident, SCM_ARG1,
 		   FUNC_NAME, "pair of INUMP");
   id = SCM_NUM2INT (SCM_ARG1, SCM_CAR (ident));
   version = SCM_NUM2INT (SCM_ARG1, SCM_CDR (ident));
@@ -1041,8 +1044,12 @@ guile_read_file (SCM port, SCM size)
 	scm_gc_realloc (data, len, ret, "svz-binary-data");
     }
 
-  /* Finally return binary smob. */
-  return scm_c_take_bytevector (data, ret);
+  /* Finally return bytevector. */
+  {
+    SCM bytevector = scm_c_make_bytevector (ret);
+    memcpy (SCM_BYTEVECTOR_CONTENTS (bytevector), data, ret);
+    return bytevector;
+  }
 }
 #undef FUNC_NAME
 

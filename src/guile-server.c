@@ -775,7 +775,8 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
 
   if (!SCM_UNBNDP (handle_request))
     {
-      bin = scm_c_take_bytevector (request, len);
+      bin = scm_c_make_bytevector (len);
+      memcpy (SCM_BYTEVECTOR_CONTENTS (bin), request, len);
       ret = guile_call (handle_request, 3, MAKE_SMOB (svz_socket, sock),
 			bin, scm_from_int (len));
       return guile_integer (SCM_ARGn, ret, -1);

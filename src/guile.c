@@ -1412,7 +1412,7 @@ guile_intarray_to_guile (svz_array_t *array)
 
   /* Go through all the strings and add these to a guile list. */
   for (list = SCM_EOL, i = 0; i < svz_array_size (array); i++)
-    list = scm_cons (scm_long2num ((long) svz_array_get (array, i)), list);
+    list = scm_cons (scm_from_long ((long) svz_array_get (array, i)), list);
   return scm_reverse (list);
 }
 
@@ -1561,7 +1561,7 @@ MAKE_STRING_CHECKER (guile_check_stype, svz_servertype_get (str, 0) != NULL)
  */
 #define MAKE_INT_ACCESSOR(cfunc, cvar)                       \
 static SCM cfunc (SCM args) {                                \
-  SCM value = scm_int2num (cvar); int n;                     \
+  SCM value = scm_from_int (cvar); int n;                     \
   GUILE_PRECALL ();                                          \
   if (!SCM_UNBNDP (args)) {                                  \
     if (guile_to_integer (args, &n)) {                       \
@@ -1760,7 +1760,7 @@ guile_eval_file (void *data)
 		       !S_ISCHR (buf.st_mode) && !S_ISBLK (buf.st_mode)))
     {
       SCM ret = SCM_BOOL_F, line;
-      while (!SCM_EOF_OBJECT_P (line = scm_read (scm_cur_inp)))
+      while (!SCM_EOF_OBJECT_P (line = scm_read (scm_current_input_port ())))
 	ret = scm_primitive_eval_x (line);
       return SCM_BOOL_T;
     }
