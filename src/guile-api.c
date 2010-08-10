@@ -650,8 +650,8 @@ scm_return_rpcentry (struct rpcent *entry)
 
   ans = scm_c_make_vector (3, SCM_UNSPECIFIED);
   ve = SCM_WRITABLE_VELTS (ans);
-  ve[0] = scm_makfrom0str (entry->r_name);
-  ve[1] = scm_makfromstrs (-1, entry->r_aliases);
+  ve[0] = scm_from_locale_string (entry->r_name);
+  ve[1] = scm_from_locale_string (-1, entry->r_aliases);
   ve[2] = scm_ulong2num ((unsigned long) entry->r_number);
   return ans;
 }
@@ -804,7 +804,7 @@ scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
     {
       if (!pmap_unset (SCM_INUM (prognum), SCM_INUM (versnum)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_unset ~A ~A",
-			  scm_list_n (scm_makfrom0str (strerror (errno)),
+			  scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, SCM_UNDEFINED),
 			  errno);
     }
@@ -818,7 +818,7 @@ scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
       if (!pmap_set (SCM_INUM (prognum), SCM_INUM (versnum),
 		     SCM_INUM (protocol), (unsigned short) SCM_INUM (port)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_set ~A ~A ~A ~A",
-			  scm_list_n (scm_makfrom0str (strerror (errno)),
+			  scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, protocol, port,
 				      SCM_UNDEFINED), errno);
     }
@@ -838,10 +838,10 @@ guile_coserver_callback (char *res, SCM callback, SCM arg)
     {
       /* Run procedure with one argument only. */
       if (SCM_UNBNDP (arg))
-	guile_call (callback, 1, scm_makfrom0str (res));
+	guile_call (callback, 1, scm_from_locale_string (res));
       /* Run procedure with both arguments. */
       else
-	guile_call (callback, 2, scm_makfrom0str (res), arg);
+	guile_call (callback, 2, scm_from_locale_string (res), arg);
       ret = 0;
     }
 
@@ -1021,7 +1021,7 @@ guile_read_file (SCM port, SCM size)
     {
       scm_gc_free (data, len, "svz-binary-data");
       scm_syserror_msg (FUNC_NAME, "~A: read ~A ~A",
-			scm_list_n (scm_makfrom0str (strerror (errno)),
+			scm_list_n (scm_from_locale_string (strerror (errno)),
 				    scm_int2num (fdes), size, SCM_UNDEFINED),
 			errno);
     }

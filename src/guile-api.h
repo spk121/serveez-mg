@@ -7,12 +7,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -146,15 +146,6 @@ typedef scm_catch_handler_t scm_t_catch_handler;
     scm_primitive_load (scm_makfrom0str (file))
 #endif
 #ifndef SCM_VERSION_15X
-#define guile_lookup(var, name) (var) = gh_lookup (name)
-#else
-#define guile_lookup(var, name) do {					    \
-    (var) = scm_sym2var (scm_str2symbol (name),				    \
-			 scm_current_module_lookup_closure (), SCM_BOOL_F); \
-    if (SCM_FALSEP (var)) (var) = SCM_UNDEFINED;			    \
-    else (var) = scm_variable_ref (var); } while (0)
-#endif
-#ifndef SCM_VERSION_15X
 #define scm_gc_protect_object(obj) scm_protect_object (obj)
 #endif
 #ifndef SCM_VERSION_15X
@@ -173,9 +164,6 @@ typedef scm_catch_handler_t scm_t_catch_handler;
 #define scm_c_scm2chars(obj, data) gh_scm2chars (obj, data)
 #endif
 #ifndef SCM_VERSION_17X
-#define scm_c_string2str(obj, str, lenp) gh_scm2newstr (obj, lenp)
-#endif
-#ifndef SCM_VERSION_17X
 #define scm_c_symbol2str(obj, str, lenp) gh_symbol2newstr (obj, lenp)
 #endif
 #ifndef SCM_OUT_OF_RANGE
@@ -183,12 +171,12 @@ typedef scm_catch_handler_t scm_t_catch_handler;
     scm_out_of_range_pos (FUNC_NAME, arg, SCM_MAKINUM (pos))
 #endif
 
-/* Return an integer. If the given Guile cell @var{obj} is not an 
+/* Return an integer. If the given Guile cell @var{obj} is not an
    integer, the routine returns the default value @var{def}. */
 #define guile_integer(pos, obj, def) \
     ((SCM_EXACTP (obj)) ? (SCM_NUM2INT (pos, obj)) : (def))
 
-/* The GUILE_CONCAT macros create a new concatenated symbol for the 
+/* The GUILE_CONCAT macros create a new concatenated symbol for the
    compiler in a portable way. It is essential to use these macros like
    GUILE_CONCAT (a,b) and *not* like GUILE_CONCAT (a, b) or its variants. */
 #if defined (__STDC__) || defined (__cplusplus)
