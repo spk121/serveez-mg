@@ -1,5 +1,5 @@
 ## Process this file with automake to produce Makefile.in
-# 
+#
 # src/Makefile.am
 #
 # Automake input file.
@@ -12,16 +12,16 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2, or (at your option)
 # any later version.
-# 
+#
 # This software is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.  
+# Boston, MA 02111-1307, USA.
 #
 
 EXTRA_DIST = serveez.rc serveez.dsp svzconfig.h.in svzconfig.h.serveez \
@@ -59,17 +59,15 @@ serveez_SOURCES = \
 	option.c option.h \
 	guile-server.c guile-server.h
 
-#	guile-bin.c guile-bin.h
-
 EXTRA_serveez_SOURCES = guile-api.c guile-api.h
 
 resource_OBJECTS = $(resource_FILES:.rc=.ro)
 
 serveez_DEPENDENCIES = $(resource_OBJECTS) $(PROTOLIBS) \
-	libserveez/libserveez.la serveez.cfg $(GUILE_DEPENDENCY)
+	libserveez/libserveez.la serveez.cfg
 
 serveez_LDADD = $(resource_OBJECTS) $(PROTOLIBS) \
-	libserveez/libserveez.la $(SERVEEZ_LIBS)
+	libserveez/libserveez.la $(SERVEEZ_LIBS) $(GUILE_LIBS)
 
 serveez_LDFLAGS = $(GUILE_LDFLAGS) $(SERVEEZ_LDFLAGS)
 INCLUDES = $(GUILE_CFLAGS) $(SERVEEZ_CFLAGS)
