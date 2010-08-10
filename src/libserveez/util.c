@@ -349,8 +349,8 @@ svz_strncasecmp (const char *str1, const char *str2,
 #elif HAVE_STRNICMP
   return strnicmp (str1, str2, n);
 #else
-  svz_c_const char *p1 = str1;
-  svz_c_const char *p2 = str2;
+  const char *p1 = str1;
+  const char *p2 = str2;
   unsigned char c1, c2;
 
   if (p1 == p2)

@@ -31,11 +31,11 @@
 #if (!defined (SVZ_HAVE_SNPRINTF)) && (!defined (__MINGW32__))
 /*
  * Implementation of the @code{snprintf()} if it is not defined. It uses
- * the @code{vsnprintf()} function therefore which will fall back to 
+ * the @code{vsnprintf()} function therefore which will fall back to
  * @code{vsprintf()} if @code{vsnprintf()} does not exist.
  */
-int 
-svz_snprintf (char *str, unsigned int n, svz_c_const char *fmt, ...)
+int
+svz_snprintf (char *str, unsigned int n, const char *fmt, ...)
 {
   int ret;
   va_list args;

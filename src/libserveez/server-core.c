@@ -303,7 +303,7 @@ svz_strsignal_init (void)
 {
   int i;
   char *str;
-  svz_c_const char *format = "Signal %d";
+  const char *format = "Signal %d";
 
   if (svz_signal_strings != NULL)
     return;

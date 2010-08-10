@@ -43,14 +43,14 @@
 #if __CRYPT_IMPORT__
 #include <crypt.h>
 #else
-extern char *crypt __PARAMS ((svz_c_const char *, svz_c_const char *));
-extern char *getpass __PARAMS ((svz_c_const char *));
+extern char *crypt __PARAMS ((const char *, const char *));
+extern char *getpass __PARAMS ((const char *));
 #endif /* __CRYPT_IMPORT__ */
 #endif
 
 typedef unsigned char svz_uint8_t;
 
-/* 
+/*
  * level of server's verbosity:
  * 0 - only fatal error messages
  * 1 - error messages

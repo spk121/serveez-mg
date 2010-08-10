@@ -73,12 +73,12 @@ static dyn_library_t *dyn_library = NULL;
 #if HAVE_DLOPEN
 # define dyn_error() dlerror ()
 #elif HAVE_NSADDIMAGE
-static char * 
+static char *
 dyn_error (void)
 {
   NSLinkEditErrors errors;
   int n;
-  svz_c_const char *file, *err;
+  const char *file, *err;
   NSLinkEditError (&errors, &n, &file, &err);
   return (char *) err;
 }
