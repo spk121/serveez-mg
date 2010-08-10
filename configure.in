@@ -785,9 +785,10 @@ dnl
 dnl Check Guile installation.
 dnl
 
-AC_GUILE
-AC_GUILE_SOURCE
-AC_GUILE_CHECK
+PKG_CHECK_MODULES(GUILE, guile-2.0)
+AC_SUBST(GUILE_CFLAGS)
+AC_SUBST(GUILE_LIBS)
+
 
 dnl ----------------------------------------------------------------------
 
@@ -1603,4 +1604,3 @@ dnl
 dnl Configure local guile source tree.
 dnl
 
-AC_GUILE_CONFIGURE
