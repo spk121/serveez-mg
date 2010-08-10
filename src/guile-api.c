@@ -646,13 +646,16 @@ static SCM
 scm_return_rpcentry (struct rpcent *entry)
 {
   SCM ans;
-  SCM *ve;
+  int i;
+  SCM lst = SCM_EOL;
 
   ans = scm_c_make_vector (3, SCM_UNSPECIFIED);
-  ve = SCM_WRITABLE_VELTS (ans);
-  ve[0] = scm_from_locale_string (entry->r_name);
-  ve[1] = scm_from_locale_string (-1, entry->r_aliases);
-  ve[2] = scm_ulong2num ((unsigned long) entry->r_number);
+  scm_c_vector_set_x (ans, 0, scm_from_locale_string (entry->r_name));
+  for (i = 0; entry->r_aliases[i]; i++);
+  while (i--)
+    lst = scm_cons (scm_from_locale_string (entry->r_aliases[i]), lst);
+  scm_c_vector_set_x (ans, 1, lst);
+  scm_c_vector_set_x (ans, 2, scm_from_ulong ((unsigned long) entry->r_number));
   return ans;
 }
 
@@ -678,16 +681,18 @@ scm_getrpc (SCM arg)
     }
 #endif /* HAVE_GETRPCENT */
 #if HAVE_GETRPCBYNAME
-  if (SCM_STRINGP (arg))
+  if (scm_is_string (arg))
     {
-      entry = getrpcbyname (SCM_STRING_CHARS (arg));
+      char *str = scm_to_locale_string (arg);
+      entry = getrpcbyname (str);
+      free (str);
     }
   else
 #endif /* HAVE_GETRPCBYNAME */
 #if HAVE_GETRPCBYNUMBER
     {
-      SCM_ASSERT_TYPE (SCM_INUMP (arg), arg, SCM_ARG1, FUNC_NAME, "INUMP");
-      entry = getrpcbynumber (SCM_INUM (arg));
+      SCM_ASSERT_TYPE (scm_is_integer (arg), arg, SCM_ARG1, FUNC_NAME, "INUMP");
+      entry = getrpcbynumber (scm_to_int (arg));
     }
 #endif /* #if HAVE_GETRPCBYNUMBER */
 

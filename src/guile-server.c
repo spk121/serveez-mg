@@ -202,7 +202,7 @@ optionhash_extract_proc (svz_hash_t *hash,
   else if (scm_is_string (hvalue))
     {
       str = scm_to_locale_string (hvalue);
-      proc = scm_lookup (scm_string_to_symbol (str));
+      proc = scm_lookup (scm_string_to_symbol (hvalue));
       if (!SCM_UNBNDP (proc) && SCM_PROCEDUREP (proc))
 	*target = proc;
       else
@@ -895,7 +895,7 @@ guile_sock_boundary (SCM sock, SCM boundary)
   /* Handle packet delimiters. */
   else
     {
-      xsock->boundary = scm_c_scm2chars (boundary, NULL);
+      xsock->boundary = scm_to_locale_string (boundary);
       xsock->boundary_size = SCM_NUM2INT (SCM_ARG2,
 					  scm_string_length (boundary));
     }
@@ -950,15 +950,10 @@ guile_sock_print (SCM sock, SCM buffer)
 		   || scm_is_true (scm_bytevector_p (buffer)),
 		   buffer, SCM_ARG2, FUNC_NAME, "string or bytevector");
 
-  if (SCM_STRINGP (buffer))
-    {
-      buf = SCM_STRING_CHARS (buffer);
-      len = SCM_NUM2INT (SCM_ARG2, scm_string_length (buffer));
-    }
+  if (scm_is_string (buffer))
+    buf = scm_to_locale_stringn (buffer, &len);
   else
-    {
-      buf = SCM_BYTEVECTOR_CONTENTS (buffer);
-    }
+    buf = SCM_BYTEVECTOR_CONTENTS (buffer);
 
   /* Depending on the protocol type use different kind of senders. */
   if (xsock->proto & (PROTO_TCP | PROTO_PIPE))
@@ -967,6 +962,9 @@ guile_sock_print (SCM sock, SCM buffer)
     ret = svz_udp_write (xsock, buf, len);
   else if (xsock->proto & PROTO_ICMP)
     ret = svz_icmp_write (xsock, buf, len);
+
+  if (scm_is_string (buffer))
+    free (buf);
 
   if (ret == -1)
     {

@@ -493,7 +493,6 @@ guile_to_strarray (SCM list, char *func)
 {
   svz_array_t *array;
   int i;
-  char *str;
 
   /* Check if the given scheme cell is a valid list. */
   if (!SCM_LISTP (list))
@@ -613,7 +612,6 @@ optionhash_extract_string (svz_hash_t *hash,
 {
   SCM hvalue = optionhash_get (hash, key);
   int err = 0;
-  char *str = NULL;
 
   /* Is there such a string in the option-hash ? */
   if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
@@ -748,7 +746,6 @@ optionhash_cb_string (char *server, void *arg, char *key,
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
-  char *str;
 
   if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
     {
@@ -1211,7 +1208,6 @@ guile_define_port (SCM name, SCM args)
 	  cfg->pipe_send.gid = (unsigned int) -1;
 	  cfg->pipe_send.uid = (unsigned int) -1;
 	  cfg->pipe_send.perm = (unsigned int) -1;
-	  scm_c_free (str);
 	}
       else if (SCM_EQ_P (p, SCM_UNSPECIFIED))
 	{
@@ -1236,7 +1232,7 @@ guile_define_port (SCM name, SCM args)
 		   proto, portname);
       FAIL ();
     }
-  scm_c_free (proto);
+  free (proto);
 
   /* Access the send and receive buffer sizes. */
   err |= optionhash_extract_int (options, PORTCFG_SEND_BUFSIZE, 1, 0,
@@ -1371,9 +1367,9 @@ guile_bind_server (SCM port, SCM server)
 
  out:
   if (portname)
-    scm_c_free (portname);
+    free (portname);
   if (servername)
-    scm_c_free (servername);
+    free (servername);
   guile_global_error |= err;
   return err ? SCM_BOOL_F : SCM_BOOL_T;
 }
@@ -1528,12 +1524,15 @@ guile_access_loadpath (SCM args)
  */
 #define MAKE_STRING_CHECKER(cfunc, expression) \
 SCM cfunc (SCM arg) {                          \
-  char *str;                                   \
+  char *str;				       \
   GUILE_PRECALL ();                            \
-  if (!scm_is_string (arg)) \
+  if (!scm_is_string (arg))		       \
     return SCM_BOOL_F;                         \
+  str = scm_to_locale_string (arg);	       \
   if (!(expression)) {                         \
+    free (str);				       \
     return SCM_BOOL_F; }                       \
+  free (str);				       \
   return SCM_BOOL_T;                           \
 }
 
