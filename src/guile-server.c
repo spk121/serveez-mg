@@ -760,7 +760,7 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
 {
   svz_server_t *server;
   svz_servertype_t *stype;
-  SCM ret, handle_request;
+  SCM ret, bin, handle_request;
   handle_request = guile_sock_getfunction (sock, "handle-request");
 
   if (SCM_UNBNDP (handle_request))
@@ -772,8 +772,9 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
 
   if (!SCM_UNBNDP (handle_request))
     {
-      ret = guile_call (handle_request, 3, MAKE_SMOB (svz_socket, sock), 
-			guile_data_to_bin (request, len), scm_int2num (len));
+      bin = scm_c_take_bytevector (request, len);
+      ret = guile_call (handle_request, 3, MAKE_SMOB (svz_socket, sock),
+			bin, scm_int2num (len));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -931,7 +932,7 @@ guile_sock_floodprotect (SCM sock, SCM flag)
 #undef FUNC_NAME
 
 /* Write the string buffer @var{buffer} to the socket @var{sock}. The
-   procedure accepts binary smobs too. Return @code{#t} on success and 
+   procedure accepts binary smobs too. Return @code{#t} on success and
    @code{#f} on failure. */
 #define FUNC_NAME "svz:sock:print"
 static SCM
@@ -942,8 +943,9 @@ guile_sock_print (SCM sock, SCM buffer)
   int len, ret = -1;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT_TYPE (SCM_STRINGP (buffer) || guile_bin_check (buffer), 
-		   buffer, SCM_ARG2, FUNC_NAME, "string or binary");
+  SCM_ASSERT_TYPE (SCM_STRINGP (buffer)
+		   || scm_is_true (scm_bytevector_p (buffer)),
+		   buffer, SCM_ARG2, FUNC_NAME, "string or bytevector");
 
   if (SCM_STRINGP (buffer))
     {
@@ -952,7 +954,7 @@ guile_sock_print (SCM sock, SCM buffer)
     }
   else
     {
-      buf = guile_bin_to_data (buffer, &len);
+      buf = SCM_BYTEVECTOR_CONTENTS (buffer);
     }
 
   /* Depending on the protocol type use different kind of senders. */
@@ -962,7 +964,7 @@ guile_sock_print (SCM sock, SCM buffer)
     ret = svz_udp_write (xsock, buf, len);
   else if (xsock->proto & PROTO_ICMP)
     ret = svz_icmp_write (xsock, buf, len);
-  
+
   if (ret == -1)
     {
       svz_sock_schedule_for_shutdown (xsock);
@@ -1714,13 +1716,12 @@ guile_server_init (void)
   DEFINE_SOCK_CALLBACK ("svz:sock:handle-request",handle_request);
   DEFINE_SOCK_CALLBACK ("svz:sock:check-request",check_request);
 
-  /* Initialize the guile SMOB things. Previously defined via 
+  /* Initialize the guile SMOB things. Previously defined via
      MAKE_SMOB_DEFINITION (). */
   INIT_SMOB (svz_socket);
   INIT_SMOB (svz_server);
   INIT_SMOB (svz_servertype);
-  
-  guile_bin_init ();
+
   guile_api_init ();
 }
 

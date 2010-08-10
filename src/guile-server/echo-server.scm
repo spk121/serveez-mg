@@ -48,29 +48,29 @@
   (define ret '())
   (println "Running echo server info " server ".")
   (set! ret " This is the echo server.")
-  (println " echo-integer: " 
+  (println " echo-integer: "
 	   (svz:server:config-ref server "echo-integer"))
-  (println " echo-integer-array: " 
+  (println " echo-integer-array: "
 	   (svz:server:config-ref server "echo-integer-array"))
-  (println " echo-string: " 
+  (println " echo-string: "
 	   (svz:server:config-ref server "echo-string"))
-  (println " echo-string-array: " 
+  (println " echo-string-array: "
 	   (svz:server:config-ref server "echo-string-array"))
-  (println " echo-hash: " 
+  (println " echo-hash: "
 	   (svz:server:config-ref server "echo-hash"))
-  (println " echo-port: " 
+  (println " echo-port: "
 	   (svz:server:config-ref server "echo-port"))
-  (println " echo-boolean: " 
+  (println " echo-boolean: "
 	   (svz:server:config-ref server "echo-boolean"))
   ret)
 
 (define (echo-handle-request sock request len)
   (define ret '())
-  (let ((idx (binary-search request "quit")))
+  (let ((idx (bytevector-search request "quit")))
     (if (and idx (= idx 0))
 	(set! ret -1)
     (begin
-      (svz:sock:print sock (binary-concat! (string->binary "Echo: ") request))
+      (svz:sock:print sock (bytevector-concat! (string->utf8 "Echo: ") request))
       (set! ret 0)))
     ret))
 

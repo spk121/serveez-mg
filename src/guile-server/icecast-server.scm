@@ -121,7 +121,7 @@
 
 ;; protocol detection
 (define (icecast-detect-proto server sock)
-  (let ((idx (binary-search (svz:sock:receive-buffer sock) "GET "))
+  (let ((idx (bytevector-search (svz:sock:receive-buffer sock) "GET "))
 	(addr (svz:sock:remote-address sock)))
     (if (and idx (= idx 0))
         (begin
@@ -247,15 +247,15 @@
 	 (pos (hash-ref data "position"))
 	 (size (hash-ref data "size")))
 
-    (if size 
+    (if size
 	(set! size (- size pos))
-	(set! size (binary-length buffer)))
+	(set! size (bytevector-length buffer)))
 
     (if (> size 0)
-	(begin	
-	  (if (> (binary-length buffer) size)
-	      (set! buffer (binary-subset buffer 0 (- size 1))))
-	  (hash-set! data "position" (+ pos (binary-length buffer)))
+	(begin
+	  (if (> (bytevector-length buffer) size)
+	      (set! buffer (bytevector-subset buffer 0 (- size 1))))
+	  (hash-set! data "position" (+ pos (bytevector-length buffer)))
 	  (svz:sock:print sock buffer)))))
 
 ;; detect whether the given file contains ID3 tags
@@ -278,8 +278,8 @@
 		(fseek port 0 SEEK_SET))))
 	(println "icecast: `" file "'is not a regular file"))
 
-    (if (and size buffer (= (binary-length buffer) 128))
-	(let ((found (binary-search buffer "TAG")))
+    (if (and size buffer (= (bytevector-length buffer) 128))
+	(let ((found (bytevector-search buffer "TAG")))
 	  (if (and found (= found 0))
 	      (begin
 		(hash-set! data "size" (- size 128))

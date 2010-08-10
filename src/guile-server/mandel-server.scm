@@ -197,7 +197,7 @@
 
 ;; detect our client with a magic string
 (define (mandel-detect-proto server sock)
-  (let ((idx (binary-search (svz:sock:receive-buffer sock) mandel-magic)))
+  (let ((idx (bytevector-search (svz:sock:receive-buffer sock) mandel-magic)))
     (if (and idx (= idx 0))
 	(begin
 	  (svz:sock:receive-buffer-reduce sock (string-length mandel-magic))
@@ -236,10 +236,10 @@
 (define (mandel-handle-request sock request len)
   (let* ((server (svz:sock:server sock))
 	 (colors (svz:server:config-ref server "colors"))
-	 (tokens (mandel-split (binary->string request)))
+	 (tokens (mandel-split (utf8->string request)))
 	 (command (list-ref tokens 1)))
 
-    (cond 
+    (cond
      ;; client wants to disconnect
      ((equal? command "bye")
       -1

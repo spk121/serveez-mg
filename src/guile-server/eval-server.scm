@@ -63,14 +63,14 @@
   " This is the eval server.")
 
 (define (eval-handle-request sock request len)
-  (let ((idx (binary-search request (svz:server:config-ref sock "quit"))))
+  (let ((idx (bytevector-search request (svz:server:config-ref sock "quit"))))
     (if (and idx (= idx 0))
 	-1
 	(let ((safe-module (make-safe-module)))
 	  (catch #t
 		 (lambda ()
 		   (let ((expr (call-with-input-string
-				(binary->string request) read)))
+				(utf8->string request) read)))
 		     (let ((res (eval expr safe-module)))
 		       (svz:sock:print sock
 		         (string-append "=> "
