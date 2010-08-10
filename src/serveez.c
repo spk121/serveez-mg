@@ -34,11 +34,7 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
+#include <libguile.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif

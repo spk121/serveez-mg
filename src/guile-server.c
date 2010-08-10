@@ -36,11 +36,7 @@
 #if HAVE_FLOSS_H
 # include <floss.h>
 #endif
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
+#include <libguile.h>
 
 #include "libserveez.h"
 #include "guile-api.h"
