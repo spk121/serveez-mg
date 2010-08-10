@@ -207,8 +207,8 @@ guile_sock_receive_buffer_size (SCM sock, SCM size)
       len = SCM_NUM2INT (SCM_ARG2, size);
       svz_sock_resize_buffers (xsock, xsock->send_buffer_size, len);
     }
-  return scm_cons (scm_int2num (xsock->recv_buffer_size),
-		   scm_int2num (xsock->recv_buffer_fill));
+  return scm_cons (scm_from_int (xsock->recv_buffer_size),
+		   scm_from_int (xsock->recv_buffer_fill));
 }
 #undef FUNC_NAME
 
@@ -241,8 +241,8 @@ guile_sock_send_buffer_size (SCM sock, SCM size)
       len = SCM_NUM2INT (SCM_ARG2, size);
       svz_sock_resize_buffers (xsock, len, xsock->recv_buffer_size);
     }
-  return scm_cons (scm_int2num (xsock->send_buffer_size),
-		   scm_int2num (xsock->send_buffer_fill));
+  return scm_cons (scm_from_int (xsock->send_buffer_size),
+		   scm_from_int (xsock->send_buffer_fill));
 }
 #undef FUNC_NAME
 
@@ -273,7 +273,7 @@ guile_sock_receive_buffer_reduce (SCM sock, SCM length)
       len = xsock->recv_buffer_fill;
     }
   svz_sock_reduce_recv (xsock, len);
-  return scm_int2num (len);
+  return scm_from_int (len);
 }
 #undef FUNC_NAME
 
@@ -291,7 +291,7 @@ guile_sock_remote_address (SCM sock, SCM address)
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
   pair = scm_cons (scm_ulong2num (xsock->remote_addr),
-		   scm_int2num ((int) xsock->remote_port));
+		   scm_from_int ((int) xsock->remote_port));
   if (!SCM_UNBNDP (address))
     {
       SCM_ASSERT_TYPE (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
@@ -319,7 +319,7 @@ guile_sock_local_address (SCM sock, SCM address)
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
   pair = scm_cons (scm_ulong2num (xsock->local_addr),
-		   scm_int2num ((int) xsock->local_port));
+		   scm_from_int ((int) xsock->local_port));
   if (!SCM_UNBNDP (address))
     {
       SCM_ASSERT_TYPE (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
@@ -415,7 +415,7 @@ guile_sock_protocol (SCM sock)
   svz_socket_t *xsock;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return scm_int2num (xsock->proto);
+  return scm_from_int (xsock->proto);
 }
 #undef FUNC_NAME
 
@@ -558,7 +558,7 @@ guile_sock_idle_counter (SCM sock, SCM counter)
 		       counter, SCM_ARG2, FUNC_NAME, "exact");
       xsock->idle_counter = SCM_NUM2INT (SCM_ARG2, counter);
     }
-  return scm_int2num (ocounter);
+  return scm_from_int (ocounter);
 }
 #undef FUNC_NAME
 
@@ -983,7 +983,7 @@ guile_sock_ident (SCM sock)
 {
   svz_socket_t *xsock;
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return scm_cons (scm_int2num (xsock->id), scm_int2num (xsock->version));
+  return scm_cons (scm_from_int (xsock->id), scm_from_int (xsock->version));
 }
 #undef FUNC_NAME
 
@@ -1022,7 +1022,7 @@ guile_read_file (SCM port, SCM size)
       scm_gc_free (data, len, "svz-binary-data");
       scm_syserror_msg (FUNC_NAME, "~A: read ~A ~A",
 			scm_list_n (scm_from_locale_string (strerror (errno)),
-				    scm_int2num (fdes), size, SCM_UNDEFINED),
+				    scm_from_int (fdes), size, SCM_UNDEFINED),
 			errno);
     }
   else if (ret == 0)
@@ -1083,20 +1083,20 @@ guile_api_init (void)
 #endif
 #if HAVE_PMAP_SET && HAVE_PMAP_UNSET
   scm_c_define_gsubr ("portmap", 2, 2, 0, scm_portmap);
-  scm_c_define ("IPPROTO_UDP", scm_int2num (IPPROTO_UDP));
-  scm_c_define ("IPPROTO_TCP", scm_int2num (IPPROTO_TCP));
+  scm_c_define ("IPPROTO_UDP", scm_from_int (IPPROTO_UDP));
+  scm_c_define ("IPPROTO_TCP", scm_from_int (IPPROTO_TCP));
 #endif
 #if HAVE_PMAP_GETMAPS
   scm_c_define_gsubr ("portmap-list", 0, 1, 0, scm_portmap_list);
 #endif
 
-  scm_c_define ("PROTO_TCP", scm_int2num (PROTO_TCP));
-  scm_c_define ("PROTO_UDP", scm_int2num (PROTO_UDP));
-  scm_c_define ("PROTO_ICMP", scm_int2num (PROTO_ICMP));
-  scm_c_define ("PROTO_RAW", scm_int2num (PROTO_RAW));
-  scm_c_define ("PROTO_PIPE", scm_int2num (PROTO_PIPE));
-  scm_c_define ("KICK_FLOOD", scm_int2num (0));
-  scm_c_define ("KICK_QUEUE", scm_int2num (1));
+  scm_c_define ("PROTO_TCP", scm_from_int (PROTO_TCP));
+  scm_c_define ("PROTO_UDP", scm_from_int (PROTO_UDP));
+  scm_c_define ("PROTO_ICMP", scm_from_int (PROTO_ICMP));
+  scm_c_define ("PROTO_RAW", scm_from_int (PROTO_RAW));
+  scm_c_define ("PROTO_PIPE", scm_from_int (PROTO_PIPE));
+  scm_c_define ("KICK_FLOOD", scm_from_int (0));
+  scm_c_define ("KICK_QUEUE", scm_from_int (1));
   scm_c_define_gsubr ("svz:sock:connect", 2, 1, 0, guile_sock_connect);
   scm_c_define_gsubr ("svz:sock:parent", 1, 1, 0, guile_sock_parent);
   scm_c_define_gsubr ("svz:sock:referrer", 1, 1, 0, guile_sock_referrer);

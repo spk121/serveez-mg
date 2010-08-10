@@ -572,7 +572,7 @@ guile_func_kicked_socket (svz_socket_t *sock, int reason)
   if (!SCM_UNBNDP (kicked))
     {
       ret = guile_call (kicked, 2, MAKE_SMOB (svz_socket, sock),
-			scm_int2num (reason));
+			scm_from_int (reason));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -777,7 +777,7 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
     {
       bin = scm_c_take_bytevector (request, len);
       ret = guile_call (handle_request, 3, MAKE_SMOB (svz_socket, sock),
-			bin, scm_int2num (len));
+			bin, scm_from_int (len));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -843,7 +843,7 @@ guile_func_check_request_oob (svz_socket_t *sock)
   if (!SCM_UNBNDP (check_request_oob))
     {
       ret = guile_call (check_request_oob, 2, MAKE_SMOB (svz_socket, sock),
-			scm_int2num (sock->oob));
+			scm_from_int (sock->oob));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -1020,7 +1020,7 @@ guile_config_convert (void *address, int type)
   switch (type)
     {
     case SVZ_ITEM_INT:
-      ret = scm_int2num (*(int *) address);
+      ret = scm_from_int (*(int *) address);
       break;
     case SVZ_ITEM_INTARRAY:
       ret = guile_intarray_to_guile (*(svz_array_t **) address);
