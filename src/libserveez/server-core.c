@@ -187,7 +187,7 @@ svz_executable (char *file)
 /*
  * Segmentation fault exception handler.
  */
-svz_t_retsig
+void
 svz_segfault_exception (int sig)
 {
 #if HAVE_GETRLIMIT
@@ -210,7 +210,7 @@ svz_segfault_exception (int sig)
  * broken pipes (SIGPIPE) and to exit gracefully if requested by the
  * user (SIGINT, SIGTERM).
  */
-svz_t_retsig 
+void
 svz_signal_handler (int sig)
 {
   switch (sig)
@@ -281,10 +281,6 @@ svz_signal_handler (int sig)
 
   /* save current signal */
   svz_signal = sig;
-
-#ifdef NONVOID_SIGNAL
-  return 0;
-#endif
 }
 
 /* 65 is hopefully a safe bet, kill(1) accepts 0..64, *sigh* */
