@@ -682,7 +682,7 @@ svz_file_closeall (void)
  * the permissions if the @code{O_CREAT} flag is set.
  */
 int
-svz_open (svz_c_const char *file, int flags, unsigned int mode)
+svz_open (const char *file, int flags, unsigned int mode)
 {
 #ifndef __MINGW32__
   int fd;
@@ -816,7 +816,7 @@ svz_fstat (int fd, struct stat *buf)
   buf->st_uid = 0;
   buf->st_gid = 0;
   buf->st_rdev = 0;
-  buf->st_size = (svz_t_off) (((__int64) info.nFileSizeHigh << 32) | 
+  buf->st_size = (svz_t_off) (((__int64) info.nFileSizeHigh << 32) |
 			      info.nFileSizeLow);
   buf->st_atime = ft2lt (info.ftLastAccessTime);
   buf->st_mtime = ft2lt (info.ftLastWriteTime);
@@ -826,11 +826,11 @@ svz_fstat (int fd, struct stat *buf)
 }
 
 /*
- * Open the file whose name is the string pointed to by @var{file} and 
+ * Open the file whose name is the string pointed to by @var{file} and
  * associates a stream with it.
  */
 FILE *
-svz_fopen (svz_c_const char *file, svz_c_const char *mode)
+svz_fopen (const char *file, const char *mode)
 {
   FILE *f;
 

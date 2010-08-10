@@ -60,11 +60,11 @@ SERVEEZ_API int svz_socket_create_pair __PARAMS ((int, svz_t_socket desc[2]));
 SERVEEZ_API char *svz_inet_ntoa __PARAMS ((unsigned long));
 SERVEEZ_API int svz_inet_aton __PARAMS ((char *, struct sockaddr_in *));
 SERVEEZ_API int svz_sendfile __PARAMS ((int, int, svz_t_off *, unsigned int));
-SERVEEZ_API int svz_open __PARAMS ((svz_c_const char *, int, unsigned int));
+SERVEEZ_API int svz_open __PARAMS ((const char *, int, unsigned int));
 SERVEEZ_API int svz_close __PARAMS ((int));
 SERVEEZ_API int svz_fstat __PARAMS ((int, struct stat *));
-SERVEEZ_API FILE *svz_fopen __PARAMS ((svz_c_const char *, 
-				       svz_c_const char *));
+SERVEEZ_API FILE *svz_fopen __PARAMS ((const char *,
+				       const char *));
 SERVEEZ_API int svz_fclose __PARAMS ((FILE *));
 SERVEEZ_API int svz_file_check __PARAMS ((char *));
 SERVEEZ_API char *svz_file_path __PARAMS ((char *, char *));

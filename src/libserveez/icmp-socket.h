@@ -89,8 +89,8 @@ SERVEEZ_API svz_socket_t *svz_icmp_connect __PARAMS ((unsigned long,
 						      unsigned char));
 SERVEEZ_API int svz_icmp_send_control __PARAMS ((svz_socket_t *, svz_uint8_t));
 SERVEEZ_API int svz_icmp_write __PARAMS ((svz_socket_t *, char *, int));
-SERVEEZ_API int svz_icmp_printf __PARAMS ((svz_socket_t *, 
-					   svz_c_const char *, ...));
+SERVEEZ_API int svz_icmp_printf __PARAMS ((svz_socket_t *,
+					   const char *, ...));
 
 __END_DECLS
 

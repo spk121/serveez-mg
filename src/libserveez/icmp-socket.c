@@ -683,7 +683,7 @@ svz_icmp_write (svz_socket_t *sock, char *buf, int length)
  * icmp header is stored in front of the actual packet data.
  */
 int
-svz_icmp_printf (svz_socket_t *sock, svz_c_const char *fmt, ...)
+svz_icmp_printf (svz_socket_t *sock, const char *fmt, ...)
 {
   va_list args;
   static char buffer[VSNPRINTF_BUF_SIZE];

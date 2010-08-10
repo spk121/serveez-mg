@@ -48,14 +48,6 @@ dnl Check for a proper C compiler.
 dnl
 AC_PROG_CC
 
-AC_C_CONST
-const_defined="const"
-if test $ac_cv_c_const = no; then
-  const_defined=""
-fi
-AC_DEFINE_UNQUOTED(svz_c_const, $const_defined,
-  [Define to empty if the keyword does not work.])
-unset const_defined
 
 AC_CACHE_CHECK([whether byte ordering is bigendian], svz_cv_sys_bigendian,
 [AC_TRY_RUN([#include <stdio.h>
