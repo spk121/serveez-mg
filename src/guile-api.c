@@ -67,13 +67,6 @@
 
 #include "libserveez.h"
 
-/* Validate network port range. */
-#define VALIDATE_NETPORT(port, cell, arg) do {                       \
-    (port) = SCM_NUM2LONG (arg, cell);                               \
-    if ((port) < 0 || (port) >= 65536) SCM_OUT_OF_RANGE (arg, cell); \
-  } while (0)
-
-
 /* Converts the given hostname @var{host} into a Internet address in host
    byte order and stores it into @var{addr}. Returns zero on success. This
    is a blocking operation. */
@@ -108,7 +101,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
   svz_socket_t *sock;
   unsigned long xhost;
   unsigned short xport = 0;
-  long p;
+  uint16_t p;
   int xproto;
   char *str;
   struct sockaddr_in addr;
@@ -148,7 +141,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
     {
       SCM_ASSERT_TYPE (SCM_EXACTP (port),
 		       port, SCM_ARG3, FUNC_NAME, "exact");
-      VALIDATE_NETPORT (p, port, SCM_ARG3);
+      p = scm_to_uint16 (port);
       xport = htons ((unsigned short) p);
     }
 
@@ -285,7 +278,7 @@ static SCM
 guile_sock_remote_address (SCM sock, SCM address)
 {
   svz_socket_t *xsock;
-  long port;
+  uint16_t port;
   SCM pair;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
@@ -296,7 +289,7 @@ guile_sock_remote_address (SCM sock, SCM address)
       SCM_ASSERT_TYPE (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
 		       && SCM_EXACTP (SCM_CDR (address)), address, SCM_ARG2, 
 		       FUNC_NAME, "pair of exact");
-      VALIDATE_NETPORT (port, SCM_CDR (address), SCM_ARG2);
+      port = scm_to_uint16 (SCM_CDR (address));
       xsock->remote_addr = SCM_NUM2ULONG (SCM_ARG2, SCM_CAR (address));
       xsock->remote_port = (unsigned short) port;
     }
@@ -313,7 +306,7 @@ static SCM
 guile_sock_local_address (SCM sock, SCM address)
 {
   svz_socket_t *xsock;
-  long port;
+  uint16_t port;
   SCM pair;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
@@ -324,7 +317,7 @@ guile_sock_local_address (SCM sock, SCM address)
       SCM_ASSERT_TYPE (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
 		       && SCM_EXACTP (SCM_CDR (address)), address, SCM_ARG2, 
 		       FUNC_NAME, "pair of exact");
-      VALIDATE_NETPORT (port, SCM_CDR (address), SCM_ARG2);
+      port = scm_to_uint16 (SCM_CDR (address));
       xsock->local_addr = SCM_NUM2ULONG (SCM_ARG2, SCM_CAR (address));
       xsock->local_port = (unsigned short) port;
     }
