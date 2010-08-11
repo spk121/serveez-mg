@@ -25,6 +25,49 @@
 #ifndef __GUILE_API_H__
 #define __GUILE_API_H__ 1
 
+/* Defines necessary for Guile 2.0.x */
+
+/* SCM_PORTP exists but isn't API */
+#define GUILE_PORTP(x) (scm_is_true (scm_port_p (x)))
+/* SCM_LINUM exists but isn't API */
+#define GUILE_LINUM(x) (scm_to_long (scm_port_line (x)))
+/* SCM_COL exists but isn't API */
+#define GUILE_COL(x) (scm_to_int (scm_port_column (x)))
+/* SCM_EXACTP was a serveez define */
+#define GUILE_EXACTP(x) (scm_is_true (scm_exact_p (x)))
+/* SCM_LISTP was a serveez define */
+#define GUILE_LISTP(x) (scm_is_true (scm_list_p (x)))
+/* SCM_EOF_OBJECT_P exists but isn't API */
+#define GUILE_EOF_OBJECT_P(x) (scm_is_true (scm_eof_object_p (x)))
+/* SCM_PROCEDUREP was a serveez define */
+#define GUILE_PROCEDUREP(x) (scm_is_true (scm_procedure_p (x)))
+/* SCM_CHARP exists but isn't API */
+#define GUILE_CHARP(x) (scm_is_true (scm_char_p (x)))
+/* SCM_CHAR exists but isn't API */
+#define GUILE_CHAR(x) (scm_to_int32 (scm_char_to_integer (x)))
+
+/* The GUILE_CONCAT macros create a new concatenated symbol for the
+   compiler in a portable way. It is essential to use these macros like
+   GUILE_CONCAT (a,b) and *not* like GUILE_CONCAT (a, b) or its variants. */
+#if defined (__STDC__) || defined (__cplusplus)
+# define GUILE_CONCAT2(a, b) a##b
+# define GUILE_CONCAT3(a, b, c) a##b##c
+#else
+# define GUILE_CONCAT2(a, b) a/* */b
+# define GUILE_CONCAT3(a, b, c) a/* */b/* */c
+#endif
+
+#define guile_integer(pos, obj, def) \
+    ((GUILE_EXACTP (obj)) ? (scm_to_int (obj)) : (def))
+
+#define guile_lookup(var, name) do {					\
+    (var) = scm_sym2var (scm_from_locale_symbol (name),			\
+                         scm_current_module_lookup_closure (), SCM_BOOL_F); \
+    if (scm_is_false (var)) (var) = SCM_UNDEFINED;			\
+    else (var) = scm_variable_ref (var); } while (0)
+
+
+#if 0
 /* Define this macro if Guile 1.7.x or better is in use. */
 #if defined (SCM_MINOR_VERSION) && (SCM_MINOR_VERSION >= 7) && \
     defined (SCM_MAJOR_VERSION) && (SCM_MAJOR_VERSION >= 1)
@@ -176,6 +219,8 @@ typedef scm_catch_handler_t scm_t_catch_handler;
 #define guile_integer(pos, obj, def) \
     ((SCM_EXACTP (obj)) ? (SCM_NUM2INT (pos, obj)) : (def))
 
+
+
 /* The GUILE_CONCAT macros create a new concatenated symbol for the
    compiler in a portable way. It is essential to use these macros like
    GUILE_CONCAT (a,b) and *not* like GUILE_CONCAT (a, b) or its variants. */
@@ -207,6 +252,8 @@ typedef scm_catch_handler_t scm_t_catch_handler;
 #endif
 #ifndef SCM_FPORT_FDES
 #define SCM_FPORT_FDES(port) fileno ((FILE *) SCM_STREAM (port))
+#endif
+
 #endif
 
 #endif /* not __GUILE_API_H__ */

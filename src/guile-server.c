@@ -154,8 +154,7 @@ static SCM GUILE_CONCAT2 (guile_sock_,func) (SCM sock, SCM proc) {     \
   svz_socket_t *xsock;						       \
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);    \
   if (!SCM_UNBNDP (proc)) {					       \
-    SCM_ASSERT_TYPE (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME, \
-		     "procedure");				       \
+    SCM_ASSERT (GUILE_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME);   \
     xsock->func = GUILE_CONCAT2 (guile_func_,func);		       \
     return guile_sock_setfunction (xsock, assoc, proc); }	       \
   return guile_sock_getfunction (xsock, assoc);			       \
@@ -181,7 +180,7 @@ optionhash_extract_proc (svz_hash_t *hash,
   char *str = NULL;
 
   /* Is there such a string in the option-hash ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       /* Nothing in hash, try to use default. */
       if (hasdef)
@@ -195,15 +194,14 @@ optionhash_extract_proc (svz_hash_t *hash,
     }
 
   /* Is that guile procedure ? */
-  if (SCM_PROCEDUREP (hvalue))
+  if (GUILE_PROCEDUREP (hvalue))
     {
       *target = hvalue;
     }
-  else if (scm_is_string (hvalue))
+  else if ((str = guile_to_string (hvalue)) != NULL)
     {
-      str = scm_to_locale_string (hvalue);
-      proc = scm_lookup (scm_string_to_symbol (hvalue));
-      if (!SCM_UNBNDP (proc) && SCM_PROCEDUREP (proc))
+      guile_lookup (proc, str);
+      if (!SCM_UNBNDP (proc) && GUILE_PROCEDUREP (proc))
 	*target = proc;
       else
 	{
@@ -346,7 +344,7 @@ guile_nuke_happened (void)
 SCM
 guile_access_exceptions (SCM enable)
 {
-  SCM value = SCM_BOOL (guile_use_exceptions);
+  SCM value = scm_from_bool (guile_use_exceptions);
   int n;
 
   if (!SCM_UNBNDP (enable))
@@ -371,8 +369,8 @@ guile_access_exceptions (SCM enable)
 static SCM
 guile_call_body (SCM data)
 {
-  return scm_apply (SCM_CAR (data),
-		    SCM_CAR (SCM_CDR (data)), SCM_CDR (SCM_CDR (data)));
+  return scm_apply (scm_car (data),
+		    scm_car (scm_cdr (data)), scm_cdr (scm_cdr (data)));
 }
 
 /*
@@ -383,11 +381,7 @@ guile_call_body (SCM data)
 static SCM
 guile_call_handler (SCM data, SCM tag, SCM args)
 {
-  char *str;
-  if (scm_is_string (tag))
-    str = scm_to_locale_string (tag);
-  else
-    str = NULL;
+  char *str = guile_to_string (tag);
 
   scm_puts ("exception in ", scm_current_error_port ());
   scm_display (data, scm_current_error_port ());
@@ -405,13 +399,13 @@ guile_call_handler (SCM data, SCM tag, SCM args)
       return SCM_BOOL_F;
     }
 
-  if (!SCM_FALSEP (SCM_CAR (args)))
+  if (!scm_is_false (scm_car (args)))
     {
-      scm_display (SCM_CAR (args), scm_current_error_port ());
+      scm_display (scm_car (args), scm_current_error_port ());
       scm_puts (": ", scm_current_error_port ());
     }
-  scm_display_error_message (SCM_CAR (SCM_CDR (args)),
-			     SCM_CAR (SCM_CDR (SCM_CDR (args))),
+  scm_display_error_message (scm_car (scm_cdr (args)),
+			     scm_car (scm_cdr (scm_cdr (args))),
 			     scm_current_error_port ());
   return SCM_BOOL_F;
 }
@@ -664,9 +658,8 @@ guile_func_info_client (svz_server_t *server, svz_socket_t *sock)
     {
       ret = guile_call (info_client, 2, MAKE_SMOB (svz_server, server),
 			MAKE_SMOB (svz_socket, sock));
-      if (!scm_is_string (ret))
+      if ((str = guile_to_string (ret)) != NULL)
 	{
-	  str = scm_to_locale_string (ret);
 	  memset (text, 0, sizeof (text));
 	  memcpy (text, str, GUILE_MIN (strlen (str) + 1, sizeof (text) - 1));
 	  free (str);
@@ -691,9 +684,8 @@ guile_func_info_server (svz_server_t *server)
   if (!SCM_UNBNDP (info_server))
     {
       ret = guile_call (info_server, 1, MAKE_SMOB (svz_server, server));
-      if (scm_is_string (ret))
+      if ((str = guile_to_string (ret)) != NULL)
 	{
-	  str = scm_to_locale_string (ret);
 	  memset (text, 0, sizeof (text));
 	  memcpy (text, str, GUILE_MIN (strlen (str) + 1, sizeof (text) - 1));
 	  free (str);
@@ -811,7 +803,7 @@ guile_func_trigger_cond (svz_socket_t *sock)
   if (!SCM_UNBNDP (trigger_cond))
     {
       ret = guile_call (trigger_cond, 1, MAKE_SMOB (svz_socket, sock));
-      return SCM_NFALSEP (ret);
+      return scm_is_true (ret);
     }
   return 0;
 }
@@ -881,24 +873,24 @@ guile_sock_boundary (SCM sock, SCM boundary)
   svz_socket_t *xsock;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT_TYPE (SCM_EXACTP (boundary) || SCM_STRINGP (boundary),
-		   boundary, SCM_ARG2, FUNC_NAME, "string or exact");
+  SCM_ASSERT (GUILE_EXACTP (boundary) || scm_is_string (boundary),
+		   boundary, SCM_ARG2, FUNC_NAME);
 
   /* Release previously set boundaries. */
   guile_sock_clear_boundary (xsock);
 
   /* Setup for fixed sized packets. */
-  if (SCM_EXACTP (boundary))
+  if (GUILE_EXACTP (boundary))
     {
       xsock->boundary = NULL;
-      xsock->boundary_size = SCM_NUM2INT (SCM_ARG2, boundary);
+      xsock->boundary_size = scm_to_int (boundary);
     }
   /* Handle packet delimiters. */
   else
     {
+	/* FIXME: check the 'free' on xsock->boundary */
       xsock->boundary = scm_to_locale_string (boundary);
-      xsock->boundary_size = SCM_NUM2INT (SCM_ARG2,
-					  scm_string_length (boundary));
+      xsock->boundary_size = scm_c_string_length (boundary);
     }
 
   /* Only assign this callback for connection oriented protocols. */
@@ -923,10 +915,10 @@ guile_sock_floodprotect (SCM sock, SCM flag)
   flags = xsock->flags;
   if (!SCM_UNBNDP (flag))
     {
-      SCM_ASSERT_TYPE (SCM_BOOLP (flag) || SCM_EXACTP (flag),
-		       flag, SCM_ARG2, FUNC_NAME, "boolean or exact");
-      if ((SCM_BOOLP (flag) && SCM_NFALSEP (flag) != 0) ||
-	  (SCM_EXACTP (flag) && SCM_NUM2INT (SCM_ARG2, flag) != 0))
+      SCM_ASSERT (scm_is_bool (flag) || GUILE_EXACTP (flag),
+		       flag, SCM_ARG2, FUNC_NAME);
+      if ((scm_is_bool (flag) && scm_is_true (flag) != 0) ||
+	  (GUILE_EXACTP (flag) && scm_to_int (flag) != 0))
 	xsock->flags &= ~SOCK_FLAG_NOFLOOD;
       else
 	xsock->flags |= SOCK_FLAG_NOFLOOD;
@@ -947,9 +939,9 @@ guile_sock_print (SCM sock, SCM buffer)
   int len, ret = -1;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT_TYPE (SCM_STRINGP (buffer)
+  SCM_ASSERT (scm_is_string (buffer)
 		   || scm_is_true (scm_bytevector_p (buffer)),
-		   buffer, SCM_ARG2, FUNC_NAME, "string or bytevector");
+		   buffer, SCM_ARG2, FUNC_NAME);
 
   if (scm_is_string (buffer))
     buf = scm_to_locale_stringn (buffer, &len);
@@ -1038,7 +1030,7 @@ guile_config_convert (void *address, int type)
 	ret = scm_from_locale_string (port->name);
       break;
     case SVZ_ITEM_BOOL:
-      ret = SCM_BOOL (*(int *) address);
+      ret = scm_from_bool (*(int *) address);
       break;
     }
   return ret;
@@ -1049,9 +1041,9 @@ guile_config_convert (void *address, int type)
    server in the variable @var{var}. */
 #define CHECK_SERVER_SMOB_ARG(smob, arg, var)                                \
   do {                                                                       \
-    SCM_ASSERT_TYPE (CHECK_SMOB (svz_server, smob) ||                        \
+    SCM_ASSERT (CHECK_SMOB (svz_server, smob) ||                             \
 		     CHECK_SMOB (svz_socket, smob), smob, arg,               \
-		     FUNC_NAME, "svz-server or svz-socket");                 \
+		     FUNC_NAME);                                             \
     var = CHECK_SMOB (svz_server, smob) ? GET_SMOB (svz_server, smob) :      \
       svz_server_find (((svz_socket_t *) GET_SMOB (svz_socket, smob))->cfg); \
   } while (0)
@@ -1075,12 +1067,9 @@ guile_server_config_ref (SCM server, SCM key)
   svz_config_prototype_t *prototype;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
 
-  if (scm_is_string (key))
-    str = scm_to_locale_string (key);
-  else
-    str = NULL;
+  str = guile_to_string (key);
   stype = svz_servertype_find (xserver);
   cfg = xserver->cfg;
   prototype = &stype->config_prototype;
@@ -1115,7 +1104,7 @@ guile_server_state_ref (SCM server, SCM key)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = scm_to_locale_string (key);
 
   if ((hash = xserver->data) != NULL)
@@ -1141,7 +1130,7 @@ guile_server_state_set_x (SCM server, SCM key, SCM value)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = scm_to_locale_string (key);
 
   if ((hash = xserver->data) == NULL)
@@ -1349,16 +1338,17 @@ guile_servertype_config_default (svz_servertype_t *server, SCM value,
 
       /* Character string. */
     case SVZ_ITEM_STR:
-      if (!scm_is_string (value))
+      if ((str = guile_to_string (value)) == NULL)
 	{
-	  guile_error ("%s: Invalid string value for `%s'",
+	  guile_error ("%s: Invalid string value for `%s'", 
 		       server->prefix, key);
 	  err = -1;
 	}
       else
 	{
-	  txt = scm_to_locale_string (value);
+	  txt = svz_strdup (str);
 	  memcpy (address, &txt, len);
+	  free (str);
 	}
       break;
 
@@ -1380,13 +1370,13 @@ guile_servertype_config_default (svz_servertype_t *server, SCM value,
 
       /* Port configuration. */
     case SVZ_ITEM_PORTCFG:
-      if (!scm_is_string (value))
+      if ((str = guile_to_string (value)) == NULL)
 	{
 	  guile_error ("%s: Invalid string value for `%s'",
 		       server->prefix, key);
 	  err = -1;
 	}
-      else if ((port = svz_portcfg_get (scm_to_locale_string (value))) == NULL)
+      else if ((port = svz_portcfg_get (str)) == NULL)
 	{
 	  guile_error ("%s: No such port configuration: `%s'",
 		       server->prefix, str);
@@ -1439,7 +1429,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
   svz_asprintf (&txt, "parsing configuration of `%s'", server->prefix);
 
   /* Check if the configuration alist is given or not. */
-  if (SCM_EQ_P (cfg, SCM_UNSPECIFIED))
+  if (scm_is_eq (cfg, SCM_UNSPECIFIED))
     {
       guile_error ("Missing servertype `configuration' for `%s'",
 		   server->prefix);
@@ -1461,8 +1451,8 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
       char *str;
 
       /* Each configuration item must be a scheme list with three elements. */
-      if (!SCM_LISTP (list) ||
-	  SCM_NUM2ULONG (SCM_ARG1, scm_length (list)) != 3)
+      if (!GUILE_LISTP (list) ||
+	  scm_to_ulong (scm_length (list)) != 3)
 	{
 	  guile_error ("Invalid definition for `%s' %s", key[n], txt);
 	  err = -1;
@@ -1473,8 +1463,8 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
       item.address = SVZ_NUM2PTR (size);
 
       /* First appears the type of item. */
-      value = SCM_CAR (list);
-      if (!scm_is_string (value))
+      value = scm_car (list);
+      if ((str = guile_to_string (value)) == NULL)
 	{
 	  guile_error ("Invalid type definition for `%s' %s", key[n], txt);
 	  err = -1;
@@ -1482,7 +1472,6 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
 	}
       else
 	{
-	  str = scm_to_locale_string (value);
 	  len = guile_servertype_config_type (str, &item, &size);
 	  free (str);
 	  if (len == 0)
@@ -1495,8 +1484,8 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
 
       /* Then appears a boolean value specifying if the configuration
 	 item is defaultable or not. */
-      list = SCM_CDR (list);
-      value = SCM_CAR (list);
+      list = scm_cdr (list);
+      value = scm_car (list);
       if (guile_to_boolean (value, &def) != 0)
 	{
 	  guile_error ("Invalid defaultable value for `%s' %s", key[n], txt);
@@ -1509,8 +1498,8 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
 	item.defaultable = SVZ_ITEM_NOTDEFAULTABLE;
 
       /* Finally the default value itself. */
-      list = SCM_CDR (list);
-      value = SCM_CAR (list);
+      list = scm_cdr (list);
+      value = scm_car (list);
       prototype = svz_realloc (prototype, size);
       memset (prototype + size - len, 0, len);
       if (item.defaultable == SVZ_ITEM_DEFAULTABLE)

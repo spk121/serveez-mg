@@ -27,6 +27,17 @@
 
 #include <libguile.h>
 
+/*
+ * Converts @code{SCM} into @code{char *} no matter if it is string or
+ * symbol. Returns @code{NULL} if it was neither. The new string must be
+ * explicitly @code{free()}d.
+ */
+#define guile_to_string(cell)						\
+  (scm_is_null (cell) ? NULL :						\
+   (scm_is_string (cell) ? scm_to_locale_string (cell) :		\
+    (scm_is_symbol (cell) ? scm_to_locale_string (scm_symbol_to_string (cell)) : \
+     NULL)))
+
 /* FAIL breaks to the label `out' and sets an error condition. */
 #define FAIL() do { err = -1; goto out; } while(0)
 

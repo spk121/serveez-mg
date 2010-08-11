@@ -9,16 +9,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: serveez.c,v 1.52 2003/06/14 14:57:59 ela Exp $
  *
@@ -26,7 +26,7 @@
 
 #if HAVE_CONFIG_H
 # include <config.h>
-#endif 
+#endif
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -80,7 +80,7 @@ guile_entry (int argc, char **argv)
     }
 
   /*
-   * Make command line arguments overriding the configuration 
+   * Make command line arguments overriding the configuration
    * file settings.
    */
   if (options->verbosity != -1)
@@ -132,7 +132,7 @@ guile_entry (int argc, char **argv)
   svz_halt ();
 
 #if SVZ_ENABLE_DEBUG
-  svz_log (LOG_DEBUG, "%d byte(s) of memory in %d block(s) wasted\n", 
+  svz_log (LOG_DEBUG, "%d byte(s) of memory in %d block(s) wasted\n",
 	   svz_allocated_bytes, svz_allocated_blocks);
 
 #if DEBUG_MEMORY_LEAKS
