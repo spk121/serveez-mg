@@ -31,7 +31,7 @@
 
 #include <sys/types.h>
 #if DEBUG_MEMORY_LEAKS
-# define GC_DEBUG
+# define GC_DEBUG 1
 #endif /* DEBUG_MEMORY_LEAKS */
 #include <gc.h>
 
@@ -43,7 +43,7 @@
   do { svz_free (var); (var) = NULL; } while (0)
 
 #if DEBUG_MEMORY_LEAKS
-# define CHECK_LEAKS() GC_collect()
+# define CHECK_LEAKS() GC_gcollect()
 #endif
 
 __BEGIN_DECLS
