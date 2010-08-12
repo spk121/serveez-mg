@@ -54,20 +54,11 @@
 /* Command line option structure. */
 option_t *options = NULL;
 
-/* Our private launch pad. */
-void
-guile_launch_pad (void *closure, int argc, char **argv)
-{
-  void (* entry) (int, char **) = (void (*) (int, char **)) closure;
-  entry (argc, argv);
-  exit (0);
-}
-
 /*
  * This is the entry point for the guile interface.
  */
-static void
-guile_entry (int argc, char **argv)
+static void *
+guile_entry (void *data)
 {
   /* Detect operating system. */
   svz_log (LOG_NOTICE, "%s\n", svz_sys_version ());
@@ -147,6 +138,8 @@ guile_entry (int argc, char **argv)
   /* FIXME: Serveez leaks because of a open logfile handle. */
   if (options->loghandle != stderr)
     svz_fclose (options->loghandle);
+
+  exit (EXIT_SUCCESS);
 }
 
 /*
@@ -156,6 +149,7 @@ int
 main (int argc, char *argv[])
 {
   /* Initialize the the core library. */
+  scm_init_guile ();
   svz_boot ();
   svz_executable (argv[0]);
   svz_envblock_setup ();
@@ -217,7 +211,7 @@ main (int argc, char *argv[])
 #endif
 
   /* Enter the main guile function. */
-  scm_boot_guile (argc, argv, guile_launch_pad, (void *) guile_entry);
+  scm_with_guile (guile_entry, NULL);
   /* Never reached. */
   return 0;
 }
