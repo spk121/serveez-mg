@@ -798,6 +798,19 @@ unset define_enable_guile
 dnl ----------------------------------------------------------------------
 
 dnl
+dnl Check if we want to use bdw-gc malloc to check for leaks
+dnl
+AC_ARG_ENABLE([leak-check],
+              [AS_HELP_STRING([--enable-leak-check],
+                              [use bdw-gc's malloc for memory leak checking])])
+if test $define_enable_leak_check = yes; then
+  AC_DEFINE([DEBUG_MEMORY_LEAKS], [1], [Define to add memory leak checking])
+  AC_CHECK_LIB([gc], [GC_malloc])
+fi
+
+dnl ----------------------------------------------------------------------
+
+dnl
 dnl Check whether to include support for named pipes under Linux.
 dnl
 

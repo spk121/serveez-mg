@@ -7,12 +7,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -60,7 +60,7 @@ main (int argc, char **argv)
 
   test_init ();
   test_print ("array function test suite\n");
-  
+
   /* array creation */
   error = 0;
   test_print ("    create: ");
@@ -201,13 +201,13 @@ main (int argc, char **argv)
       if (svz_array_set (array, n, svz_array_get (array, REPEAT - n - 1)) !=
 	  value)
 	error++;
-      if (svz_array_set (array, REPEAT - n - 1, value) != 
+      if (svz_array_set (array, REPEAT - n - 1, value) !=
 	  (void *) (REPEAT - n - 1))
 	error++;
     }
   for (n = 0; n < REPEAT; n++)
     {
-      if (svz_array_idx (array, (void *) n) != 
+      if (svz_array_idx (array, (void *) n) !=
 	  (unsigned long) (REPEAT - n - 1))
 	error++;
       if (svz_array_contains (array, (void *) n) != 1)
@@ -218,9 +218,9 @@ main (int argc, char **argv)
   /* insert and delete a bit (re-reverse) */
   for (n = 0; n < REPEAT; n++)
     {
-      if (svz_array_ins (array, n, 
-			 svz_array_del (array, 
-					svz_array_size (array) - 1)) != 
+      if (svz_array_ins (array, n,
+			 svz_array_del (array,
+					svz_array_size (array) - 1)) !=
 	  (unsigned long) n)
 	error++;
       if (svz_array_idx (array, (void *) n) != (unsigned long) n)
@@ -241,13 +241,13 @@ main (int argc, char **argv)
 	    error++;
 	  if (svz_array_del (array, n + i) != (void *) (n + i))
 	    error++;
-	  if (svz_array_ins (array, n + i, (void *) 0xdeadbeef) != 
+	  if (svz_array_ins (array, n + i, (void *) 0xdeadbeef) !=
 	      (unsigned long) n + i)
 	    error++;
 	}
       if (svz_array_size (array) != REPEAT)
 	error++;
-      if (svz_array_contains (array, (void *) 0xdeadbeef) != 
+      if (svz_array_contains (array, (void *) 0xdeadbeef) !=
 	  (unsigned long) n + i)
 	error++;
       if (svz_array_idx (array, (void *) 0xdeadbeef) != (unsigned long) 0)
@@ -275,7 +275,7 @@ main (int argc, char **argv)
       error++;
   svz_array_destroy (dup);
   test (error);
-  
+
   /* replication */
   test_print ("    strdup: ");
   error = 0;
@@ -307,17 +307,16 @@ main (int argc, char **argv)
     }
   svz_array_destroy (dup);
   test (error);
-  
+
   /* destroy function */
   test_print ("   destroy: ");
   svz_array_destroy (array);
   test_ok ();
 
-#if SVZ_ENABLE_DEBUG
+#if DEBUG_MEMORY_LEAKS
   /* is heap ok ? */
-  test_print ("      heap: ");
-  test (svz_allocated_bytes || svz_allocated_blocks);
-#endif /* SVZ_ENABLE_DEBUG */
+  CHECK_LEAKS ();
+#endif /* DEBUG_MEMORY_LEAKS */
 
   return result;
 }

@@ -7,12 +7,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -58,7 +58,7 @@ main (int argc, char **argv)
 
   test_init ();
   test_print ("vector function test suite\n");
-  
+
   /* vector creation */
   error = 0;
   test_print ("    create: ");
@@ -88,11 +88,11 @@ main (int argc, char **argv)
       if (*value != n)
 	error++;
     }
-  if (svz_vector_get (vector, n) != NULL || 
+  if (svz_vector_get (vector, n) != NULL ||
       svz_vector_get (vector, -1) != NULL)
     error++;
   test (error);
-  
+
   /* set function */
   test_print ("       set: ");
   for (error = n = 0; n < REPEAT; n++)
@@ -212,11 +212,10 @@ main (int argc, char **argv)
   svz_vector_destroy (vector);
   test_ok ();
 
-#if SVZ_ENABLE_DEBUG
+#if DEBUG_MEMORY_LEAKS
   /* is heap ok ? */
-  test_print ("      heap: ");
-  test (svz_allocated_bytes || svz_allocated_blocks);
-#endif /* SVZ_ENABLE_DEBUG */
+  CHECK_LEAKS ();
+#endif /* DEBUG_MEMORY_LEAKS */
 
   return result;
 }

@@ -131,14 +131,9 @@ guile_entry (int argc, char **argv)
 
   svz_halt ();
 
-#if SVZ_ENABLE_DEBUG
-  svz_log (LOG_DEBUG, "%d byte(s) of memory in %d block(s) wasted\n",
-	   svz_allocated_bytes, svz_allocated_blocks);
-
 #if DEBUG_MEMORY_LEAKS
-  svz_heap ();
-#endif
-#endif /* SVZ_ENABLE_DEBUG */
+  CHECK_LEAKS ();
+#endif /* DEBUG_MEMORY_LEAKS */
 
 #ifdef __MINGW32__
   if (options->daemon)

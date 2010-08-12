@@ -9,16 +9,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: server-core.c,v 1.43 2003/08/26 04:59:33 ela Exp $
  *
@@ -32,7 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Some Unices define the strsignal() function depending on 
+/* Some Unices define the strsignal() function depending on
    this definition. */
 #ifndef __EXTENSIONS__
 # define __EXTENSIONS__
@@ -94,7 +94,7 @@
 #include "libserveez/server.h"
 #include "libserveez/server-core.h"
 
-/* 
+/*
  * When @var{svz_nuke_happened} is set to a non-zero value, the server
  * will terminate its main loop.
  */
@@ -108,7 +108,7 @@ int svz_nuke_happened = 0;
 static int svz_reset_happened;
 
 /*
- * The variable @var{svz_pipe_broke} is set to a non-zero value whenever 
+ * The variable @var{svz_pipe_broke} is set to a non-zero value whenever
  * the server receives a SIGPIPE signal.
  */
 static int svz_pipe_broke;
@@ -121,24 +121,24 @@ svz_t_handle svz_child_died;
 
 /*
  * The @var{svz_uncaught_signal} variable is set to a value greater or
- * equal zero when the server receives a signal which is not handled.  
+ * equal zero when the server receives a signal which is not handled.
  */
 static int svz_uncaught_signal = -1;
 
 /*
  * The @var{svz_signal} variable is set to a value greater or equal
- * zero for every received signal.  
+ * zero for every received signal.
  */
 static int svz_signal = -1;
 
-/* 
+/*
  * This holds the time on which the next call to @code{svz_periodic_tasks()}
  * should occur.
  */
 long svz_notify;
 
 /*
- * @var{svz_sock_root} is the pointer to the head of the list of sockets, 
+ * @var{svz_sock_root} is the pointer to the head of the list of sockets,
  * which are handled by the server loop.
  */
 svz_socket_t *svz_sock_root = NULL;
@@ -150,7 +150,7 @@ svz_socket_t *svz_sock_root = NULL;
 svz_socket_t *svz_sock_last = NULL;
 
 /*
- * The @var{svz_sock_lookup_table} array is used to speed up references to 
+ * The @var{svz_sock_lookup_table} array is used to speed up references to
  * socket structures by socket's id.
  */
 static svz_socket_t **svz_sock_lookup_table = NULL;
@@ -378,7 +378,7 @@ svz_abort (char *msg)
 
 #if SVZ_ENABLE_DEBUG
 /*
- * This function is for debugging purposes only. It shows a text 
+ * This function is for debugging purposes only. It shows a text
  * representation of the current socket list.
  */
 static void
@@ -389,8 +389,8 @@ svz_sock_print_list (void)
   while (sock)
     {
       fprintf (stdout, "id: %04d, sock: %p == %p, prev: %p, next: %p\n",
-	       sock->id, (void *) sock, 
-	       (void *) svz_sock_lookup_table[sock->id], 
+	       sock->id, (void *) sock,
+	       (void *) svz_sock_lookup_table[sock->id],
 	       (void *) sock->prev, (void *) sock->next);
       sock = sock->next;
     }
@@ -406,7 +406,7 @@ static int
 svz_sock_validate_list (void)
 {
   svz_socket_t *sock, *prev;
-  
+
 #if 0
   svz_sock_print_list ();
 #endif
@@ -430,7 +430,7 @@ svz_sock_validate_list (void)
 	      svz_abort ("invalid pipe descriptor");
 	    }
 	}
-      
+
       /* check socket list structure */
       if (svz_sock_lookup_table[sock->id] != sock)
 	{
@@ -454,8 +454,8 @@ svz_sock_validate_list (void)
 
 /*
  * Rechain the socket list to prevent sockets from starving at the end
- * of this list. We will call it every time when a @code{select()} or 
- * @code{poll()} has returned. Listeners are kept at the beginning of the 
+ * of this list. We will call it every time when a @code{select()} or
+ * @code{poll()} has returned. Listeners are kept at the beginning of the
  * chain anyway.
  */
 static void
@@ -469,7 +469,7 @@ svz_sock_rechain_list (void)
   if (sock && sock->prev)
     {
       end_socket = sock->prev;
-      for (last_listen = svz_sock_root; last_listen && last_listen != sock && 
+      for (last_listen = svz_sock_root; last_listen && last_listen != sock &&
 	     last_listen->flags & (SOCK_FLAG_LISTENING | SOCK_FLAG_PRIORITY) &&
 	     !(sock->flags & SOCK_FLAG_LISTENING);
 	   last_listen = last_listen->next);
@@ -495,7 +495,7 @@ svz_sock_rechain_list (void)
 	  last_listen->next = sock;
 	  sock->prev = last_listen;
 	}
-      else 
+      else
 	{
 	  /* enqueue at root */
 	  sock->next = svz_sock_root;
@@ -503,7 +503,7 @@ svz_sock_rechain_list (void)
 	  sock->next->prev = sock;
 	  svz_sock_root = sock;
 	}
-      
+
       /* mark the new end of chain */
       end_socket->next = NULL;
       svz_sock_last = end_socket;
@@ -540,7 +540,7 @@ svz_sock_enqueue (svz_socket_t *sock)
   /* check lookup table */
   if (svz_sock_lookup_table[sock->id] || sock->flags & SOCK_FLAG_ENQUEUED)
     {
-      svz_log (LOG_FATAL, "socket id %d has been already enqueued\n", 
+      svz_log (LOG_FATAL, "socket id %d has been already enqueued\n",
 	       sock->id);
       return -1;
     }
@@ -595,7 +595,7 @@ svz_sock_dequeue (svz_socket_t *sock)
   /* check lookup table */
   if (!svz_sock_lookup_table[sock->id] || !(sock->flags & SOCK_FLAG_ENQUEUED))
     {
-      svz_log (LOG_FATAL, "socket id %d has been already dequeued\n", 
+      svz_log (LOG_FATAL, "socket id %d has been already dequeued\n",
 	       sock->id);
       return -1;
     }
@@ -656,7 +656,7 @@ svz_sock_check_frequency (svz_socket_t *parent, svz_socket_t *child)
       /* Check the connection frequency. */
       if ((nr /= 4) > port->connect_freq)
 	{
-	  svz_log (LOG_NOTICE, "connect frequency reached: %s: %d/%d\n", 
+	  svz_log (LOG_NOTICE, "connect frequency reached: %s: %d/%d\n",
 		   ip, nr, port->connect_freq);
 	  ret = -1;
 	}
@@ -673,7 +673,7 @@ svz_sock_check_frequency (svz_socket_t *parent, svz_socket_t *child)
 }
 
 /*
- * This function returns zero if the @var{child} socket is allowed to 
+ * This function returns zero if the @var{child} socket is allowed to
  * connect to the port configuration of the @var{parent} socket structure
  * which needs to be a listener therefore.
  */
@@ -804,7 +804,7 @@ svz_sock_getreferrer (svz_socket_t *sock)
 }
 
 /*
- * Return the socket structure for the socket id @var{id} and the version 
+ * Return the socket structure for the socket id @var{id} and the version
  * @var{version} or @code{NULL} if no such socket exists. If @var{version}
  * is -1 it is not checked.
  */
@@ -822,7 +822,7 @@ svz_sock_find (int id, int version)
   sock = svz_sock_lookup_table[id];
   if (version != -1 && sock && sock->version != version)
     {
-      svz_log (LOG_WARNING, "socket version %d (id %d) is invalid\n", 
+      svz_log (LOG_WARNING, "socket version %d (id %d) is invalid\n",
 	       version, id);
       return NULL;
     }
@@ -831,18 +831,18 @@ svz_sock_find (int id, int version)
 }
 
 /*
- * Create the socket lookup table initially. Must be called from 
+ * Create the socket lookup table initially. Must be called from
  * @code{svz_boot()}.
  */
 void
 svz_sock_table_create (void)
 {
-  svz_sock_lookup_table = svz_calloc (svz_sock_limit * 
+  svz_sock_lookup_table = svz_calloc (svz_sock_limit *
 				      sizeof (svz_socket_t *));
 }
 
 /*
- * Destroy the socket lookup table finally. Must be called from 
+ * Destroy the socket lookup table finally. Must be called from
  * @code{svz_halt()}.
  */
 void
@@ -852,8 +852,8 @@ svz_sock_table_destroy (void)
 }
 
 /*
- * Calculate unique socket structure id and assign a version for a 
- * given @var{sock}. The version is for validating socket structures. It is 
+ * Calculate unique socket structure id and assign a version for a
+ * given @var{sock}. The version is for validating socket structures. It is
  * currently used in the coserver callbacks.
  */
 int
@@ -861,7 +861,7 @@ svz_sock_unique_id (svz_socket_t *sock)
 {
   int i;
 
-  for (i = 0; i < svz_sock_limit; i++) 
+  for (i = 0; i < svz_sock_limit; i++)
     {
       svz_sock_id++;
       svz_sock_id &= (svz_sock_limit - 1);
@@ -874,7 +874,7 @@ svz_sock_unique_id (svz_socket_t *sock)
   if (i == svz_sock_limit)
     {
       svz_sock_lookup_table = svz_realloc (svz_sock_lookup_table,
-					   svz_sock_limit * 2 * 
+					   svz_sock_limit * 2 *
 					   sizeof (svz_socket_t *));
       memset (&svz_sock_lookup_table[svz_sock_limit], 0,
 	      svz_sock_limit * sizeof (svz_socket_t *));
@@ -885,7 +885,7 @@ svz_sock_unique_id (svz_socket_t *sock)
 
   sock->id = svz_sock_id;
   sock->version = svz_sock_version++;
-  
+
   return svz_sock_id;
 }
 
@@ -903,7 +903,7 @@ svz_reset (void)
 
 /*
  * Do everything to shut down the socket @var{sock}. The socket structure
- * gets removed from the socket queue, the file descriptor is closed 
+ * gets removed from the socket queue, the file descriptor is closed
  * and all memory used by the socket gets freed. Note that this
  * function calls the @var{sock}'s disconnect handler if defined.
  */
@@ -950,7 +950,7 @@ svz_sock_shutdown_all (void)
 /*
  * Mark socket @var{sock} as killed.  That means that no operations except
  * disconnecting and freeing are allowed anymore.  All marked sockets
- * will be deleted once the server loop is through.  
+ * will be deleted once the server loop is through.
  */
 int
 svz_sock_schedule_for_shutdown (svz_socket_t *sock)
@@ -976,8 +976,8 @@ svz_sock_schedule_for_shutdown (svz_socket_t *sock)
 }
 
 /*
- * This routine gets called once a second and is supposed to perform any 
- * task that has to get scheduled periodically. It checks all sockets' 
+ * This routine gets called once a second and is supposed to perform any
+ * task that has to get scheduled periodically. It checks all sockets'
  * timers and calls their timer functions when necessary.
  */
 int
@@ -987,7 +987,7 @@ svz_periodic_tasks (void)
 
   svz_notify += 1;
 
-  sock = svz_sock_root; 
+  sock = svz_sock_root;
   while (sock)
     {
 #if SVZ_ENABLE_FLOOD_PROTECTION
@@ -1003,7 +1003,7 @@ svz_periodic_tasks (void)
 	    {
 	      if (sock->idle_func (sock))
 		{
-		  svz_log (LOG_ERROR, 
+		  svz_log (LOG_ERROR,
 			   "idle function for socket id %d "
 			   "returned error\n", sock->id);
 		  svz_sock_schedule_for_shutdown (sock);
@@ -1043,7 +1043,7 @@ svz_sock_check_bogus (void)
       if (sock->flags & SOCK_FLAG_SOCK)
 	{
 #ifdef __MINGW32__
-	  if (ioctlsocket (sock->sock_desc, FIONREAD, &readBytes) == 
+	  if (ioctlsocket (sock->sock_desc, FIONREAD, &readBytes) ==
 	      SOCKET_ERROR)
 	    {
 #else /* not __MINGW32__ */
@@ -1077,7 +1077,7 @@ svz_sock_check_bogus (void)
 #endif /* not __MINGW32__ */
     }
 }
-  
+
 /*
  * Setup signaling for the core library.
  */
@@ -1150,7 +1150,7 @@ svz_signal_dn (void)
 
 /*
  * This routine checks whether the child process specified by the @code{pid}
- * handle stored in the socket structure @var{sock} is still alive. It 
+ * handle stored in the socket structure @var{sock} is still alive. It
  * returns zero if so, otherwise (when the child process died) non-zero. This
  * routine is called from @code{svz_sock_check_children()}.
  */
@@ -1239,7 +1239,7 @@ svz_loop_one (void)
 
   if (svz_pipe_broke)
     {
-      /* SIGPIPE received. */ 
+      /* SIGPIPE received. */
       svz_log (LOG_ERROR, "broken pipe, continuing\n");
       svz_pipe_broke = 0;
     }
@@ -1284,7 +1284,7 @@ svz_loop_one (void)
   /*
    * Shut down all sockets that have been scheduled for closing.
    */
-  sock = svz_sock_root; 
+  sock = svz_sock_root;
   while (sock)
     {
       next = sock->next;
@@ -1300,8 +1300,8 @@ svz_loop_one (void)
 void
 svz_loop_pre (void)
 {
-  /* 
-   * Setting up control variables. These get set either in the signal 
+  /*
+   * Setting up control variables. These get set either in the signal
    * handler or from a command processing routine.
    */
   svz_reset_happened = 0;
@@ -1326,7 +1326,7 @@ svz_loop_post (void)
 }
 
 /*
- * Main server loop. Handle all signals, incoming and outgoing connections 
+ * Main server loop. Handle all signals, incoming and outgoing connections
  * and listening server sockets.
  */
 void
@@ -1336,6 +1336,9 @@ svz_loop (void)
   while (!svz_nuke_happened)
     {
       svz_loop_one ();
+#ifdef DEBUG_MEMORY_LEAKS
+      CHECK_LEAKS ();
+#endif
     }
   svz_loop_post ();
 }

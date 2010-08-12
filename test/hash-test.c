@@ -7,12 +7,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -117,7 +117,7 @@ main (int argc, char **argv)
   values = svz_hash_values (hash);
   keys = svz_hash_keys (hash);
   if (keys && values)
-    { 
+    {
       for (n = 0; n < REPEAT; n++)
 	{
 	  if (atol (keys[n]) != (long) values[n])
@@ -160,7 +160,7 @@ main (int argc, char **argv)
     error++;
   svz_free (text);
   test (error);
-  
+
   /* hash clear */
   test_print ("              clear: ");
   svz_hash_clear (hash);
@@ -198,13 +198,6 @@ main (int argc, char **argv)
     }
   test (error != 3 || val != 6);
   svz_hash_destroy (hash);
-
-
-#if SVZ_ENABLE_DEBUG
-  /* is heap ok ? */
-  test_print ("               heap: ");
-  test (svz_allocated_bytes || svz_allocated_blocks);
-#endif
 
   return result;
 }

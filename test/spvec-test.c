@@ -7,12 +7,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -59,7 +59,7 @@ main (int argc, char **argv)
 
   test_init ();
   test_print ("sparse vector function test suite\n");
-  
+
   /* sparse vector creation */
   test_print ("         create: ");
   test ((list = svz_spvec_create ()) == NULL);
@@ -144,15 +144,15 @@ main (int argc, char **argv)
 	error++;
 
       for (i = GAP - 1; i > 0; i--)
-	{ 
-	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) != 
+	{
+	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) !=
 	      NULL)
 	    error++;
 	  if (svz_spvec_unset (list, n * GAP + i) != (void *) ((n * GAP) + i))
 	    error++;
 	}
     }
-  
+
   if (svz_spvec_length (list) != 0 || svz_spvec_size (list) != 0)
     error++;
   for (n = 0; n < REPEAT; n++)
@@ -179,15 +179,15 @@ main (int argc, char **argv)
 	error++;
 
       for (i = GAP - 1; i > 0; i--)
-	{ 
-	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) != 
+	{
+	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) !=
 	      NULL)
 	    error++;
 	  if (svz_spvec_get (list, n * GAP + i) != (void *) ((n * GAP) + i))
 	    error++;
 	}
     }
-  
+
   if (svz_spvec_length (list) != REPEAT || svz_spvec_size (list) != REPEAT)
     error++;
   for (n = 0; n < REPEAT; n++)
@@ -222,7 +222,7 @@ main (int argc, char **argv)
       if (svz_spvec_set (list, n * GAP, (void *) n) != NULL)
 	error++;
     }
-  if (svz_spvec_length (list) != REPEAT * GAP - GAP + 1 || 
+  if (svz_spvec_length (list) != REPEAT * GAP - GAP + 1 ||
       svz_spvec_size (list) != REPEAT)
     error++;
   svz_spvec_pack (list);
@@ -246,7 +246,7 @@ main (int argc, char **argv)
       n += GAP;
     }
   n++;
-  if (svz_spvec_size (list) != (unsigned) n || 
+  if (svz_spvec_size (list) != (unsigned) n ||
       svz_spvec_length (list) != (unsigned) n)
     error++;
   for (i = GAP, n = 0; (unsigned) n < svz_spvec_length (list) - 1; n++, i++)
@@ -327,12 +327,12 @@ main (int argc, char **argv)
   if ((values = svz_spvec_values (list)) != NULL)
     {
       svz_spvec_pack (list);
-      if (svz_spvec_size (list) != REPEAT || 
+      if (svz_spvec_size (list) != REPEAT ||
 	  svz_spvec_length (list) != REPEAT)
 	error++;
       for (n = 0; n < REPEAT; n++)
 	{
-	  if (svz_spvec_get (list, n) != values[n] || 
+	  if (svz_spvec_get (list, n) != values[n] ||
 	      values[n] != (void *) 0xdeadbeef)
 	    error++;
 	}
@@ -359,7 +359,7 @@ main (int argc, char **argv)
   test_print (error ? "?" : ".");
 
   for (i = SIZE; i < SIZE + 10; i++)
-    { 
+    {
       /* build sparse vector */
       while (svz_spvec_size (list) != (unsigned) i)
 	{
@@ -372,7 +372,7 @@ main (int argc, char **argv)
       /* delete all values by chance */
       while (svz_spvec_size (list))
 	{
-	  svz_spvec_delete_range (list, test_value (i), 
+	  svz_spvec_delete_range (list, test_value (i),
 				  test_value (10 * i * 5 + 1));
 	}
       test_print (error ? "?" : ".");
@@ -397,11 +397,10 @@ main (int argc, char **argv)
   svz_spvec_destroy (list);
   test_ok ();
 
-#if SVZ_ENABLE_DEBUG
+#if DEBUG_MEMORY_LEAKS
   /* is heap ok ? */
-  test_print ("           heap: ");
-  test (svz_allocated_bytes || svz_allocated_blocks);
-#endif /* SVZ_ENABLE_DEBUG */
+  CHECK_LEAKS ();
+#endif /* DEBUG_MEMORY_LEAKS */
 
   return result;
 }
