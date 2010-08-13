@@ -7,16 +7,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: http-cgi.c,v 1.54 2007/03/29 18:12:31 ela Exp $
  *
@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -101,8 +102,8 @@ http_cgi_disconnect (svz_socket_t *sock)
     }
 
 #ifdef __MINGW32__
-  /* 
-   * Close the process handle if necessary, but only in the Windows-Port ! 
+  /*
+   * Close the process handle if necessary, but only in the Windows-Port !
    */
   if (http->pid != INVALID_HANDLE)
     {
@@ -133,7 +134,7 @@ http_cgi_disconnect (svz_socket_t *sock)
 }
 
 /*
- * This is the default idle function for http connections. It checks 
+ * This is the default idle function for http connections. It checks
  * whether any died child was a cgi script.
  */
 int
@@ -150,7 +151,7 @@ http_cgi_died (svz_socket_t *sock)
       /* Check if a died child is this cgi. */
       if (svz_child_died && http->pid == svz_child_died)
 	{
-	  svz_log (LOG_NOTICE, "cgi script pid %d died\n", 
+	  svz_log (LOG_NOTICE, "cgi script pid %d died\n",
 		   (int) svz_child_died);
 	  svz_child_died = 0;
 	}
@@ -186,7 +187,7 @@ http_cgi_died (svz_socket_t *sock)
 	}
 #endif /* __MINGW32__ */
     }
-  
+
   sock->idle_counter = 1;
   return 0;
 }
@@ -206,14 +207,14 @@ http_cgi_read (svz_socket_t *sock)
 
   /* read as much space is left in the buffer */
   do_read = sock->send_buffer_size - sock->send_buffer_fill;
-  if (do_read <= 0) 
+  if (do_read <= 0)
     {
       return 0;
     }
 
 #ifdef __MINGW32__
   /* check how many bytes could be read from the cgi pipe */
-  if (!PeekNamedPipe (sock->pipe_desc[READ], NULL, 0, 
+  if (!PeekNamedPipe (sock->pipe_desc[READ], NULL, 0,
 		      NULL, (DWORD *) &num_read, NULL))
     {
       svz_log (LOG_ERROR, "cgi: PeekNamedPipe: %s\n", SYS_ERROR);
@@ -274,12 +275,12 @@ http_cgi_read (svz_socket_t *sock)
       sock->flags &= ~SOCK_FLAG_RECV_PIPE;
       return -1;
     }
-  
+
   return 0;
 }
 
 /*
- * HTTP_CGI_WRITE pipes all read data from the http socket connection 
+ * HTTP_CGI_WRITE pipes all read data from the http socket connection
  * into the cgi stdin. This is necessary for the so called post method.
  * It directly reads from the RECV_BUFFER of the socket structure.
  */
@@ -290,7 +291,7 @@ http_cgi_write (svz_socket_t *sock)
   int num_written;
   http_socket_t *http = sock->data;
 
-  /* 
+  /*
    * Write as many bytes as possible, remember how many
    * were actually sent. Do not write more than the content
    * length of the post data.
@@ -300,14 +301,14 @@ http_cgi_write (svz_socket_t *sock)
     do_write = http->contentlength;
 
 #ifdef __MINGW32__
-  if (!WriteFile (sock->pipe_desc[WRITE], sock->recv_buffer, 
+  if (!WriteFile (sock->pipe_desc[WRITE], sock->recv_buffer,
 		  do_write, (DWORD *) &num_written, NULL))
     {
       svz_log (LOG_ERROR, "cgi: WriteFile: %s\n", SYS_ERROR);
       num_written = -1;
     }
 #else /* !__MINGW32__ */
-  if ((num_written = write (sock->pipe_desc[WRITE], 
+  if ((num_written = write (sock->pipe_desc[WRITE],
 			    sock->recv_buffer, do_write)) == -1)
     {
       svz_log (LOG_ERROR, "cgi: write: %s\n", SYS_ERROR);
@@ -325,7 +326,7 @@ http_cgi_write (svz_socket_t *sock)
        */
       if (sock->recv_buffer_fill > num_written)
 	{
-	  memmove (sock->recv_buffer, 
+	  memmove (sock->recv_buffer,
 		   sock->recv_buffer + num_written,
 		   sock->recv_buffer_fill - num_written);
 	}
@@ -333,7 +334,7 @@ http_cgi_write (svz_socket_t *sock)
       http->contentlength -= num_written;
     }
 
-  /* 
+  /*
    * If we have written all data to the CGI stdin, we can now start
    * reading from the CGI's stdout and write again to the http
    * connection.
@@ -376,12 +377,12 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   /* request type identifiers */
   static char request_type[2][5] = { "POST", "GET" };
 
-  /* 
-   * This data field is needed for the conversion of http request 
+  /*
+   * This data field is needed for the conversion of http request
    * properties into environment variables.
    */
-  static struct 
-  { 
+  static struct
+  {
     char *property; /* property identifier */
     char *env;      /* variable identifier */
   }
@@ -400,7 +401,7 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
     { NULL, NULL }
   };
 
-  unsigned n; 
+  unsigned n;
   int c;
 
   /* setup default environment */
@@ -413,18 +414,18 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   if (http->property)
     for (c = 0; env_var[c].property; c++)
       for (n = 0; http->property[n]; n += 2)
-	if (!svz_strcasecmp (http->property[n], env_var[c].property))
+	if (!strcasecmp (http->property[n], env_var[c].property))
 	  {
-	    svz_envblock_add (env, "%s=%s", 
+	    svz_envblock_add (env, "%s=%s",
 			      env_var[c].env, http->property[n + 1]);
 	    break;
 	  }
 
-  /* 
-   * set up some more environment variables which might be 
+  /*
+   * set up some more environment variables which might be
    * necessary for the cgi script
    */
-  svz_envblock_add (env, "SERVER_NAME=%s", 
+  svz_envblock_add (env, "SERVER_NAME=%s",
 		    cfg->host ? cfg->host : svz_inet_ntoa (sock->local_addr));
   svz_envblock_add (env, "SERVER_PORT=%u", ntohs (sock->local_port));
   svz_envblock_add (env, "REMOTE_ADDR=%s", http->host ? http->host :
@@ -433,7 +434,7 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   svz_envblock_add (env, "SCRIPT_NAME=%s%s", cfg->cgiurl, script);
   svz_envblock_add (env, "GATEWAY_INTERFACE=%s", CGI_VERSION);
   svz_envblock_add (env, "SERVER_PROTOCOL=%s", HTTP_VERSION);
-  svz_envblock_add (env, "SERVER_SOFTWARE=%s/%s", 
+  svz_envblock_add (env, "SERVER_SOFTWARE=%s/%s",
 		    svz_library, svz_version);
   svz_envblock_add (env, "REQUEST_METHOD=%s", request_type[type]);
 
@@ -467,7 +468,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
       return HTTP_NO_CGI;
     }
 
-  /* 
+  /*
    * skip the CGI url and concate the script file itself, then
    * check for trailing '?' which is the starting character for
    * GET variables.
@@ -509,7 +510,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
     }
 
   if (!(buf.st_mode & S_IFREG) ||
-      !(buf.st_mode & S_IXUSR) || !(buf.st_mode & S_IRUSR))  
+      !(buf.st_mode & S_IXUSR) || !(buf.st_mode & S_IRUSR))
     {
       svz_log (LOG_ERROR, "cgi: no executable: %s\n", file);
       close (fd);
@@ -529,7 +530,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
 }
 
 /*
- * Prepare the invocation of a cgi script which means to change to 
+ * Prepare the invocation of a cgi script which means to change to
  * the referred directory and the creation of a valid environment
  * block. Return a NULL pointer on errors or a pointer to the full
  * cgi file (including the path). This MUST be freed afterwards.
@@ -558,7 +559,7 @@ http_pre_exec (svz_socket_t *sock,   /* socket structure */
 
   /* get the current directory  */
   cgidir = svz_getcwd ();
-  
+
   /* put the directory and file together */
   cgifile = svz_malloc (strlen (cgidir) + strlen (file) + 1);
   sprintf (cgifile, "%s%s", cgidir, file);
@@ -611,7 +612,7 @@ http_gen_cgi_apps (http_config_t *cfg)
     cfg->cgiapps = svz_hash_create (4, svz_free);
 
   /* the associations need to be in the hash to be executed at all */
-  if ((p = svz_hash_put (cfg->cgiapps, "exe", svz_strdup (DEFAULT_CGIAPP))) 
+  if ((p = svz_hash_put (cfg->cgiapps, "exe", svz_strdup (DEFAULT_CGIAPP)))
       != NULL)
     svz_free (p);
   if ((p = svz_hash_put (cfg->cgiapps, "com", svz_strdup (DEFAULT_CGIAPP)))
@@ -657,7 +658,7 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
   sock->disconnected_socket = http_cgi_disconnect;
 
 #ifdef __MINGW32__
-  /* 
+  /*
    * Clean the StartupInfo, use the stdio handles, and store the
    * pipe handles there if necessary (depends on type).
    */
@@ -761,7 +762,7 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
       svz_free (savedir);
       return -1;
     }
-  
+
   /* reenter the actual directory and free reserved space */
   chdir (savedir);
   svz_free (cgifile);
@@ -770,7 +771,7 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
   pid = ProcessInfo.hProcess;
 
 #ifdef SVZ_ENABLE_DEBUG
-  svz_log (LOG_DEBUG, "http: cgi %s got pid 0x%08X\n", 
+  svz_log (LOG_DEBUG, "http: cgi %s got pid 0x%08X\n",
 	   file + 1, ProcessInfo.dwProcessId);
 #endif
 
@@ -877,8 +878,8 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
       argv[0] = cgifile;
       argv[1] = NULL;
 
-      /* 
-       * Execute the CGI script itself here. This will overwrite the 
+      /*
+       * Execute the CGI script itself here. This will overwrite the
        * current process.
        */
       if (execve (cgifile, argv, svz_envblock_get (envp)) == -1)
@@ -977,7 +978,7 @@ http_cgi_get_response (svz_socket_t *sock, char *request, int flags)
   sock->pipe_desc[READ] = cgi2s[READ];
   svz_fd_cloexec ((int) cgi2s[READ]);
 
-  if (http_cgi_exec (sock, INVALID_HANDLE, cgi2s[WRITE], 
+  if (http_cgi_exec (sock, INVALID_HANDLE, cgi2s[WRITE],
 		     file, request, GET_METHOD))
     {
       /* some error occurred here */
@@ -1050,7 +1051,7 @@ http_post_response (svz_socket_t *sock, char *request, int flags)
   svz_fd_cloexec ((int) cgi2s[READ]);
 
   /* execute the cgi script in FILE */
-  if (http_cgi_exec (sock, s2cgi[READ], cgi2s[WRITE], 
+  if (http_cgi_exec (sock, s2cgi[READ], cgi2s[WRITE],
 		     file, request, POST_METHOD))
     {
       /* some error occurred here */

@@ -9,12 +9,12 @@
  * under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -73,10 +73,6 @@ SERVEEZ_API void svz_log_setfile __PARAMS ((FILE *));
 SERVEEZ_API int svz_hexdump __PARAMS ((FILE *, char *, int, char *, int, int));
 SERVEEZ_API char *svz_itoa __PARAMS ((unsigned int));
 SERVEEZ_API unsigned int svz_atoi __PARAMS ((char *));
-SERVEEZ_API int svz_strcasecmp __PARAMS ((const char *,
-					  const char *));
-SERVEEZ_API int svz_strncasecmp __PARAMS ((const char *,
-					   const char *, unsigned int));
 SERVEEZ_API char *svz_getcwd __PARAMS ((void));
 SERVEEZ_API int svz_openfiles __PARAMS ((int));
 SERVEEZ_API char *svz_time __PARAMS ((long));
@@ -86,8 +82,8 @@ SERVEEZ_API char *svz_sys_version __PARAMS ((void));
 SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
 
 /*
- * Convert the byte array pointed to by @var{p} to a signed 32 bit integer. 
- * This is needed on aligned architectures where a plain type cast ends up 
+ * Convert the byte array pointed to by @var{p} to a signed 32 bit integer.
+ * This is needed on aligned architectures where a plain type cast ends up
  * in a fatal bus error.
  */
 #define SVZ_INT32(p) \
@@ -155,7 +151,7 @@ SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
 
 #ifdef __MINGW32__
 /*
- * The variable @code{svz_os_version} could be used to differentiate 
+ * The variable @code{svz_os_version} could be used to differentiate
  * between some Win32 versions.
  */
 #define Win32s  0
@@ -199,7 +195,7 @@ __END_DECLS
 # define WINSOCK_VERSION 0x0202 /* this is version 2.02 */
 #endif
 
-/* 
+/*
  * This little modification is necessary for the native Win32 compiler.
  * We do have these macros defined in the MinGW32 and Cygwin headers
  * but not within the native Win32 headers.

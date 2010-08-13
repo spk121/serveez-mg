@@ -7,16 +7,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: http-core.c,v 1.45 2003/06/14 14:57:59 ela Exp $
  *
@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <errno.h>
 #include <time.h>
 #include <sys/types.h>
@@ -79,8 +80,8 @@ http_header_t http_header;
 
 #ifdef __MINGW32__
 
-/* 
- * Handle and function definitions for the NetApi interface. 
+/*
+ * Handle and function definitions for the NetApi interface.
  */
 typedef NET_API_STATUS (__stdcall *GetUserInfoProc) (WCHAR *, WCHAR *,
 						     DWORD, LPBYTE *);
@@ -89,7 +90,7 @@ static FreeUserInfoProc FreeUserInfo = NULL;
 static GetUserInfoProc GetUserInfo = NULL;
 static HMODULE netapiHandle = NULL;
 
-/* 
+/*
  * Unload the `netapi32.dll'.
  */
 void
@@ -102,7 +103,7 @@ http_stop_netapi (void)
     }
 }
 
-/* 
+/*
  * Load `netapi32.dll' and get function pointers necessary to obtain
  * a user's home directory.
  */
@@ -111,9 +112,9 @@ http_start_netapi (void)
 {
   if ((netapiHandle = LoadLibrary ("netapi32.dll")) != NULL)
     {
-      FreeUserInfo = (FreeUserInfoProc) 
+      FreeUserInfo = (FreeUserInfoProc)
 	GetProcAddress (netapiHandle, "NetApiBufferFree");
-      GetUserInfo = (GetUserInfoProc) 
+      GetUserInfo = (GetUserInfoProc)
 	GetProcAddress (netapiHandle, "NetUserGetInfo");
       if (GetUserInfo == NULL)
 	{
@@ -153,11 +154,11 @@ http_userdir (svz_socket_t *sock, char *uri)
       user = svz_malloc (p - uri - 1);
       memcpy (user, uri + 2, p - uri - 2);
       user[p - uri - 2] = '\0';
-      
+
 #if HAVE_GETPWNAM
       if ((entry = getpwnam (user)) != NULL)
 	{
-	  file = svz_malloc (strlen (entry->pw_dir) + strlen (cfg->userdir) + 
+	  file = svz_malloc (strlen (entry->pw_dir) + strlen (cfg->userdir) +
 			     strlen (p) + 2);
 	  sprintf (file, "%s/%s%s", entry->pw_dir, cfg->userdir, p);
 	  svz_free (user);
@@ -199,11 +200,11 @@ http_userdir (svz_socket_t *sock, char *uri)
       /* successfully got the user information ? */
       else if (entry && entry->usri1_home_dir && entry->usri1_home_dir[0])
 	{
-	  file = 
+	  file =
 	    svz_malloc (strlen (svz_windoze_uni2asc (entry->usri1_home_dir)) +
 			strlen (cfg->userdir) + strlen (p) + 2);
-	  sprintf (file, "%s/%s%s", 
-		   svz_windoze_uni2asc (entry->usri1_home_dir), 
+	  sprintf (file, "%s/%s%s",
+		   svz_windoze_uni2asc (entry->usri1_home_dir),
 		   cfg->userdir, p);
 	  FreeUserInfo (entry);
 	  svz_free (user);
@@ -239,7 +240,7 @@ http_identification (char *ident, int id, int version)
       http = sock->data;
       if (!http->ident)
 	http->ident = svz_strdup (ident);
-    } 
+    }
 
   return 0;
 }
@@ -258,7 +259,7 @@ http_remotehost (char *host, int id, int version)
       http = sock->data;
       if (!http->host)
 	http->host = svz_strdup (host);
-    } 
+    }
 
   return 0;
 }
@@ -404,7 +405,7 @@ http_add_header (const char *fmt, ...)
   va_list args;
   int len = strlen (http_header.field);
   char *p = http_header.field + len;
-  
+
   if (len >= HTTP_HEADER_SIZE)
     return;
   va_start (args, fmt);
@@ -421,7 +422,7 @@ http_send_header (svz_socket_t *sock)
   int ret = 0;
 
   /* send first part of header including response field and static texts */
-  ret = svz_sock_printf (sock, 
+  ret = svz_sock_printf (sock,
 			 "%s"
 			 "Date: %s\r\n"
 			 "Server: %s/%s\r\n",
@@ -435,7 +436,7 @@ http_send_header (svz_socket_t *sock)
   ret = svz_sock_printf (sock, "%s\r\n", http_header.field);
   if (ret)
     return ret;
-  
+
   return 0;
 }
 
@@ -487,7 +488,7 @@ http_get_range (char *line, http_range_t *range)
     return -1;
 
   /* check identifier */
-  if (strlen (p) >= HTTP_BYTES_LENGTH && 
+  if (strlen (p) >= HTTP_BYTES_LENGTH &&
       memcmp (p, HTTP_BYTES, HTTP_BYTES_LENGTH))
     {
 #if SVZ_ENABLE_DEBUG
@@ -503,36 +504,36 @@ http_get_range (char *line, http_range_t *range)
   if (*p != '=')
     return 0;
   p++;
-  n = 0; 
+  n = 0;
   while (*p >= '0' && *p <= '9')
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->first = n;
 
   if (*p != '-')
-    return 0; 
+    return 0;
   p++;
-  n = 0; 
-  while (*p >= '0' && *p <= '9') 
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+  n = 0;
+  while (*p >= '0' && *p <= '9')
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->last = n;
 
-  if (*p != '/') 
-    return 0; 
+  if (*p != '/')
+    return 0;
   p++;
-  n = 0; 
-  while (*p >= '0' && *p <= '9') 
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+  n = 0;
+  while (*p >= '0' && *p <= '9')
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->length = n;
 
@@ -627,22 +628,22 @@ http_error_response (svz_socket_t *sock, int response)
     case 505:
       txt = "HTTP Version Not Supported";
       break;
-    default: 
-      txt = "Bad Request"; 
+    default:
+      txt = "Bad Request";
     }
   http->response = response;
 
   /* Send some standard error message. */
-  return svz_sock_printf (sock, 
+  return svz_sock_printf (sock,
 			  "<html><body bgcolor=white text=black><br>"
 			  "<h1>%d %s</h1>"
 			  "<hr noshade><i>%s/%s server at %s port %d, "
 			  "please send email to <a href=\"mailto:%s\">%s</a> "
 			  "for reporting errors</i>"
 			  "</body></html>",
-			  response, txt, 
+			  response, txt,
 			  svz_library, svz_version,
-			  cfg->host ? cfg->host : 
+			  cfg->host ? cfg->host :
 			  svz_inet_ntoa (sock->local_addr),
 			  ntohs (sock->local_port), cfg->admin, cfg->admin);
 }
@@ -658,7 +659,7 @@ http_keep_alive (svz_socket_t *sock)
     {
       http_free_socket (sock);
 
-      sock->userflags &= ~HTTP_FLAG; 
+      sock->userflags &= ~HTTP_FLAG;
       sock->read_socket = svz_tcp_read_socket;
       sock->check_request = http_check_request;
       sock->write_socket = http_default_write;
@@ -686,7 +687,7 @@ http_check_keepalive (svz_socket_t *sock)
     {
       sock->idle_counter = cfg->timeout;
       http_add_header ("Connection: Keep-Alive\r\n");
-      http_add_header ("Keep-Alive: timeout=%d, max=%d\r\n", 
+      http_add_header ("Keep-Alive: timeout=%d, max=%d\r\n",
 		       sock->idle_counter, cfg->keepalive);
       http->keepalive--;
     }
@@ -707,7 +708,7 @@ http_clf_date (time_t t)
 {
   static char date[64];
   static char months[12][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
   struct tm *tm;
@@ -738,7 +739,7 @@ http_asc_date (time_t t)
 }
 
 /*
- * Extract a date information from a given string and return a 
+ * Extract a date information from a given string and return a
  * UTC time (time_t) as time() does.
  */
 time_t
@@ -751,7 +752,7 @@ http_parse_date (char *date)
   time_t ret;
 
   static char month[12][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
 
@@ -760,20 +761,20 @@ http_parse_date (char *date)
       /* ASCTIME-Date */
     case ' ':
       sscanf (date, "%3s %3s %2d %02d:%02d:%02d %04d",
-	      _wkday, _month, &parse_time.tm_mday, &parse_time.tm_hour, 
+	      _wkday, _month, &parse_time.tm_mday, &parse_time.tm_hour,
 	      &parse_time.tm_min, &parse_time.tm_sec, &parse_time.tm_year);
-      
+
       break;
       /* RFC1123-Date */
     case ',':
-      sscanf (date, "%3s, %02d %3s %04d %02d:%02d:%02d GMT", 
+      sscanf (date, "%3s, %02d %3s %04d %02d:%02d:%02d GMT",
 	      _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
 	      &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
 
       break;
       /* RFC850-Date */
     default:
-      sscanf (date, "%s, %02d-%3s-%02d %02d:%02d:%02d GMT", 
+      sscanf (date, "%s, %02d-%3s-%02d %02d:%02d:%02d GMT",
 	      _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
 	      &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
 
@@ -781,7 +782,7 @@ http_parse_date (char *date)
 
       break;
     }
-    
+
   /* find the month identifier */
   for (n = 0; n < 12; n++)
     if (!memcmp (_month, month[n], 3))
@@ -844,7 +845,7 @@ http_parse_property (svz_socket_t *sock, char *request, char *end)
       request = p + 2;
 
 #if 0
-      printf ("http header: {%s} = {%s}\n", 
+      printf ("http header: {%s} = {%s}\n",
 	      http->property[n - 2], http->property[n - 1]);
 #endif
     }
@@ -872,7 +873,7 @@ http_find_property (http_socket_t *http, char *key)
   n = 0;
   while (http->property[n])
     {
-      if (!svz_strcasecmp (http->property[n], key))
+      if (!strcasecmp (http->property[n], key))
 	{
 	  return http->property[n + 1];
 	}
@@ -887,8 +888,8 @@ http_find_property (http_socket_t *http, char *key)
   else if (c >= 'A' && c <= 'F') c -= ('A' - 10);
 
 /*
- * Convert hexadecimal encoded characters within the URI. This is 
- * necessary for some special characters. The URI is a Uniform Resource 
+ * Convert hexadecimal encoded characters within the URI. This is
+ * necessary for some special characters. The URI is a Uniform Resource
  * Identifier meaning the requested file.
  */
 void
@@ -981,7 +982,7 @@ http_read_types (http_config_t *cfg)
 	  *p++ = 0;
 	  if (strlen (suffix))
 	    {
-	      /* 
+	      /*
 	       * add the given content type to the hash if it does not
 	       * contain it already
 	       */
@@ -1051,8 +1052,8 @@ http_absolute_file (char *file)
 
   /* get current work directory */
   savedir = svz_getcwd ();
-  
-  /* 
+
+  /*
    * If there was no path separator in the filename then just concate
    * current work directory and filename.
    */
@@ -1064,7 +1065,7 @@ http_absolute_file (char *file)
       svz_free (file);
       return savedir;
     }
-  
+
   /* change to give directory (absolute or relative)  */
   *p = 0;
   if (chdir (file) == -1)

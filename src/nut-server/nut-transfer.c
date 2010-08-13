@@ -7,16 +7,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: nut-transfer.c,v 1.42 2004/03/20 10:43:32 ela Exp $
  *
@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <ctype.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -81,7 +82,7 @@
 
 #ifndef __MINGW32__
 # define FILENAME de->d_name
-#else 
+#else
 # define FILENAME de.cFileName
 # define closedir(dir) FindClose (dir)
 #endif
@@ -92,14 +93,14 @@
 #include "nut-transfer.h"
 
 /*
- * Check if a given search pattern matches a filename. Return non-zero 
+ * Check if a given search pattern matches a filename. Return non-zero
  * on success and zero otherwise.
  */
 static int
 nut_string_regex (char *text, char *regex)
 {
   char *p, *token, *str, *reg;
-  
+
   /* first check if text tokens are in text */
   if (!strchr (regex, '*') && !strchr (regex, '?'))
     {
@@ -122,7 +123,7 @@ nut_string_regex (char *text, char *regex)
     }
 
   /* parse until end of both strings */
-  else 
+  else
     while (*regex && *text)
       {
 	/* find end of strings or '?' or '*' */
@@ -150,21 +151,21 @@ nut_string_regex (char *text, char *regex)
 	    while (*regex == '?')
 	      regex++;
 	    /* skip all characters until next character in pattern found */
-	    while (*text && tolower (*regex) != tolower (*text)) 
+	    while (*text && tolower (*regex) != tolower (*text))
 	      text++;
 	    /* next character in pattern found */
 	    if (*text)
 	      {
 		/* find the last occurrence of this character in the text */
 		p = text + strlen (text);
-		while (tolower (*p) != tolower (*text)) 
+		while (tolower (*p) != tolower (*text))
 		  p--;
 		/* continue parsing at this character */
 		text = p;
 	      }
 	  }
       }
-  
+
   /* is the text longer than the regex ? */
   if (!*text && !*regex)
     return -1;
@@ -193,7 +194,7 @@ nut_save_transfer (svz_socket_t *sock)
 	  svz_log (LOG_ERROR, "nut: write: %s\n", SYS_ERROR);
 	  return -1;
 	}
-      
+
       /* crop written data from receive buffer */
       svz_sock_reduce_recv (sock, num_written);
 
@@ -226,10 +227,10 @@ nut_check_transfer (svz_socket_t *sock)
   if (fill >= len && !memcmp (sock->recv_buffer, NUT_GET_OK, len))
     {
       /* find the end of the HTTP header (twice a CR/LF) */
-      while (p < sock->recv_buffer + (fill - 3) && 
+      while (p < sock->recv_buffer + (fill - 3) &&
 	     memcmp (p, NUT_SEPERATOR, 4))
 	p++;
-      
+
       /* did we get all the header information ? */
       if (p < sock->recv_buffer + (fill - 3) && !memcmp (p, NUT_SEPERATOR, 4))
 	{
@@ -247,7 +248,7 @@ nut_check_transfer (svz_socket_t *sock)
 	      return -1;
 	    }
 
-	  /* 
+	  /*
 	   * check if the announced file length in the search reply
 	   * corresponds to the content length of this HTTP header
 	   */
@@ -315,12 +316,12 @@ nut_disconnect_transfer (svz_socket_t *sock)
 	  if (unlink (transfer->file) == -1)
 	    svz_log (LOG_ERROR, "nut: unlink: %s\n", SYS_ERROR);
 	}
-      
-      /* 
-       * send a push request if the connection process itself has been 
+
+      /*
+       * send a push request if the connection process itself has been
        * aborted (refused or no route)
        */
-      if (sock->userflags & NUT_FLAG_DNLOAD && 
+      if (sock->userflags & NUT_FLAG_DNLOAD &&
 	  !(sock->userflags & NUT_FLAG_HDR))
 	{
 	  nut_send_push (sock->cfg, sock->data);
@@ -338,7 +339,7 @@ nut_disconnect_transfer (svz_socket_t *sock)
  * get a certain file.
  */
 int
-nut_init_transfer (svz_socket_t *sock, nut_reply_t *reply, 
+nut_init_transfer (svz_socket_t *sock, nut_reply_t *reply,
 		   nut_record_t *record, char *savefile)
 {
   nut_config_t *cfg = sock->cfg;
@@ -348,7 +349,7 @@ nut_init_transfer (svz_socket_t *sock, nut_reply_t *reply,
   int fd;
   nut_transfer_t *transfer;
   int n = 0, pos;
-  
+
   /* has the requested file the right file extension ? */
   if (cfg->extensions)
     {
@@ -358,7 +359,7 @@ nut_init_transfer (svz_socket_t *sock, nut_reply_t *reply,
 	  if (strlen (savefile) > strlen (ext))
 	    {
 	      pos = strlen (savefile) - strlen (ext);
-	      if (pos < 0 || !svz_strcasecmp (&savefile[pos], ext))
+	      if (pos < 0 || !strcasecmp (&savefile[pos], ext))
 		break;
 	    }
 	}
@@ -464,7 +465,7 @@ nut_check_given (svz_socket_t *sock)
   /* check if we got the whole "GIV " line */
   while (p < sock->recv_buffer + (fill - 1) && memcmp (p, "\n\n", 2))
     p++;
-      
+
   if (p < sock->recv_buffer + (fill - 1) && !memcmp (p, "\n\n", 2))
     {
       len = p + 2 - sock->recv_buffer;
@@ -509,7 +510,7 @@ nut_check_given (svz_socket_t *sock)
 	  svz_log (LOG_NOTICE, "nut: %s already exists\n", file);
 	  return -1;
 	}
-      
+
       /* try creating local file */
       if ((fd = open (file, O_RDWR | O_CREAT | O_BINARY, 0644)) == -1)
 	{
@@ -569,11 +570,11 @@ nut_send_push (nut_config_t *cfg, nut_transfer_t *transfer)
       push.index = transfer->index;
       if ((port = svz_sock_portcfg (sock)) != NULL)
 	addr = svz_portcfg_addr (port);
-      push.ip = cfg->ip ? cfg->ip : addr ? 
+      push.ip = cfg->ip ? cfg->ip : addr ?
 	addr->sin_addr.s_addr : sock->local_addr;
       push.port = (unsigned short) (cfg->port ? cfg->port : addr ?
 				    addr->sin_port : sock->local_port);
-      
+
       /* create push request key and check if it was already sent */
       pushkey = svz_malloc (16 + NUT_GUID_SIZE * 2);
       sprintf (pushkey, "%d:%s", push.index, nut_text_guid (push.id));
@@ -587,9 +588,9 @@ nut_send_push (nut_config_t *cfg, nut_transfer_t *transfer)
 	}
 
       /* try sending header and push request */
-      if (svz_sock_write (sock, (char *) nut_put_header (&hdr), 
+      if (svz_sock_write (sock, (char *) nut_put_header (&hdr),
 			  SIZEOF_NUT_HEADER) == -1 ||
-	  svz_sock_write (sock, (char *) nut_put_push (&push), 
+	  svz_sock_write (sock, (char *) nut_put_push (&push),
 			  SIZEOF_NUT_PUSH) == -1)
 	{
 	  svz_sock_schedule_for_shutdown (sock);
@@ -606,7 +607,7 @@ nut_send_push (nut_config_t *cfg, nut_transfer_t *transfer)
 
 #if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "nut: sent push request to %s:%u\n",
-		  svz_inet_ntoa (sock->remote_addr), 
+		  svz_inet_ntoa (sock->remote_addr),
 		  ntohs (sock->remote_port));
 #endif
 
@@ -618,7 +619,7 @@ nut_send_push (nut_config_t *cfg, nut_transfer_t *transfer)
     }
   return 0;
 }
-	  
+
 /*
  * Destroy database.
  */
@@ -626,7 +627,7 @@ void
 nut_destroy_database (nut_config_t *cfg)
 {
   nut_file_t *entry;
-  
+
   while ((entry = cfg->database) != NULL)
     {
       cfg->database = entry->next;
@@ -717,7 +718,7 @@ nut_read_database_r (nut_config_t *cfg, char *dirname, int depth)
 #endif
 
   /* first call */
-  if (!depth) 
+  if (!depth)
     {
       nut_destroy_database (cfg);
     }
@@ -731,7 +732,7 @@ nut_read_database_r (nut_config_t *cfg, char *dirname, int depth)
 #ifdef __MINGW32__
       if (svz_snprintf (filename, NUT_PATH_SIZE - 1, "%s/*", dirname) == -1)
 	return;
-      
+
       if ((dir = FindFirstFile (filename, &de)) != INVALID_HANDLE)
 #else
       if ((dir = opendir (dirname)) != NULL)
@@ -774,7 +775,7 @@ nut_read_database_r (nut_config_t *cfg, char *dirname, int depth)
 }
 
 /*
- * This routine checks for a valid http header for gnutella upload 
+ * This routine checks for a valid http header for gnutella upload
  * requests.
  */
 int
@@ -877,7 +878,7 @@ nut_init_upload (svz_socket_t *sock, nut_file_t *entry)
   /* create filename */
   file = svz_malloc (strlen (entry->path) + strlen (entry->file) + 2);
   sprintf (file, "%s/%s", entry->path, entry->file);
-  
+
   /* check file */
   if (stat (file, &buf) == -1 || !S_ISREG (buf.st_mode) || buf.st_size <= 0)
     {
@@ -885,7 +886,7 @@ nut_init_upload (svz_socket_t *sock, nut_file_t *entry)
       svz_free (file);
       return -1;
     }
-  
+
   /* open the file for reading */
   if ((fd = open (file, O_RDONLY | O_BINARY)) == -1)
     {
@@ -957,8 +958,8 @@ nut_file_read (svz_socket_t *sock)
 
   do_read = sock->send_buffer_size - sock->send_buffer_fill;
 
-  /* 
-   * This means the send buffer is currently full, we have to 
+  /*
+   * This means the send buffer is currently full, we have to
    * wait until some data has been send via the socket.
    */
   if (do_read <= 0)
@@ -995,8 +996,8 @@ nut_file_read (svz_socket_t *sock)
 #if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "nut: file successfully read\n");
 #endif
-      /* 
-       * no further read()s from the file descriptor, signaling 
+      /*
+       * no further read()s from the file descriptor, signaling
        * the writers there will not be additional data from now on
        */
       sock->read_socket = svz_tcp_read_socket;
@@ -1007,7 +1008,7 @@ nut_file_read (svz_socket_t *sock)
 }
 
 /*
- * This function is the upload callback for the gnutella server. It 
+ * This function is the upload callback for the gnutella server. It
  * throttles its network output to a configured value.
  */
 int
@@ -1026,13 +1027,13 @@ nut_file_write (svz_socket_t *sock)
       return 0;
     }
 
-  /* 
+  /*
    * Write as many bytes as possible, remember how many
    * were actually sent.
    */
-  do_write = (sock->send_buffer_fill > SOCK_MAX_WRITE) 
+  do_write = (sock->send_buffer_fill > SOCK_MAX_WRITE)
     ? SOCK_MAX_WRITE : sock->send_buffer_fill;
-    
+
   num_written = send (sock->sock_desc, sock->send_buffer, do_write, 0);
 
   /* some data has been written */
@@ -1042,7 +1043,7 @@ nut_file_write (svz_socket_t *sock)
 
       if (sock->send_buffer_fill > num_written)
         {
-          memmove (sock->send_buffer, 
+          memmove (sock->send_buffer,
                    sock->send_buffer + num_written,
                    sock->send_buffer_fill - num_written);
         }

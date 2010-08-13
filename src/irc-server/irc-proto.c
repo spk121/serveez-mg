@@ -7,16 +7,16 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
+ * Boston, MA 02111-1307, USA.
  *
  * $Id: irc-proto.c,v 1.41 2003/06/14 14:57:59 ela Exp $
  *
@@ -32,11 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <time.h>
-
-#if HAVE_STRINGS_H
-# include <strings.h>
-#endif
 
 #ifdef __MINGW32__
 # include <winsock2.h>
@@ -111,7 +108,7 @@ svz_key_value_pair_t irc_config_prototype[] =
 #if ENABLE_TIMESTAMP
   SVZ_REGISTER_INT ("tsdelta", irc_config.tsdelta, SVZ_ITEM_DEFAULTABLE),
 #endif
-  SVZ_REGISTER_STR ("admininfo", irc_config.admininfo, 
+  SVZ_REGISTER_STR ("admininfo", irc_config.admininfo,
 		    SVZ_ITEM_NOTDEFAULTABLE),
   SVZ_REGISTER_STR ("M-line", irc_config.MLine, SVZ_ITEM_NOTDEFAULTABLE),
   SVZ_REGISTER_STR ("A-line", irc_config.ALine, SVZ_ITEM_DEFAULTABLE),
@@ -163,7 +160,7 @@ irc_global_init (svz_servertype_t *server)
   printf ("sizeof (irc_ban_t)            = %d\n", sizeof (irc_ban_t));
   printf ("sizeof (irc_channel_t)        = %d\n", sizeof (irc_channel_t));
   printf ("sizeof (irc_client_t)         = %d\n", sizeof (irc_client_t));
-  printf ("sizeof (irc_client_history_t) = %d\n", 
+  printf ("sizeof (irc_client_history_t) = %d\n",
 	  sizeof (irc_client_history_t));
   printf ("sizeof (irc_server_t)         = %d\n", sizeof (irc_server_t));
   printf ("sizeof (irc_user_t)           = %d\n", sizeof (irc_user_t));
@@ -239,11 +236,11 @@ irc_init (svz_server_t *server)
   char tmp[3][256];
 
   /* scan the M line (server configuration) */
-  if (!cfg->MLine || 
-      irc_parse_line (cfg->MLine, "M:%s:%s:%s:%d", 
+  if (!cfg->MLine ||
+      irc_parse_line (cfg->MLine, "M:%s:%s:%s:%d",
 		      tmp[0], tmp[1], tmp[2], &cfg->port) != 4)
     {
-      svz_log (LOG_ERROR, "irc: invalid M line: %s\n", 
+      svz_log (LOG_ERROR, "irc: invalid M line: %s\n",
 	       cfg->MLine ? cfg->MLine : "(nil)");
       return -1;
     }
@@ -259,7 +256,7 @@ irc_init (svz_server_t *server)
   if (!cfg->ALine ||
       irc_parse_line (cfg->ALine, "A:%s:%s:%s", tmp[0], tmp[1], tmp[2]) != 3)
     {
-      svz_log (LOG_ERROR, "irc: invalid A line: %s\n", 
+      svz_log (LOG_ERROR, "irc: invalid A line: %s\n",
 	       cfg->ALine ? cfg->ALine : "(nil)");
       return -1;
     }
@@ -319,7 +316,7 @@ irc_finalize (svz_server_t *server)
 /*
  * Check if a certain client is in a channel. Return -1 if not and
  * return the client's position in the channel list. This is useful to
- * to detect its channel flags. If you passed a valid socket the 
+ * to detect its channel flags. If you passed a valid socket the
  * ERR_NOTONCHANNEL reply is sent to the socket.
  */
 int
@@ -334,7 +331,7 @@ irc_client_in_channel (svz_socket_t *sock,     /* client's socket */
   for (n = 0; n < channel->clients; n++)
     if (channel->client[n] == client)
       return n;
-  
+
   /* not in channel ! */
   if (sock)
     {
@@ -368,7 +365,7 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
 	  /* joined just too many channels ? */
 	  if (client->channels >= cfg->channels_per_user)
 	    {
-	      irc_printf (client->sock, 
+	      irc_printf (client->sock,
 			  ":%s %03d %s " ERR_TOOMANYCHANNELS_TEXT "\n",
 			  cfg->host, ERR_TOOMANYCHANNELS, client->nick,
 			  channel->name);
@@ -376,7 +373,7 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
 	  else
 	    {
 	      channel->client = svz_realloc (channel->client,
-					     sizeof (irc_client_t *) * 
+					     sizeof (irc_client_t *) *
 					     (n + 1));
 	      channel->cflag = svz_realloc (channel->cflag,
 					    sizeof (int) * (n + 1));
@@ -384,12 +381,12 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
 	      channel->cflag[n] = 0;
 	      channel->clients++;
 #if SVZ_ENABLE_DEBUG
-	      svz_log (LOG_DEBUG, "irc: %s joined channel %s\n", 
+	      svz_log (LOG_DEBUG, "irc: %s joined channel %s\n",
 		       client->nick, channel->name);
 #endif
 	      n = client->channels;
-	      client->channel = svz_realloc (client->channel, 
-					     sizeof (irc_channel_t *) * 
+	      client->channel = svz_realloc (client->channel,
+					     sizeof (irc_channel_t *) *
 					     (n + 1));
 	      client->channel[n] = channel;
 	      client->channels++;
@@ -403,7 +400,7 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
       /* check if the client has not joined too many channels */
       if (client->channels >= cfg->channels_per_user)
 	{
-	  irc_printf (client->sock, 
+	  irc_printf (client->sock,
 		      ":%s %03d %s " ERR_TOOMANYCHANNELS_TEXT "\n",
 		      cfg->host, ERR_TOOMANYCHANNELS, client->nick, chan);
 	  return 0;
@@ -420,11 +417,11 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
       channel->since = time (NULL);
 #if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "irc: channel %s created\n", channel->name);
-      svz_log (LOG_DEBUG, "irc: %s joined channel %s\n", 
+      svz_log (LOG_DEBUG, "irc: %s joined channel %s\n",
 	       client->nick, channel->name);
 #endif
       n = client->channels;
-      client->channel = svz_realloc (client->channel, 
+      client->channel = svz_realloc (client->channel,
 				     sizeof (irc_channel_t *) * (n + 1));
       client->channel[n] = channel;
       client->channels++;
@@ -437,7 +434,7 @@ irc_join_channel (irc_config_t *cfg, irc_client_t *client, char *chan)
  * Delete a client of a given channel.
  */
 int
-irc_leave_channel (irc_config_t *cfg, 
+irc_leave_channel (irc_config_t *cfg,
 		   irc_client_t *client, irc_channel_t *channel)
 {
   int n, i, last;
@@ -452,9 +449,9 @@ irc_leave_channel (irc_config_t *cfg,
 	  {
 	    channel->client[n] = channel->client[last];
 	    channel->cflag[n] = channel->cflag[last];
-	    channel->client = svz_realloc (channel->client, 
+	    channel->client = svz_realloc (channel->client,
 					   sizeof (irc_client_t *) * last);
-	    channel->cflag = svz_realloc (channel->cflag, 
+	    channel->cflag = svz_realloc (channel->cflag,
 					  sizeof (int) * last);
 	  }
 	else
@@ -476,8 +473,8 @@ irc_leave_channel (irc_config_t *cfg,
 	      if (--client->channels != 0)
 		{
 		  client->channel[i] = client->channel[last];
-		  client->channel = svz_realloc (client->channel, 
-						 sizeof (irc_channel_t *) * 
+		  client->channel = svz_realloc (client->channel,
+						 sizeof (irc_channel_t *) *
 						 client->channels);
 		}
 	      else
@@ -502,7 +499,7 @@ irc_leave_channel (irc_config_t *cfg,
 }
 
 /*
- * Send an error message if there are not enough arguments given. 
+ * Send an error message if there are not enough arguments given.
  * Return non zero if there are less than necessary.
  */
 int
@@ -551,7 +548,7 @@ irc_client_absent (irc_client_t *client,  /* requested client */
  * then the client is deleted itself.
  */
 int
-irc_leave_all_channels (irc_config_t *cfg, 
+irc_leave_all_channels (irc_config_t *cfg,
 			irc_client_t *client, char *reason)
 {
   irc_channel_t *channel;
@@ -571,13 +568,13 @@ irc_leave_all_channels (irc_config_t *cfg,
 	{
 	  if (channel->client[i] == client)
 	    continue;
-	  
+
 	  cl = channel->client[i];
 	  xsock = cl->sock;
 	  irc_printf (xsock, ":%s!%s@%s QUIT :%s\n",
 		      client->nick, client->user, client->host, reason);
 	}
-	  
+
       /* delete this client of channel */
       irc_leave_channel (cfg, client, channel);
     }
@@ -603,7 +600,7 @@ irc_disconnect (svz_socket_t *sock)
 {
   irc_config_t *cfg = sock->cfg;
   irc_client_t *client = sock->data;
-  
+
   /* is it a valid IRC connection ? */
   if (client)
     {
@@ -630,7 +627,7 @@ irc_idle (svz_socket_t *sock)
       return 0;
     }
 
-  /* 
+  /*
    * Shutdown this connection if the client did not respond
    * within a certain period of time.
    */
@@ -704,8 +701,8 @@ irc_handle_request (svz_socket_t *sock, char *request, int len)
 
   irc_parse_request (request, len);
 
-  /* 
-   * FIXME: server handling not yet done. 
+  /*
+   * FIXME: server handling not yet done.
    * Should be alike: get irc client by message prefix, otherwise special
    *                  server request handling
    */
@@ -714,7 +711,7 @@ irc_handle_request (svz_socket_t *sock, char *request, int len)
 
   for (n = 0; irc_callback[n].request; n++)
     {
-      if (!svz_strcasecmp (irc_callback[n].request, irc_request.request))
+      if (!strcasecmp (irc_callback[n].request, irc_request.request))
 	{
 	  irc_callback[n].count++;
 	  client->recv_bytes += len;
@@ -724,7 +721,7 @@ irc_handle_request (svz_socket_t *sock, char *request, int len)
     }
 
   irc_printf (sock, ":%s %03d %s " ERR_UNKNOWNCOMMAND_TEXT "\n",
-	      cfg->host, ERR_UNKNOWNCOMMAND, 
+	      cfg->host, ERR_UNKNOWNCOMMAND,
 	      client->nick ? client->nick : "", irc_request.request);
 
   return 0;
@@ -748,7 +745,7 @@ irc_delete_channel (irc_config_t *cfg, irc_channel_t *channel)
 	svz_free (channel->ban);
 
       svz_hash_delete (cfg->channels, channel->name);
-      
+
       if (channel->topic)
 	svz_free (channel->topic);
       if (channel->topic_by)
@@ -858,7 +855,7 @@ irc_add_client_history (irc_config_t *cfg, irc_client_t *cl)
  * the history list.
  */
 irc_client_history_t *
-irc_find_nick_history (irc_config_t *cfg, 
+irc_find_nick_history (irc_config_t *cfg,
 		       irc_client_history_t *cl, char *nick)
 {
   irc_client_history_t *client;
@@ -949,7 +946,7 @@ irc_find_userhost (irc_config_t *cfg, char *user, char *host)
     {
       for (n = 0; n < svz_hash_size (cfg->clients); n++)
 	{
-	  if (!strcmp (client[n]->user, user) && 
+	  if (!strcmp (client[n]->user, user) &&
 	      !strcmp (client[n]->host, host))
 	    {
 	      fclient = client[n];
