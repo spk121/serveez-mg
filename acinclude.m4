@@ -170,7 +170,7 @@ AC_DEFUN([AC_GUILE_CONFIGURE], [
         --without-threads --enable-ltdl-convenience --prefix=$prefix \
         --host=$host --build=$build --target=$target --cache-file=$cache_file])
     else
-      AC_MSG_RESULT([The file \`$GUILE_SOURCE/libguile/scmconfig.h' exists.])
+      AC_MSG_RESULT([The file '$GUILE_SOURCE/libguile/scmconfig.h' exists.])
       AC_MSG_RESULT([Guile already configured... skipped.])
     fi
   fi
@@ -181,8 +181,8 @@ AC_DEFUN([AC_GUILE_CHECK], [
     AC_MSG_ERROR([
   The $PACKAGE $VERSION package requires either an installed Guile
   version or an unpacked source tarball at hand.  You can specify the
-  install location by passing \`--with-guile=<directory>' or the source
-  location by passing \`--with-guile-source=<directory>'.  Guile 
+  install location by passing '--with-guile=<directory>' or the source
+  location by passing '--with-guile-source=<directory>'.  Guile 
   version 1.4 is preferred.])
   fi
 ])
