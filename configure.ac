@@ -1410,27 +1410,6 @@ AC_DEFINE_UNQUOTED(svz_c_signed, $signed_defined,
 
 unset signed_defined
 
-dnl
-dnl Checking for working Texi2HTML.
-dnl
-AC_MSG_CHECKING([for working texi2html])
-TEXI2HTML=":"
-[tex=`eval texi2html --version 2>/dev/null | head -1 | sed 's/[^0-9\.]//g'`]
-if test -n "$tex"; then
-case "$tex" in
-  [1.6[4-9] | 1.[789]* | [2-9].*)]
-    AC_MSG_RESULT($tex >= 1.64)
-    TEXI2HTML="texi2html"
-  ;;
-  [*)]
-    AC_MSG_RESULT($tex < 1.64)
-  ;;
-esac
-else
-  AC_MSG_RESULT(missing)
-fi
-AC_SUBST(TEXI2HTML)
-unset tex
 
 dnl
 dnl Checking for RPM builder version

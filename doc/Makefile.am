@@ -6,6 +6,7 @@
 #
 # Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
 # Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 #
 # This is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +28,8 @@ AUTOMAKE_OPTIONS = no-texinfo.tex
 info_TEXINFOS = serveez.texi serveez-api.texi
 serveez_TEXINFOS = guile-api.texi
 man_MANS = serveez.1 serveez-config.1
+AM_MAKEINFOHTMLFLAGS = -o $(builddir)/$@\
+	 -I $(srcdir) -I $(builddir) --no-split $<
 EXTRA_DIST = $(man_MANS) index.html serveez.en.html guile-api.texi.in \
         logo.jpg logosmall.jpg mandel.jpg serveez-api.texi.in \
         serveez-doc-snarf.awk $(srcdir)/Makefile.in $(srcdir)/version.texi 
@@ -115,12 +118,6 @@ site: all-local info
 	$(CP) -rp $(HTML_DIR) $(SITE_DIR)
 	$(CP) -p index.html logosmall.jpg mandel.jpg $(SITE_DIR)/$(HTML_DIR)
 	$(CP) -p $(MANUAL_FILES) $(SITE_DIR)/$(HTML_DIR)
-
-$(HTML_DIR)/serveez.html: serveez.texi guile-api.texi
-	$(TEXI2HTML) -subdir $(HTML_DIR) -I $(srcdir) -I $(builddir) -split_chapter $(srcdir)/serveez.texi
-
-$(HTML_DIR)/serveez-api.html: serveez-api.texi
-	$(TEXI2HTML) -subdir $(HTML_DIR) -I $(srcdir) -I $(builddir) -split_chapter $(builddir)/serveez-api.texi
 
 .texi.info:
 	$(MAKEINFO) -o $(builddir)/$@ -I $(srcdir) -I $(builddir) --no-split $<
