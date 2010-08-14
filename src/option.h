@@ -30,14 +30,7 @@
 # include <config.h>
 #endif
 
-#if HAVE_GETOPT_H
-# include <getopt.h>
-#elif HAVE_UNISTD_H
-# define __EXTENSIONS__
-/* FreeBSD and probably all commercial Un*ces define getopt() 
-   in this specific file */
-# include <unistd.h>
-#endif
+#include <getopt.h>
 
 /*
  * The following structure contains all command line options which might
@@ -54,44 +47,6 @@ typedef struct
   int daemon;      /* start as daemon or not */
 }
 option_t;
-
-/*
- * Defining here the struct and #define's for getopt_long() if it
- * is in libiberty.a but could not be found in getopt.h
- */
-#if defined (HAVE_GETOPT_LONG) && !defined (DECLARED_GETOPT_LONG)
-
-extern char *optarg;
-
-struct option
-{
-  const char *name;
-  int has_arg;
-  int *flag;
-  int val;
-};
-
-#define no_argument       0
-#define required_argument 1
-#define optional_argument 2
-
-extern int getopt_long (int argc, 
-			char * const argv[], 
-			const char *optstring,
-			const struct option *longopts, 
-			int *longindex);
-
-#endif /* DECLARED_GETOPT_LONG */
-
-#ifndef HAVE_GETOPT
-
-int getopt (int argc, char * const argv[], const char *optstring);
-extern char *optarg;
-extern int optind;
-extern int opterr;
-extern int optopt;
-
-#endif /* not HAVE_GETOPT */
 
 option_t *handle_options (int argc, char **argv);
 

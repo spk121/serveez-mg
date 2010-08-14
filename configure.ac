@@ -842,52 +842,6 @@ if test x$define_enable_heap = "xyes" ; then
 fi
 unset define_enable_heap
 
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Checking for getopt() and getopt_long() functions and headers.
-dnl
-
-have_getopt="no"
-have_getopt_long="no"
-AC_CHECK_FUNC(getopt, have_getopt="yes",
-    AC_CHECK_LIB(iberty, getopt, have_getopt="yeslib"))
-if test $have_getopt != "no"; then
-    AC_DEFINE(HAVE_GETOPT, 
-	1, [Define if you have the getopt function.])
-fi
-
-AC_CHECK_FUNC(getopt_long, have_getopt_long="yes",
-    AC_CHECK_LIB(iberty, getopt_long, have_getopt_long="yeslib"))
-
-dnl
-dnl We might declare getopt_long ourselves if the headers do not.
-dnl
-
-if test $have_getopt_long != "no"; then
-  AC_CACHE_CHECK([whether getopt_long is declared], svz_cv_decl_getopt_long,
-    AC_EGREP_HEADER(getopt_long, getopt.h,
-      svz_cv_decl_getopt_long=yes,
-      svz_cv_decl_getopt_long=no))
-  if test $svz_cv_decl_getopt_long = yes ; then
-    AC_DEFINE(DECLARED_GETOPT_LONG, 1, 
-      [Define if the getopt_long function is declared in <getopt.h>.])
-  fi
-fi
-
-if test $have_getopt_long != "no"; then
-    AC_DEFINE(HAVE_GETOPT_LONG, 
-	1, [Define if you have the getopt_long function.])
-fi
-
-if test $have_getopt = "yeslib" -o $have_getopt_long = "yeslib"; then
-    case $host_os in
-    mingw*) LIBS="$LIBS -liberty" ;;
-    *)      SERVEEZ_LIBS="$SERVEEZ_LIBS -liberty" ;;
-    esac
-fi
-unset have_getopt
-unset have_getopt_long
 
 dnl
 dnl Check if libtool copes with SunOS/Solaris.  GNU libtool 1.4.2 and less
@@ -1139,7 +1093,6 @@ fi
 dnl
 dnl Check whether extra net libraries are required.
 dnl
-AC_CHECK_FUNC(connect)
 AC_CHECK_FUNC(socketpair)
 if test $ac_cv_func_socketpair = no; then
   AC_CHECK_LIB(socket, socketpair, 
