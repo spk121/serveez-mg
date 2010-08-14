@@ -1361,7 +1361,7 @@ fi
 dnl
 dnl Check for more functionality used in Serveez.
 dnl
-AC_CHECK_FUNCS(times waitpid)
+AC_CHECK_FUNCS(waitpid)
 
 dnl
 dnl Checks for RPC services.

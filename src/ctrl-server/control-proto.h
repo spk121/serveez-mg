@@ -102,14 +102,9 @@ int ctrl_handle_request (svz_socket_t *sock, char *request, int len);
 # define CPU_FORMAT "no cpu info available"
 #endif
 
-#if HAVE_TIMES
-# define PROC_FORMAT \
+#define PROC_FORMAT \
   "user %ld.%01ld%%, sys %ld.%01ld%%, " \
   "child user %ld.%01ld%%, child sys %ld.%01ld%%"
-#else
-# define PROC_FORMAT \
-  "process %ld.%01ld%%"
-#endif
 
 #if HAVE_PROC_STAT
 # define CPU_FILE_NAME   "/proc/stat"

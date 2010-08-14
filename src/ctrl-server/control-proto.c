@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <sys/times.h>
 
 #ifdef __MINGW32__
 # include <winsock2.h>
@@ -55,9 +56,6 @@
 # include <mach/mach_host.h>
 #endif
 
-#if HAVE_TIMES
-# include <sys/times.h>
-#endif
 
 #include "libserveez.h"
 #include "control-proto.h"
@@ -902,23 +900,15 @@ ctrl_get_cpu_state (void)
   mach_msg_type_number_t count;
 #endif
 
-#if HAVE_TIMES
   struct tms proc_tms;
-#endif
 
   n = (cpu_state.index + 1) & 1;
 
-#if HAVE_TIMES
   cpu_state.ptotal[n] = times (&proc_tms);
   cpu_state.proc[n][0] = proc_tms.tms_utime;
   cpu_state.proc[n][1] = proc_tms.tms_stime;
   cpu_state.proc[n][2] = proc_tms.tms_cutime;
   cpu_state.proc[n][3] = proc_tms.tms_cstime;
-#else /* not HAVE_TIMES */
-  cpu_state.ptotal[n] = cpu_state.ptotal[cpu_state.index] + 
-    (CLOCKS_PER_SEC * CTRL_LOAD_UPDATE);
-  cpu_state.proc[n][0] = clock ();
-#endif /* not HAVE_TIMES */
 
 #if HAVE_LIBKSTAT /* Solaris */
 
