@@ -4,6 +4,7 @@
 #
 # Automake input file for the encoder/decoder interface.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2001, 2003 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -24,7 +25,7 @@
 
 noinst_LTLIBRARIES = libcodec.la
 
-INCLUDES = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
+AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
 
 libcodec_la_LDFLAGS = @NOUNDEFINED@
 libcodec_la_SOURCES = codec.c gzlib.c bzip2.c

@@ -28,8 +28,9 @@ info_TEXINFOS = serveez.texi serveez-api.texi
 serveez_TEXINFOS = guile-api.texi
 man_MANS = serveez.1 serveez-config.1
 EXTRA_DIST = $(man_MANS) index.html serveez.en.html guile-api.texi.in \
-	logo.jpg logosmall.jpg mandel.jpg serveez-api.texi.in \
-	serveez-doc-snarf.awk
+        logo.jpg logosmall.jpg mandel.jpg serveez-api.texi.in \
+        serveez-doc-snarf.awk $(srcdir)/Makefile.in $(srcdir)/version.texi 
+        $(srcdir)/version1.texi ChangeLog mdate-sh
 CLEANFILES = *.info *.tgz *~ *.info-[0-9] stamp-vti* serveez-api.texi \
 	$(SED_FILE) guile-api.texi $(GUILE_SED_FILE) $(HTML_DIR)/*.html \
 	$(GUILE_TXT_FILE)
@@ -63,12 +64,6 @@ MANUAL_FILES = \
 LOCAL_TARGETS = $(GUILE_TXT_FILE) \
   $(HTML_DIR)/serveez.html $(HTML_DIR)/serveez-api.html
 pkgdata_DATA = $(GUILE_TXT_FILE)
-
-# redefines DIST_COMMON?
-
-DIST_COMMON = $(serveez_TEXINFOS) $(srcdir)/Makefile.am \
-        $(srcdir)/Makefile.in $(srcdir)/version.texi $(srcdir)/version1.texi \
-	ChangeLog mdate-sh
 
  # local dependencies
 

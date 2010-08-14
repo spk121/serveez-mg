@@ -4,6 +4,7 @@
 #
 # Human readable control protocol.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org> 
 # Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
 #
@@ -28,6 +29,6 @@ noinst_LIBRARIES = libctrl.a
 libctrl_a_SOURCES = \
 	control-proto.c control-proto.h
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in

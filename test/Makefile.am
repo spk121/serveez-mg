@@ -4,6 +4,7 @@
 #
 # Automake input file for the test directory.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -44,7 +45,7 @@ codec_test_SOURCES = codec-test.c
 codec_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 prog_test_SOURCES = prog-test.c
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 
 CLEANFILES = *~ *.orig *.rej
 MAINTAINERCLEANFILES = Makefile.in \

@@ -4,6 +4,7 @@
 #
 # Automake input file for the internal coservers.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
 # Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
 #
@@ -25,7 +26,7 @@
 
 noinst_LTLIBRARIES = libcoserver.la
 
-INCLUDES = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
+AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
 
 libcoserver_la_LDFLAGS = @NOUNDEFINED@
 libcoserver_la_SOURCES = coserver.c dns.c ident.c reverse-dns.c

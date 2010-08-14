@@ -4,6 +4,7 @@
 #
 # Automake input file.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000, 2001, 2002 Stefan Jahn <stefan@lkcc.org>
 # Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
 # Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
@@ -71,7 +72,7 @@ serveez_LDADD = $(resource_OBJECTS) $(PROTOLIBS) \
 	libserveez/libserveez.la $(SERVEEZ_LIBS)
 
 serveez_LDFLAGS = $(GUILE_LDFLAGS) $(SERVEEZ_LDFLAGS)
-INCLUDES = $(GUILE_CFLAGS) $(SERVEEZ_CFLAGS)
+AM_CPPFLAGS = $(GUILE_CFLAGS) $(SERVEEZ_CFLAGS)
 
 mkpassword_SOURCES = mkpassword.c
 

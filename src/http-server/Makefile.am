@@ -4,6 +4,7 @@
 #
 # Small and fast minimal webserver.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org>
 #
@@ -32,6 +33,6 @@ libhttp_a_SOURCES = \
 	http-proto.c http-proto.h \
 	http-core.c http-core.h
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in

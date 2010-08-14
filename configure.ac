@@ -7,6 +7,7 @@ dnl
 dnl Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
 dnl Copyright (C) 2000, 2001 Raimund Jacob <raimi@lkcc.org>
 dnl Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+dnl Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 dnl
 dnl This is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -29,12 +30,13 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Initialize autoconf and automake
 dnl
-AC_INIT(serveez,0.1.7,bug-serveez@gnu.org)
+AC_INIT([serveez],[0.1.7],[bug-serveez@gnu.org])
+AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE(serveez,0.1.7,no-define)
-AM_CONFIG_HEADER(config.h src/svzconfig.h)
+AM_INIT_AUTOMAKE([gnu -Wall])
+AC_CONFIG_HEADERS([config.h src/svzconfig.h])
 
 dnl
 dnl Determine if maintainer portions of the Makefiles should be included.
@@ -48,33 +50,11 @@ dnl Check for a proper C compiler.
 dnl
 AC_PROG_CC
 
-AC_C_CONST
 const_defined="const"
-if test $ac_cv_c_const = no; then
-  const_defined=""
-fi
 AC_DEFINE_UNQUOTED(svz_c_const, $const_defined,
   [Define to empty if the keyword does not work.])
-unset const_defined
 
-AC_CACHE_CHECK([whether byte ordering is bigendian], svz_cv_sys_bigendian,
-[AC_TRY_RUN([#include <stdio.h>
-  #include <string.h>
-  main () {
-    unsigned char c_big[] = {0x12, 0x34};
-    unsigned short s_big = 0x1234;
-    if (!memcmp (c_big, &s_big, sizeof (char) * 2))
-      exit (0);
-    exit (1);}],
-  svz_cv_sys_bigendian=yes,
-  svz_cv_sys_bigendian=no,
-  svz_cv_sys_bigendian=no)])
-
-if test $svz_cv_sys_bigendian = yes ; then
-  AC_DEFINE(WORDS_BIGENDIAN, 1, 
-  [Define if your processor stores words with the most significant 
-   byte first (like Motorola and SPARC, unlike Intel and VAX).])
-fi
+AC_C_BIGENDIAN
 
 AC_CHECK_SIZEOF(long, 4)
 AC_CHECK_SIZEOF(void *, 4)
@@ -87,8 +67,8 @@ dnl Locate required external software.
 dnl
 AC_PROG_INSTALL
 AC_PROG_AWK
-AC_CHECK_PROG(AR, ar, ar, :)
-AC_CHECK_PROG(WINDRES, windres, windres, :)
+AC_CHECK_PROG([AR], [ar], [ar], :)
+AC_CHECK_PROG([WINDRES], [windres], [windres], [:])
 
 dnl ----------------------------------------------------------------------
 
@@ -160,8 +140,8 @@ if test "x$define_enable_warn" = "xyes" ; then
   for flag in $warnflags; do
     CFLAGS="$flag"
     AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-    AC_TRY_COMPILE(,,warn_cflags="$warn_cflags $CFLAGS"
-      AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+    AC_COMPILE_IFELSE(,,[warn_cflags="$warn_cflags $CFLAGS"
+      AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
   done
   unset warnflags
 
@@ -211,18 +191,18 @@ if test $define_enable_opt = yes ; then
     for flag in $optflags; do
       CFLAGS="$flag"
       AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-      AC_TRY_COMPILE(,,opt_cflags="$opt_cflags $CFLAGS" 
-        AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+      AC_COMPILE_IFELSE(,,[opt_cflags="$opt_cflags $CFLAGS"
+        AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
     done
     unset optflags
     CFLAGS="-m486"
     AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-    AC_TRY_COMPILE(,,opt_is486="yes"; AC_MSG_RESULT([yes]), 
-		     opt_is486="no";  AC_MSG_RESULT([no]))
+    AC_COMPILE_IFELSE(,,[opt_is486="yes"; AC_MSG_RESULT([yes])],
+                        [opt_is486="no";  AC_MSG_RESULT([no])])
     CFLAGS="-march=pentiumpro"
     AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-    AC_TRY_COMPILE(,,opt_isPPro="yes"; AC_MSG_RESULT([yes]), 
-		     opt_isPPro="no";  AC_MSG_RESULT([no]))
+    AC_COMPILE_IFELSE(,,[opt_isPPro="yes"; AC_MSG_RESULT([yes])],
+                        [opt_isPPro="no";  AC_MSG_RESULT([no])])
 
   dnl Other compiler than GNU C
   else
@@ -230,8 +210,8 @@ if test $define_enable_opt = yes ; then
     for flag in $optflags; do
       CFLAGS="$flag"
       AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-      AC_TRY_COMPILE(,,opt_cflags="$opt_cflags $CFLAGS" 
-        AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+      AC_COMPILE_IFELSE(,,[opt_cflags="$opt_cflags $CFLAGS"
+        AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
     done
     unset optflags
   fi
@@ -248,15 +228,15 @@ if test $define_enable_opt = yes ; then
   for flag in $optflags; do
     CFLAGS="$flag"
     AC_MSG_CHECKING([whether $CC accepts $CFLAGS])
-    AC_TRY_COMPILE(,,opt_cflags="$opt_cflags $CFLAGS" 
-      AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+    AC_COMPILE_IFELSE(,,[opt_cflags="$opt_cflags $CFLAGS"
+      AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
   done
   unset optflags
 
   LDFLAGS="-s"
   AC_MSG_CHECKING([whether $CC accepts $LDFLAGS])
-  AC_TRY_LINK(,,opt_ldflags="$opt_ldflags $LDFLAGS" 
-    AC_MSG_RESULT([yes]), AC_MSG_RESULT([no]))
+  AC_LINK_IFELSE(,,[opt_ldflags="$opt_ldflags $LDFLAGS" 
+    AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
   if test x$opt_isPPro = "xyes" ; then
     AC_MSG_CHECKING([whether to enable i686 optimizations])
@@ -784,8 +764,7 @@ dnl
 dnl Checking for libtool support.
 dnl 
 
-AC_LIBTOOL_WIN32_DLL
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll])
 
 dnl ----------------------------------------------------------------------
 
@@ -869,12 +848,6 @@ unset define_enable_heap
 dnl ----------------------------------------------------------------------
 
 dnl
-dnl Check for system header files.
-dnl
-
-AC_HEADER_STDC
-
-dnl
 dnl Checking for getopt() and getopt_long() functions and headers.
 dnl
 
@@ -934,11 +907,11 @@ dnl do not provide).
 dnl
 
 AC_CACHE_CHECK([for timezone and daylight variables], svz_cv_var_timezone,
-  AC_TRY_LINK(
+  AC_LINK_IFELSE(
     [extern long int timezone; extern int daylight;],
     [long int t = timezone; int d = daylight; return (d + t);],
-    svz_cv_var_timezone=yes,
-    svz_cv_var_timezone=no))
+    [svz_cv_var_timezone=yes],
+    [svz_cv_var_timezone=no]))
 
 if test $svz_cv_var_timezone = yes ; then
   AC_DEFINE(HAVE_TIMEZONE, 1, [Define if you have timezone and daylight.])
@@ -949,8 +922,7 @@ dnl bzero() is defined in <strings.h> on AIX, used by FD_ZERO()
 dnl There is no <wait.h> on AIX, but <sys/wait.h>.
 dnl
 
-AC_CHECK_HEADERS(wait.h strings.h)
-AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([wait.h strings.h])
 
 AC_CHECK_FUNC(strcasecmp,
   AC_DEFINE(HAVE_STRCASECMP, 1, [Define if you have the strcasecmp function.]),
@@ -988,11 +960,12 @@ dnl
 dnl Some installations need <sys/types.h> before <netinet/tcp.h>.
 dnl
 AC_CACHE_CHECK([for netinet/tcp.h], svz_cv_header_netinet_tcp_h,
-AC_TRY_CPP([
+AC_PREPROC_IFELSE([
+    AC_LANG_SOURCE([[
     #include <sys/types.h>
-    #include <netinet/tcp.h> ],
-  svz_cv_header_netinet_tcp_h=yes,
-  svz_cv_header_netinet_tcp_h=no))
+    #include <netinet/tcp.h> ]])],
+  [svz_cv_header_netinet_tcp_h=yes],
+  [svz_cv_header_netinet_tcp_h=no]))
 if test $svz_cv_header_netinet_tcp_h = yes ; then
   AC_DEFINE(HAVE_NETINET_TCP_H, 1, 
     [Define if you have the <netinet/tcp.h> header file.])
@@ -1238,7 +1211,8 @@ dnl  fixed but we do not really know. To work around we implement inet_ntoa()
 dnl  on our own if it does not work.
 dnl
 AC_CACHE_CHECK([whether inet_ntoa is broken], svz_cv_func_inet_ntoa_broken,
-AC_TRY_RUN([#include <stdio.h>
+AC_RUN_IFELSE([AC_LANG_SOURCE(
+    [[#include <stdio.h>
     #include <sys/types.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>
@@ -1247,10 +1221,10 @@ AC_TRY_RUN([#include <stdio.h>
 	ip.s_addr = htonl (0x12345678);
 	if (strcmp (inet_ntoa (ip), "18.52.86.120"))
 	    exit (0);
-	exit (1);}],
-   svz_cv_func_inet_ntoa_broken=yes,
-   svz_cv_func_inet_ntoa_broken=no,
-   svz_cv_func_inet_ntoa_broken=no))
+	exit (1);}]])],
+   [svz_cv_func_inet_ntoa_broken=yes],
+   [svz_cv_func_inet_ntoa_broken=no],
+   [svz_cv_func_inet_ntoa_broken=no]))
 
 if test $svz_cv_func_inet_ntoa_broken = yes ; then
    AC_DEFINE(BROKEN_INET_NTOA, 1, [Define if inet_ntoa function is broken.])
@@ -1304,7 +1278,8 @@ AC_CHECK_HEADERS([mswsock.h], [], [],
 dnl
 dnl Determine the return type of signal handlers.
 dnl
-AC_TYPE_SIGNAL
+
+ac_cv_type_signal="void"
 if test $ac_cv_type_signal != void ; then
     AC_DEFINE(NONVOID_SIGNAL, 1, [Define if signal()s are non-void.])
 fi
@@ -1434,30 +1409,17 @@ dnl
 dnl Find a working signed keyword.
 dnl
 AC_CACHE_CHECK([for working signed], svz_cv_c_signed,
-[AC_TRY_COMPILE([#include <stdio.h>],
+[AC_COMPILE_IFELSE([#include <stdio.h>],
   [signed char have_signed = (signed char) 0;],
-  svz_cv_c_signed=yes
-  signed_defined="signed",
-  svz_cv_c_signed=no
-  signed_defined="")])
+  [svz_cv_c_signed=yes
+  signed_defined="signed"],
+  [svz_cv_c_signed=no
+  signed_defined=""])])
 
 AC_DEFINE_UNQUOTED(svz_c_signed, $signed_defined,
   [Define to empty if the keyword does not work.])
 
 unset signed_defined
-
-dnl
-dnl Check for working Tex.
-dnl
-AC_MSG_CHECKING([for working texi2dvi])
-TEXI2DVI="texi2dvi"
-if test "x`eval tex --version 2>/dev/null`" = "x"; then
-  AC_MSG_RESULT(missing)
-  TEXI2DVI=":"
-else
-  AC_MSG_RESULT($TEXI2DVI)
-fi
-AC_SUBST(TEXI2DVI)
 
 dnl
 dnl Checking for working Texi2HTML.
@@ -1570,7 +1532,7 @@ AC_SUBST(SERVEEZ_CONFIG_LDFLAGS)
 dnl
 dnl Output files.
 dnl
-AC_OUTPUT(
+AC_CONFIG_FILES([
     Makefile src/Makefile src/libserveez/Makefile
     src/libserveez/coserver/Makefile
     src/libserveez/codec/Makefile
@@ -1588,11 +1550,13 @@ AC_OUTPUT(
     src/prog-server/Makefile
     src/guile-server/Makefile
     doc/Makefile 
+    doc/serveez-api.texi
     data/Makefile
     test/Makefile
     redhat.sh
     debian.sh
-    version.h)
+    version.h])
+AC_OUTPUT
 
 dnl
 dnl Apply executable permissions to scripts.

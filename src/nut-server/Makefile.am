@@ -4,6 +4,7 @@
 #
 # Gnutella spider.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -32,6 +33,6 @@ libnut_a_SOURCES = \
 	nut-hostlist.c nut-hostlist.h \
 	nut-request.c nut-request.h
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in

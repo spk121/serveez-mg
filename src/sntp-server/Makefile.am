@@ -4,6 +4,7 @@
 #
 # Simple network time protocol server.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -27,6 +28,6 @@ noinst_LIBRARIES = libsntp.a
 libsntp_a_SOURCES = \
 	sntp-proto.h sntp-proto.c
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFlAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in

@@ -4,6 +4,7 @@
 #
 # Automake input file for the serveez core library.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -66,7 +67,7 @@ svzpath.h: $(srcdir)/svzpath.h.in $(srcdir)/Makefile.in
 
 noinst_HEADERS = ipdata.h iphlpapi.h
 
-INCLUDES = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
+AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
 
 CLEANFILES = *~ *.orig *.rej svzpath.h
 

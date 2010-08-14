@@ -4,6 +4,7 @@
 #
 # Port forwarder for TCP, UDP and ICMP.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -27,6 +28,6 @@ noinst_LIBRARIES = libtunnel.a
 libtunnel_a_SOURCES = \
 	tunnel.c tunnel.h
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in

@@ -4,6 +4,7 @@
 #
 # Automake input file for an example server.
 #
+# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
 # Copyright (C) 2000 Stefan Jahn <stefan@lkcc.org>
 #
@@ -28,6 +29,6 @@ noinst_LIBRARIES = libfoo.a
 libfoo_a_SOURCES = \
 	foo-proto.h foo-proto.c
 
-INCLUDES = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in
