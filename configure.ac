@@ -49,7 +49,7 @@ dnl
 dnl Check for a proper C compiler.
 dnl
 AC_PROG_CC
-
+gl_EARLY
 AC_C_BIGENDIAN
 
 AC_CHECK_SIZEOF(long, 4)
@@ -65,6 +65,7 @@ AC_PROG_INSTALL
 AC_PROG_AWK
 AC_CHECK_PROG([AR], [ar], [ar], :)
 AC_CHECK_PROG([WINDRES], [windres], [windres], [:])
+gl_INIT
 
 dnl ----------------------------------------------------------------------
 
@@ -1475,7 +1476,9 @@ dnl
 dnl Output files.
 dnl
 AC_CONFIG_FILES([
-    Makefile src/Makefile src/libserveez/Makefile
+    Makefile
+    lib/Makefile
+    src/Makefile src/libserveez/Makefile
     src/libserveez/coserver/Makefile
     src/libserveez/codec/Makefile
     src/serveez-config
