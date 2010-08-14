@@ -1275,13 +1275,6 @@ dnl
 dnl Determine the return type of signal handlers.
 dnl
 
-ac_cv_type_signal="void"
-if test $ac_cv_type_signal != void ; then
-    AC_DEFINE(NONVOID_SIGNAL, 1, [Define if signal()s are non-void.])
-fi
-AC_DEFINE_UNQUOTED(svz_t_retsig, $ac_cv_type_signal,
-  [Define the signal()'s detected return type.])
-
 AC_TYPE_SIZE_T
 size_t_defined="size_t"
 if test $ac_cv_type_size_t = no; then

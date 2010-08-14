@@ -4,6 +4,7 @@
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +86,7 @@ SERVEEZ_API void svz_loop __PARAMS ((void));
 SERVEEZ_API void svz_loop_one __PARAMS ((void));
 SERVEEZ_API void svz_signal_up __PARAMS ((void));
 SERVEEZ_API void svz_signal_dn __PARAMS ((void));
-SERVEEZ_API svz_t_retsig svz_signal_handler __PARAMS ((int));
+SERVEEZ_API void svz_signal_handler __PARAMS ((int));
 SERVEEZ_API void svz_strsignal_init __PARAMS ((void));
 SERVEEZ_API void svz_strsignal_destroy __PARAMS ((void));
 SERVEEZ_API char *svz_strsignal __PARAMS ((int));
