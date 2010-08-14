@@ -2,6 +2,7 @@
  * server-socket.c - server sockets for TCP, UDP, ICMP and pipes
  *
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -355,14 +356,11 @@ svz_pipe_accept (svz_socket_t *server_sock)
   DWORD connect;
 #endif
 
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD) || defined (__MINGW32__)
   svz_t_handle recv_pipe, send_pipe;
   svz_socket_t *sock;
   svz_portcfg_t *port = server_sock->port;
   server_sock->idle_counter = 1;
-#endif
 
-#if HAVE_MKFIFO || HAVE_MKNOD
   /* 
    * Try opening the server's send pipe. This will fail 
    * until the client has opened it for reading.
@@ -386,123 +384,6 @@ svz_pipe_accept (svz_socket_t *server_sock)
       return 0;
     }
 
-#elif defined (__MINGW32__) /* not HAVE_MKFIFO */
-
-  recv_pipe = server_sock->pipe_desc[READ];
-  send_pipe = server_sock->pipe_desc[WRITE];
-
-  /* Try connecting to one of these pipes. This will fail until a client 
-     has been connected. */
-  if (server_sock->flags & SOCK_FLAG_CONNECTING)
-    {
-      if (!GetOverlappedResult (send_pipe, server_sock->overlap[WRITE], 
-                                &connect, FALSE))
-        {
-          if (GetLastError () != ERROR_IO_INCOMPLETE)
-            {
-              svz_log (LOG_ERROR, "pipe: GetOverlappedResult: %s\n", 
-		       SYS_ERROR);
-              return -1;
-            }
-	  return 0;
-        }
-      else
-	{
-	  server_sock->flags &= ~SOCK_FLAG_CONNECTING;
-	  svz_log (LOG_NOTICE, "pipe: send pipe %s connected\n",
-		   server_sock->send_pipe);
-	}
-
-      if (!GetOverlappedResult (recv_pipe, server_sock->overlap[READ], 
-                                &connect, FALSE))
-        {
-          if (GetLastError () != ERROR_IO_INCOMPLETE)
-            {
-              svz_log (LOG_ERROR, "pipe: GetOverlappedResult: %s\n", 
-		       SYS_ERROR);
-              return -1;
-            }
-	  return 0;
-        }
-      else
-	{
-	  server_sock->flags &= ~SOCK_FLAG_CONNECTING;
-	  svz_log (LOG_NOTICE, "pipe: receive pipe %s connected\n",
-		   server_sock->recv_pipe);
-	}
-    }
-
-  /* Try to schedule both of the named pipes for connection. */
-  else
-    {
-      if (ConnectNamedPipe (send_pipe, server_sock->overlap[WRITE]))
-	return 0;
-      connect = GetLastError ();
-
-      /* Pipe is listening ? */
-      if (connect == ERROR_PIPE_LISTENING)
-	return 0;
-      /* Connection in progress ? */
-      else if (connect == ERROR_IO_PENDING)
-	server_sock->flags |= SOCK_FLAG_CONNECTING;
-      /* Pipe finally connected ? */
-      else if (connect != ERROR_PIPE_CONNECTED)
-	{
-	  svz_log (LOG_ERROR, "ConnectNamedPipe: %s\n", SYS_ERROR);
-	  return -1;
-	}
-
-      if (ConnectNamedPipe (recv_pipe, server_sock->overlap[READ]))
-	return 0;
-      connect = GetLastError ();
-
-      /* Pipe is listening ? */
-      if (connect == ERROR_PIPE_LISTENING)
-	return 0;
-      /* Connection in progress ? */
-      else if (connect == ERROR_IO_PENDING)
-	server_sock->flags |= SOCK_FLAG_CONNECTING;
-      /* Pipe finally connected ? */
-      else if (connect != ERROR_PIPE_CONNECTED)
-	{
-	  svz_log (LOG_ERROR, "ConnectNamedPipe: %s\n", SYS_ERROR);
-	  return -1;
-	}
-
-      /* Both pipes scheduled for connection ? */
-      if (server_sock->flags & SOCK_FLAG_CONNECTING)
-	{
-	  svz_log (LOG_NOTICE, "connection scheduled for pipe (%d-%d)\n",
-		   recv_pipe, send_pipe);
-	  return 0;
-	}
-    }
-
-  /* Create a socket structure for the client pipe. */
-  if ((sock = svz_pipe_create (recv_pipe, send_pipe)) == NULL)
-    {
-      /* Just disconnect the client pipes. */
-      if (!DisconnectNamedPipe (send_pipe))
-	svz_log (LOG_ERROR, "DisconnectNamedPipe: %s\n", SYS_ERROR);
-      if (!DisconnectNamedPipe (recv_pipe))
-	svz_log (LOG_ERROR, "DisconnectNamedPipe: %s\n", SYS_ERROR);
-      return 0;
-    }
-
-  /* Copy overlapped structures to client pipes. */
-  if (svz_os_version >= WinNT4x)
-    {
-      sock->overlap[READ] = server_sock->overlap[READ];
-      sock->overlap[WRITE] = server_sock->overlap[WRITE];
-    }
-
-#else /* not __MINGW32__ */
-
-  return -1;
-
-#endif /* neither HAVE_MKFIFO nor __MINGW32__ */
-
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD) || defined (__MINGW32__)
   sock->read_socket = svz_pipe_read_socket;
   sock->write_socket = svz_pipe_write_socket;
   svz_sock_setreferrer (sock, server_sock);
@@ -530,5 +411,4 @@ svz_pipe_accept (svz_socket_t *server_sock)
       svz_sock_schedule_for_shutdown (sock);
 
   return 0;
-#endif /* HAVE_MKFIFO or __MINGW32__ */
 }

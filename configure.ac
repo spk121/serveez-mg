@@ -804,7 +804,7 @@ dnl
 dnl Check whether to include support for named pipes under Linux.
 dnl
 
-AC_CHECK_FUNCS(mkfifo mknod sendfile)
+AC_CHECK_FUNCS(sendfile)
 
 dnl
 dnl Create additional CFLAGS for MinGW32 and CygWin.

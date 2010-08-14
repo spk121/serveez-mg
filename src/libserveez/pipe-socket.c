@@ -2,6 +2,7 @@
  * pipe-socket.c - pipes in socket structures
  *
  * Copyright (C) 2000, 2001, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -975,13 +976,8 @@ svz_pipe_connect (svz_pipe_t *recv, svz_pipe_t *send)
   return sock;
 }
 
-#if HAVE_MKFIFO
-# define MKFIFO(path, mode) mkfifo (path, mode)
-# define MKFIFO_FUNC "mkfifo"
-#else
-# define MKFIFO(path, mode) mknod (path, mode | S_IFIFO, 0)
-# define MKFIFO_FUNC "mknod"
-#endif
+#define MKFIFO(path, mode) mkfifo (path, mode)
+#define MKFIFO_FUNC "mkfifo"
 
 /*
  * Prepare the server socket structure @var{sock} for listening 
@@ -991,12 +987,9 @@ svz_pipe_connect (svz_pipe_t *recv, svz_pipe_t *send)
 int
 svz_pipe_listener (svz_socket_t *sock, svz_pipe_t *recv, svz_pipe_t *send)
 {
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD)
   struct stat buf;
   unsigned int mask, uid, gid;
-#endif
 
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD) || defined (__MINGW32__)
 #ifdef __MINGW32__
   svz_t_handle send_pipe;
 #endif
@@ -1008,9 +1001,7 @@ svz_pipe_listener (svz_socket_t *sock, svz_pipe_t *recv, svz_pipe_t *send)
   /* Pipe requested via port configuration ? */
   if (!sock->recv_pipe || !sock->send_pipe)
     return -1;
-#endif
 
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD)
   /* Test if both of the named pipes have been created yet. If not then 
      create them locally. */
   if (stat (sock->recv_pipe, &buf) == -1)
@@ -1086,67 +1077,6 @@ svz_pipe_listener (svz_socket_t *sock, svz_pipe_t *recv, svz_pipe_t *send)
   sock->pipe_desc[READ] = recv_pipe;
   sock->flags |= SOCK_FLAG_RECV_PIPE;
 
-#elif defined (__MINGW32__) /* not (HAVE_MKFIFO || HAVE_MKNOD) */
-
-  /*
-   * Create both of the named pipes and put the handles into
-   * the server socket structure.
-   */
-  recv_pipe = CreateNamedPipe (
-    sock->recv_pipe,                            /* path */
-    PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED, /* receive + overlapped */
-    PIPE_READMODE_BYTE | PIPE_WAIT,             /* binary + blocking */
-    1,                                          /* one instance only */
-    0, 0,                                       /* default buffer sizes */
-    100,                                        /* timeout in ms */
-    NULL);                                      /* no security */
-
-  if (recv_pipe == INVALID_HANDLE || !recv_pipe)
-    {
-      svz_log (LOG_ERROR, "pipe: CreateNamedPipe: %s\n", SYS_ERROR);
-      return -1;
-    }
-  sock->pipe_desc[READ] = recv_pipe;
-  sock->flags |= SOCK_FLAG_RECV_PIPE;
-
-  send_pipe = CreateNamedPipe (
-    sock->send_pipe,                             /* path */
-    PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED, /* send + overlapped */
-    PIPE_TYPE_BYTE | PIPE_WAIT,                  /* binary + blocking */
-    1,                                           /* one instance only */
-    0, 0,                                        /* default buffer sizes */
-    100,                                         /* timeout in ms */
-    NULL);                                       /* no security */
-      
-  if (send_pipe == INVALID_HANDLE || !send_pipe)
-    {
-      svz_log (LOG_ERROR, "pipe: CreateNamedPipe: %s\n", SYS_ERROR);
-      return -1;
-    }
-  sock->pipe_desc[WRITE] = send_pipe;
-  sock->flags |= SOCK_FLAG_SEND_PIPE;
-
-  /*
-   * Initialize the overlapped structures for this server socket. Each
-   * client connected gets it passed.
-   */
-  if (svz_os_version >= WinNT4x)
-    {
-      sock->overlap[READ] = svz_malloc (sizeof (OVERLAPPED));
-      memset (sock->overlap[READ], 0, sizeof (OVERLAPPED));
-      sock->overlap[WRITE] = svz_malloc (sizeof (OVERLAPPED));
-      memset (sock->overlap[WRITE], 0, sizeof (OVERLAPPED));
-    }
-
-#else /* not __MINGW32__ */
-
-  return -1;
-
-#endif /* neither HAVE_MKFIFO nor __MINGW32__ */
-
-#if defined (HAVE_MKFIFO) || defined (HAVE_MKNOD) || defined (__MINGW32__)
 
   return 0;
-
-#endif /* HAVE_MKFIFO or __MINGW32__ */
 }
