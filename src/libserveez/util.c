@@ -45,6 +45,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <errno.h>
+#include <sys/utsname.h>
 
 #if HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -65,10 +66,6 @@
 
 #ifdef __MINGW32__
 # include <winsock2.h>
-#endif
-
-#if HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
 #endif
 
 #include "libserveez/alloc.h"
@@ -545,69 +542,14 @@ svz_sys_version (void)
 {
   static char os[256] = ""; /* contains the os string */
 
-#ifdef __MINGW32__
-  static char ver[][6] =
-    { " 32s", " 95", " 98", " NT", " NT", " 2000", " XP", " ME" };
-  OSVERSIONINFO osver;
-#elif HAVE_SYS_UTSNAME_H
   struct utsname buf;
-#endif
 
   /* detect only once */
   if (os[0])
     return os;
 
-#ifdef __MINGW32__ /* Windows */
-  osver.dwOSVersionInfoSize = sizeof (osver);
-  if (!GetVersionEx (&osver))
-    {
-      svz_log (LOG_ERROR, "GetVersionEx: %s\n", SYS_ERROR);
-      sprintf (os, "unknown Windows");
-    }
-  else
-    {
-      switch (osver.dwPlatformId)
-	{
-	case VER_PLATFORM_WIN32_NT: /* NT, Windows 2000 or Windows XP */
-	  if (osver.dwMajorVersion == 4)
-	    svz_os_version = WinNT4x;
-	  else if (osver.dwMajorVersion <= 3)
-	    svz_os_version = WinNT3x;
-	  else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
-	    svz_os_version = Win2k;
-	  else if (osver.dwMajorVersion >= 5)
-	    svz_os_version = WinXP;
-	  break;
-
-	case VER_PLATFORM_WIN32_WINDOWS: /* Win95 or Win98 */
-	  if ((osver.dwMajorVersion > 4) ||
-	      ((osver.dwMajorVersion == 4) && (osver.dwMinorVersion > 0)))
-	    {
-	      if (osver.dwMinorVersion >= 90)
-		svz_os_version = WinME;
-	      else
-		svz_os_version = Win98;
-	    }
-	  else
-	    svz_os_version = Win95;
-	  break;
-
-	case VER_PLATFORM_WIN32s: /* Windows 3.x */
-	  svz_os_version = Win32s;
-	  break;
-	}
-
-      sprintf (os, "Windows%s %ld.%02ld %s%s(Build %ld)",
-	       ver[svz_os_version], 
-	       osver.dwMajorVersion, osver.dwMinorVersion,
-	       osver.szCSDVersion, osver.szCSDVersion[0] ? " " : "",
-	       osver.dwBuildNumber & 0xFFFF);
-    }
-#elif HAVE_UNAME /* !__MINGW32__ */
   uname (&buf);
   sprintf (os, "%s %s on %s", buf.sysname, buf.release, buf.machine);
-#endif /* not HAVE_UNAME */
-
   return os;
 }
 

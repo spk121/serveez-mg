@@ -1067,13 +1067,6 @@ AC_SUBST(CODECLIBS)
 
 dnl ----------------------------------------------------------------------
 
-dnl Check for 'uname' interface.
-
-AC_CHECK_HEADERS(sys/utsname.h)
-AC_CHECK_FUNCS(uname)
-
-dnl ----------------------------------------------------------------------
-
 dnl Check for the 'kstat' interface on Solaris.
 
 AC_CHECK_LIB(kstat, kstat_open,
