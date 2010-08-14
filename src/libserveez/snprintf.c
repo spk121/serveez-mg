@@ -2,6 +2,7 @@
  * snprintf.c - (v)snprintf function implementation
  *
  * Copyright (C) 2000, 2001, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -35,7 +36,7 @@
  * @code{vsprintf()} if @code{vsnprintf()} does not exist.
  */
 int 
-svz_snprintf (char *str, unsigned int n, svz_c_const char *fmt, ...)
+svz_snprintf (char *str, unsigned int n, const char *fmt, ...)
 {
   int ret;
   va_list args;

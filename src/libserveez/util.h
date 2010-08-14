@@ -4,6 +4,7 @@
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -43,8 +44,8 @@
 #if __CRYPT_IMPORT__
 #include <crypt.h>
 #else
-extern char *crypt __PARAMS ((svz_c_const char *, svz_c_const char *));
-extern char *getpass __PARAMS ((svz_c_const char *));
+extern char *crypt __PARAMS ((const char *, const char *));
+extern char *getpass __PARAMS ((const char *));
 #endif /* __CRYPT_IMPORT__ */
 #endif
 
@@ -67,16 +68,16 @@ typedef unsigned char svz_uint8_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API void svz_log __PARAMS ((int, svz_c_const char *, ...));
+SERVEEZ_API void svz_log __PARAMS ((int, const char *, ...));
 SERVEEZ_API void svz_log_setfile __PARAMS ((FILE *));
 
 SERVEEZ_API int svz_hexdump __PARAMS ((FILE *, char *, int, char *, int, int));
 SERVEEZ_API char *svz_itoa __PARAMS ((unsigned int));
 SERVEEZ_API unsigned int svz_atoi __PARAMS ((char *));
-SERVEEZ_API int svz_strcasecmp __PARAMS ((svz_c_const char *, 
-					  svz_c_const char *));
-SERVEEZ_API int svz_strncasecmp __PARAMS ((svz_c_const char *,
-					   svz_c_const char *, unsigned int));
+SERVEEZ_API int svz_strcasecmp __PARAMS ((const char *, 
+					  const char *));
+SERVEEZ_API int svz_strncasecmp __PARAMS ((const char *,
+					   const char *, unsigned int));
 SERVEEZ_API char *svz_getcwd __PARAMS ((void));
 SERVEEZ_API int svz_openfiles __PARAMS ((int));
 SERVEEZ_API char *svz_time __PARAMS ((long));

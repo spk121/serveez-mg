@@ -2,6 +2,7 @@
  * udp-socket.h - udp socket header definitions
  *
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,7 @@ SERVEEZ_API svz_socket_t *svz_udp_connect __PARAMS ((unsigned long,
 						     unsigned short));
 SERVEEZ_API int svz_udp_write __PARAMS ((svz_socket_t *, char *, int));
 SERVEEZ_API int svz_udp_printf __PARAMS ((svz_socket_t *, 
-					  svz_c_const char *, ...));
+					  const char *, ...));
 
 __END_DECLS
 

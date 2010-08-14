@@ -2,6 +2,7 @@
  * snprintf.h - (v)snprintf function interface
  *
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -44,10 +45,10 @@
  * ourselves.
  */
 # if !defined (SVZ_HAVE_SNPRINTF)
-int _snprintf (char *, unsigned int, svz_c_const char *, ...);
+int _snprintf (char *, unsigned int, const char *, ...);
 # endif
 # if !defined (SVZ_HAVE_VSNPRINTF)
-int _vsnprintf (char *, unsigned int, svz_c_const char *, va_list);
+int _vsnprintf (char *, unsigned int, const char *, va_list);
 # endif
 # define svz_vsnprintf _vsnprintf
 # define svz_snprintf _snprintf
@@ -66,7 +67,7 @@ __BEGIN_DECLS
 
 #ifndef SVZ_HAVE_SNPRINTF
 SERVEEZ_API int svz_snprintf __PARAMS ((char *, unsigned int, 
-					svz_c_const char *, ...));
+					const char *, ...));
 #elif !defined (svz_snprintf)
 # define svz_snprintf snprintf
 #endif

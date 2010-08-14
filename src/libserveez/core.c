@@ -2,6 +2,7 @@
  * core.c - socket and file descriptor core implementations
  *
  * Copyright (C) 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -682,7 +683,7 @@ svz_file_closeall (void)
  * the permissions if the @code{O_CREAT} flag is set.
  */
 int
-svz_open (svz_c_const char *file, int flags, unsigned int mode)
+svz_open (const char *file, int flags, unsigned int mode)
 {
 #ifndef __MINGW32__
   int fd;
@@ -830,7 +831,7 @@ svz_fstat (int fd, struct stat *buf)
  * associates a stream with it.
  */
 FILE *
-svz_fopen (svz_c_const char *file, svz_c_const char *mode)
+svz_fopen (const char *file, const char *mode)
 {
   FILE *f;
 

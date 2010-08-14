@@ -2,6 +2,7 @@
  * icmp-socket.h - ICMP socket definitions and declarations
  *
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +91,7 @@ SERVEEZ_API svz_socket_t *svz_icmp_connect __PARAMS ((unsigned long,
 SERVEEZ_API int svz_icmp_send_control __PARAMS ((svz_socket_t *, svz_uint8_t));
 SERVEEZ_API int svz_icmp_write __PARAMS ((svz_socket_t *, char *, int));
 SERVEEZ_API int svz_icmp_printf __PARAMS ((svz_socket_t *, 
-					   svz_c_const char *, ...));
+					   const char *, ...));
 
 __END_DECLS
 

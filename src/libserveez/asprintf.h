@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2002 Andreas Rottmann <a.rottmann@gmx.at>
  * Copyright (C) 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -40,8 +41,8 @@
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_asprintf __PARAMS ((char **, svz_c_const char *, ...));
-SERVEEZ_API int svz_vasprintf __PARAMS ((char **, svz_c_const char *, 
+SERVEEZ_API int svz_asprintf __PARAMS ((char **, const char *, ...));
+SERVEEZ_API int svz_vasprintf __PARAMS ((char **, const char *, 
 					 va_list));
 
 __END_DECLS

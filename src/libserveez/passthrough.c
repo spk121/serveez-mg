@@ -2,6 +2,7 @@
  * passthrough.c - pass through connections to processes
  *
  * Copyright (C) 2001, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -1163,7 +1164,7 @@ svz_envblock_add (svz_envblock_t *env, char *format, ...)
  * routine is the comparison routine for the @code{qsort()} call.
  */
 static int
-svz_envblock_sort (svz_c_const void *data1, svz_c_const void *data2)
+svz_envblock_sort (const void *data1, const void *data2)
 {
   char *entry1 = * (char **) data1;
   char *entry2 = * (char **) data2;

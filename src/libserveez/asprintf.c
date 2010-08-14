@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2002 Andreas Rottmann <a.rottmann@gmx.at>
  * Copyright (C) 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -40,7 +41,7 @@
  * responsible to run @code{svz_free()} on @var{str}.
  */
 int
-svz_asprintf (char **str, svz_c_const char *fmt, ...)
+svz_asprintf (char **str, const char *fmt, ...)
 {
   va_list args;
   int retval;
@@ -57,7 +58,7 @@ svz_asprintf (char **str, svz_c_const char *fmt, ...)
  * helper function only.
  */
 int
-svz_vasprintf (char **str, svz_c_const char *fmt, va_list args)
+svz_vasprintf (char **str, const char *fmt, va_list args)
 {
   int size = 128; /* guess we need no more than 128 characters of space */
   int nchars;

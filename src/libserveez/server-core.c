@@ -4,6 +4,7 @@
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -307,7 +308,7 @@ svz_strsignal_init (void)
 {
   int i;
   char *str;
-  svz_c_const char *format = "Signal %d";
+  const char *format = "Signal %d";
 
   if (svz_signal_strings != NULL)
     return;

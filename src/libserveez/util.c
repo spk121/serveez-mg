@@ -4,6 +4,7 @@
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -109,7 +110,7 @@ svz_mutex_define (svz_log_mutex)
  * Print a message to the log system. @var{level} specifies the prefix.
  */
 void
-svz_log (int level, svz_c_const char *format, ...)
+svz_log (int level, const char *format, ...)
 {
   va_list args;
   time_t tm;
@@ -304,15 +305,15 @@ svz_tolower (char *str)
  * strings are equal.
  */
 int
-svz_strcasecmp (svz_c_const char *str1, svz_c_const char *str2)
+svz_strcasecmp (const char *str1, const char *str2)
 {
 #if HAVE_STRCASECMP
   return strcasecmp (str1, str2);
 #elif HAVE_STRICMP
   return stricmp (str1, str2);
 #else
-  svz_c_const char *p1 = str1;
-  svz_c_const char *p2 = str2;
+  const char *p1 = str1;
+  const char *p2 = str2;
   unsigned char c1, c2;
 
   if (p1 == p2)
@@ -341,7 +342,7 @@ svz_strcasecmp (svz_c_const char *str1, svz_c_const char *str2)
  * @var{str2}. It only compares the first @var{n} characters of @var{str1}.
  */
 int
-svz_strncasecmp (svz_c_const char *str1, svz_c_const char *str2, 
+svz_strncasecmp (const char *str1, const char *str2, 
 		 unsigned int n)
 {
 #if HAVE_STRNCASECMP
@@ -349,8 +350,8 @@ svz_strncasecmp (svz_c_const char *str1, svz_c_const char *str2,
 #elif HAVE_STRNICMP
   return strnicmp (str1, str2, n);
 #else
-  svz_c_const char *p1 = str1;
-  svz_c_const char *p2 = str2;
+  const char *p1 = str1;
+  const char *p2 = str2;
   unsigned char c1, c2;
 
   if (p1 == p2)
