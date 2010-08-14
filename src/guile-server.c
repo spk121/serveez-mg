@@ -2,6 +2,7 @@
  * guile-server.c - guile server modules
  *
  * Copyright (C) 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -1430,7 +1431,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
   char *prototype = NULL;
   int size = 0, len;
 
-  svz_asprintf (&txt, "parsing configuration of `%s'", server->prefix);
+  asprintf (&txt, "parsing configuration of `%s'", server->prefix);
 
   /* Check if the configuration alist is given or not. */
   if (SCM_EQ_P (cfg, SCM_UNSPECIFIED))
@@ -1567,7 +1568,7 @@ guile_define_servertype (SCM args)
   svz_hash_t *functions;
 
   server = svz_calloc (sizeof (svz_servertype_t));
-  svz_asprintf (&txt, "defining servertype");
+  asprintf (&txt, "defining servertype");
 
   if (NULL == (options = guile_to_optionhash (args, txt, 0)))
     FAIL (); /* Message already emitted. */
@@ -1576,8 +1577,8 @@ guile_define_servertype (SCM args)
   if (optionhash_extract_string (options, "prefix", 0, NULL, 
 				 &server->prefix, txt) != 0)
     FAIL ();
-  svz_asprintf (&txt, "defining servertype `%s'", server->prefix);
-  
+  asprintf (&txt, "defining servertype `%s'", server->prefix);
+
   /* Check the servertype definition once. */
   err |= optionhash_validate (options, 1, "servertype", server->prefix);
   

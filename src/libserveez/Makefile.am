@@ -36,21 +36,21 @@ libserveez_la_DEPENDENCIES = coserver/libcoserver.la codec/libcodec.la
 libserveez_la_LIBADD = coserver/libcoserver.la codec/libcodec.la \
   $(LIBSERVEEZLIBS) $(LIBSOCKET) $(GETHOSTNAME_LIB)
 
-libserveez_la_SOURCES = alloc.c util.c snprintf.c hash.c sparsevec.c      \
+libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c      \
   tcp-socket.c pipe-socket.c udp-socket.c icmp-socket.c raw-socket.c      \
   server-core.c server-loop.c windoze.c boot.c server.c server-socket.c   \
   interface.c dynload.c vector.c core.c socket.c array.c portcfg.c        \
-  binding.c passthrough.c cfg.c asprintf.c mutex.c
+  binding.c passthrough.c cfg.c mutex.c
 
 # these file are available by #include <libserveez/foo.h>
 
 libserveezdir = $(includedir)/libserveez
 
-libserveez_HEADERS = alloc.h util.h snprintf.h hash.h sparsevec.h socket.h \
+libserveez_HEADERS = alloc.h util.h hash.h sparsevec.h socket.h \
   tcp-socket.h pipe-socket.h udp-socket.h icmp-socket.h raw-socket.h       \
   server-core.h server-loop.h windoze.h defines.h boot.h server.h          \
   server-socket.h interface.h dynload.h vector.h core.h array.h portcfg.h  \
-  binding.h passthrough.h cfg.h asprintf.h mutex.h
+  binding.h passthrough.h cfg.h mutex.h
 
 # generate path info (included in <libserveez/dynload.c>
 

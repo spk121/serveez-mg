@@ -58,7 +58,6 @@
 # include <netdb.h>
 #endif
 
-#include "libserveez/snprintf.h"
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
 #include "libserveez/socket.h"
@@ -720,7 +719,7 @@ svz_sock_printf (svz_socket_t *sock, const char *fmt, ...)
     return 0;
 
   va_start (args, fmt);
-  len = svz_vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
+  len = vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
   va_end (args);
 
   /* Just to be sure... */

@@ -2,6 +2,7 @@
  * irc-proto.c - basic IRC protocol functions
  *
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1058,7 +1059,7 @@ irc_printf (svz_socket_t *sock, const char *fmt, ...)
     return 0;
 
   va_start (args, fmt);
-  len = svz_vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
+  len = vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
   va_end (args);
 
   /* Just to be sure... */

@@ -4,6 +4,7 @@
  * Copyright (C) 2002 Andreas Rottmann <a.rottmann@gmx.at>
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com)
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -34,7 +35,6 @@
 
 #include "libserveez/cfg.h"
 #include "libserveez/util.h"
-#include "libserveez/asprintf.h"
 #include "libserveez/server.h"
 
 /*
@@ -545,7 +545,7 @@ svz_config_type_instantiate (char *type, char *name, char *instance,
   if (cfgtype == NULL)
     {
       if (error)
-        svz_asprintf (error, "No such configurable type `%s'", type);
+        asprintf (error, "No such configurable type `%s'", type);
       return -1;
     }
   return cfgtype->instantiate (name, instance, options, accessor, error);

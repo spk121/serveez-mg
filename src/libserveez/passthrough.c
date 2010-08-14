@@ -65,7 +65,6 @@
 
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
-#include "libserveez/snprintf.h"
 #include "libserveez/socket.h"
 #include "libserveez/core.h"
 #include "libserveez/server-core.h"
@@ -1137,7 +1136,7 @@ svz_envblock_add (svz_envblock_t *env, char *format, ...)
   va_list args;
 
   va_start (args, format);
-  svz_vsnprintf (buffer, VSNPRINTF_BUF_SIZE, format, args);
+  vsnprintf (buffer, VSNPRINTF_BUF_SIZE, format, args);
   va_end (args);
 
   /* Check for duplicate entry. */

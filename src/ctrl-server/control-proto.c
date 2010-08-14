@@ -2,6 +2,7 @@
  * control-proto.c - control protocol implementation
  *
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -924,8 +925,8 @@ ctrl_get_cpu_state (void)
     {
       if (kstat_read (kc, ksp, &cs) == -1) 
 	{
-	  svz_snprintf (cpu_state.info, STAT_BUFFER_SIZE, 
-			"kstat_read() failed");
+          snprintf (cpu_state.info, STAT_BUFFER_SIZE,
+                   "kstat_read() failed");
 	  return -1;
 	}
 
@@ -940,8 +941,8 @@ ctrl_get_cpu_state (void)
   /* open the statistics file */
   if ((f = svz_fopen (cpu_state.cpufile, "r")) == NULL)
     {
-      svz_snprintf (cpu_state.info, STAT_BUFFER_SIZE, 
-		    "%s not available", cpu_state.cpufile);
+      snprintf (cpu_state.info, STAT_BUFFER_SIZE,
+                "%s not available", cpu_state.cpufile);
       return -1;
     }
 
@@ -960,8 +961,8 @@ ctrl_get_cpu_state (void)
     }
 
   /* cpu line not found */
-  svz_snprintf (cpu_state.info, STAT_BUFFER_SIZE, 
-		"cpu line not found in %s", cpu_state.cpufile);
+  snprintf (cpu_state.info, STAT_BUFFER_SIZE,
+            "cpu line not found in %s", cpu_state.cpufile);
   svz_fclose (f);
 
 #elif HAVE_PSTAT /* HP Unix */
@@ -1022,15 +1023,15 @@ ctrl_idle (svz_socket_t *sock)
   all = c->ptotal[n] - c->ptotal[old]; 
   if (all != 0)
     {
-      svz_snprintf (c->pinfo, STAT_BUFFER_SIZE, PROC_FORMAT,
-		    PROC_DIFF (0) * 100 / all,
-		    PROC_DIFF (0) * 1000 / all % 10,
-		    PROC_DIFF (1) * 100 / all,
-		    PROC_DIFF (1) * 1000 / all % 10,
-		    PROC_DIFF (2) * 100 / all,
-		    PROC_DIFF (2) * 1000 / all % 10,
-		    PROC_DIFF (3) * 100 / all,
-		    PROC_DIFF (3) * 1000 / all % 10);
+      snprintf (c->pinfo, STAT_BUFFER_SIZE, PROC_FORMAT,
+                PROC_DIFF (0) * 100 / all,
+                PROC_DIFF (0) * 1000 / all % 10,
+                PROC_DIFF (1) * 100 / all,
+                PROC_DIFF (1) * 1000 / all % 10,
+                PROC_DIFF (2) * 100 / all,
+                PROC_DIFF (2) * 1000 / all % 10,
+                PROC_DIFF (3) * 100 / all,
+                PROC_DIFF (3) * 1000 / all % 10);
     }
 
   if (ret != -1)
@@ -1039,17 +1040,17 @@ ctrl_idle (svz_socket_t *sock)
       c->total[n] = c->cpu[n][0] + c->cpu[n][1] + c->cpu[n][2] + c->cpu[n][3];
       all = c->total[n] - c->total[old];
       if (all != 0)
-	{
-	  svz_snprintf (c->info, STAT_BUFFER_SIZE, c->cpuinfoline,
-			CPU_DIFF (0) * 100 / all,
-			CPU_DIFF (0) * 1000 / all % 10,
-			CPU_DIFF (1) * 100 / all,
-			CPU_DIFF (1) * 1000 / all % 10,
-			CPU_DIFF (2) * 100 / all,
-			CPU_DIFF (2) * 1000 / all % 10,
-			CPU_DIFF (3) * 100 / all,
-			CPU_DIFF (3) * 1000 / all % 10);
-	}
+        {
+          snprintf (c->info, STAT_BUFFER_SIZE, c->cpuinfoline,
+                    CPU_DIFF (0) * 100 / all,
+                    CPU_DIFF (0) * 1000 / all % 10,
+                    CPU_DIFF (1) * 100 / all,
+                    CPU_DIFF (1) * 1000 / all % 10,
+                    CPU_DIFF (2) * 100 / all,
+                    CPU_DIFF (2) * 1000 / all % 10,
+                    CPU_DIFF (3) * 100 / all,
+                    CPU_DIFF (3) * 1000 / all % 10);
+        }
     }
   
   c->index = n;

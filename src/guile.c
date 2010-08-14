@@ -4,6 +4,7 @@
  * Copyright (C) 2001 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2002 Andreas Rottmann <a.rottmann@gmx.at>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -965,8 +966,8 @@ guile_config_instantiate (SCM type, SCM name, SCM instance, SCM opts)
       guile_error ("Invalid instance identifier (string expected)");
       FAIL ();
     }
-  
-  svz_asprintf (&txt, "defining %s `%s'", c_type, c_instance);
+
+  asprintf (&txt, "defining %s `%s'", c_type, c_instance);
 
   /* Extract options if any. */
   if (SCM_UNBNDP (opts))
@@ -1085,7 +1086,7 @@ guile_define_port (SCM name, SCM args)
       FAIL ();
     }
 
-  svz_asprintf (&txt, "defining port `%s'", portname);
+  asprintf (&txt, "defining port `%s'", portname);
 
   if (NULL == (options = guile_to_optionhash (args, txt, 0)))
     FAIL (); /* Message already emitted. */
@@ -1168,8 +1169,8 @@ guile_define_port (SCM name, SCM args)
       cfg->proto = PROTO_PIPE;
 
       /* Handle receiving pipe. */
-      svz_asprintf (&txt, "defining pipe `%s' in port `%s'", 
-		    PORTCFG_RECV, portname);
+      asprintf (&txt, "defining pipe `%s' in port `%s'",
+                PORTCFG_RECV, portname);
 
       /* Check if it is a plain string. */ 
       p = optionhash_get (options, PORTCFG_RECV);
@@ -1200,8 +1201,8 @@ guile_define_port (SCM name, SCM args)
 	}
 
       /* Try getting send pipe. */
-      svz_asprintf (&txt, "defining pipe `%s' in port `%s'", 
-		    PORTCFG_SEND, portname);
+      asprintf (&txt, "defining pipe `%s' in port `%s'",
+                PORTCFG_SEND, portname);
 
       /* Check plain string. */
       p = optionhash_get (options, PORTCFG_SEND);

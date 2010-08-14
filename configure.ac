@@ -1137,26 +1137,6 @@ if test $ac_cv_func_vsprintf = no ; then
 fi
 
 dnl
-dnl Some Unices (e.g. Dec Unix) do not implement snprintf().
-dnl
-AC_CHECK_FUNC(snprintf, , [AC_CHECK_FUNC(_snprintf)])
-if test x$ac_cv_func_snprintf = xyes -o x$ac_cv_func__snprintf = xyes; then
-  AC_DEFINE(HAVE_SNPRINTF, 1, [Define if you have the snprintf function.])
-  AC_DEFINE(SVZ_HAVE_SNPRINTF, 1, [Define if you have the snprintf function.])
-else
-  AC_MSG_WARN([using function vsnprintf instead])
-fi
-
-AC_CHECK_FUNC(vsnprintf, , [AC_CHECK_FUNC(_vsnprintf)])
-if test x$ac_cv_func_vsnprintf = xyes -o x$ac_cv_func__vsnprintf = xyes; then
-  AC_DEFINE(HAVE_VSNPRINTF, 1, [Define if you have the vsnprintf function.])
-  AC_DEFINE(SVZ_HAVE_VSNPRINTF, 1, 
-    [Define if you have the vsnprintf function.])
-else
-  AC_MSG_WARN([using unsafe function vsprintf instead])
-fi
-
-dnl
 dnl Check whether extra net libraries are required.
 dnl
 AC_CHECK_FUNC(connect)

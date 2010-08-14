@@ -51,7 +51,6 @@
 # include <process.h>
 #endif
 
-#include "libserveez/snprintf.h"
 #include "libserveez/util.h"
 #include "libserveez/socket.h"
 #include "libserveez/core.h"
@@ -696,7 +695,7 @@ svz_icmp_printf (svz_socket_t *sock, const char *fmt, ...)
 
   /* save actual packet load */
   va_start (args, fmt);
-  len = svz_vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
+  len = vsnprintf (buffer, VSNPRINTF_BUF_SIZE, fmt, args);
   va_end (args);
   
   return svz_icmp_write (sock, buffer, len);

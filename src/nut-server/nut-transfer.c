@@ -2,6 +2,7 @@
  * nut-transfer.c - gnutella file transfer implementation
  *
  * Copyright (C) 2000, 2001, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -729,7 +730,7 @@ nut_read_database_r (nut_config_t *cfg, char *dirname, int depth)
 
       /* open the directory */
 #ifdef __MINGW32__
-      if (svz_snprintf (filename, NUT_PATH_SIZE - 1, "%s/*", dirname) == -1)
+      if (snprintf (filename, NUT_PATH_SIZE - 1, "%s/*", dirname) == -1)
 	return;
       
       if ((dir = FindFirstFile (filename, &de)) != INVALID_HANDLE)
@@ -744,7 +745,7 @@ nut_read_database_r (nut_config_t *cfg, char *dirname, int depth)
 	  do
 #endif
 	    {
-	      if (svz_snprintf (filename, NUT_PATH_SIZE - 1,
+	      if (snprintf (filename, NUT_PATH_SIZE - 1,
 				"%s/%s", dirname, FILENAME) == -1)
 		continue;
 

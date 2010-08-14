@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -50,7 +51,6 @@
 #include "libserveez/server.h"
 #include "libserveez/binding.h"
 #include "libserveez/dynload.h"
-#include "libserveez/asprintf.h"
 
 /*
  * The list of registered servers. Feel free to add yours.
@@ -499,7 +499,7 @@ svz_servertype_instantiate (char *type, char *name, void *options,
   if (NULL == (stype = svz_servertype_get (type, 1)))
     {
       if (error)
-        svz_asprintf (error, "No such server type: `%s'", type);
+        asprintf (error, "No such server type: `%s'", type);
       return -1;
     }
 
@@ -516,7 +516,7 @@ svz_servertype_instantiate (char *type, char *name, void *options,
   if (svz_server_get (name) != NULL)
     {
       if (error)
-        svz_asprintf (error, "Duplicate server definition: `%s'", name);
+        asprintf (error, "Duplicate server definition: `%s'", name);
       svz_server_free (server);
       return -1;
     }

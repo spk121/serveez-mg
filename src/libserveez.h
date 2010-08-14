@@ -2,6 +2,7 @@
  * libserveez.h - serveez core library include header
  *
  * Copyright (C) 2001 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -27,8 +28,6 @@
 
 #include "libserveez/boot.h"
 #include "libserveez/alloc.h"
-#include "libserveez/snprintf.h"
-#include "libserveez/asprintf.h"
 #include "libserveez/array.h"
 #include "libserveez/hash.h"
 #include "libserveez/sparsevec.h"

@@ -2,6 +2,7 @@
  * http-core.c - http core functionality
  *
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -408,7 +409,7 @@ http_add_header (const char *fmt, ...)
   if (len >= HTTP_HEADER_SIZE)
     return;
   va_start (args, fmt);
-  svz_vsnprintf (p, HTTP_HEADER_SIZE - len, fmt, args);
+  vsnprintf (p, HTTP_HEADER_SIZE - len, fmt, args);
   va_end (args);
 }
 
