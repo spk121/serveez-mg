@@ -905,8 +905,8 @@ dnl
 
 AC_CACHE_CHECK([for timezone and daylight variables], svz_cv_var_timezone,
   AC_LINK_IFELSE(
-    [extern long int timezone; extern int daylight;],
-    [long int t = timezone; int d = daylight; return (d + t);],
+    [AC_LANG_PROGRAM([[extern long int timezone; extern int daylight;]],
+    [[long int t = timezone; int d = daylight; return (d + t);]])],
     [svz_cv_var_timezone=yes],
     [svz_cv_var_timezone=no]))
 
@@ -1399,8 +1399,8 @@ dnl
 dnl Find a working signed keyword.
 dnl
 AC_CACHE_CHECK([for working signed], svz_cv_c_signed,
-[AC_COMPILE_IFELSE([#include <stdio.h>],
-  [signed char have_signed = (signed char) 0;],
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],
+  [[signed char have_signed = (signed char) 0;]])],
   [svz_cv_c_signed=yes
   signed_defined="signed"],
   [svz_cv_c_signed=no
