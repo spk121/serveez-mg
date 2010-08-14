@@ -2,6 +2,7 @@
  * tcp-socket.c - TCP socket connection implementation
  *
  * Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,9 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <time.h>
+#if 0
+#include <poll.h>
+#endif
 
 #if HAVE_UNISTD_H
 # include <unistd.h>
@@ -219,7 +223,7 @@ svz_tcp_recv_oob (svz_socket_t *sock)
   int num_read, ret;
 
 #if 0
-#if HAVE_POLL && ENABLE_POLL && defined (__linux__)
+#if ENABLE_POLL && defined (__linux__)
 #ifdef SIOCATMARK
   /* FIXME: fails for poll() on GNU/Linux ???  This is a hack !!! 
             With this hack you are missing some OOB data bytes if sent too
@@ -233,7 +237,7 @@ svz_tcp_recv_oob (svz_socket_t *sock)
     }
   else
 #endif /* SIOCATMARK */
-#endif /* HAVE_POLL && ENABLE_POLL && linux */
+#endif /* ENABLE_POLL && linux */
 #endif
 
   num_read = recv (desc, (void *) &sock->oob, 1, MSG_OOB);

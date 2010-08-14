@@ -2,6 +2,7 @@
  * server-loop.c - server loop implementation
  *
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +42,7 @@
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <poll.h>
 
 #if HAVE_FLOSS_H
 # include <floss.h>
@@ -52,15 +54,8 @@
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#if HAVE_SYS_POLL_H
-# include <sys/poll.h>
-#endif
 #if HAVE_STRINGS_H
 # include <strings.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
 #endif
 
 #include "libserveez/alloc.h"
@@ -356,7 +351,7 @@ svz_check_sockets_select (void)
 
 #endif /* not __MINGW32__ */
 
-#if HAVE_POLL && ENABLE_POLL /* configured */
+#if ENABLE_POLL /* configured */
 
 /* re-allocate static buffers if necessary */
 #define FD_EXPAND()                                                 \
@@ -617,237 +612,7 @@ svz_check_sockets_poll (void)
   return 0;
 }
 
-#endif /* HAVE_POLL */
-
-#ifdef __MINGW32__
-
-/*
- * This is the specialized routine for this Win32 port.
- */
-static int
-svz_check_sockets_MinGW (void)
-{
-  int nfds;			/* count of file descriptors to check */
-  fd_set read_fds;		/* bitmasks for file descriptors to check */
-  fd_set write_fds;		/* ditto */
-  fd_set except_fds;		/* ditto */
-  struct timeval wait;		/* used for timeout in select() */
-  svz_socket_t *sock;
-
-  /*
-   * Prepare the file handle sets for the select() call below.
-   */
-  FD_ZERO (&read_fds);
-  FD_ZERO (&except_fds);
-  FD_ZERO (&write_fds);
-  nfds = 0;
-
-  /*
-   * Here we set the bitmaps for all clients we handle.
-   */
-  svz_sock_foreach (sock)
-    {
-      /* Put only those SOCKs into fd set not yet killed and skip files. */
-      if (sock->flags & SOCK_FLAG_KILLED)
-	continue;
-
-
-      /* If socket is a file descriptor, then read it here. */
-      SOCK_FILE_FUNCTIONALITY (sock);
-
-      /* Issue the trigger funcionality. */
-      SOCK_TRIGGER_FUNCTIONALITY (sock);
-
-      /* Handle pipes. */
-      if (sock->flags & SOCK_FLAG_PIPE)
-	{
-	  /* Do not handle listening pipes here. */
-	  if (sock->flags & SOCK_FLAG_LISTENING)
-	    continue;
-
-	  /* 
-	   * Handle receiving pipes. Is non-blocking, but cannot 
-	   * be select()ed. 
-	   */
-	  if (sock->flags & SOCK_FLAG_RECV_PIPE)
-	    {
-	      if (SOCK_READABLE (sock))
-		if (sock->read_socket)
-		  if (sock->read_socket (sock))
-		    svz_sock_schedule_for_shutdown (sock);
-	    }
-	}
-
-      if (sock->flags & SOCK_FLAG_SOCK)
-	{
-	  /* Is the socket descriptor currently unavailable ? */
-	  if (sock->unavailable)
-	    {
-	      if (time (NULL) >= sock->unavailable)
-		sock->unavailable = 0;
-	    }
-
-	  /* Put every client's socket into EXCEPT. */
-	  FD_SET (sock->sock_desc, &except_fds);
-	  if (sock->sock_desc > (svz_t_socket) nfds)
-	    nfds = sock->sock_desc;
-
-	  /* Put a client's socket into READ if necessary. */
-	  if (!(sock->flags & SOCK_FLAG_CONNECTING))
-	    if (SOCK_READABLE (sock))
-	      FD_SET (sock->sock_desc, &read_fds);
-
-	  /* Put a socket into WRITE if necessary and possible. */
-	  if (!sock->unavailable && (sock->send_buffer_fill > 0 || 
-				     sock->flags & SOCK_FLAG_CONNECTING))
-	    {
-	      FD_SET (sock->sock_desc, &write_fds);
-	    }
-	}
-    }
-  
-  nfds++;
-
-  /*
-   * Adjust timeout value, so we won't wait longer than we want.
-   */
-  wait.tv_sec = svz_notify - time (NULL);
-  if (wait.tv_sec < 0)
-    wait.tv_sec = 0;
-  wait.tv_usec = 0;
-
-  /* Just sleep a bit if there is no file descriptor to be select()'ed. */
-  if (nfds < 2)
-    Sleep (1);
-
-  else if ((nfds = select (nfds, &read_fds, &write_fds, &except_fds, &wait)) 
-	   <= 0)
-    {
-      if (nfds < 0)
-	{
-	  svz_log (LOG_ERROR, "select: %s\n", NET_ERROR);
-	  /* FIXME: What value do we choose here ? */
-	  if (svz_errno != 0)
-	    svz_sock_check_bogus ();
-	  return -1;
-	}
-      else 
-	{
-	  /*
-	   * select() timed out, so we can do some administrative stuff.
-	   */
-	  svz_periodic_tasks ();
-	}
-    }
-
-  /* 
-   * Go through all enqueued SOCKs and check if these have been 
-   * select()ed or could be handle in any other way.
-   */
-  svz_sock_foreach (sock)
-    {
-      if (sock->flags & SOCK_FLAG_KILLED)
-	continue;
-
-      /* Handle pipes. Different in Win32 and Unices. */
-      if (sock->flags & SOCK_FLAG_PIPE)
-	{
-	  /* Make listening pipe servers listen. */
-	  if (sock->flags & SOCK_FLAG_LISTENING)
-	    {
-	      if (!(sock->flags & SOCK_FLAG_INITED))
-		if (sock->read_socket)
-		  if (sock->read_socket (sock))
-		    svz_sock_schedule_for_shutdown (sock);
-	      continue;
-	    }
-
-	  /* Handle sending pipes. Is blocking ! */
-	  if (sock->flags & SOCK_FLAG_SEND_PIPE)
-	    {
-	      if (sock->send_buffer_fill > 0)
-		if (sock->write_socket)
-		  if (sock->write_socket (sock))
-		    svz_sock_schedule_for_shutdown (sock);
-	    }
-	}
-
-      /* Handle usual sockets. Socket in the exception set ? */
-      if (sock->flags & SOCK_FLAG_SOCK)
-	{
-	  if (FD_ISSET (sock->sock_desc, &except_fds))
-	    {
-	      if (sock->flags & SOCK_FLAG_CONNECTING)
-		{
-		  svz_log (LOG_ERROR, "exception connecting socket %d\n",
-			   sock->sock_desc);
-		  svz_sock_error_info (sock);
-		  svz_sock_schedule_for_shutdown (sock);
-		  continue;
-		}
-	      else
-		{
-		  /* Handle out-of-band data correctly. */
-		  if (sock->read_socket_oob)
-		    if (sock->read_socket_oob (sock))
-		      {
-			svz_sock_schedule_for_shutdown (sock);
-			continue;
-		      }
-		}
-	    }
-	  
-	  /* Is socket readable ? */
-	  if (FD_ISSET (sock->sock_desc, &read_fds))
-	    {
-	      if (sock->read_socket)
-		if (sock->read_socket (sock))
-		  {
-		    svz_sock_schedule_for_shutdown (sock);
-		    continue;
-		  }
-	    }
-	  
-	  /* Is socket writable ? */
-	  if (FD_ISSET (sock->sock_desc, &write_fds))
-	    {
-	      /* Finally connected * */
-	      if (sock->flags & SOCK_FLAG_CONNECTING)
-		{
-		  if (sock->connected_socket)
-		    if (sock->connected_socket (sock))
-		      {
-			svz_sock_schedule_for_shutdown (sock);
-			continue;
-		      }
-		}
-	      /* Just writable. */
-	      else 
-		{
-		  if (sock->write_socket)
-		    if (sock->write_socket (sock))
-		      {
-			svz_sock_schedule_for_shutdown (sock);
-			continue;
-		      }
-		}
-	    }
-	}
-    }
-
-  /*
-   * We had no chance to time out so we have to explicitly call the
-   * timeout handler.
-   */
-  if (time (NULL) > svz_notify)
-    {
-      svz_periodic_tasks ();
-    }
-  
-  return 0;
-}
-
-#endif /* __MINGW32__ */
+#endif /* ENABLE_POLL */
 
 /*
  * Check the server and client sockets for incoming connections 
@@ -856,10 +621,8 @@ svz_check_sockets_MinGW (void)
 int
 svz_check_sockets (void)
 {
-#if HAVE_POLL && ENABLE_POLL
+#if ENABLE_POLL
   return svz_check_sockets_poll ();
-#elif defined (__MINGW32__)
-  return svz_check_sockets_MinGW ();
 #else
   return svz_check_sockets_select ();
 #endif

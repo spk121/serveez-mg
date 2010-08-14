@@ -934,7 +934,7 @@ AC_CHECK_FUNC(strncasecmp,
 
 AC_CHECK_FUNCS(getrlimit getdtablesize getpwnam seteuid setegid geteuid \
   getegid gettimeofday shl_load NSAddImage)
-AC_CHECK_HEADERS(stdio.h unistd.h sys/time.h sys/poll.h pwd.h varargs.h \
+AC_CHECK_HEADERS(stdio.h unistd.h sys/time.h pwd.h varargs.h \
   getopt.h dlfcn.h sys/sockio.h sys/resource.h sys/sendfile.h sys/uio.h \
   ws2tcpip.h dirent.h sys/dirent.h direct.h dl.h dld.h grp.h \
   mach-o/dyld.h zlib.h bzlib.h rpc/rpcent.h rpc/rpc.h rpc/pmap_clnt.h \
@@ -1361,7 +1361,7 @@ fi
 dnl
 dnl Check for more functionality used in Serveez.
 dnl
-AC_CHECK_FUNCS(times poll waitpid)
+AC_CHECK_FUNCS(times waitpid)
 
 dnl
 dnl Checks for RPC services.
