@@ -29,7 +29,6 @@
 
 #if ENABLE_PROG_SERVER
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include <time.h>

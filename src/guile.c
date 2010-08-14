@@ -29,11 +29,11 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 
 #if HAVE_UNISTD_H
@@ -985,7 +985,7 @@ guile_config_instantiate (SCM type, SCM name, SCM instance, SCM opts)
     }
   
  out:
-  svz_free (txt);
+  free (txt);
   svz_free (error);
   if (c_type)
     scm_c_free (c_type);
@@ -1279,7 +1279,7 @@ guile_define_port (SCM name, SCM args)
 	}
     }
 
-  svz_free (txt);
+  free (txt);
 
   /* Check for unused keys in input. */
   if (0 != optionhash_validate (options, 0, "port", portname))

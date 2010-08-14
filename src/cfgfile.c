@@ -27,7 +27,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <string.h>
 
 #ifdef __MINGW32__

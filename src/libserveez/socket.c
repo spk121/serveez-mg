@@ -28,7 +28,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +37,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <time.h>
+#include <stdarg.h>
 
 #if HAVE_UNISTD_H
 # include <unistd.h>

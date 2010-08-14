@@ -28,7 +28,6 @@
 
 #if ENABLE_IRC_PROTO
 
-#define _GNU_SOURCE
 #include <string.h>
 #include <stdlib.h>
 

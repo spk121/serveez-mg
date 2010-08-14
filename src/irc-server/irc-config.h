@@ -29,8 +29,6 @@
 #ifndef __IRC_CONFIG_H__
 #define __IRC_CONFIG_H__
 
-#define _GNU_SOURCE
-
 /*
  * Export these routines.
  */

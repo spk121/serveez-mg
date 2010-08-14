@@ -29,12 +29,12 @@
 
 #if ENABLE_HTTP_PROTO
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
+#include <stdarg.h>
 #include <sys/types.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>

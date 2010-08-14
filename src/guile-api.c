@@ -28,7 +28,6 @@
 
 #if ENABLE_GUILE_SERVER
 
-#define _GNU_SOURCE
 #include <string.h>
 #include <errno.h>
 

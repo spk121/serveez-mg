@@ -25,7 +25,7 @@
 #ifndef __PASSTHROUGH_H__
 #define __PASSTHROUGH_H__ 1
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 
 #include "libserveez/defines.h"
 

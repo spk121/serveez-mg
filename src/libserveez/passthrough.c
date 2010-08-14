@@ -27,13 +27,13 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <stdarg.h>
 
 #if HAVE_FLOSS_H
 # include <floss.h>

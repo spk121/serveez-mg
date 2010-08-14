@@ -94,8 +94,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
-
 /* Miscellaneous functions */
 char *irc_client_flag_string (irc_client_t *client);
 char *irc_channel_flag_string (irc_channel_t *channel);

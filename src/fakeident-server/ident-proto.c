@@ -29,7 +29,6 @@
 
 #if ENABLE_FAKEIDENT
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <ctype.h>
 

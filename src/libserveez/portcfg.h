@@ -25,7 +25,7 @@
 #ifndef __PORTCFG_H__
 #define __PORTCFG_H__ 1
 
-#define _GNU_SOURCE
+#define _GNU_SOURCE 1
 #include <sys/types.h>
 #include <sys/stat.h>
 

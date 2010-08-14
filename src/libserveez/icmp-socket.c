@@ -27,7 +27,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,6 +34,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
+#include <stdarg.h>
 
 #if HAVE_UNISTD_H
 # include <unistd.h>

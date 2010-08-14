@@ -28,11 +28,11 @@
 
 #if ENABLE_IRC_PROTO
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdarg.h>
 
 #ifdef __MINGW32__
 # include <winsock2.h>

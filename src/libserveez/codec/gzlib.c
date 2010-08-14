@@ -28,7 +28,6 @@
 
 #if HAVE_ZLIB && HAVE_ZLIB_H
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

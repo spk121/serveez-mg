@@ -29,8 +29,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
-
 /* These definitions are for the GUID creating functions in Win32. */
 #ifdef __MINGW32__
 typedef int (__stdcall *CreateGuidProc) (svz_uint8_t *);

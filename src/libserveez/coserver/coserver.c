@@ -26,7 +26,6 @@
 # include <config.h>
 #endif
 
-#define _GNU_SOURCE
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -53,7 +52,6 @@
 # include <netinet/in.h>
 #endif
 
-#include "libserveez/snprintf.h"
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
 #include "libserveez/core.h"
@@ -118,9 +116,9 @@ svz_coserver_ident_invoke (svz_socket_t *sock,
 			   svz_coserver_args_t)
 {
   char buffer[COSERVER_BUFSIZE];
-  svz_snprintf (buffer, COSERVER_BUFSIZE, "%s:%u:%u",
-		svz_inet_ntoa (sock->remote_addr),
-		ntohs (sock->remote_port), ntohs (sock->local_port));
+  snprintf (buffer, COSERVER_BUFSIZE, "%s:%u:%u",
+            svz_inet_ntoa (sock->remote_addr),
+            ntohs (sock->remote_port), ntohs (sock->local_port));
   svz_coserver_send_request (COSERVER_IDENT, buffer, cb, arg0, arg1);
 }
 
@@ -188,7 +186,7 @@ svz_coserver_put_id (unsigned id, char *response)
 {
   char buffer[COSERVER_BUFSIZE];
 
-  svz_snprintf (buffer, COSERVER_BUFSIZE, "%u:%s\n", id, response);
+  snprintf (buffer, COSERVER_BUFSIZE, "%u:%s\n", id, response);
   strcpy (response, buffer);
 }
 
