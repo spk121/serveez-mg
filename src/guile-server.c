@@ -886,14 +886,13 @@ guile_sock_boundary (SCM sock, SCM boundary)
   if (scm_is_integer (boundary))
     {
       xsock->boundary = NULL;
-      xsock->boundary_size = SCM_NUM2INT (SCM_ARG2, boundary);
+      xsock->boundary_size = scm_to_int (boundary);
     }
   /* Handle packet delimiters. */
   else
     {
       xsock->boundary = scm_c_scm2chars (boundary, NULL);
-      xsock->boundary_size = SCM_NUM2INT (SCM_ARG2, 
-					  scm_string_length (boundary));
+      xsock->boundary_size = scm_c_string_length (boundary);
     }
 
   /* Only assign this callback for connection oriented protocols. */
@@ -921,7 +920,7 @@ guile_sock_floodprotect (SCM sock, SCM flag)
       SCM_ASSERT (SCM_BOOLP (flag) || scm_is_integer (flag), flag, SCM_ARG2,
                   FUNC_NAME);
       if ((SCM_BOOLP (flag) && SCM_NFALSEP (flag) != 0) ||
-	  (scm_is_integer (flag) && SCM_NUM2INT (SCM_ARG2, flag) != 0))
+	  (scm_is_integer (flag) && scm_to_int (flag) != 0))
 	xsock->flags &= ~SOCK_FLAG_NOFLOOD;
       else
 	xsock->flags |= SOCK_FLAG_NOFLOOD;
@@ -948,7 +947,7 @@ guile_sock_print (SCM sock, SCM buffer)
   if (scm_is_string (buffer))
     {
       buf = SCM_STRING_CHARS (buffer);
-      len = SCM_NUM2INT (SCM_ARG2, scm_string_length (buffer));
+      len = scm_c_string_length (buffer);
     }
   else
     {
@@ -1454,8 +1453,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
       char *str;
 
       /* Each configuration item must be a scheme list with three elements. */
-      if (!SCM_LISTP (list) || 
-	  SCM_NUM2ULONG (SCM_ARG1, scm_length (list)) != 3)
+      if (!SCM_LISTP (list) || scm_to_ulong (scm_length (list)) != 3)
 	{
 	  guile_error ("Invalid definition for `%s' %s", key[n], txt);
 	  err = -1;

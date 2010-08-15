@@ -331,7 +331,7 @@ guile_to_integer (SCM cell, int *target)
   /* Usual guile exact number. */
   if (scm_is_integer (cell))
     {
-      *target = SCM_NUM2INT (SCM_ARG1, cell);
+      *target = scm_num2int (cell);
     }
   /* Try string (or even symbol) to integer conversion. */
   else if (NULL != (str = guile_to_string (cell)))
@@ -420,8 +420,7 @@ guile_to_hash (SCM list, char *prefix)
     }
 
   /* Iterate the alist. */
-  hash = svz_hash_create (SCM_NUM2ULONG (SCM_ARG1, scm_length (list)), 
-			  svz_free);
+  hash = svz_hash_create (scm_to_ulong (scm_length (list)), svz_free);
   for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
     {
       SCM k, v, pair = SCM_CAR (list);
@@ -505,8 +504,7 @@ guile_to_strarray (SCM list, char *func)
     }
 
   /* Iterate over the list and build up the array of strings. */
-  array = svz_array_create (SCM_NUM2ULONG (SCM_ARG1, scm_length (list)), 
-			    svz_free);
+  array = svz_array_create (scm_to_ulong (scm_length (list)), svz_free);
   for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
     {
       if ((str = guile_to_string (SCM_CAR (list))) == NULL)
@@ -544,7 +542,7 @@ guile_to_intarray (SCM list, char *func)
     }
 
   /* Iterate over the list and build up the array of strings. */
-  array = svz_array_create (SCM_NUM2ULONG (SCM_ARG1, scm_length (list)), NULL);
+  array = svz_array_create (scm_to_ulong (scm_length (list)), NULL);
   for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
     {
       if (guile_to_integer (SCM_CAR (list), &n) != 0)
