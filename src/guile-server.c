@@ -23,9 +23,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_GUILE_SERVER
 
@@ -37,11 +35,7 @@
 #if HAVE_FLOSS_H
 # include <floss.h>
 #endif
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
+#include <libguile.h>
 
 #include "libserveez.h"
 #include "guile-api.h"
@@ -73,7 +67,7 @@ static int guile_use_exceptions = 1;
     xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);                      \
     if (!SCM_UNBNDP (proc))                                             \
       {                                                                 \
-        SCM_ASSERT (scm_is_true (scm_procedure_p (proc), proc,          \
+        SCM_ASSERT (scm_is_true (scm_procedure_p (proc)), proc,         \
                                  SCM_ARG2, FUNC_NAME);                  \
         xsock->TYPE = FUNC;                                             \
         return guile_sock_setfunction (xsock, ASSOC, proc);             \
@@ -146,14 +140,12 @@ optionhash_extract_proc (svz_hash_t *hash,
     }
 
   /* Is that guile procedure ? */
-  if (scm_is_true (scm_procedure_p (hvalue))
-    {
-      *target = hvalue;
-    }
+  if (scm_is_true (scm_procedure_p (hvalue)))
+    *target = hvalue;
   else if ((str = guile_to_string (hvalue)) != NULL)
     {
       guile_lookup (proc, str);
-      if (!SCM_UNBNDP (proc) && scm_is_true (scm_procedure_p (proc))
+      if (!SCM_UNBNDP (proc) && scm_is_true (scm_procedure_p (proc)))
 	*target = proc;
       else
 	{
