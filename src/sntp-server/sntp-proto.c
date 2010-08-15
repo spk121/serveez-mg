@@ -2,6 +2,7 @@
  * sntp-proto.c - simple network time protocol implementation
  *
  * Copyright (C) 2000, 2001, 2002 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,8 +118,6 @@ sntp_create_reply (unsigned char *reply)
 {
   unsigned long date;
 
-#if HAVE_GETTIMEOFDAY
-
   struct timeval t;
   gettimeofday (&t, NULL);
   date = htonl (SNTP_TIME_CONSTANT + t.tv_sec);
@@ -126,15 +125,6 @@ sntp_create_reply (unsigned char *reply)
   date = htonl (t.tv_usec);
   memcpy (&reply[4], &date, 4);
   return 8;
-
-#else /* not HAVE_GETTIMEOFDAY */
-
-  time_t t = time (NULL);
-  date = htonl (SNTP_TIME_CONSTANT + t);
-  memcpy (reply, &date, 4);
-  return 4;
-
-#endif /* not HAVE_GETTIMEOFDAY */
 }
 
 /*

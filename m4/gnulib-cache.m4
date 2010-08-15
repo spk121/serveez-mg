@@ -15,13 +15,14 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --no-libtool --macro-prefix=gl getdtablesize getopt-gnu mkfifo poll snprintf strcase times uname vasprintf vsnprintf
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=lib --m4-base=m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --no-libtool --macro-prefix=gl getdtablesize getopt-gnu gettimeofday mkfifo poll snprintf strcase times uname vasprintf vsnprintf
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
 gl_MODULES([
   getdtablesize
   getopt-gnu
+  gettimeofday
   mkfifo
   poll
   snprintf
