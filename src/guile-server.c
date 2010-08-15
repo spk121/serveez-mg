@@ -525,7 +525,7 @@ guile_func_kicked_socket (svz_socket_t *sock, int reason)
     {
       SCM socket_smob;
       SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
-      ret = guile_call (kicked, 2, socket_smob, scm_int2num (reason));
+      ret = guile_call (kicked, 2, socket_smob, scm_from_int (reason));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -745,7 +745,7 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
       SCM socket_smob;
       SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
       bin = scm_c_take_bytevector (request, len);
-      ret = guile_call (handle_request, 3, socket_smob, bin, scm_int2num (len));
+      ret = guile_call (handle_request, 3, socket_smob, bin, scm_from_int (len));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -819,7 +819,7 @@ guile_func_check_request_oob (svz_socket_t *sock)
       SCM socket_smob;
       SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
       ret = guile_call (check_request_oob, 2, socket_smob, 
-                        scm_int2num (sock->oob));
+                        scm_from_int (sock->oob));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -1003,7 +1003,7 @@ guile_config_convert (void *address, int type)
   switch (type)
     {
     case SVZ_ITEM_INT:
-      ret = scm_int2num (*(int *) address);
+      ret = scm_from_int (*(int *) address);
       break;
     case SVZ_ITEM_INTARRAY:
       ret = guile_intarray_to_guile (*(svz_array_t **) address);
