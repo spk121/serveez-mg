@@ -876,14 +876,14 @@ guile_sock_boundary (SCM sock, SCM boundary)
   svz_socket_t *xsock;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT (SCM_EXACTP (boundary) || SCM_STRINGP (boundary), boundary,
+  SCM_ASSERT (scm_is_integer (boundary) || SCM_STRINGP (boundary), boundary,
               SCM_ARG2, FUNC_NAME);
 
   /* Release previously set boundaries. */
   guile_sock_clear_boundary (xsock);
 
   /* Setup for fixed sized packets. */
-  if (SCM_EXACTP (boundary))
+  if (scm_is_integer (boundary))
     {
       xsock->boundary = NULL;
       xsock->boundary_size = SCM_NUM2INT (SCM_ARG2, boundary);
@@ -918,10 +918,10 @@ guile_sock_floodprotect (SCM sock, SCM flag)
   flags = xsock->flags;
   if (!SCM_UNBNDP (flag))
     {
-      SCM_ASSERT (SCM_BOOLP (flag) || SCM_EXACTP (flag), flag, SCM_ARG2,
+      SCM_ASSERT (SCM_BOOLP (flag) || scm_is_integer (flag), flag, SCM_ARG2,
                   FUNC_NAME);
       if ((SCM_BOOLP (flag) && SCM_NFALSEP (flag) != 0) ||
-	  (SCM_EXACTP (flag) && SCM_NUM2INT (SCM_ARG2, flag) != 0))
+	  (scm_is_integer (flag) && SCM_NUM2INT (SCM_ARG2, flag) != 0))
 	xsock->flags &= ~SOCK_FLAG_NOFLOOD;
       else
 	xsock->flags |= SOCK_FLAG_NOFLOOD;

@@ -329,7 +329,7 @@ guile_to_integer (SCM cell, int *target)
   char *str = NULL, *endp;
 
   /* Usual guile exact number. */
-  if (SCM_EXACTP (cell))
+  if (scm_is_integer (cell))
     {
       *target = SCM_NUM2INT (SCM_ARG1, cell);
     }

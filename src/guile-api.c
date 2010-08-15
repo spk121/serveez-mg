@@ -107,12 +107,12 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
   struct sockaddr_in addr;
   SCM ret = SCM_BOOL_F;
 
-  SCM_ASSERT (SCM_EXACTP (host) || SCM_STRINGP (host), host, SCM_ARG1, 
+  SCM_ASSERT (scm_is_integer (host) || SCM_STRINGP (host), host, SCM_ARG1, 
               FUNC_NAME);
-  SCM_ASSERT (SCM_EXACTP (proto), proto, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (proto), proto, SCM_ARG2, FUNC_NAME);
 
   /* Extract host to connect to. */
-  if (SCM_EXACTP (host))
+  if (scm_is_integer (host))
     xhost = htonl ((unsigned long) SCM_NUM2INT (SCM_ARG1, host));
   else
     {
@@ -138,7 +138,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
   /* Find out about given port. */
   if (!SCM_UNBNDP (port))
     {
-      SCM_ASSERT (SCM_EXACTP (port), port, SCM_ARG3, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (port), port, SCM_ARG3, FUNC_NAME);
       p = scm_to_uint16 (port);
       xport = htons ((unsigned short) p);
     }
@@ -193,7 +193,7 @@ guile_sock_receive_buffer_size (SCM sock, SCM size)
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
   if (!SCM_UNBNDP (size))
     {
-      SCM_ASSERT (SCM_EXACTP (size), size, SCM_ARG2, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
       len = SCM_NUM2INT (SCM_ARG2, size);
       svz_sock_resize_buffers (xsock, xsock->send_buffer_size, len);
     }
@@ -227,7 +227,7 @@ guile_sock_send_buffer_size (SCM sock, SCM size)
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
   if (!SCM_UNBNDP (size))
     {
-      SCM_ASSERT (SCM_EXACTP (size), size, SCM_ARG2, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
       len = SCM_NUM2INT (SCM_ARG2, size);
       svz_sock_resize_buffers (xsock, len, xsock->recv_buffer_size);
     }
@@ -252,7 +252,7 @@ guile_sock_receive_buffer_reduce (SCM sock, SCM length)
   /* Check if second length argument is given. */
   if (!SCM_UNBNDP (length))
     {
-      SCM_ASSERT (SCM_EXACTP (length), length, SCM_ARG2, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (length), length, SCM_ARG2, FUNC_NAME);
       len = SCM_NUM2INT (SCM_ARG2, length);
       if (len < 0 || len > xsock->recv_buffer_fill)
 	SCM_OUT_OF_RANGE (SCM_ARG2, length);
@@ -283,8 +283,8 @@ guile_sock_remote_address (SCM sock, SCM address)
 		   scm_int2num ((int) xsock->remote_port));
   if (!SCM_UNBNDP (address))
     {
-      SCM_ASSERT (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
-                  && SCM_EXACTP (SCM_CDR (address)), address, SCM_ARG2, 
+      SCM_ASSERT (SCM_PAIRP (address) && scm_is_integer (SCM_CAR (address))
+                  && scm_is_integer (SCM_CDR (address)), address, SCM_ARG2, 
                   FUNC_NAME);
       port = scm_to_uint16 (SCM_CDR (address));
       xsock->remote_addr = SCM_NUM2ULONG (SCM_ARG2, SCM_CAR (address));
@@ -311,8 +311,8 @@ guile_sock_local_address (SCM sock, SCM address)
 		   scm_int2num ((int) xsock->local_port));
   if (!SCM_UNBNDP (address))
     {
-      SCM_ASSERT (SCM_PAIRP (address) && SCM_EXACTP (SCM_CAR (address))
-                  && SCM_EXACTP (SCM_CDR (address)), address, SCM_ARG2, 
+      SCM_ASSERT (SCM_PAIRP (address) && scm_is_integer (SCM_CAR (address))
+                  && scm_is_integer (SCM_CDR (address)), address, SCM_ARG2, 
                   FUNC_NAME);
       port = scm_to_uint16 (SCM_CDR (address));
       xsock->local_addr = SCM_NUM2ULONG (SCM_ARG2, SCM_CAR (address));
@@ -440,10 +440,10 @@ guile_sock_no_delay (SCM sock, SCM enable)
     {
       if (!SCM_UNBNDP (enable))
 	{
-	  SCM_ASSERT (SCM_BOOLP (enable) || SCM_EXACTP (enable), enable, 
+	  SCM_ASSERT (SCM_BOOLP (enable) || scm_is_integer (enable), enable, 
                       SCM_ARG2, FUNC_NAME);
 	  if ((SCM_BOOLP (enable) && SCM_NFALSEP (enable) != 0) ||
-	      (SCM_EXACTP (enable) && SCM_NUM2INT (SCM_ARG2, enable) != 0))
+	      (scm_is_integer (enable) && SCM_NUM2INT (SCM_ARG2, enable) != 0))
 	    set = 1;
 	}
       if (svz_tcp_nodelay (xsock->sock_desc, set, &old) < 0)
@@ -543,7 +543,7 @@ guile_sock_idle_counter (SCM sock, SCM counter)
   ocounter = xsock->idle_counter;
   if (!SCM_UNBNDP (counter))
     {
-      SCM_ASSERT (SCM_EXACTP (counter), counter, SCM_ARG2, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (counter), counter, SCM_ARG2, FUNC_NAME);
       xsock->idle_counter = SCM_NUM2INT (SCM_ARG2, counter);
     }
   return scm_int2num (ocounter);
@@ -980,7 +980,7 @@ guile_read_file (SCM port, SCM size)
   /* Check argument list. */
   SCM_ASSERT (SCM_NIMP (port) && SCM_FPORTP (port) && SCM_OPINFPORTP (port),
               port, SCM_ARG1, FUNC_NAME);
-  SCM_ASSERT (SCM_EXACTP (size), size, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
 
   /* Get underlying file descriptor. */
   fdes = SCM_FPORT_FDES (port);
@@ -1031,7 +1031,8 @@ guile_sock_send_oob (SCM sock, SCM oob)
 
   /* Check the arguments. */
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT (SCM_EXACTP (oob) || SCM_CHARP (oob), oob, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (oob) || SCM_CHARP (oob), oob, SCM_ARG2,
+              FUNC_NAME);
 
   /* Send the oob byte through TCP sockets only. */
   if (xsock->proto & PROTO_TCP)
