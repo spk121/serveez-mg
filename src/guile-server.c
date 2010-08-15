@@ -63,110 +63,56 @@ static char *guile_functions[] = {
 /* If set to zero exception handling is disabled. */
 static int guile_use_exceptions = 1;
 
-/*
- * Depending on the smob implementation of Guile we use different functions
- * in order to create a new smob tag. It is also necessary to apply a smob
- * `free' function for older Guile versions because it is called 
- * unconditionally and has no reasonable default function.
- */
-
-#if HAVE_OLD_SMOBS
-  /* Guile 1.3 backward compatibility code. */
-# define CREATE_SMOB_TAG(ctype, description)                               \
-  static scm_smobfuns guile_funs = {                                       \
-    NULL, GUILE_CONCAT3 (guile_,ctype,_free),                              \
-    GUILE_CONCAT3 (guile_,ctype,_print), NULL };                           \
-  GUILE_CONCAT3 (guile_,ctype,_tag) = scm_newsmob (&guile_funs);
-#else
-  /* Create new smob data type and assign a printer function. */
-# define CREATE_SMOB_TAG(ctype, description)                               \
-  GUILE_CONCAT3 (guile_,ctype,_tag) = scm_make_smob_type (description, 0); \
-  scm_set_smob_print (GUILE_CONCAT3 (guile_,ctype,_tag),                   \
-                      GUILE_CONCAT3 (guile_,ctype,_print));
-#endif
-
-/*
- * Creates a Guile SMOB (small object). The @var{ctype} specifies a base 
- * name for all defined functions. The argument @var{description} is used
- * in the printer function. The macro creates various function to operate
- * on a SMOB:
- * a) creator - Creates a new instance.
- * b) getter  - Converts a scheme cell to the C structure.
- * c) checker - Checks if the scheme cell represents this SMOB.
- * d) printer - Used when applying (display . args) in Guile.
- * e) init    - Initialization of the SMOB type
- * f) tag     - The new scheme tag used to identify a SMOB.
- * g) free    - Run if the SMOB gets destroyed.
- */
-#define MAKE_SMOB_DEFINITION(ctype, description)                             \
-static scm_t_bits GUILE_CONCAT3 (guile_,ctype,_tag) = 0;                     \
-static SCM GUILE_CONCAT3 (guile_,ctype,_create) (void *data) {               \
-  SCM_RETURN_NEWSMOB (GUILE_CONCAT3 (guile_,ctype,_tag), data);              \
-}                                                                            \
-static void * GUILE_CONCAT3 (guile_,ctype,_get) (SCM smob) {                 \
-  return (void *) SCM_SMOB_DATA (smob);                                      \
-}                                                                            \
-static int GUILE_CONCAT3 (guile_,ctype,_p) (SCM smob) {                      \
-  return (SCM_NIMP (smob) &&                                                 \
-          SCM_TYP16 (smob) == GUILE_CONCAT3 (guile_,ctype,_tag)) ? 1 : 0;    \
-}                                                                            \
-static int GUILE_CONCAT3 (guile_,ctype,_print) (SCM smob, SCM port,          \
-                                                scm_print_state *state) {    \
-  static char txt[256];                                                      \
-  sprintf (txt, "#<%s %p>", description, (void *) SCM_SMOB_DATA (smob));     \
-  scm_puts (txt, port);                                                      \
-  return 1;                                                                  \
-}                                                                            \
-static size_t GUILE_CONCAT3 (guile_,ctype,_free) (SCM smob) {                \
-  return 0;                                                                  \
-}                                                                            \
-static void GUILE_CONCAT3 (guile_,ctype,_init) (void) {                      \
-  CREATE_SMOB_TAG (ctype, description);                                      \
-}
-
-/* Initializer macro for a new smob type. */
-#define INIT_SMOB(ctype) GUILE_CONCAT3 (guile_,ctype,_init) ()
-
-/* Instantiating macro for a smob type. */
-#define MAKE_SMOB(ctype, data) GUILE_CONCAT3 (guile_,ctype,_create) (data)
-
-/* Checks if the given scheme cell is a smob or not. */
-#define CHECK_SMOB(ctype, smob) GUILE_CONCAT3 (guile_,ctype,_p) (smob)
-
-/* Extracts the smob data from a given smob cell. */
-#define GET_SMOB(ctype, smob) GUILE_CONCAT3 (guile_,ctype,_get) (smob)
-
-/* Checks if the scheme cell @var{smob} is a smob and throws an error if
-   not. Otherwise the variable @var{var} receives the smob data. */
-#define CHECK_SMOB_ARG(ctype, smob, arg, description, var) do { \
-  if (!CHECK_SMOB (ctype, smob))                                \
-    scm_wrong_type_arg_msg (FUNC_NAME, arg, smob, description); \
-  else                                                          \
-    var = GET_SMOB (ctype, smob);                               \
-  } while (0)
-
-/* Finally: With the help of the above macros we create smob types for
-   Serveez socket structures, servers and server types. */
-MAKE_SMOB_DEFINITION (svz_socket, "svz-socket")
-MAKE_SMOB_DEFINITION (svz_server, "svz-server")
-MAKE_SMOB_DEFINITION (svz_servertype, "svz-servertype")
-
-/* This macro creates a socket callback getter/setter for use in Guile.
-   The procedure returns any previously set callback or an undefined value. */
-#define MAKE_SOCK_CALLBACK(func, assoc)                                \
-static SCM GUILE_CONCAT2 (guile_sock_,func) (SCM sock, SCM proc) {     \
-  svz_socket_t *xsock;						       \
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);    \
-  if (!SCM_UNBNDP (proc)) {					       \
-    SCM_ASSERT (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME);     \
-    xsock->func = GUILE_CONCAT2 (guile_func_,func);		       \
-    return guile_sock_setfunction (xsock, assoc, proc); }	       \
-  return guile_sock_getfunction (xsock, assoc);			       \
-}
+#define MAKE_SOCK_CALLBACK(FUNC, CALLBACK, TYPE, ASSOC)                 \
+  static SCM                                                            \
+  FUNC (SCM sock, SCM proc)                                             \
+  {                                                                     \
+    svz_socket_t *xsock;                                                \
+    scm_assert_smob_type (guile_svz_socket_tag, sock);                  \
+    xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);                      \
+    if (!SCM_UNBNDP (proc))                                             \
+      {                                                                 \
+        SCM_ASSERT (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME);  \
+        xsock->TYPE = FUNC;                                             \
+        return guile_sock_setfunction (xsock, ASSOC, proc);             \
+      }                                                                 \
+    return guile_sock_getfunction (xsock, ASSOC);                       \
+  } 
 
 /* Provides a socket callback setter/getter. */
 #define DEFINE_SOCK_CALLBACK(assoc, func) \
-  scm_c_define_gsubr (assoc, 1, 1, 0, GUILE_CONCAT2 (guile_sock_,func))
+  scm_c_define_gsubr (assoc, 1, 1, 0, func)
+
+scm_t_bits guile_svz_socket_tag = 0;
+scm_t_bits guile_svz_server_tag = 0;
+scm_t_bits guile_svz_servertype_tag = 0;
+
+static int
+guile_svz_socket_print (SCM smob, SCM port, scm_print_state *state) 
+{
+  static char txt[256];
+  sprintf (txt, "#<svz:sock %p>", (void *) SCM_SMOB_DATA (smob));
+  scm_puts (txt, port);
+  return 1;
+}
+
+static int
+guile_svz_server_print (SCM smob, SCM port, scm_print_state *state) 
+{
+  static char txt[256];
+  sprintf (txt, "#<svz:server %p>", (void *) SCM_SMOB_DATA (smob));
+  scm_puts (txt, port);
+  return 1;
+}
+
+static int
+guile_svz_servertype_print (SCM smob, SCM port, scm_print_state *state) 
+{
+  static char txt[256];
+  sprintf (txt, "#<svz:servertype %p>", (void *) SCM_SMOB_DATA (smob));
+  scm_puts (txt, port);
+  return 1;
+}
 
 /*
  * Extract a guile procedure from an option hash. Return zero on success.
@@ -471,7 +417,9 @@ guile_func_global_init (svz_servertype_t *stype)
 
   if (!SCM_UNBNDP (global_init))
     {
-      ret = guile_call (global_init, 1, MAKE_SMOB (svz_servertype, stype));
+      SCM servertype_smob;
+      SCM_NEWSMOB (servertype_smob, guile_svz_servertype_tag, stype);
+      ret = guile_call (global_init, 1, servertype_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -489,7 +437,9 @@ guile_func_init (svz_server_t *server)
 
   if (!SCM_UNBNDP (init))
     {
-      ret = guile_call (init, 1, MAKE_SMOB (svz_server, server));
+      SCM server_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      ret = guile_call (init, 1, server_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -507,8 +457,10 @@ guile_func_detect_proto (svz_server_t *server, svz_socket_t *sock)
 
   if (!SCM_UNBNDP (detect_proto))
     {
-      ret = guile_call (detect_proto, 2, MAKE_SMOB (svz_server, server), 
-			MAKE_SMOB (svz_socket, sock));
+      SCM server_smob, socket_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (detect_proto, 2, server_smob, socket_smob); 
       return guile_integer (SCM_ARGn, ret, 0);
     }
   return 0;
@@ -541,7 +493,9 @@ guile_func_disconnected_socket (svz_socket_t *sock)
   /* First call the guile callback if necessary. */
   if (!SCM_UNBNDP (disconnected))
     {
-      ret = guile_call (disconnected, 1, MAKE_SMOB (svz_socket, sock));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (disconnected, 1, socket_smob);
       retval = guile_integer (SCM_ARGn, ret, -1);
     }
 
@@ -569,8 +523,9 @@ guile_func_kicked_socket (svz_socket_t *sock, int reason)
 
   if (!SCM_UNBNDP (kicked))
     {
-      ret = guile_call (kicked, 2, MAKE_SMOB (svz_socket, sock), 
-			scm_int2num (reason));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (kicked, 2, socket_smob, scm_int2num (reason));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -591,8 +546,10 @@ guile_func_connect_socket (svz_server_t *server, svz_socket_t *sock)
 
   if (!SCM_UNBNDP (connect_socket))
     {
-      ret = guile_call (connect_socket, 2, MAKE_SMOB (svz_server, server), 
-			MAKE_SMOB (svz_socket, sock));
+      SCM server_smob, socket_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (connect_socket, 2, server_smob, socket_smob); 
       return guile_integer (SCM_ARGn, ret, 0);
     }
   return 0;
@@ -611,7 +568,9 @@ guile_func_finalize (svz_server_t *server)
 
   if (!SCM_UNBNDP (finalize))
     {
-      ret = guile_call (finalize, 1, MAKE_SMOB (svz_server, server));
+      SCM server_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      ret = guile_call (finalize, 1, server_smob);
       retval = guile_integer (SCM_ARGn, ret, -1);
     }
 
@@ -636,7 +595,9 @@ guile_func_global_finalize (svz_servertype_t *stype)
 
   if (!SCM_UNBNDP (global_finalize))
     {
-      ret = guile_call (global_finalize, 1, MAKE_SMOB (svz_servertype, stype));
+      SCM servertype_smob;
+      SCM_NEWSMOB (servertype_smob, guile_svz_servertype_tag, stype);
+      ret = guile_call (global_finalize, 1, servertype_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -660,8 +621,10 @@ guile_func_info_client (svz_server_t *server, svz_socket_t *sock)
 
   if (!SCM_UNBNDP (info_client))
     {
-      ret = guile_call (info_client, 2, MAKE_SMOB (svz_server, server),
-			MAKE_SMOB (svz_socket, sock));
+      SCM server_smob, socket_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (info_client, 2, server_smob, socket_smob);
       if ((str = guile_to_string (ret)) != NULL)
 	{
 	  memset (text, 0, sizeof (text));
@@ -687,7 +650,9 @@ guile_func_info_server (svz_server_t *server)
 
   if (!SCM_UNBNDP (info_server))
     {
-      ret = guile_call (info_server, 1, MAKE_SMOB (svz_server, server));
+      SCM server_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      ret = guile_call (info_server, 1, server_smob);
       if ((str = guile_to_string (ret)) != NULL)
 	{
 	  memset (text, 0, sizeof (text));
@@ -710,7 +675,9 @@ guile_func_notify (svz_server_t *server)
 
   if (!SCM_UNBNDP (notify))
     {
-      ret = guile_call (notify, 1, MAKE_SMOB (svz_server, server));
+      SCM server_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      ret = guile_call (notify, 1, server_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -727,7 +694,9 @@ guile_func_reset (svz_server_t *server)
 
   if (!SCM_UNBNDP (reset))
     {
-      ret = guile_call (reset, 1, MAKE_SMOB (svz_server, server));
+      SCM server_smob;
+      SCM_NEWSMOB (server_smob, guile_svz_server_tag, server);
+      ret = guile_call (reset, 1, server_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -744,7 +713,9 @@ guile_func_check_request (svz_socket_t *sock)
 
   if (!SCM_UNBNDP (check_request))
     {
-      ret = guile_call (check_request, 1, MAKE_SMOB (svz_socket, sock));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (check_request, 1, socket_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -771,9 +742,10 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
 
   if (!SCM_UNBNDP (handle_request))
     {
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
       bin = scm_c_take_bytevector (request, len);
-      ret = guile_call (handle_request, 3, MAKE_SMOB (svz_socket, sock),
-			bin, scm_int2num (len));
+      ret = guile_call (handle_request, 3, socket_smob, bin, scm_int2num (len));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -789,7 +761,9 @@ guile_func_idle_func (svz_socket_t *sock)
 
   if (!SCM_UNBNDP (idle_func))
     {
-      ret = guile_call (idle_func, 1, MAKE_SMOB (svz_socket, sock));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (idle_func, 1, socket_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -805,7 +779,9 @@ guile_func_trigger_cond (svz_socket_t *sock)
 
   if (!SCM_UNBNDP (trigger_cond))
     {
-      ret = guile_call (trigger_cond, 1, MAKE_SMOB (svz_socket, sock));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (trigger_cond, 1, socket_smob);
       return SCM_NFALSEP (ret);
     }
   return 0;
@@ -821,7 +797,9 @@ guile_func_trigger_func (svz_socket_t *sock)
 
   if (!SCM_UNBNDP (trigger_func))
     {
-      ret = guile_call (trigger_func, 1, MAKE_SMOB (svz_socket, sock));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (trigger_func, 1, socket_smob);
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return 0;
@@ -838,8 +816,10 @@ guile_func_check_request_oob (svz_socket_t *sock)
 
   if (!SCM_UNBNDP (check_request_oob))
     {
-      ret = guile_call (check_request_oob, 2, MAKE_SMOB (svz_socket, sock),
-			scm_int2num (sock->oob));
+      SCM socket_smob;
+      SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+      ret = guile_call (check_request_oob, 2, socket_smob, 
+                        scm_int2num (sock->oob));
       return guile_integer (SCM_ARGn, ret, -1);
     }
   return -1;
@@ -850,14 +830,18 @@ guile_func_check_request_oob (svz_socket_t *sock)
    to the Guile procedure @var{proc}. The procedure returns the previously
    set handler if there is any. */
 #define FUNC_NAME "svz:sock:handle-request"
-MAKE_SOCK_CALLBACK (handle_request, "handle-request")
+MAKE_SOCK_CALLBACK (guile_sock_handle_request, 
+                    guile_func_handle_request,
+                    handle_request, "handle-request")
 #undef FUNC_NAME
 
 /* Set the @code{check-request} member of the socket structure @var{sock} 
    to the Guile procedure @var{proc}. Returns the previously handler if 
    there is any. */
 #define FUNC_NAME "svz:sock:check-request"
-MAKE_SOCK_CALLBACK (check_request, "check-request")
+MAKE_SOCK_CALLBACK (guile_sock_check_request,
+                    guile_func_handle_request,
+                    check_request, "check-request")
 #undef FUNC_NAME
 
 /* Setup the packet boundary of the socket @var{sock}. The given string value
@@ -875,7 +859,8 @@ guile_sock_boundary (SCM sock, SCM boundary)
 {
   svz_socket_t *xsock;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   SCM_ASSERT (scm_is_integer (boundary) || scm_is_string (boundary), boundary,
               SCM_ARG2, FUNC_NAME);
 
@@ -913,7 +898,8 @@ guile_sock_floodprotect (SCM sock, SCM flag)
   svz_socket_t *xsock;
   int flags;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   flags = xsock->flags;
   if (!SCM_UNBNDP (flag))
     {
@@ -940,7 +926,8 @@ guile_sock_print (SCM sock, SCM buffer)
   char *buf;
   int len, ret = -1;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   SCM_ASSERT (scm_is_string (buffer) || scm_is_true (scm_bytevector_p (buffer)),
               buffer, SCM_ARG2, FUNC_NAME);
 
@@ -952,6 +939,7 @@ guile_sock_print (SCM sock, SCM buffer)
   else
     {
       buf = SCM_BYTEVECTOR_CONTENTS (buffer);
+      len = scm_c_bytevector_length (buffer);
     }
 
   /* Depending on the protocol type use different kind of senders. */
@@ -982,8 +970,9 @@ guile_sock_data (SCM sock, SCM data)
   svz_socket_t *xsock;
   SCM ret = SCM_EOL;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
+ 
   /* Save return value here. */
   if (xsock->data != NULL)
     ret = (SCM) SVZ_PTR2NUM (xsock->data);
@@ -1042,13 +1031,21 @@ guile_config_convert (void *address, int type)
 /* Checks if the given Guile object @var{smob} in position @var{arg} is a 
    server or socket and throws an exception if not. Otherwise it saves the
    server in the variable @var{var}. */
-#define CHECK_SERVER_SMOB_ARG(smob, arg, var)                           \
-  do {                                                                  \
-    SCM_ASSERT (CHECK_SMOB (svz_server, smob)                           \
-                || CHECK_SMOB (svz_socket, smob), smob, arg, FUNC_NAME); \
-    var = CHECK_SMOB (svz_server, smob) ? GET_SMOB (svz_server, smob) : \
-      svz_server_find (((svz_socket_t *) GET_SMOB (svz_socket, smob))->cfg); \
-  } while (0)
+static void
+check_server_smob_arg (SCM smob, int arg, svz_server_t **var)
+{
+  void *cfg;
+  SCM_ASSERT (SCM_SMOB_PREDICATE (guile_svz_server_tag, smob)
+              || SCM_SMOB_PREDICATE (guile_svz_socket_tag, smob),
+              smob, arg, NULL);
+  if (SCM_SMOB_PREDICATE (guile_svz_server_tag, smob))
+    *var = (svz_server_t *) SCM_SMOB_DATA (smob);
+  else
+    {
+      cfg = ((svz_socket_t *) SCM_SMOB_DATA (smob))->cfg;
+      *var = svz_server_find (cfg);
+    }
+}
 
 /* This procedure returns the configuration item specified by @var{key} of
    the given server instance @var{server}. You can pass this function a
@@ -1068,7 +1065,7 @@ guile_server_config_ref (SCM server, SCM key)
   char *str;
   svz_config_prototype_t *prototype;
   
-  CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
+  check_server_smob_arg (server, SCM_ARG1, &xserver);
   SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
 
   str = guile_to_string (key);
@@ -1105,7 +1102,7 @@ guile_server_state_ref (SCM server, SCM key)
   char *str;
   svz_hash_t *hash;
 
-  CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
+  check_server_smob_arg (server, SCM_ARG1, &xserver);
   SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
@@ -1131,7 +1128,7 @@ guile_server_state_set_x (SCM server, SCM key, SCM value)
   char *str;
   svz_hash_t *hash;
 
-  CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
+  check_server_smob_arg (server, SCM_ARG1, &xserver);
   SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
@@ -1165,7 +1162,7 @@ guile_server_state_to_hash (SCM server)
   int i;
   char **key;
 
-  CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
+  check_server_smob_arg (server, SCM_ARG1, &xserver);
   if ((data = xserver->data) != NULL)
     {
       hash = scm_c_make_vector (svz_hash_size (data), SCM_EOL);
@@ -1708,14 +1705,17 @@ guile_server_init (void)
 		      0, 1, 0, guile_access_exceptions);
   scm_c_define_gsubr ("serveez-nuke",
 		      0, 0, 0, guile_nuke_happened);
-  DEFINE_SOCK_CALLBACK ("svz:sock:handle-request",handle_request);
-  DEFINE_SOCK_CALLBACK ("svz:sock:check-request",check_request);
+  DEFINE_SOCK_CALLBACK ("svz:sock:handle-request", guile_sock_handle_request);
+  DEFINE_SOCK_CALLBACK ("svz:sock:check-request", guile_sock_check_request);
 
-  /* Initialize the guile SMOB things. Previously defined via
-     MAKE_SMOB_DEFINITION (). */
-  INIT_SMOB (svz_socket);
-  INIT_SMOB (svz_server);
-  INIT_SMOB (svz_servertype);
+  guile_svz_socket_tag = scm_make_smob_type ("svz:sock", 0);
+  scm_set_smob_print (guile_svz_socket_tag, guile_svz_socket_print);
+
+  guile_svz_server_tag = scm_make_smob_type ("svz:server", 0);
+  scm_set_smob_print (guile_svz_server_tag, guile_svz_server_print);
+
+  guile_svz_servertype_tag = scm_make_smob_type ("svz:servertype", 0);
+  scm_set_smob_print (guile_svz_servertype_tag, guile_svz_servertype_print);
 
   guile_api_init ();
 }

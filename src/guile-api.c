@@ -164,7 +164,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
     return ret;
 
   sock->disconnected_socket = guile_func_disconnected_socket;
-  return MAKE_SMOB (svz_socket, sock);
+  SCM_RETURN_NEWSMOB (guile_svz_socket_tag, sock);
 }
 #undef FUNC_NAME
 
@@ -174,7 +174,9 @@ static SCM
 guile_sock_receive_buffer (SCM sock)
 {
   svz_socket_t *xsock;
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   return scm_c_take_bytevector (xsock->recv_buffer, xsock->recv_buffer_fill);
 }
 #undef FUNC_NAME
@@ -190,7 +192,8 @@ guile_sock_receive_buffer_size (SCM sock, SCM size)
   svz_socket_t *xsock;
   int len;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   if (!SCM_UNBNDP (size))
     {
       SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
@@ -208,7 +211,8 @@ static SCM
 guile_sock_send_buffer (SCM sock)
 {
   svz_socket_t *xsock;
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   return scm_c_take_bytevector (xsock->send_buffer, xsock->send_buffer_fill);
 }
 #undef FUNC_NAME
@@ -224,7 +228,8 @@ guile_sock_send_buffer_size (SCM sock, SCM size)
   svz_socket_t *xsock;
   int len;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   if (!SCM_UNBNDP (size))
     {
       SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
@@ -247,13 +252,14 @@ guile_sock_receive_buffer_reduce (SCM sock, SCM length)
   svz_socket_t *xsock;
   int len;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
 
   /* Check if second length argument is given. */
   if (!SCM_UNBNDP (length))
     {
       SCM_ASSERT (scm_is_integer (length), length, SCM_ARG2, FUNC_NAME);
-      len = scm_to_signed_int (length, 0, xsock->recv_buffer_fill);
+      len = scm_to_signed_integer (length, 0, xsock->recv_buffer_fill);
     }
   else
     {
@@ -276,7 +282,8 @@ guile_sock_remote_address (SCM sock, SCM address)
   uint16_t port;
   SCM pair;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   pair = scm_cons (scm_ulong2num (xsock->remote_addr), 
 		   scm_int2num ((int) xsock->remote_port));
   if (!SCM_UNBNDP (address))
@@ -304,7 +311,8 @@ guile_sock_local_address (SCM sock, SCM address)
   uint16_t port;
   SCM pair;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   pair = scm_cons (scm_ulong2num (xsock->local_addr), 
 		   scm_int2num ((int) xsock->local_port));
   if (!SCM_UNBNDP (address))
@@ -330,12 +338,14 @@ guile_sock_parent (SCM sock, SCM parent)
   SCM oparent = SCM_EOL;
   svz_socket_t *xsock, *xparent;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   if ((xparent = svz_sock_getparent (xsock)) != NULL)
-    oparent = MAKE_SMOB (svz_socket, xparent);
+    SCM_NEWSMOB (oparent, guile_svz_socket_tag, xparent);
   if (!SCM_UNBNDP (parent))
     {
-      CHECK_SMOB_ARG (svz_socket, parent, SCM_ARG2, "svz-socket", xparent);
+      scm_assert_smob_type (guile_svz_socket_tag, parent);
+      xparent = (svz_socket_t *) SCM_SMOB_DATA (parent);
       svz_sock_setparent (xsock, xparent);
     }
   return oparent;
@@ -352,12 +362,14 @@ guile_sock_referrer (SCM sock, SCM referrer)
   SCM oreferrer = SCM_EOL;
   svz_socket_t *xsock, *xreferrer;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   if ((xreferrer = svz_sock_getreferrer (xsock)) != NULL)
-    oreferrer = MAKE_SMOB (svz_socket, xreferrer);
+    SCM_NEWSMOB (oreferrer, guile_svz_socket_tag, xreferrer);
   if (!SCM_UNBNDP (referrer))
     {
-      CHECK_SMOB_ARG (svz_socket, referrer, SCM_ARG2, "svz-socket", xreferrer);
+      scm_assert_smob_type (guile_svz_socket_tag, referrer);
+      xreferrer = (svz_socket_t *) SCM_SMOB_DATA (referrer);
       svz_sock_setreferrer (xsock, xreferrer);
     }
   return oreferrer;
@@ -379,12 +391,15 @@ guile_sock_server (SCM sock, SCM server)
   svz_socket_t *xsock;
   svz_server_t *xserver;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
+  
   if ((xserver = svz_server_find (xsock->cfg)) != NULL)
-    oserver = MAKE_SMOB (svz_server, xserver);
+    SCM_NEWSMOB (oserver, guile_svz_server_tag, xserver);
   if (!SCM_UNBNDP (server))
     {
-      CHECK_SMOB_ARG (svz_server, server, SCM_ARG2, "svz-server", xserver);
+      scm_assert_smob_type (guile_svz_server_tag, server);
+      xserver = (svz_server_t *) SCM_SMOB_DATA (server);
       xsock->cfg = xserver->cfg;
     }
   return oserver;
@@ -401,7 +416,8 @@ guile_sock_protocol (SCM sock)
 {
   svz_socket_t *xsock;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   return scm_int2num (xsock->proto);
 }
 #undef FUNC_NAME
@@ -415,7 +431,8 @@ guile_sock_final_print (SCM sock)
 {
   svz_socket_t *xsock;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   xsock->flags |= SOCK_FLAG_FINAL_WRITE;
   return SCM_UNSPECIFIED;
 }
@@ -433,7 +450,8 @@ guile_sock_no_delay (SCM sock, SCM enable)
   svz_socket_t *xsock;
   int old = 0, set = 0;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   if (xsock->proto & PROTO_TCP)
     {
       if (!SCM_UNBNDP (enable))
@@ -459,7 +477,10 @@ guile_sock_no_delay (SCM sock, SCM enable)
 static SCM
 guile_sock_p (SCM sock)
 {
-  return CHECK_SMOB (svz_socket, sock) ? SCM_BOOL_T : SCM_BOOL_F;
+  if (SCM_SMOB_PREDICATE (guile_svz_socket_tag, sock))
+    return SCM_BOOL_T;
+  else
+    return SCM_BOOL_F;
 }
 #undef FUNC_NAME
 
@@ -469,7 +490,10 @@ guile_sock_p (SCM sock)
 static SCM
 guile_server_p (SCM server)
 {
-  return CHECK_SMOB (svz_server, server) ? SCM_BOOL_T : SCM_BOOL_F;
+  if (SCM_SMOB_PREDICATE (guile_svz_server_tag, server))
+    return SCM_BOOL_T;
+  else
+    return SCM_BOOL_F;
 }
 #undef FUNC_NAME
 
@@ -478,7 +502,10 @@ guile_server_p (SCM server)
    runs whenever the socket is lost for some external reason. The procedure 
    returns the previously set handler if there is one. */
 #define FUNC_NAME "svz:sock:disconnected"
-MAKE_SOCK_CALLBACK (disconnected_socket, "disconnected")
+MAKE_SOCK_CALLBACK (guile_sock_disconnected_socket, 
+                    guile_func_disconnected_socket,
+                    disconnected_socket,
+                    "disconnected")
 #undef FUNC_NAME
 
 /* Sets the @code{kicked-socket} callback of the given socket structure
@@ -486,7 +513,9 @@ MAKE_SOCK_CALLBACK (disconnected_socket, "disconnected")
    set procedure.  This callback gets called whenever the socket gets 
    closed by Serveez intentionally.  */
 #define FUNC_NAME "svz:sock:kicked"
-MAKE_SOCK_CALLBACK (kicked_socket, "kicked")
+MAKE_SOCK_CALLBACK (guile_sock_kicked_socket,
+                    guile_func_kicked_socket,
+                    kicked_socket, "kicked")
 #undef FUNC_NAME
 
 /* This procedure sets the @code{trigger-condition} callback for the socket
@@ -495,7 +524,9 @@ MAKE_SOCK_CALLBACK (kicked_socket, "kicked")
    server loop indicating whether the @code{trigger} callback should be
    run or not. */
 #define FUNC_NAME "svz:sock:trigger-condition"
-MAKE_SOCK_CALLBACK (trigger_cond, "trigger-condition")
+MAKE_SOCK_CALLBACK (guile_sock_trigger_cond,
+                    guile_func_trigger_cond,
+                    trigger_cond, "trigger-condition")
 #undef FUNC_NAME
 
 /* Sets the @code{trigger} callback of the socket structure @var{sock} to
@@ -503,7 +534,9 @@ MAKE_SOCK_CALLBACK (trigger_cond, "trigger-condition")
    The callback is run when the @code{trigger-condition} callback returned
    @code{#t}. */
 #define FUNC_NAME "svz:sock:trigger"
-MAKE_SOCK_CALLBACK (trigger_func, "trigger")
+MAKE_SOCK_CALLBACK (guile_sock_trigger_func,
+                    guile_func_trigger_func,
+                    trigger_func, "trigger")
 #undef FUNC_NAME
 
 /* This procedure sets the @code{idle} callback of the socket structure
@@ -514,7 +547,9 @@ MAKE_SOCK_CALLBACK (trigger_func, "trigger")
    callback can reset @code{idle-counter} to some value and thus can 
    re-schedule itself for a later task. */
 #define FUNC_NAME "svz:sock:idle"
-MAKE_SOCK_CALLBACK (idle_func, "idle")
+MAKE_SOCK_CALLBACK (guile_sock_idle_func,
+                    guile_func_idle_func,
+                    idle_func, "idle")
 #undef FUNC_NAME
 
 /* With this procedure you can setup the @code{check-oob-request} callback
@@ -523,7 +558,10 @@ MAKE_SOCK_CALLBACK (idle_func, "idle")
    set any before.  The callback is run whenever urgent data (out-of-band)
    has been detected on the socket. */
 #define FUNC_NAME "svz:sock:check-oob-request"
-MAKE_SOCK_CALLBACK (check_request_oob, "check-oob-request")
+MAKE_SOCK_CALLBACK (guile_sock_check_request_oob,
+                    guile_func_check_request_oob,
+                    check_request_oob,
+                    "check-oob-request")
 #undef FUNC_NAME
 
 /* This functions returns the socket structure @var{sock}'s current 
@@ -537,7 +575,8 @@ guile_sock_idle_counter (SCM sock, SCM counter)
   svz_socket_t *xsock;
   int ocounter;
 
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   ocounter = xsock->idle_counter;
   if (!SCM_UNBNDP (counter))
     {
@@ -570,17 +609,20 @@ guile_server_listeners (SCM server)
   /* Maybe server smob given. */
   if (xserver == NULL)
     {
-      CHECK_SMOB_ARG (svz_server, server, SCM_ARG1, "svz-server or string", 
-		      xserver);
+      scm_assert_smob_type (guile_svz_server_tag, server);
+      xserver = (svz_server_t *) SCM_SMOB_DATA (server);
     }
 
   /* Create a list of socket smobs for the server. */
   if ((listeners = svz_server_listeners (xserver)) != NULL)
     {
+      SCM smob;
       for (i = 0; i < svz_array_size (listeners); i++)
-	list = scm_cons (MAKE_SMOB (svz_socket, (svz_socket_t *)
-				    svz_array_get (listeners, i)),
-			 list);
+        {
+          SCM_NEWSMOB (smob, guile_svz_socket_tag, 
+                       (svz_socket_t *) svz_array_get (listeners, i));
+          list = scm_cons (smob, list);
+        }
       svz_array_destroy (listeners);
     }
   return scm_reverse (list);
@@ -610,15 +652,19 @@ guile_server_clients (SCM server)
   /* If the above failed it is possibly a real server smob. */
   if (xserver == NULL)
     {
-      CHECK_SMOB_ARG (svz_server, server, SCM_ARG1, "svz-server or string", 
-		      xserver);
+      scm_assert_smob_type (guile_svz_server_tag, server);
+      xserver = (svz_server_t *) SCM_SMOB_DATA (server);
     }
 
   /* Create a list of socket smobs for the server. */
   if ((clients = svz_server_clients (xserver)) != NULL)
     {
+      SCM socket_smob;
       svz_array_foreach (clients, sock, i)
-	list = scm_cons (MAKE_SMOB (svz_socket, sock), list);
+        {
+          SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
+          list = scm_cons (socket_smob, list);
+        }
       svz_array_destroy (clients);
     }
   return list;
@@ -908,7 +954,8 @@ guile_coserver_ident (SCM sock, SCM callback, SCM arg)
   svz_socket_t *xsock;
 
   /* Check argument list first. */
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   SCM_ASSERT (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME);
 
   /* Protect callback (Guile procedure) and arg (any Guile cell) from
@@ -940,7 +987,8 @@ guile_sock_find (SCM ident)
   id = scm_to_int (SCM_CAR (ident));
   version = scm_to_int (SCM_CDR (ident));
   if ((sock = svz_sock_find (id, version)) != NULL)
-    return MAKE_SMOB (svz_socket, sock);
+    SCM_RETURN_NEWSMOB (guile_svz_socket_tag, sock);
+
   return SCM_BOOL_F;
 }
 #undef FUNC_NAME
@@ -956,7 +1004,8 @@ SCM
 guile_sock_ident (SCM sock)
 {
   svz_socket_t *xsock;
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   return scm_cons (scm_int2num (xsock->id), scm_int2num (xsock->version));
 }
 #undef FUNC_NAME
@@ -1028,7 +1077,8 @@ guile_sock_send_oob (SCM sock, SCM oob)
   int ret = -1;
 
   /* Check the arguments. */
-  CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
+  scm_assert_smob_type (guile_svz_socket_tag, sock);
+  xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
   SCM_ASSERT (scm_is_integer (oob) || SCM_CHARP (oob), oob, SCM_ARG2,
               FUNC_NAME);
 
@@ -1106,13 +1156,13 @@ guile_api_init (void)
 		      2, 1, 0, guile_coserver_ident);
   scm_c_define_gsubr ("svz:read-file", 2, 0, 0, guile_read_file);
   scm_c_define_gsubr ("svz:sock:send-oob", 2, 0, 0, guile_sock_send_oob);
-
-  DEFINE_SOCK_CALLBACK ("svz:sock:trigger-condition",trigger_cond);
-  DEFINE_SOCK_CALLBACK ("svz:sock:trigger",trigger_func);
-  DEFINE_SOCK_CALLBACK ("svz:sock:disconnected",disconnected_socket);
-  DEFINE_SOCK_CALLBACK ("svz:sock:kicked",kicked_socket);
-  DEFINE_SOCK_CALLBACK ("svz:sock:idle",idle_func);
-  DEFINE_SOCK_CALLBACK ("svz:sock:check-oob-request",check_request_oob);
+  DEFINE_SOCK_CALLBACK ("svz:sock:trigger", guile_sock_trigger_func);
+  DEFINE_SOCK_CALLBACK ("svz:sock:disconnected", 
+                        guile_sock_disconnected_socket);
+  DEFINE_SOCK_CALLBACK ("svz:sock:kicked", guile_sock_kicked_socket);
+  DEFINE_SOCK_CALLBACK ("svz:sock:idle", guile_sock_idle_func);
+  DEFINE_SOCK_CALLBACK ("svz:sock:check-oob-request", 
+                        guile_sock_check_request_oob);
 }
 
 /* Finalize the API functions. */
