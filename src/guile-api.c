@@ -157,7 +157,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
       sock = svz_icmp_connect (xhost, xport, ICMP_SERVEEZ);
       break;
     default:
-      SCM_OUT_OF_RANGE (SCM_ARG2, proto);
+      scm_out_of_range (FUNC_NAME, proto);
     }
 
   if (sock == NULL)
@@ -984,7 +984,7 @@ guile_read_file (SCM port, SCM size)
   fdes = SCM_FPORT_FDES (port);
 
   if ((len = scm_to_int (size)) <= 0)
-    SCM_OUT_OF_RANGE (SCM_ARG2, size);
+    scm_out_of_range (FUNC_NAME, size);
 
   /* Allocate necessary data. */
   data = (unsigned char *) scm_gc_malloc (len, "svz-binary-data");
