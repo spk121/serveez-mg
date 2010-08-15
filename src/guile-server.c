@@ -126,7 +126,7 @@ optionhash_extract_proc (svz_hash_t *hash,
   char *str = NULL;
 
   /* Is there such a string in the option-hash ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       /* Nothing in hash, try to use default. */
       if (hasdef)
@@ -1423,7 +1423,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
   asprintf (&txt, "parsing configuration of `%s'", server->prefix);
 
   /* Check if the configuration alist is given or not. */
-  if (SCM_EQ_P (cfg, SCM_UNSPECIFIED))
+  if (scm_is_eq (cfg, SCM_UNSPECIFIED))
     {
       guile_error ("Missing servertype `configuration' for `%s'", 
 		   server->prefix);

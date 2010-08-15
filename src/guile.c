@@ -579,7 +579,7 @@ optionhash_extract_int (svz_hash_t *hash,
   SCM hvalue = optionhash_get (hash, key);
 
   /* Is there such an integer in the option-hash ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       /* Nothing in hash, try to use default. */
       if (hasdef)
@@ -617,7 +617,7 @@ optionhash_extract_string (svz_hash_t *hash,
   char *str = NULL;
 
   /* Is there such a string in the option-hash ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       /* Nothing in hash, try to use default. */
       if (hasdef)
@@ -663,7 +663,7 @@ optionhash_cb_integer (char *server, void *arg, char *key, int *target,
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
   
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -690,7 +690,7 @@ optionhash_cb_boolean (char *server, void *arg, char *key, int *target,
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
 
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -719,7 +719,7 @@ optionhash_cb_intarray (char *server, void *arg, char *key,
   SCM hvalue = optionhash_get (options, key);
 
   /* Is that integer array defined in the option-hash ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -752,7 +752,7 @@ optionhash_cb_string (char *server, void *arg, char *key,
   SCM hvalue = optionhash_get (options, key);
   char *str;
 
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -782,7 +782,7 @@ optionhash_cb_strarray (char *server, void *arg, char *key,
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
 
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -814,7 +814,7 @@ optionhash_cb_hash (char *server, void *arg, char *key,
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
 
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -849,7 +849,7 @@ optionhash_cb_portcfg (char *server, void *arg, char *key,
   char *str;
 
   /* Is the requested port configuration defined ? */
-  if (SCM_EQ_P (hvalue, SCM_UNSPECIFIED))
+  if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
 	return SVZ_ITEM_DEFAULT_ERRMSG;
@@ -1181,7 +1181,7 @@ guile_define_port (SCM name, SCM args)
           free (str);
 	}
       /* Create local optionhash for receiving pipe direction. */
-      else if (SCM_EQ_P (p, SCM_UNSPECIFIED))
+      else if (scm_is_eq (p, SCM_UNSPECIFIED))
 	{
 	  guile_error ("%s: You have to define a pipe called `%s'",
 		       portname, PORTCFG_RECV);
@@ -1212,7 +1212,7 @@ guile_define_port (SCM name, SCM args)
 	  cfg->pipe_send.perm = (unsigned int) -1;
           free (str);
 	}
-      else if (SCM_EQ_P (p, SCM_UNSPECIFIED))
+      else if (scm_is_eq (p, SCM_UNSPECIFIED))
 	{
 	  guile_error ("%s: You have to define a pipe called `%s'",
 		       portname, PORTCFG_SEND);
@@ -1255,7 +1255,7 @@ guile_define_port (SCM name, SCM args)
 
       cfg->deny = NULL;
       list = optionhash_get (options, PORTCFG_DENY);
-      if (!SCM_EQ_P (list, SCM_UNSPECIFIED))
+      if (!scm_is_eq (list, SCM_UNSPECIFIED))
 	{
 	  if ((cfg->deny = guile_to_strarray (list, PORTCFG_DENY)) == NULL)
 	    {
@@ -1266,7 +1266,7 @@ guile_define_port (SCM name, SCM args)
 	}
       cfg->allow = NULL;
       list = optionhash_get (options, PORTCFG_ALLOW);
-      if (!SCM_EQ_P (list, SCM_UNSPECIFIED))
+      if (!scm_is_eq (list, SCM_UNSPECIFIED))
 	{
 	  if ((cfg->allow = guile_to_strarray (list, PORTCFG_ALLOW)) == NULL)
 	    {
