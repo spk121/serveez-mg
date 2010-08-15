@@ -276,7 +276,7 @@
 			  (run-rpc-portmapper (vector-ref rpc 0)
 					      (vector-ref rpc 2) version
 					      (rpc-ip-proto service-line)
-					      (svz:ntohs port)))
+					      (ntohs port)))
 			))
 		    ;; get the listening socket sructures
 		    (svz:server:listeners server))
