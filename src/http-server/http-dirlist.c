@@ -76,18 +76,10 @@
 #include "http-dirlist.h"
 
 #ifndef __MINGW32__
-# if HAVE_SORTED_LIST
-#  define FILENAME dir[n]->d_name
-# else
-#  define FILENAME de->d_name
-# endif
+# define FILENAME dir[n]->d_name
 #else 
 # define FILENAME de.cFileName
 # define closedir(dir) FindClose (dir)
-#endif
-
-#if defined (HAVE_ALPHASORT) && !defined (DECLARED_ALPHASORT)
-extern int alphasort (const struct dirent **, const struct dirent **);
 #endif
 
 /* Size of last buffer allocated. */
@@ -144,16 +136,8 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
   char *timestr = NULL;
   char postamble[DIRLIST_SPACE_POST];
   int files = 0;
-#if HAVE_SORTED_LIST
   struct dirent **dir;
   int n;
-#elif !defined(__MINGW32__)
-  DIR *dir;
-  struct dirent *de = NULL;
-#else
-  WIN32_FIND_DATA de;
-  HANDLE dir;
-#endif
 
   /* Initialize data fields */
   memset (filename, 0, DIRLIST_SPACE_NAME);
@@ -169,20 +153,7 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
     }
 
   /* Open the directory */
-#if HAVE_SORTED_LIST
   if ((files = scandir (dirname, &dir, 0, alphasort)) == -1)
-#elif defined(__MINGW32__)
-  strcpy (filename, dirname);
-  if (filename[strlen (filename) - 1] == '/' ||
-      filename[strlen (filename) - 1] == '\\')
-    strcat (filename, "*");
-  else
-    strcat (filename, "/*");
-      
-  if ((dir = FindFirstFile (filename, &de)) == INVALID_HANDLE)
-#else
-  if ((dir = opendir (dirname)) == NULL)
-#endif
     {
       return NULL;
     }
@@ -223,13 +194,7 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
     }
 
   /* Iterate directory */
-#if HAVE_SORTED_LIST
   for (n = 0; n < files; n++)
-#elif !defined(__MINGW32__)
-  while (NULL != (de = readdir (dir)))
-#else
-  do
-#endif
     {
       /* Create fully qualified filename */
       snprintf (filename, DIRLIST_SPACE_NAME - 1, "%s/%s",
@@ -282,11 +247,6 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
 	    }
 	}
 
-      /* increase file counter unless this list is sorted */
-#if !HAVE_SORTED_LIST
-      files++;
-#endif
-
       /* Append this entry's data to output buffer */
       while (datasize - strlen (dirdata) < strlen (entrystr) + 1)
 	{
@@ -295,9 +255,6 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
 	}
       strcat (dirdata, entrystr);
     }
-#ifdef __MINGW32__
-  while (FindNextFile (dir, &de));
-#endif
 
   /* Output postamble */
   snprintf (postamble, DIRLIST_SPACE_POST - 1,
@@ -315,12 +272,8 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
   http_dirlist_size = datasize;
 
   /* Close the directory */
-#if HAVE_SORTED_LIST
   free (dir);
-#else
-  closedir (dir);
-#endif
-  
+
   return dirdata;
 }
 

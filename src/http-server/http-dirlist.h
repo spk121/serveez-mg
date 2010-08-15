@@ -2,6 +2,7 @@
  * http-dirlist.h - http protocol dirlist header file
  *
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +53,5 @@ extern int http_dirlist_size;
 #define DIRLIST_SPACE_NAME 1024   /* Bufferspace for stat'ed filenames */
 #define DIRLIST_SPACE_ENTRY 512   /* Max. size of a single line (1 per file) */
 #define DIRLIST_SPACE_POST 1024   /* Max. size of postamble */
-
-#define HAVE_SORTED_LIST (HAVE_SCANDIR && HAVE_ALPHASORT)
 
 #endif /* __HTTP_DIRLIST_H__ */

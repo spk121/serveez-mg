@@ -911,28 +911,6 @@ if test $svz_cv_header_netinet_tcp_h = yes ; then
     [Define if you have the <netinet/tcp.h> header file.])
 fi
 
-dnl
-dnl Check if alphasort() is declared.  Also check for alphasort(),
-dnl strsignal() and scandir() in -liberty.
-dnl
-save_LIBS="$LIBS"
-LIBS="$LIBS $SERVEEZ_LIBS $EXTRALIBS"
-AC_CHECK_FUNCS(alphasort scandir strsignal)
-LIBS="$save_LIBS"
-unset save_LIBS
-
-if test $ac_cv_header_dirent_h = yes ; then
-AC_CACHE_CHECK([whether alphasort is declared], svz_cv_decl_alphasort,
-AC_EGREP_HEADER(alphasort, dirent.h,
-  svz_cv_decl_alphasort=yes,
-  svz_cv_decl_alphasort=no))
-else
-  svz_cv_decl_alphasort=yes
-fi
-if test $svz_cv_decl_alphasort = yes ; then
-  AC_DEFINE(DECLARED_ALPHASORT, 1,
-    [Define if the alphasort function is declared in <dirent.h>.])
-fi
 
 LIBSERVEEZLIBS=""
 
