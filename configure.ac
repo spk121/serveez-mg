@@ -875,7 +875,7 @@ dnl
 
 AC_CHECK_HEADERS([wait.h])
 
-AC_CHECK_FUNCS(getrlimit getdtablesize getpwnam seteuid setegid geteuid \
+AC_CHECK_FUNCS(getrlimit getpwnam seteuid setegid geteuid \
   getegid gettimeofday shl_load NSAddImage)
 AC_CHECK_HEADERS(stdio.h unistd.h sys/time.h pwd.h varargs.h \
   getopt.h dlfcn.h sys/sockio.h sys/resource.h sys/sendfile.h sys/uio.h \

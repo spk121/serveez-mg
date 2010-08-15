@@ -34,7 +34,7 @@ lib_LTLIBRARIES = libserveez.la
 libserveez_la_LDFLAGS = -export-dynamic @NOUNDEFINED@ -release @VERSION@
 libserveez_la_DEPENDENCIES = coserver/libcoserver.la codec/libcodec.la
 libserveez_la_LIBADD = coserver/libcoserver.la codec/libcodec.la \
-  $(LIBSERVEEZLIBS) $(LIBSOCKET) $(GETHOSTNAME_LIB)
+  $(LIBSERVEEZLIBS) $(LIBSOCKET) $(GETHOSTNAME_LIB) $(LTLIBINTL)
 
 libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c      \
   tcp-socket.c pipe-socket.c udp-socket.c icmp-socket.c raw-socket.c      \

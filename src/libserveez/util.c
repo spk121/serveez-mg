@@ -550,7 +550,6 @@ svz_openfiles (int max_sockets)
   struct rlimit rlim;
 #endif
 
-#if HAVE_GETDTABLESIZE
   int openfiles;
 
   if ((openfiles = getdtablesize ()) == -1)
@@ -559,7 +558,6 @@ svz_openfiles (int max_sockets)
       return -1;
     }
   svz_log (LOG_NOTICE, "file descriptor table size: %d\n", openfiles);
-#endif /* HAVE_GETDTABLESIZE */
 
 #if HAVE_GETRLIMIT
 
