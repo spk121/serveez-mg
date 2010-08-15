@@ -158,8 +158,7 @@ static SCM GUILE_CONCAT2 (guile_sock_,func) (SCM sock, SCM proc) {     \
   svz_socket_t *xsock;						       \
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);    \
   if (!SCM_UNBNDP (proc)) {					       \
-    SCM_ASSERT_TYPE (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME, \
-		     "procedure");				       \
+    SCM_ASSERT (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME);     \
     xsock->func = GUILE_CONCAT2 (guile_func_,func);		       \
     return guile_sock_setfunction (xsock, assoc, proc); }	       \
   return guile_sock_getfunction (xsock, assoc);			       \
@@ -877,8 +876,8 @@ guile_sock_boundary (SCM sock, SCM boundary)
   svz_socket_t *xsock;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT_TYPE (SCM_EXACTP (boundary) || SCM_STRINGP (boundary), 
-		   boundary, SCM_ARG2, FUNC_NAME, "string or exact");
+  SCM_ASSERT (SCM_EXACTP (boundary) || SCM_STRINGP (boundary), boundary,
+              SCM_ARG2, FUNC_NAME);
 
   /* Release previously set boundaries. */
   guile_sock_clear_boundary (xsock);
@@ -919,8 +918,8 @@ guile_sock_floodprotect (SCM sock, SCM flag)
   flags = xsock->flags;
   if (!SCM_UNBNDP (flag))
     {
-      SCM_ASSERT_TYPE (SCM_BOOLP (flag) || SCM_EXACTP (flag), 
-		       flag, SCM_ARG2, FUNC_NAME, "boolean or exact");
+      SCM_ASSERT (SCM_BOOLP (flag) || SCM_EXACTP (flag), flag, SCM_ARG2,
+                  FUNC_NAME);
       if ((SCM_BOOLP (flag) && SCM_NFALSEP (flag) != 0) ||
 	  (SCM_EXACTP (flag) && SCM_NUM2INT (SCM_ARG2, flag) != 0))
 	xsock->flags &= ~SOCK_FLAG_NOFLOOD;
@@ -943,9 +942,8 @@ guile_sock_print (SCM sock, SCM buffer)
   int len, ret = -1;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT_TYPE (SCM_STRINGP (buffer)
-		   || scm_is_true (scm_bytevector_p (buffer)),
-		   buffer, SCM_ARG2, FUNC_NAME, "string or bytevector");
+  SCM_ASSERT (SCM_STRINGP (buffer) || scm_is_true (scm_bytevector_p (buffer)),
+              buffer, SCM_ARG2, FUNC_NAME);
 
   if (SCM_STRINGP (buffer))
     {
@@ -1045,12 +1043,11 @@ guile_config_convert (void *address, int type)
 /* Checks if the given Guile object @var{smob} in position @var{arg} is a 
    server or socket and throws an exception if not. Otherwise it saves the
    server in the variable @var{var}. */
-#define CHECK_SERVER_SMOB_ARG(smob, arg, var)                                \
-  do {                                                                       \
-    SCM_ASSERT_TYPE (CHECK_SMOB (svz_server, smob) ||                        \
-		     CHECK_SMOB (svz_socket, smob), smob, arg,               \
-		     FUNC_NAME, "svz-server or svz-socket");                 \
-    var = CHECK_SMOB (svz_server, smob) ? GET_SMOB (svz_server, smob) :      \
+#define CHECK_SERVER_SMOB_ARG(smob, arg, var)                           \
+  do {                                                                  \
+    SCM_ASSERT (CHECK_SMOB (svz_server, smob)                           \
+                || CHECK_SMOB (svz_socket, smob), smob, arg, FUNC_NAME); \
+    var = CHECK_SMOB (svz_server, smob) ? GET_SMOB (svz_server, smob) : \
       svz_server_find (((svz_socket_t *) GET_SMOB (svz_socket, smob))->cfg); \
   } while (0)
 
@@ -1073,7 +1070,7 @@ guile_server_config_ref (SCM server, SCM key)
   svz_config_prototype_t *prototype;
   
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
 
   str = guile_to_string (key);
   stype = svz_servertype_find (xserver);
@@ -1110,7 +1107,7 @@ guile_server_state_ref (SCM server, SCM key)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
   if ((hash = xserver->data) != NULL)
@@ -1136,7 +1133,7 @@ guile_server_state_set_x (SCM server, SCM key, SCM value)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT_TYPE (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME, "string");
+  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
   if ((hash = xserver->data) == NULL)
