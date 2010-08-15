@@ -671,147 +671,6 @@ guile_server_clients (SCM server)
 }
 #undef FUNC_NAME
 
-#if HAVE_GETRPCENT || HAVE_GETRPCBYNAME || HAVE_GETRPCBYNUMBER
-static SCM
-scm_return_rpcentry (struct rpcent *entry)
-{
-  SCM ans;
-  SCM *ve;
-
-  ans = scm_c_make_vector (3, SCM_UNSPECIFIED);
-  ve = SCM_WRITABLE_VELTS (ans);
-  ve[0] = scm_makfrom0str (entry->r_name);
-  ve[1] = scm_makfromstrs (-1, entry->r_aliases);
-  ve[2] = scm_from_ulong ((unsigned long) entry->r_number);
-  return ans;
-}
-
-/* @defunx getrpcent
-   @defunx getrpcbyname name
-   @defunx getrpcbynumber number
-   Lookup a network rpc service by name or by service number, and 
-   return a network rpc service object.  The @code{(getrpc)} procedure 
-   will take either a rpc service name or number as its first argument; 
-   if given no arguments, it behaves like @code{(getrpcent)}. */
-#define FUNC_NAME "getrpc"
-static SCM
-scm_getrpc (SCM arg)
-{
-  struct rpcent *entry = NULL;
-
-#if HAVE_GETRPCENT
-  if (SCM_UNBNDP (arg))
-    {
-      if ((entry = getrpcent ()) == NULL)
-	return SCM_BOOL_F;
-      return scm_return_rpcentry (entry);
-    }
-#endif /* HAVE_GETRPCENT */
-#if HAVE_GETRPCBYNAME
-  if (scm_is_string (arg))
-    {
-      entry = getrpcbyname (SCM_STRING_CHARS (arg));
-    }
-  else
-#endif /* HAVE_GETRPCBYNAME */
-#if HAVE_GETRPCBYNUMBER
-    {
-      SCM_ASSERT (SCM_INUMP (arg), arg, SCM_ARG1, FUNC_NAME);
-      entry = getrpcbynumber (SCM_INUM (arg));
-    }
-#endif /* #if HAVE_GETRPCBYNUMBER */
-
-  if (!entry)
-    scm_syserror_msg (FUNC_NAME, "no such rpc service ~A", 
-		      scm_list_n (arg, SCM_UNDEFINED), errno);
-  return scm_return_rpcentry (entry);
-}
-#undef FUNC_NAME
-#endif /* HAVE_GETRPCENT || HAVE_GETRPCBYNAME || HAVE_GETRPCBYNUMBER */
-
-#ifndef DECLARED_SETRPCENT
-extern void setrpcent (int);
-#endif /* DECLARED_SETRPCENT */
-#ifndef DECLARED_ENDRPCENT
-extern void endrpcent (void);
-#endif /* DECLARED_ENDRPCENT */
-
-#if HAVE_SETRPCENT && HAVE_ENDRPCENT
-/* @defunx setrpcent stayopen
-   @defunx endrpcent
-   The @code{(setrpc)} procedure opens and rewinds the file @file{/etc/rpc}.
-   If the @var{stayopen} flag is non-zero, the net data base will not be 
-   closed after each call to @code{(getrpc)}.  If @var{stayopen} is omitted, 
-   this is equivalent to @code{(endrpcent)}.  Otherwise it is equivalent to 
-   @code{(setrpcent stayopen)}. */
-#define FUNC_NAME "setrpc"
-static SCM
-scm_setrpc (SCM stayopen)
-{
-  if (SCM_UNBNDP (stayopen))
-    endrpcent ();
-  else
-    setrpcent (!scm_is_false (stayopen));
-  return SCM_UNSPECIFIED;
-}
-#undef FUNC_NAME
-#endif /* HAVE_SETRPCENT && HAVE_ENDRPCENT */
-
-#if HAVE_PMAP_GETMAPS
-/* This procedure returns a list of the current RPC program-to-port mappings
-   on the host located at IP address @var{address}. When you leave this 
-   argument it defaults to the local machine's IP address. This routine 
-   can return an empty list indicating either there is no such list 
-   available or an error occurred while fetching the list. */
-#define FUNC_NAME "portmap-list"
-SCM
-scm_portmap_list (SCM address)
-{
-  struct sockaddr_in addr, raddr;
-  struct pmaplist *map;
-  char *str;
-  SCM list = SCM_EOL, mapping, *ve;
-
-  memset (&addr, 0, sizeof (struct sockaddr_in));
-#if HAVE_GET_MYADDRESS
-  get_myaddress (&addr);
-#else
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons (PMAPPORT);
-  addr.sin_addr.s_addr = htonl (INADDR_LOOPBACK);
-#endif
-  if (!SCM_UNBNDP (address))
-    {
-      SCM_ASSERT (scm_is_string (address), address, SCM_ARG1, FUNC_NAME);
-      str = guile_to_string (address);
-      if (svz_inet_aton (str, &raddr) == -1)
-	{
-	  guile_error ("%s: IP in dotted decimals expected", FUNC_NAME);
-          free (str);
-	  return SCM_EOL;
-	}
-      addr.sin_addr.s_addr = raddr.sin_addr.s_addr;
-      free (str);
-    }
-
-  if ((map = pmap_getmaps (&addr)) == NULL)
-    return SCM_EOL;
-  do
-    {
-      mapping = scm_c_make_vector (4, SCM_UNSPECIFIED);
-      ve = SCM_WRITABLE_VELTS (mapping);
-      ve[0] = scm_from_ulong ((unsigned long) map->pml_map.pm_prog);
-      ve[1] = scm_from_ulong ((unsigned long) map->pml_map.pm_vers);
-      ve[2] = scm_from_ulong ((unsigned long) map->pml_map.pm_prot);
-      ve[3] = scm_from_ulong ((unsigned long) map->pml_map.pm_port);
-      list = scm_cons (mapping ,list);
-    }
-  while ((map = map->pml_next) != NULL);
-  return scm_reverse (list);
-}
-#undef FUNC_NAME
-#endif /* HAVE_PMAP_GETMAPS */
-
 #if HAVE_PMAP_SET && HAVE_PMAP_UNSET
 /* A user interface to the portmap service, which establishes a mapping
    between the triple [@var{prognum},@var{versnum},@var{protocol}] and 
@@ -1098,19 +957,10 @@ guile_sock_send_oob (SCM sock, SCM oob)
 void
 guile_api_init (void)
 {
-#if HAVE_GETRPCENT || HAVE_GETRPCBYNAME || HAVE_GETRPCBYNUMBER
-  scm_c_define_gsubr ("getrpc", 0, 1, 0, scm_getrpc);
-#endif
-#if HAVE_SETRPCENT && HAVE_ENDRPCENT
-  scm_c_define_gsubr ("setrpc", 0, 1, 0, scm_setrpc);
-#endif
 #if HAVE_PMAP_SET && HAVE_PMAP_UNSET
   scm_c_define_gsubr ("portmap", 2, 2, 0, scm_portmap);
   scm_c_define ("IPPROTO_UDP", scm_from_int (IPPROTO_UDP));
   scm_c_define ("IPPROTO_TCP", scm_from_int (IPPROTO_TCP));
-#endif
-#if HAVE_PMAP_GETMAPS
-  scm_c_define_gsubr ("portmap-list", 0, 1, 0, scm_portmap_list);
 #endif
 
   scm_c_define ("PROTO_TCP", scm_from_int (PROTO_TCP));
