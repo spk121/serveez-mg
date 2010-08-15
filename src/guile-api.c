@@ -2,6 +2,7 @@
  * guile-api.c - export additional Serveez functionality to Guile
  *
  * Copyright (C) 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -22,49 +23,17 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_GUILE_SERVER
 
-#include <string.h>             /* memcpy */
-#include <errno.h>
 #include <arpa/inet.h>          /* htonl, htons */
-
-#ifndef __MINGW32__
-# include <sys/socket.h>
-# include <netdb.h>             /* gethostbyname */
-# include <netinet/in.h>        /* IPPROTO_UDP */
-#endif
-
-#if HAVE_RPC_RPCENT_H
-# include <rpc/rpcent.h>
-#endif
-#if HAVE_RPC_RPC_H
-# include <rpc/rpc.h>
-#endif
-#if HAVE_RPC_CLNT_SOC_H
-# include <rpc/clnt_soc.h>
-#endif
-#if HAVE_RPC_PMAP_CLNT_H
-# include <rpc/pmap_clnt.h>     /* pmap_set, pmap_unset */
-#endif
-#if HAVE_RPC_PMAP_PROT_H
-# include <rpc/pmap_prot.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#if HAVE_IO_H
-# include <io.h>
-#endif
-
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
+#include <errno.h>
+#include <libguile.h>
+#include <netdb.h>              /* gethostbyname */
+#include <netinet/in.h>         /* IPPROTO_UDP */
+#include <rpc/pmap_clnt.h>      /* pmap_set, pmap_unset */
+#include <string.h>             /* memcpy */
 
 #include "libserveez.h"
 
