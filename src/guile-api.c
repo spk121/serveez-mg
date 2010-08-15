@@ -123,13 +123,13 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
 	    {
 	      guile_error ("%s: IP in dotted decimals or hostname expected", 
 			   FUNC_NAME);
-	      scm_c_free (str);
+	      free (str);
 	      return ret;
 	    }
 	}
       else
 	xhost = addr.sin_addr.s_addr;
-      scm_c_free (str);
+      free (str);
     }
 
   /* Extract protocol to use. */
@@ -604,7 +604,7 @@ guile_server_listeners (SCM server)
   if ((str = guile_to_string (server)) != NULL)
     {
       xserver = svz_server_get (str);
-      scm_c_free (str);
+      free (str);
     }
   /* Maybe server smob given. */
   if (xserver == NULL)
@@ -647,7 +647,7 @@ guile_server_clients (SCM server)
   if ((str = guile_to_string (server)) != NULL)
     {
       xserver = svz_server_get (str);
-      scm_c_free (str);
+      free (str);
     }
   /* If the above failed it is possibly a real server smob. */
   if (xserver == NULL)
@@ -787,11 +787,11 @@ scm_portmap_list (SCM address)
       if (svz_inet_aton (str, &raddr) == -1)
 	{
 	  guile_error ("%s: IP in dotted decimals expected", FUNC_NAME);
-	  scm_c_free (str);
+          free (str);
 	  return SCM_EOL;
 	}
       addr.sin_addr.s_addr = raddr.sin_addr.s_addr;
-      scm_c_free (str);
+      free (str);
     }
 
   if ((map = pmap_getmaps (&addr)) == NULL)
@@ -906,7 +906,7 @@ guile_coserver_dns (SCM host, SCM callback, SCM arg)
 
   /* Enqueue coserver request. */
   svz_coserver_dns (request, guile_coserver_callback, callback, arg);
-  scm_c_free (request);
+  free (request);
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME

@@ -172,7 +172,7 @@ guile_error (char *format, ...)
 	   (!SCM_UNBNDP (lp) && SCM_PORTP (lp)) ?
 	   (int) SCM_COL (lp) : 0);
   if (file)
-    scm_c_free (file);
+    free (file);
 
   va_start (args, format);
   vfprintf (stderr, format, args);
@@ -297,7 +297,7 @@ guile_to_optionhash (SCM pairlist, char *suffix, int dounpack)
 	  svz_free_and_zero (old_value);
 	}
       svz_hash_put (hash, str, (void *) new_value);
-      scm_c_free (str);
+      free (str);
     }
 
   /* Pairlist must be SCM_NULLP() now or that was not a good pairlist. */
@@ -340,7 +340,7 @@ guile_to_integer (SCM cell, int *target)
       *target = strtol (str, &endp, 10);
       if (*endp != '\0' || errno == ERANGE)
 	err = 1;
-      scm_c_free (str);
+      free (str);
     }
   /* No chance. */
   else
@@ -389,7 +389,7 @@ guile_to_boolean (SCM cell, int *target)
 	*target = 0;
       else
 	err = 1;
-      scm_c_free (str);
+      free (str);
     }
   else
     {
@@ -446,7 +446,7 @@ guile_to_hash (SCM list, char *prefix)
       else
 	{
 	  keystr = svz_strdup (str);
-	  scm_c_free (str);
+	  free (str);
 	}
 
       /* Obtain value character string. */
@@ -460,7 +460,7 @@ guile_to_hash (SCM list, char *prefix)
       else
 	{
 	  valstr = svz_strdup (str);
-	  scm_c_free (str);
+	  free (str);
 	}
 
       /* Add to hash if key and value look good. */
@@ -514,7 +514,7 @@ guile_to_strarray (SCM list, char *func)
 	  continue;
 	}
       svz_array_add (array, svz_strdup (str));
-      scm_c_free (str);
+      free (str);
     }
 
   /* Check the size of the resulting string array. */
@@ -639,7 +639,7 @@ optionhash_extract_string (svz_hash_t *hash,
       else
 	{
 	  *target = svz_strdup (str);
-	  scm_c_free (str);
+	  free (str);
 	}
     }
   return err;
@@ -769,7 +769,7 @@ optionhash_cb_string (char *server, void *arg, char *key,
     }
 
   *target = svz_strdup (str);
-  scm_c_free (str);
+  free (str);
   return SVZ_ITEM_OK;
 }
 
@@ -870,12 +870,12 @@ optionhash_cb_portcfg (char *server, void *arg, char *key,
   if ((port = svz_portcfg_get (str)) == NULL)
     {
       guile_error ("%s: No such port configuration: `%s'", server, str);
-      scm_c_free (str);
+      free (str);
       return SVZ_ITEM_FAILED;
     }
 
   /* Duplicate this port configuration. */
-  scm_c_free (str);
+  free (str);
   *target = svz_portcfg_dup (port);
   return SVZ_ITEM_OK;
 }
@@ -986,11 +986,11 @@ guile_config_instantiate (SCM type, SCM name, SCM instance, SCM opts)
   free (txt);
   svz_free (error);
   if (c_type)
-    scm_c_free (c_type);
+    free (c_type);
   if (c_name)
-    scm_c_free (c_name);
+    free (c_name);
   if (c_instance)
-    scm_c_free (c_instance);
+    free (c_instance);
   optionhash_destroy (options);
 
   guile_global_error |= err;
@@ -1046,7 +1046,7 @@ guile_define_server (SCM name, SCM args)
  out:
   svz_free (servertype);
   if (servername)
-    scm_c_free (servername);
+    free (servername);
   
   return retval;
 }
@@ -1178,7 +1178,7 @@ guile_define_port (SCM name, SCM args)
 	  cfg->pipe_recv.gid = (unsigned int) -1;
 	  cfg->pipe_recv.uid = (unsigned int) -1;
 	  cfg->pipe_recv.perm = (unsigned int) -1;
-	  scm_c_free (str);
+          free (str);
 	}
       /* Create local optionhash for receiving pipe direction. */
       else if (SCM_EQ_P (p, SCM_UNSPECIFIED))
@@ -1210,7 +1210,7 @@ guile_define_port (SCM name, SCM args)
 	  cfg->pipe_send.gid = (unsigned int) -1;
 	  cfg->pipe_send.uid = (unsigned int) -1;
 	  cfg->pipe_send.perm = (unsigned int) -1;
-	  scm_c_free (str);
+          free (str);
 	}
       else if (SCM_EQ_P (p, SCM_UNSPECIFIED))
 	{
@@ -1235,7 +1235,7 @@ guile_define_port (SCM name, SCM args)
 		   proto, portname);
       FAIL ();
     }
-  scm_c_free (proto);
+  free (proto);
 
   /* Access the send and receive buffer sizes. */
   err |= optionhash_extract_int (options, PORTCFG_SEND_BUFSIZE, 1, 0,
@@ -1303,7 +1303,7 @@ guile_define_port (SCM name, SCM args)
   if (err)
     svz_portcfg_destroy (cfg);
   if (portname)
-    scm_c_free (portname);
+    free (portname);
   optionhash_destroy (options);
   guile_global_error |= err;
   return err ? SCM_BOOL_F : SCM_BOOL_T;
@@ -1361,9 +1361,9 @@ guile_bind_server (SCM port, SCM server)
 
  out:
   if (portname)
-    scm_c_free (portname);
+    free (portname);
   if (servername)
-    scm_c_free (servername);
+    free (servername);
   guile_global_error |= err;
   return err ? SCM_BOOL_F : SCM_BOOL_T;
 }
@@ -1521,9 +1521,9 @@ SCM cfunc (SCM arg) {                          \
   if ((str = guile_to_string (arg)) == NULL)   \
     return SCM_BOOL_F;                         \
   if (!(expression)) {                         \
-    scm_c_free (str);                          \
+    free (str);                                \
     return SCM_BOOL_F; }                       \
-  scm_c_free (str);                            \
+  free (str);                                  \
   return SCM_BOOL_T;                           \
 }
 
@@ -1576,7 +1576,7 @@ static SCM cfunc (SCM args) {                                \
     } else {                                                 \
       svz_free (cvar);                                       \
       cvar = svz_strdup (str);                               \
-      scm_c_free (str);                                      \
+      free (str);                                            \
     } }                                                      \
   return value;                                              \
 }
@@ -1606,7 +1606,7 @@ guile_exception (void *data, SCM tag, SCM args)
   /* FIXME: current-load-port is not defined in this state. Why ? */
   char *str = guile_to_string (tag);
   guile_error ("Exception due to `%s'", str);
-  scm_c_free (str);
+  free (str);
 
   /* `tag' contains internal exception name */
   scm_puts ("guile-error: ", scm_current_error_port ());
@@ -1658,7 +1658,7 @@ guile_serveez_load (SCM file)
   if ((full = guile_to_string (file)) == NULL)
     return SCM_BOOL_F;
   f = svz_strdup (full);
-  scm_c_free (full);
+  free (full);
 
   if (svz_file_check (f) == -1)
     {

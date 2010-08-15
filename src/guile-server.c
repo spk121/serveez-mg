@@ -158,7 +158,7 @@ optionhash_extract_proc (svz_hash_t *hash,
 	  guile_error ("No such procedure `%s' for `%s' %s", str, key, txt);
 	  err = 1;
 	}
-      scm_c_free (str);
+      free (str);
     }
   else
     {
@@ -339,7 +339,7 @@ guile_call_handler (SCM data, SCM tag, SCM args)
   scm_puts (str, scm_current_error_port ());
   scm_puts ("'\n", scm_current_error_port ());
   scm_puts ("guile-error: ", scm_current_error_port ());
-  scm_c_free (str);
+  free (str);
 
   /* on quit/exit */
   if (SCM_NULLP (args))
@@ -473,7 +473,8 @@ guile_sock_clear_boundary (svz_socket_t *sock)
 {
   if (sock->boundary)
     {
-      scm_c_free (sock->boundary);
+      /* Free here since boundary is set by scm_to_locale_string or similar */
+      free (sock->boundary);
       sock->boundary = NULL;
     }
   sock->boundary_size = 0;
@@ -629,7 +630,7 @@ guile_func_info_client (svz_server_t *server, svz_socket_t *sock)
 	{
 	  memset (text, 0, sizeof (text));
 	  memcpy (text, str, GUILE_MIN (strlen (str) + 1, sizeof (text) - 1));
-	  scm_c_free (str);
+          free (str);
 	  return text;
 	}
     }
@@ -657,7 +658,7 @@ guile_func_info_server (svz_server_t *server)
 	{
 	  memset (text, 0, sizeof (text));
 	  memcpy (text, str, GUILE_MIN (strlen (str) + 1, sizeof (text) - 1));
-	  scm_c_free (str);
+          free (str);
 	  return text;
 	}
     }
@@ -1084,7 +1085,7 @@ guile_server_config_ref (SCM server, SCM key)
 	  break;
 	}
     }
-  scm_c_free (str);
+  free (str);
   return ret;
 }
 #undef FUNC_NAME
@@ -1109,7 +1110,7 @@ guile_server_state_ref (SCM server, SCM key)
   if ((hash = xserver->data) != NULL)
     if (svz_hash_exists (hash, str))
       ret = (SCM) SVZ_PTR2NUM (svz_hash_get (hash, str));
-  scm_c_free (str);
+  free (str);
   return ret;
 }
 #undef FUNC_NAME
@@ -1145,7 +1146,7 @@ guile_server_state_set_x (SCM server, SCM key, SCM value)
   else
     svz_hash_put (hash, str, SVZ_NUM2PTR (value));
   scm_gc_protect_object (value);
-  scm_c_free (str);
+  free (str);
   return ret;
 }
 #undef FUNC_NAME
@@ -1347,7 +1348,7 @@ guile_servertype_config_default (svz_servertype_t *server, SCM value,
 	{
 	  txt = svz_strdup (str);
 	  memcpy (address, &txt, len);
-	  scm_c_free (str);
+	  free (str);
 	}
       break;
 
@@ -1379,12 +1380,12 @@ guile_servertype_config_default (svz_servertype_t *server, SCM value,
 	{
 	  guile_error ("%s: No such port configuration: `%s'", 
 		       server->prefix, str);
-	  scm_c_free (str);
+	  free (str);
 	  err = -1;
 	}
       else
 	{
-	  scm_c_free (str);
+	  free (str);
 	  dup = svz_portcfg_dup (port);
 	  memcpy (address, &dup, len);
 	}
@@ -1471,7 +1472,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
       else
 	{
 	  len = guile_servertype_config_type (str, &item, &size);
-	  scm_c_free (str);
+	  free (str);
 	  if (len == 0)
 	    {
 	      guile_error ("Invalid type for `%s' %s", key[n], txt);
