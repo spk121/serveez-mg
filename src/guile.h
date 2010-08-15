@@ -30,10 +30,10 @@
  * symbol. Returns @code{NULL} if it was neither. The new string must be 
  * explicitly @code{free()}d.
  */
-#define guile_to_string(cell)					      \
-  (SCM_NULLP (cell) ? NULL :					      \
-  (SCM_STRINGP (cell) ? scm_c_string2str (cell, NULL, NULL) :	      \
-  (SCM_SYMBOLP (cell) ? scm_c_symbol2str (cell, NULL, NULL) : NULL)))
+#define guile_to_string(cell)                                           \
+  (SCM_NULLP (cell) ? NULL :                                            \
+   (scm_is_string (cell) ? scm_c_string2str (cell, NULL, NULL) :        \
+    (SCM_SYMBOLP (cell) ? scm_c_symbol2str (cell, NULL, NULL) : NULL)))
 
 /* FAIL breaks to the label `out' and sets an error condition. */
 #define FAIL() do { err = -1; goto out; } while(0)

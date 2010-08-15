@@ -107,7 +107,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
   struct sockaddr_in addr;
   SCM ret = SCM_BOOL_F;
 
-  SCM_ASSERT (scm_is_integer (host) || SCM_STRINGP (host), host, SCM_ARG1, 
+  SCM_ASSERT (scm_is_integer (host) || scm_is_string (host), host, SCM_ARG1, 
               FUNC_NAME);
   SCM_ASSERT (scm_is_integer (proto), proto, SCM_ARG2, FUNC_NAME);
 
@@ -664,7 +664,7 @@ scm_getrpc (SCM arg)
     }
 #endif /* HAVE_GETRPCENT */
 #if HAVE_GETRPCBYNAME
-  if (SCM_STRINGP (arg))
+  if (scm_is_string (arg))
     {
       entry = getrpcbyname (SCM_STRING_CHARS (arg));
     }
@@ -738,7 +738,7 @@ scm_portmap_list (SCM address)
 #endif
   if (!SCM_UNBNDP (address))
     {
-      SCM_ASSERT (SCM_STRINGP (address), address, SCM_ARG1, FUNC_NAME);
+      SCM_ASSERT (scm_is_string (address), address, SCM_ARG1, FUNC_NAME);
       str = guile_to_string (address);
       if (svz_inet_aton (str, &raddr) == -1)
 	{
@@ -848,7 +848,7 @@ guile_coserver_dns (SCM host, SCM callback, SCM arg)
   char *request;
 
   /* Check argument list first. */
-  SCM_ASSERT (SCM_STRINGP (host), host, SCM_ARG1, FUNC_NAME);
+  SCM_ASSERT (scm_is_string (host), host, SCM_ARG1, FUNC_NAME);
   SCM_ASSERT (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME);
 
   /* Convert hostname into C string. */

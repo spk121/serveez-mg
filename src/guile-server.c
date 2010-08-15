@@ -876,7 +876,7 @@ guile_sock_boundary (SCM sock, SCM boundary)
   svz_socket_t *xsock;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT (scm_is_integer (boundary) || SCM_STRINGP (boundary), boundary,
+  SCM_ASSERT (scm_is_integer (boundary) || scm_is_string (boundary), boundary,
               SCM_ARG2, FUNC_NAME);
 
   /* Release previously set boundaries. */
@@ -942,10 +942,10 @@ guile_sock_print (SCM sock, SCM buffer)
   int len, ret = -1;
 
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  SCM_ASSERT (SCM_STRINGP (buffer) || scm_is_true (scm_bytevector_p (buffer)),
+  SCM_ASSERT (scm_is_string (buffer) || scm_is_true (scm_bytevector_p (buffer)),
               buffer, SCM_ARG2, FUNC_NAME);
 
-  if (SCM_STRINGP (buffer))
+  if (scm_is_string (buffer))
     {
       buf = SCM_STRING_CHARS (buffer);
       len = SCM_NUM2INT (SCM_ARG2, scm_string_length (buffer));
@@ -1070,7 +1070,7 @@ guile_server_config_ref (SCM server, SCM key)
   svz_config_prototype_t *prototype;
   
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
 
   str = guile_to_string (key);
   stype = svz_servertype_find (xserver);
@@ -1107,7 +1107,7 @@ guile_server_state_ref (SCM server, SCM key)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
   if ((hash = xserver->data) != NULL)
@@ -1133,7 +1133,7 @@ guile_server_state_set_x (SCM server, SCM key, SCM value)
   svz_hash_t *hash;
 
   CHECK_SERVER_SMOB_ARG (server, SCM_ARG1, xserver);
-  SCM_ASSERT (SCM_STRINGP (key), key, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_string (key), key, SCM_ARG2, FUNC_NAME);
   str = guile_to_string (key);
 
   if ((hash = xserver->data) == NULL)
