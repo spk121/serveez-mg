@@ -264,14 +264,14 @@ guile_to_optionhash (SCM pairlist, char *suffix, int dounpack)
   if (dounpack && !SCM_NULLP (pairlist) && !SCM_UNBNDP (pairlist))
     pairlist = SCM_CAR (pairlist);
 
-  for ( ; SCM_PAIRP (pairlist); pairlist = SCM_CDR (pairlist))
+  for ( ; scm_is_pair (pairlist); pairlist = SCM_CDR (pairlist))
     {
       SCM pair = SCM_CAR (pairlist);
       SCM key, val;
       char *str = NULL;
 
       /* The car must be another pair which contains key and value. */
-      if (!SCM_PAIRP (pair))
+      if (!scm_is_pair (pair))
 	{
 	  guile_error ("Not a pair %s", suffix);
 	  err = 1;
@@ -421,12 +421,12 @@ guile_to_hash (SCM list, char *prefix)
 
   /* Iterate the alist. */
   hash = svz_hash_create (scm_to_ulong (scm_length (list)), svz_free);
-  for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
+  for (i = 0; scm_is_pair (list); list = SCM_CDR (list), i++)
     {
       SCM k, v, pair = SCM_CAR (list);
       char *str, *keystr, *valstr;
 
-      if (!SCM_PAIRP (pair))
+      if (!scm_is_pair (pair))
 	{
 	  err = -1;
 	  guile_error ("%s: Element #%d of hash is not a pair", prefix, i);
@@ -505,7 +505,7 @@ guile_to_strarray (SCM list, char *func)
 
   /* Iterate over the list and build up the array of strings. */
   array = svz_array_create (scm_to_ulong (scm_length (list)), svz_free);
-  for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
+  for (i = 0; scm_is_pair (list); list = SCM_CDR (list), i++)
     {
       if ((str = guile_to_string (SCM_CAR (list))) == NULL)
 	{
@@ -543,7 +543,7 @@ guile_to_intarray (SCM list, char *func)
 
   /* Iterate over the list and build up the array of strings. */
   array = svz_array_create (scm_to_ulong (scm_length (list)), NULL);
-  for (i = 0; SCM_PAIRP (list); list = SCM_CDR (list), i++)
+  for (i = 0; scm_is_pair (list); list = SCM_CDR (list), i++)
     {
       if (guile_to_integer (SCM_CAR (list), &n) != 0)
 	{

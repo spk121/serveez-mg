@@ -288,7 +288,7 @@ guile_sock_remote_address (SCM sock, SCM address)
 		   scm_from_int ((int) xsock->remote_port));
   if (!SCM_UNBNDP (address))
     {
-      SCM_ASSERT (SCM_PAIRP (address) && scm_is_integer (SCM_CAR (address))
+      SCM_ASSERT (scm_is_pair (address) && scm_is_integer (SCM_CAR (address))
                   && scm_is_integer (SCM_CDR (address)), address, SCM_ARG2, 
                   FUNC_NAME);
       port = scm_to_uint16 (SCM_CDR (address));
@@ -317,7 +317,7 @@ guile_sock_local_address (SCM sock, SCM address)
 		   scm_from_int ((int) xsock->local_port));
   if (!SCM_UNBNDP (address))
     {
-      SCM_ASSERT (SCM_PAIRP (address) && scm_is_integer (SCM_CAR (address))
+      SCM_ASSERT (scm_is_pair (address) && scm_is_integer (SCM_CAR (address))
                   && scm_is_integer (SCM_CDR (address)), address, SCM_ARG2, 
                   FUNC_NAME);
       port = scm_to_uint16 (SCM_CDR (address));
@@ -982,7 +982,7 @@ guile_sock_find (SCM ident)
   int version, id;
   svz_socket_t *sock;
 
-  SCM_ASSERT (SCM_PAIRP (ident) && SCM_INUMP (SCM_CAR (ident)) 
+  SCM_ASSERT (scm_is_pair (ident) && SCM_INUMP (SCM_CAR (ident)) 
               && SCM_INUMP (SCM_CDR (ident)), ident, SCM_ARG1, FUNC_NAME);
   id = scm_to_int (SCM_CAR (ident));
   version = scm_to_int (SCM_CDR (ident));
