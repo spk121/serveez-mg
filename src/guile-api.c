@@ -671,7 +671,6 @@ guile_server_clients (SCM server)
 }
 #undef FUNC_NAME
 
-#if HAVE_PMAP_SET && HAVE_PMAP_UNSET
 /* A user interface to the portmap service, which establishes a mapping
    between the triple [@var{prognum},@var{versnum},@var{protocol}] and 
    @var{port} on the machine's portmap service. The value of @var{protocol}
@@ -683,33 +682,32 @@ guile_server_clients (SCM server)
 SCM
 scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
 {
-  SCM_ASSERT (SCM_INUMP (prognum), prognum, SCM_ARG1, FUNC_NAME);
-  SCM_ASSERT (SCM_INUMP (versnum), prognum, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (prognum), prognum, SCM_ARG1, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (versnum), prognum, SCM_ARG2, FUNC_NAME);
 
   if (SCM_UNBNDP (protocol) && SCM_UNBNDP (port))
     {
-      if (!pmap_unset (SCM_INUM (prognum), SCM_INUM (versnum)))
+      if (!pmap_unset (scm_to_ulong(prognum), scm_to_ulong (versnum)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_unset ~A ~A",
-			  scm_list_n (scm_makfrom0str (strerror (errno)),
+                          scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, SCM_UNDEFINED), 
 			  errno);
     }
   else
     {
-      SCM_ASSERT (SCM_INUMP (protocol), protocol, SCM_ARG3, FUNC_NAME);
-      SCM_ASSERT (SCM_INUMP (port), port, SCM_ARG4, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (protocol), protocol, SCM_ARG3, FUNC_NAME);
+      SCM_ASSERT (scm_is_integer (port), port, SCM_ARG4, FUNC_NAME);
 
-      if (!pmap_set (SCM_INUM (prognum), SCM_INUM (versnum), 
-		     SCM_INUM (protocol), (unsigned short) SCM_INUM (port)))
+      if (!pmap_set (scm_to_ulong (prognum), scm_to_ulong (versnum), 
+                     scm_to_int (protocol), scm_to_ushort (port)))
 	scm_syserror_msg (FUNC_NAME, "~A: pmap_set ~A ~A ~A ~A",
-			  scm_list_n (scm_makfrom0str (strerror (errno)),
+                          scm_list_n (scm_from_locale_string (strerror (errno)),
 				      prognum, versnum, protocol, port, 
 				      SCM_UNDEFINED), errno);
     }
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME
-#endif /* HAVE_PMAP_SET && HAVE_PMAP_UNSET */
 
 /* Callback wrapper for coserver responses. */
 static int
@@ -957,12 +955,9 @@ guile_sock_send_oob (SCM sock, SCM oob)
 void
 guile_api_init (void)
 {
-#if HAVE_PMAP_SET && HAVE_PMAP_UNSET
   scm_c_define_gsubr ("portmap", 2, 2, 0, scm_portmap);
   scm_c_define ("IPPROTO_UDP", scm_from_int (IPPROTO_UDP));
   scm_c_define ("IPPROTO_TCP", scm_from_int (IPPROTO_TCP));
-#endif
-
   scm_c_define ("PROTO_TCP", scm_from_int (PROTO_TCP));
   scm_c_define ("PROTO_UDP", scm_from_int (PROTO_UDP));
   scm_c_define ("PROTO_ICMP", scm_from_int (PROTO_ICMP));
