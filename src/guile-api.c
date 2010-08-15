@@ -751,7 +751,8 @@ guile_coserver_dns (SCM host, SCM callback, SCM arg)
 
   /* Check argument list first. */
   SCM_ASSERT (scm_is_string (host), host, SCM_ARG1, FUNC_NAME);
-  SCM_ASSERT (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2, 
+              FUNC_NAME);
 
   /* Convert hostname into C string. */
   request = guile_to_string (host);
@@ -783,7 +784,8 @@ guile_coserver_rdns (SCM addr, SCM callback, SCM arg)
 
   /* Check argument list first. */
   SCM_ASSERT (SCM_INUMP (addr), addr, SCM_ARG1, FUNC_NAME);
-  SCM_ASSERT (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2,
+              FUNC_NAME);
 
   /* Convert IP address into C long value. */
   ip = scm_to_ulong (addr);
@@ -814,7 +816,8 @@ guile_coserver_ident (SCM sock, SCM callback, SCM arg)
   /* Check argument list first. */
   scm_assert_smob_type (guile_svz_socket_tag, sock);
   xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
-  SCM_ASSERT (SCM_PROCEDUREP (callback), callback, SCM_ARG2, FUNC_NAME);
+  SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2,
+              FUNC_NAME);
 
   /* Protect callback (Guile procedure) and arg (any Guile cell) from
      garbage collection meanwhile. */

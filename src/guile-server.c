@@ -73,7 +73,8 @@ static int guile_use_exceptions = 1;
     xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);                      \
     if (!SCM_UNBNDP (proc))                                             \
       {                                                                 \
-        SCM_ASSERT (SCM_PROCEDUREP (proc), proc, SCM_ARG2, FUNC_NAME);  \
+        SCM_ASSERT (scm_is_true (scm_procedure_p (proc), proc,          \
+                                 SCM_ARG2, FUNC_NAME);                  \
         xsock->TYPE = FUNC;                                             \
         return guile_sock_setfunction (xsock, ASSOC, proc);             \
       }                                                                 \
@@ -145,14 +146,14 @@ optionhash_extract_proc (svz_hash_t *hash,
     }
 
   /* Is that guile procedure ? */
-  if (SCM_PROCEDUREP (hvalue))
+  if (scm_is_true (scm_procedure_p (hvalue))
     {
       *target = hvalue;
     }
   else if ((str = guile_to_string (hvalue)) != NULL)
     {
       guile_lookup (proc, str);
-      if (!SCM_UNBNDP (proc) && SCM_PROCEDUREP (proc))
+      if (!SCM_UNBNDP (proc) && scm_is_true (scm_procedure_p (proc))
 	*target = proc;
       else
 	{
