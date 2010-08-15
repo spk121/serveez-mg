@@ -288,7 +288,7 @@ guile_nuke_happened (void)
 SCM
 guile_access_exceptions (SCM enable)
 {
-  SCM value = SCM_BOOL (guile_use_exceptions);
+  SCM value = scm_from_bool (guile_use_exceptions);
   int n;
 
   if (!SCM_UNBNDP (enable))
@@ -1017,7 +1017,7 @@ guile_config_convert (void *address, int type)
         ret = scm_from_locale_string (port->name);
       break;
     case SVZ_ITEM_BOOL:
-      ret = SCM_BOOL (*(int *) address);
+      ret = scm_from_bool (*(int *) address);
       break;
     }
   return ret;
