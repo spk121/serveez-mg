@@ -144,7 +144,7 @@ static SCM
 guile_get_current_load_port (void)
 {
   SCM p = scm_current_load_port ();
-  if (!SCM_FALSEP (p) && SCM_PORTP (p))
+  if (!scm_is_false (p) && SCM_PORTP (p))
     return p;
   if (!SCM_UNBNDP (guile_load_port) && SCM_PORTP (guile_load_port))
     return guile_load_port;
@@ -366,9 +366,9 @@ guile_to_boolean (SCM cell, int *target)
   char *str;
 
   /* Usual guile boolean. */
-  if (SCM_BOOLP (cell))
+  if (scm_is_bool (cell))
     {
-      i = SCM_NFALSEP (cell);
+      i = scm_is_true (cell);
       *target = (i == 0 ? 0 : 1);
     }
   /* Try with the integer converter. */
@@ -1619,7 +1619,7 @@ guile_exception (void *data, SCM tag, SCM args)
       return SCM_BOOL_F;
     }
 
-  if (!SCM_FALSEP (SCM_CAR (args)))
+  if (!scm_is_false (SCM_CAR (args)))
     {
       scm_display (SCM_CAR (args), scm_current_error_port ());
       scm_puts (": ", scm_current_error_port ());
@@ -1775,7 +1775,7 @@ guile_load_config (char *cfgfile)
 			    (scm_t_catch_handler) guile_exception,
 			    (void *) cfgfile);
 
-  if (SCM_FALSEP (ret))
+  if (scm_is_false (ret))
     guile_global_error = -1; 
 
   /* Kick the garbage collection now since no Guile is involved anymore 

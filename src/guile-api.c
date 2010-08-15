@@ -455,11 +455,11 @@ guile_sock_no_delay (SCM sock, SCM enable)
   if (xsock->proto & PROTO_TCP)
     {
       if (!SCM_UNBNDP (enable))
-	{
-	  SCM_ASSERT (SCM_BOOLP (enable) || scm_is_integer (enable), enable, 
+        {
+          SCM_ASSERT (scm_is_bool (enable) || scm_is_integer (enable), enable,
                       SCM_ARG2, FUNC_NAME);
-	  if ((SCM_BOOLP (enable) && SCM_NFALSEP (enable) != 0) ||
-	      (scm_is_integer (enable) && scm_to_int (enable) != 0))
+          if ((scm_is_bool (enable) && scm_is_true (enable) != 0) ||
+              (scm_is_integer (enable) && scm_to_int (enable) != 0))
 	    set = 1;
 	}
       if (svz_tcp_nodelay (xsock->sock_desc, set, &old) < 0)
@@ -751,7 +751,7 @@ scm_setrpc (SCM stayopen)
   if (SCM_UNBNDP (stayopen))
     endrpcent ();
   else
-    setrpcent (!SCM_FALSEP (stayopen));
+    setrpcent (!scm_is_false (stayopen));
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME

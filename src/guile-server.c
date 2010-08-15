@@ -349,7 +349,7 @@ guile_call_handler (SCM data, SCM tag, SCM args)
       return SCM_BOOL_F;
     }
 
-  if (!SCM_FALSEP (SCM_CAR (args)))
+  if (!scm_is_false (SCM_CAR (args)))
     {
       scm_display (SCM_CAR (args), scm_current_error_port ());
       scm_puts (": ", scm_current_error_port ());
@@ -782,7 +782,7 @@ guile_func_trigger_cond (svz_socket_t *sock)
       SCM socket_smob;
       SCM_NEWSMOB (socket_smob, guile_svz_socket_tag, sock);
       ret = guile_call (trigger_cond, 1, socket_smob);
-      return SCM_NFALSEP (ret);
+      return scm_is_true (ret);
     }
   return 0;
 }
@@ -903,9 +903,9 @@ guile_sock_floodprotect (SCM sock, SCM flag)
   flags = xsock->flags;
   if (!SCM_UNBNDP (flag))
     {
-      SCM_ASSERT (SCM_BOOLP (flag) || scm_is_integer (flag), flag, SCM_ARG2,
+      SCM_ASSERT (scm_is_bool (flag) || scm_is_integer (flag), flag, SCM_ARG2,
                   FUNC_NAME);
-      if ((SCM_BOOLP (flag) && SCM_NFALSEP (flag) != 0) ||
+      if ((scm_is_bool (flag) && scm_is_true (flag) != 0) ||
 	  (scm_is_integer (flag) && scm_to_int (flag) != 0))
 	xsock->flags &= ~SOCK_FLAG_NOFLOOD;
       else
