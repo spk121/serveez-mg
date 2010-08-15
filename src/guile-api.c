@@ -751,7 +751,7 @@ guile_coserver_dns (SCM host, SCM callback, SCM arg)
 
   /* Check argument list first. */
   SCM_ASSERT (scm_is_string (host), host, SCM_ARG1, FUNC_NAME);
-  SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2, 
+  SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2,
               FUNC_NAME);
 
   /* Convert hostname into C string. */
@@ -783,7 +783,7 @@ guile_coserver_rdns (SCM addr, SCM callback, SCM arg)
   unsigned long ip;
 
   /* Check argument list first. */
-  SCM_ASSERT (SCM_INUMP (addr), addr, SCM_ARG1, FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (addr), addr, SCM_ARG1, FUNC_NAME);
   SCM_ASSERT (scm_is_true (scm_procedure_p (callback)), callback, SCM_ARG2,
               FUNC_NAME);
 
@@ -843,8 +843,8 @@ guile_sock_find (SCM ident)
   int version, id;
   svz_socket_t *sock;
 
-  SCM_ASSERT (scm_is_pair (ident) && SCM_INUMP (SCM_CAR (ident)) 
-              && SCM_INUMP (SCM_CDR (ident)), ident, SCM_ARG1, FUNC_NAME);
+  SCM_ASSERT (scm_is_pair (ident) && scm_is_integer (SCM_CAR (ident)) 
+              && scm_is_integer (SCM_CDR (ident)), ident, SCM_ARG1, FUNC_NAME);
   id = scm_to_int (SCM_CAR (ident));
   version = scm_to_int (SCM_CDR (ident));
   if ((sock = svz_sock_find (id, version)) != NULL)
@@ -940,15 +940,15 @@ guile_sock_send_oob (SCM sock, SCM oob)
   /* Check the arguments. */
   scm_assert_smob_type (guile_svz_socket_tag, sock);
   xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
-  SCM_ASSERT (scm_is_integer (oob) || SCM_CHARP (oob), oob, SCM_ARG2,
-              FUNC_NAME);
+  SCM_ASSERT (scm_is_integer (oob) || scm_is_true (scm_char_p (oob)), oob,
+              SCM_ARG2, FUNC_NAME);
 
   /* Send the oob byte through TCP sockets only. */
   if (xsock->proto & PROTO_TCP)
     {
-      xsock->oob = (unsigned char)
-	(SCM_CHARP (oob) ? SCM_CHAR (oob) :
-	 (unsigned char) scm_to_uint8 (oob));
+      xsock->oob = (unsigned char) (scm_is_true (scm_char_p (oob))
+                                    ? scm_to_uint8 (scm_char_to_integer (oob))
+                                    : (unsigned char) scm_to_uint8 (oob));
       ret = svz_tcp_send_oob (xsock);
     }
   return ((ret < 0) ? SCM_BOOL_F : SCM_BOOL_T);
