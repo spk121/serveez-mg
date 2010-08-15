@@ -2,6 +2,7 @@
  * http-proto.c - http protocol implementation
  *
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +38,10 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <strings.h>
 
 #if HAVE_FLOSS_H
 # include <floss.h>
-#endif
-#if HAVE_STRINGS_H
-# include <strings.h>
 #endif
 #if HAVE_UNISTD_H
 # include <unistd.h>

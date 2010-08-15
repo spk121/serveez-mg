@@ -74,10 +74,6 @@ SERVEEZ_API void svz_log_setfile __PARAMS ((FILE *));
 SERVEEZ_API int svz_hexdump __PARAMS ((FILE *, char *, int, char *, int, int));
 SERVEEZ_API char *svz_itoa __PARAMS ((unsigned int));
 SERVEEZ_API unsigned int svz_atoi __PARAMS ((char *));
-SERVEEZ_API int svz_strcasecmp __PARAMS ((const char *, 
-					  const char *));
-SERVEEZ_API int svz_strncasecmp __PARAMS ((const char *,
-					   const char *, unsigned int));
 SERVEEZ_API char *svz_getcwd __PARAMS ((void));
 SERVEEZ_API int svz_openfiles __PARAMS ((int));
 SERVEEZ_API char *svz_time __PARAMS ((long));

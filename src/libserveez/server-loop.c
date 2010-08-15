@@ -42,6 +42,7 @@
 #include <errno.h>
 #include <time.h>
 #include <poll.h>
+#include <strings.h>
 
 #if HAVE_FLOSS_H
 # include <floss.h>
@@ -52,9 +53,6 @@
 #include <sys/types.h>
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#if HAVE_STRINGS_H
-# include <strings.h>
 #endif
 
 #include "libserveez/alloc.h"

@@ -873,18 +873,7 @@ dnl bzero() is defined in <strings.h> on AIX, used by FD_ZERO()
 dnl There is no <wait.h> on AIX, but <sys/wait.h>.
 dnl
 
-AC_CHECK_HEADERS([wait.h strings.h])
-
-AC_CHECK_FUNC(strcasecmp,
-  AC_DEFINE(HAVE_STRCASECMP, 1, [Define if you have the strcasecmp function.]),
-  [AC_CHECK_FUNC(stricmp,
-    AC_DEFINE(HAVE_STRICMP, 1, [Define if you have the stricmp function.]))])
-
-AC_CHECK_FUNC(strncasecmp,
-  AC_DEFINE(HAVE_STRNCASECMP, 1, 
-    [Define if you have the strncasecmp function.]),
-  [AC_CHECK_FUNC(strnicmp,
-    AC_DEFINE(HAVE_STRNICMP, 1, [Define if you have the strnicmp function.]))])
+AC_CHECK_HEADERS([wait.h])
 
 AC_CHECK_FUNCS(getrlimit getdtablesize getpwnam seteuid setegid geteuid \
   getegid gettimeofday shl_load NSAddImage)

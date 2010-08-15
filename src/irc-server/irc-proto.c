@@ -34,10 +34,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdarg.h>
-
-#if HAVE_STRINGS_H
-# include <strings.h>
-#endif
+#include <strings.h>
 
 #ifdef __MINGW32__
 # include <winsock2.h>
@@ -715,7 +712,7 @@ irc_handle_request (svz_socket_t *sock, char *request, int len)
 
   for (n = 0; irc_callback[n].request; n++)
     {
-      if (!svz_strcasecmp (irc_callback[n].request, irc_request.request))
+      if (!strcasecmp (irc_callback[n].request, irc_request.request))
 	{
 	  irc_callback[n].count++;
 	  client->recv_bytes += len;

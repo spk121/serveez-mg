@@ -45,6 +45,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/utsname.h>
+#include <strings.h>
 
 #if HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -54,9 +55,6 @@
 #endif
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#if HAVE_STRINGS_H
-# include <strings.h>
 #endif
 
 #ifndef __MINGW32__
@@ -293,79 +291,6 @@ svz_tolower (char *str)
       p++;
     }
   return str;
-}
-
-/*
- * This is the system dependent case insensitive string compare. It
- * compares the strings @var{str1} and @var{str2} and returns zero if both 
- * strings are equal.
- */
-int
-svz_strcasecmp (const char *str1, const char *str2)
-{
-#if HAVE_STRCASECMP
-  return strcasecmp (str1, str2);
-#elif HAVE_STRICMP
-  return stricmp (str1, str2);
-#else
-  const char *p1 = str1;
-  const char *p2 = str2;
-  unsigned char c1, c2;
-
-  if (p1 == p2)
-    return 0;
-
-  do
-    {
-      c1 = isupper (*p1) ? tolower (*p1) : *p1;
-      c2 = isupper (*p2) ? tolower (*p2) : *p2;
-      if (c1 == '\0')
-	break;
-      ++p1;
-      ++p2;
-    }
-  while (c1 == c2);
-
-  return c1 - c2;
-#endif /* neither HAVE_STRCASECMP nor HAVE_STRICMP */
-}
-
-/*
- * The @code{svz_strncasecmp()} function compares the two strings @var{str1}
- * and @var{str2}, ignoring the case of the characters. It returns an
- * integer less than, equal to, or greater than zero if @var{str1} is
- * found, respectively, to be less than, to match, or be greater than 
- * @var{str2}. It only compares the first @var{n} characters of @var{str1}.
- */
-int
-svz_strncasecmp (const char *str1, const char *str2, 
-		 unsigned int n)
-{
-#if HAVE_STRNCASECMP
-  return strncasecmp (str1, str2, n);
-#elif HAVE_STRNICMP
-  return strnicmp (str1, str2, n);
-#else
-  const char *p1 = str1;
-  const char *p2 = str2;
-  unsigned char c1, c2;
-
-  if (p1 == p2)
-    return 0;
-
-  do
-    {
-      c1 = isupper (*p1) ? tolower (*p1) : *p1;
-      c2 = isupper (*p2) ? tolower (*p2) : *p2;
-      if (c1 == '\0')
-	break;
-      ++p1;
-      ++p2;
-    }
-  while (c1 == c2 && --n > 0);
-
-  return c1 - c2;
-#endif /* neither HAVE_STRCASECMP nor HAVE_STRICMP */
 }
 
 #ifdef __MINGW32__

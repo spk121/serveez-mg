@@ -44,6 +44,7 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <time.h>
+#include <strings.h>
 
 #if HAVE_UNISTD_H
 # include <unistd.h>
@@ -73,9 +74,6 @@
 # endif
 # if HAVE_SYS_WAIT_H
 #  include <sys/wait.h>
-# endif
-# if HAVE_STRINGS_H
-#  include <strings.h>
 # endif
 #endif
 

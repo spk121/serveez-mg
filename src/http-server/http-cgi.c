@@ -2,6 +2,7 @@
  * http-cgi.c - http cgi implementation
  *
  * Copyright (C) 2000, 2001, 2003, 2004, 2007 Stefan Jahn <stefan@lkcc.org>
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -42,10 +44,6 @@
 # include <floss.h>
 #endif
 #include <signal.h>
-
-#if HAVE_STRINGS_H
-# include <strings.h>
-#endif
 
 #ifdef __MINGW32__
 # include <winsock2.h>
@@ -412,7 +410,7 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   if (http->property)
     for (c = 0; env_var[c].property; c++)
       for (n = 0; http->property[n]; n += 2)
-	if (!svz_strcasecmp (http->property[n], env_var[c].property))
+	if (!strcasecmp (http->property[n], env_var[c].property))
 	  {
 	    svz_envblock_add (env, "%s=%s", 
 			      env_var[c].env, http->property[n + 1]);

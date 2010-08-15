@@ -873,7 +873,7 @@ http_find_property (http_socket_t *http, char *key)
   n = 0;
   while (http->property[n])
     {
-      if (!svz_strcasecmp (http->property[n], key))
+      if (!strcasecmp (http->property[n], key))
 	{
 	  return http->property[n + 1];
 	}

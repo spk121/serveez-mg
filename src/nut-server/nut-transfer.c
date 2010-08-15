@@ -358,7 +358,7 @@ nut_init_transfer (svz_socket_t *sock, nut_reply_t *reply,
 	  if (strlen (savefile) > strlen (ext))
 	    {
 	      pos = strlen (savefile) - strlen (ext);
-	      if (pos < 0 || !svz_strcasecmp (&savefile[pos], ext))
+	      if (pos < 0 || !strcasecmp (&savefile[pos], ext))
 		break;
 	    }
 	}

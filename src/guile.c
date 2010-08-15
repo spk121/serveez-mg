@@ -379,13 +379,13 @@ guile_to_boolean (SCM cell, int *target)
   /* Neither integer nor boolean, try text conversion. */
   else if ((str = guile_to_string (cell)) != NULL)
     {
-      if (!svz_strcasecmp (str, "yes") ||
-	  !svz_strcasecmp (str, "on") ||
-	  !svz_strcasecmp (str, "true"))
+      if (!strcasecmp (str, "yes") ||
+	  !strcasecmp (str, "on") ||
+	  !strcasecmp (str, "true"))
 	*target = 1;
-      else if (!svz_strcasecmp (str, "no") ||
-	       !svz_strcasecmp (str, "off") ||
-	       !svz_strcasecmp (str, "false"))
+      else if (!strcasecmp (str, "no") ||
+	       !strcasecmp (str, "off") ||
+	       !strcasecmp (str, "false"))
 	*target = 0;
       else
 	err = 1;

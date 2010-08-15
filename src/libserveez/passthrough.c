@@ -943,9 +943,9 @@ svz_process_check_executable (char *file, char **app)
       suffix = suffix ? suffix + 1 : file;
 
       /* Does the file have a known suffix ? */
-      if (!svz_strcasecmp (suffix, "com") || 
-	  !svz_strcasecmp (suffix, "exe") ||
-	  !svz_strcasecmp (suffix, "bat"))
+      if (!strcasecmp (suffix, "com") || 
+	  !strcasecmp (suffix, "exe") ||
+	  !strcasecmp (suffix, "bat"))
 	return 0;
 
       /* No. Try finding an application able to execute the script. */
