@@ -1040,8 +1040,8 @@ guile_define_server (SCM name, SCM args)
     }
 
   /* Instantiate and configure this server. */
-  retval = guile_config_instantiate (scm_makfrom0str ("server"),
-				     scm_makfrom0str (servertype),
+  retval = guile_config_instantiate (scm_from_locale_string ("server"),
+                                     scm_from_locale_string (servertype),
 				     name, args);
  out:
   svz_free (servertype);
@@ -1384,8 +1384,8 @@ guile_strarray_to_guile (svz_array_t *array)
 
   /* Go through all the strings and add these to a guile list. */
   for (list = SCM_EOL, i = 0; i < svz_array_size (array); i++)
-    list = scm_cons (scm_makfrom0str ((char *) svz_array_get (array, i)), 
-		     list);
+    list = scm_cons (scm_from_locale_string ((char *) svz_array_get (array, i)), 
+                     list);
   return scm_reverse (list);
 }
 
@@ -1420,8 +1420,8 @@ guile_hash_to_guile (svz_hash_t *hash)
   
   svz_hash_foreach_key (hash, key, n)
     {
-      pair = scm_cons (scm_makfrom0str (key[n]),
-		       scm_makfrom0str ((char *) svz_hash_get (hash, key[n])));
+      pair = scm_cons (scm_from_locale_string (key[n]),
+                       scm_from_locale_string ((char *) svz_hash_get (hash, key[n])));
       alist = scm_cons (pair, alist);
     }
   return alist;
@@ -1567,7 +1567,7 @@ static SCM cfunc (SCM args) {                                \
  */
 #define MAKE_STRING_ACCESSOR(cfunc, cvar)                    \
 static SCM cfunc (SCM args) {                                \
-  SCM value = scm_makfrom0str (cvar); char *str;             \
+  SCM value = scm_from_locale_string (cvar); char *str;             \
   GUILE_PRECALL ();                                          \
   if (!SCM_UNBNDP (args)) {                                  \
     if (NULL == (str = guile_to_string (args))) {            \
@@ -1696,7 +1696,7 @@ static void
 guile_init (void)
 {
   /* define some variables */
-  scm_c_define ("serveez-version", scm_makfrom0str (svz_version));
+  scm_c_define ("serveez-version", scm_from_locale_string (svz_version));
   scm_c_define ("guile-version", scm_version ());
   scm_c_define ("have-debug", SCM_BOOL (svz_have_debug));
   scm_c_define ("have-Win32", SCM_BOOL (svz_have_Win32));

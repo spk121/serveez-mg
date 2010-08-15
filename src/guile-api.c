@@ -28,13 +28,14 @@
 
 #if ENABLE_GUILE_SERVER
 
-#include <string.h>
+#include <string.h>             /* memcpy */
 #include <errno.h>
+#include <arpa/inet.h>          /* htonl, htons */
 
 #ifndef __MINGW32__
 # include <sys/socket.h>
-# include <netdb.h>
-# include <netinet/in.h>
+# include <netdb.h>             /* gethostbyname */
+# include <netinet/in.h>        /* IPPROTO_UDP */
 #endif
 
 #if HAVE_RPC_RPCENT_H
@@ -47,7 +48,7 @@
 # include <rpc/clnt_soc.h>
 #endif
 #if HAVE_RPC_PMAP_CLNT_H
-# include <rpc/pmap_clnt.h>
+# include <rpc/pmap_clnt.h>     /* pmap_set, pmap_unset */
 #endif
 #if HAVE_RPC_PMAP_PROT_H
 # include <rpc/pmap_prot.h>
@@ -100,7 +101,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
 {
   svz_socket_t *sock;
   uint32_t xhost;
-  unsigned short xport = 0;
+  uint16_t xport = 0;
   uint16_t p;
   int xproto;
   char *str;
@@ -140,7 +141,7 @@ guile_sock_connect (SCM host, SCM proto, SCM port)
     {
       SCM_ASSERT (scm_is_integer (port), port, SCM_ARG3, FUNC_NAME);
       p = scm_to_uint16 (port);
-      xport = htons ((unsigned short) p);
+      xport = htons (p);
     }
 
   /* Depending on the requested protocol; create different kinds of
@@ -458,7 +459,7 @@ guile_sock_no_delay (SCM sock, SCM enable)
         {
           SCM_ASSERT (scm_is_bool (enable) || scm_is_integer (enable), enable,
                       SCM_ARG2, FUNC_NAME);
-          if ((scm_is_bool (enable) && scm_is_true (enable) != 0) ||
+          if ((scm_is_bool (enable) && scm_is_true (enable)) ||
               (scm_is_integer (enable) && scm_to_int (enable) != 0))
 	    set = 1;
 	}
@@ -720,10 +721,10 @@ guile_coserver_callback (char *res, SCM callback, SCM arg)
     {
       /* Run procedure with one argument only. */
       if (SCM_UNBNDP (arg))
-	guile_call (callback, 1, scm_makfrom0str (res));
+        guile_call (callback, 1, scm_from_locale_string (res));
       /* Run procedure with both arguments. */
       else
-	guile_call (callback, 2, scm_makfrom0str (res), arg);
+        guile_call (callback, 2, scm_from_locale_string (res), arg);
       ret = 0;
     }
 
@@ -900,7 +901,7 @@ guile_read_file (SCM port, SCM size)
     {
       scm_gc_free (data, len, "svz-binary-data");
       scm_syserror_msg (FUNC_NAME, "~A: read ~A ~A",
-			scm_list_n (scm_makfrom0str (strerror (errno)),
+                        scm_list_n (scm_from_locale_string (strerror (errno)),
 				    scm_from_int (fdes), size, SCM_UNDEFINED),
 			errno);
     }

@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdarg.h>             /* va_start, etc */
 #if HAVE_FLOSS_H
 # include <floss.h>
 #endif
@@ -1010,7 +1011,7 @@ guile_config_convert (void *address, int type)
       ret = guile_intarray_to_guile (*(svz_array_t **) address);
       break;
     case SVZ_ITEM_STR:
-      ret = scm_makfrom0str (*(char **) address);
+      ret = scm_from_locale_string (*(char **) address);
       break;
     case SVZ_ITEM_STRARRAY:
       ret = guile_strarray_to_guile (*(svz_array_t **) address);
@@ -1020,7 +1021,7 @@ guile_config_convert (void *address, int type)
       break;
     case SVZ_ITEM_PORTCFG:
       if ((port = *(svz_portcfg_t **) address) != NULL)
-	ret = scm_makfrom0str (port->name);
+        ret = scm_from_locale_string (port->name);
       break;
     case SVZ_ITEM_BOOL:
       ret = SCM_BOOL (*(int *) address);
@@ -1168,7 +1169,7 @@ guile_server_state_to_hash (SCM server)
     {
       hash = scm_c_make_vector (svz_hash_size (data), SCM_EOL);
       svz_hash_foreach_key (data, key, i)
-	scm_hash_set_x (hash, scm_makfrom0str (key[i]),
+        scm_hash_set_x (hash, scm_from_locale_string (key[i]),
 			(SCM) SVZ_PTR2NUM (svz_hash_get (data, key[i])));
     }
   return hash;
