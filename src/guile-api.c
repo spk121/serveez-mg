@@ -886,41 +886,43 @@ guile_read_file (SCM port, SCM size)
   void *data;
 
   /* Check argument list. */
-  SCM_ASSERT (SCM_NIMP (port) && SCM_FPORTP (port) && SCM_OPINFPORTP (port),
+  SCM_ASSERT (scm_is_true (scm_file_port_p (port)) &&
+              scm_is_true (scm_input_port_p (port)) &&
+              scm_is_false (scm_port_closed_p (port)),
               port, SCM_ARG1, FUNC_NAME);
   SCM_ASSERT (scm_is_integer (size), size, SCM_ARG2, FUNC_NAME);
 
   /* Get underlying file descriptor. */
-  fdes = SCM_FPORT_FDES (port);
+  fdes = scm_to_int (scm_fileno (port));
 
   if ((len = scm_to_int (size)) <= 0)
     scm_out_of_range (FUNC_NAME, size);
 
   /* Allocate necessary data. */
-  data = (unsigned char *) scm_gc_malloc (len, "svz-binary-data");
+  data = (unsigned char *) scm_malloc (len);
 
   /* Read from file descriptor and evaluate return value. */
   if ((ret = read (fdes, data, len)) < 0)
     {
-      scm_gc_free (data, len, "svz-binary-data");
+      free (data);
       scm_syserror_msg (FUNC_NAME, "~A: read ~A ~A",
-                        scm_list_n (scm_from_locale_string (strerror (errno)),
+			scm_list_n (scm_from_locale_string (strerror (errno)),
 				    scm_from_int (fdes), size, SCM_UNDEFINED),
 			errno);
     }
   else if (ret == 0)
     {
-      scm_gc_free (data, len, "svz-binary-data");
+      free (data);
       return SCM_EOF_VAL;
     }
-  else if (ret != len)
-    {
-      data = (unsigned char *) 
-	scm_gc_realloc (data, len, ret, "svz-binary-data");
-    }
 
-  /* Finally return binary smob. */
-  return guile_garbage_to_bin (data, ret);
+  /* Finally return bytevector. */
+  {
+    SCM bytevector = scm_c_make_bytevector (ret);
+    memcpy (SCM_BYTEVECTOR_CONTENTS (bytevector), data, ret);
+    free (data);
+    return bytevector;
+  }
 }
 #undef FUNC_NAME
 
