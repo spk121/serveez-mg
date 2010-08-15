@@ -184,13 +184,13 @@ guile_sock_receive_buffer (SCM sock)
 {
   svz_socket_t *xsock;
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return guile_data_to_bin (xsock->recv_buffer, xsock->recv_buffer_fill);
+  return scm_c_take_bytevector (xsock->recv_buffer, xsock->recv_buffer_fill);
 }
 #undef FUNC_NAME
 
-/* Returns the current receive buffers size and fill status in bytes of 
-   the socket @var{sock} as a pair of exact numbers.  If the optional 
-   argument @var{size} is given the receive buffer will be set to the 
+/* Returns the current receive buffers size and fill status in bytes of
+   the socket @var{sock} as a pair of exact numbers.  If the optional
+   argument @var{size} is given the receive buffer will be set to the
    specified size in bytes. */
 #define FUNC_NAME "svz:sock:receive-buffer-size"
 static SCM
@@ -218,13 +218,13 @@ guile_sock_send_buffer (SCM sock)
 {
   svz_socket_t *xsock;
   CHECK_SMOB_ARG (svz_socket, sock, SCM_ARG1, "svz-socket", xsock);
-  return guile_data_to_bin (xsock->send_buffer, xsock->send_buffer_fill);
+  return scm_c_take_bytevector (xsock->send_buffer, xsock->send_buffer_fill);
 }
 #undef FUNC_NAME
 
-/* This procedure returns the current send buffer size and fill status in 
-   bytes of the socket @var{sock} as a pair of exact numbers.  If the 
-   optional argument @var{size} is given the send buffer will be set to 
+/* This procedure returns the current send buffer size and fill status in
+   bytes of the socket @var{sock} as a pair of exact numbers.  If the
+   optional argument @var{size} is given the send buffer will be set to
    the specified size in bytes. */
 #define FUNC_NAME "svz:sock:send-buffer-size"
 static SCM
