@@ -1,6 +1,7 @@
 /*
  * serveez.c - main module
  *
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
@@ -24,27 +25,12 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif 
+#include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <errno.h>
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <libguile.h>
+#include <stdio.h>              /* stderr, fileno */
+#include <stdlib.h>             /* exit */
+#include <unistd.h>            /* fork, isatty, close */
 
 #include "libserveez.h"
 #include "serveez.h"
@@ -185,7 +171,6 @@ main (int argc, char *argv[])
   /* Start as daemon, not as foreground application. */
   if (options->daemon)
     {
-#ifndef __MINGW32__
       int pid;
 
       if ((pid = fork ()) == -1)
@@ -207,15 +192,6 @@ main (int argc, char *argv[])
 	close (fileno (stdout));
       if (isatty (fileno (stderr)))
 	close (fileno (stderr));
-#else /* __MINGW32__ */
-      if (svz_windoze_start_daemon (argv[0]) == -1)
-	exit (1);
-      if (options->loghandle == stderr)
-	svz_log_setfile (NULL);
-      closehandle (GetStdHandle (STD_INPUT_HANDLE));
-      closehandle (GetStdHandle (STD_OUTPUT_HANDLE));
-      closehandle (GetStdHandle (STD_ERROR_HANDLE));
-#endif /* __MINGW32__ */
     }
 
   /* Initialize the static server types. */
