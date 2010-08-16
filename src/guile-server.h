@@ -28,4 +28,6 @@
 void guile_server_init (void);
 void guile_server_finalize (void);
 
+int guile_func_disconnected_socket (svz_socket_t *sock);
+
 #endif /* not __GUILE_SERVER_H__ */

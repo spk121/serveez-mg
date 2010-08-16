@@ -27,15 +27,20 @@
 
 #if ENABLE_GUILE_SERVER
 
-#include <arpa/inet.h>          /* htonl, htons */
-#include <errno.h>
+#include <errno.h>              /* errno */
 #include <libguile.h>
 #include <netdb.h>              /* gethostbyname */
+#include <stdint.h>             /* uint16_t */
+#include <stdlib.h>             /* free */
+#include <string.h>             /* memcpy, strerror */
+
+#include <arpa/inet.h>          /* htonl, htons */
 #include <netinet/in.h>         /* IPPROTO_UDP */
 #include <rpc/pmap_clnt.h>      /* pmap_set, pmap_unset */
-#include <string.h>             /* memcpy */
 
 #include "libserveez.h"
+#include "guile.h"
+#include "guile-server.h"
 
 /* Converts the given hostname @var{host} into a Internet address in host
    byte order and stores it into @var{addr}. Returns zero on success. This

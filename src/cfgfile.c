@@ -1,6 +1,7 @@
 /*
  * cfgfile.c - configuration file and left overs
  *
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2000, 2001 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  *
@@ -23,16 +24,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#include <string.h>
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
+#include <config.h>
 #include "libserveez.h"
 #include "cfgfile.h"
 

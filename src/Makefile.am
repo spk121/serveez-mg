@@ -58,6 +58,7 @@ serveez_SOURCES = \
 	guile.c guile.h \
 	cfgfile.c cfgfile.h \
 	option.c option.h \
+	guile-api.c guile-api.h \
 	guile-server.c guile-server.h
 
 EXTRA_serveez_SOURCES = guile-api.c guile-api.h

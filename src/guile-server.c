@@ -494,7 +494,7 @@ guile_sock_clear_boundary (svz_socket_t *sock)
    delete the additional guile callbacks associated with the disconnected
    socket structure. */
 #define FUNC_NAME "guile_func_disconnected_socket"
-static int
+int
 guile_func_disconnected_socket (svz_socket_t *sock)
 {
   SCM ret, disconnected = guile_sock_getfunction (sock, "disconnected");
@@ -1721,8 +1721,6 @@ guile_sock_destroy (svz_hash_t *callbacks)
 {
   svz_hash_destroy (callbacks);
 }
-
-#include "guile-api.c"
 
 /*
  * Initialization of the guile server module. Should be run before calling
