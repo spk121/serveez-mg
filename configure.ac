@@ -1386,8 +1386,6 @@ AC_CONFIG_FILES([
     src/fakeident-server/Makefile
     src/prog-server/Makefile
     src/guile-server/Makefile
-    doc/Makefile 
-    doc/serveez-api.texi
     data/Makefile
     test/Makefile
     redhat.sh
