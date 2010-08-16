@@ -27,34 +27,10 @@
 
 #include "libserveez/defines.h"
 
-#if SVZ_HAVE_PTHREAD_H
-# include <pthread.h>
-#endif
-
-#ifdef __MINGW32__
-# include <windows.h>
-#endif
-
-#if SVZ_HAVE_THREADS
-
-# ifdef __MINGW32__ /* Windows native */
-
-typedef svz_t_handle svz_mutex_t;
-# define SVZ_MUTEX_INITIALIZER NULL
-
-# else /* POSIX threads */
+#include <pthread.h>
 
 typedef pthread_mutex_t svz_mutex_t;
 # define SVZ_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
-
-#endif
-
-#else /* !SVZ_HAVE_THREADS */
-
-typedef void * svz_mutex_t;
-# define SVZ_MUTEX_INITIALIZER NULL
-
-#endif
 
 /* Declares a @var{mutex} object externally.  This is useful when the
    @var{mutex} object is defined in another file. */

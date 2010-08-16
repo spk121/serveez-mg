@@ -62,6 +62,9 @@
 #include "libserveez/server-core.h"
 #include "libserveez/server-loop.h"
 
+static int svz_check_sockets_select (void) __attribute__ ((used));
+
+
 #define SOCK_FILE_FUNCTIONALITY(sock) do {                 \
   /* If socket is a file descriptor, then read it here. */ \
   if (sock->flags & SOCK_FLAG_FILE)                        \

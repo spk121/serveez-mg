@@ -49,7 +49,7 @@ dnl
 dnl Check for a proper C compiler.
 dnl
 AC_PROG_CC
-gl_EARLY
+dnl gl_EARLY
 AC_C_BIGENDIAN
 
 AC_CHECK_SIZEOF(long, 4)
@@ -65,7 +65,7 @@ AC_PROG_INSTALL
 AC_PROG_AWK
 AC_CHECK_PROG([AR], [ar], [ar], :)
 AC_CHECK_PROG([WINDRES], [windres], [windres], [:])
-gl_INIT
+dnl gl_INIT
 
 dnl ----------------------------------------------------------------------
 
@@ -769,9 +769,9 @@ dnl
 dnl Check Guile installation.
 dnl
 
-AC_GUILE
-AC_GUILE_SOURCE
-AC_GUILE_CHECK
+PKG_CHECK_MODULES(GUILE, guile-2.0)
+AC_SUBST(GUILE_CFLAGS)
+AC_SUBST(GUILE_LIBS)
 
 dnl ----------------------------------------------------------------------
 
@@ -1051,11 +1051,11 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for existence of some useful functions.
 dnl
-AC_CHECK_FUNCS(vsprintf)
-if test $ac_cv_func_vsprintf = no ; then
-  AC_MSG_ERROR([cannot compile without vsprintf])
-  exit
-fi
+dnl AC_CHECK_FUNCS(vsprintf)
+dnl if test $ac_cv_func_vsprintf = no ; then
+dnl   AC_MSG_ERROR([cannot compile without vsprintf])
+dnl   exit
+dnl fi
 
 dnl
 dnl Check whether extra net libraries are required.
@@ -1370,7 +1370,6 @@ dnl Output files.
 dnl
 AC_CONFIG_FILES([
     Makefile
-    lib/Makefile
     src/Makefile src/libserveez/Makefile
     src/libserveez/coserver/Makefile
     src/libserveez/codec/Makefile

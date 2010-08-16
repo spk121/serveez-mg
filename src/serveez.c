@@ -30,15 +30,14 @@
 #include <libguile.h>
 #include <stdio.h>              /* stderr, fileno */
 #include <stdlib.h>             /* exit */
-#include <unistd.h>            /* fork, isatty, close */
+#include <unistd.h>             /* fork, isatty, close */
 
-#include "libserveez.h"
+#include "libserveez.h"         /* svz_log, svz_sys_version */
 #include "serveez.h"
-#include "cfgfile.h"
-#include "option.h"
-#include "guile-api.h"
-#include "guile.h"
-#include "guile-server.h"
+#include "cfgfile.h"            /* init_server_definitions */
+#include "option.h"             /* handle_options  */
+#include "guile.h"              /* guile_load_config */
+#include "guile-server.h"       /* guile_server_finalize */
 
 /* Command line option structure. */
 option_t *options = NULL;
@@ -56,7 +55,8 @@ guile_launch_pad (void *closure, int argc, char **argv)
  * This is the entry point for the guile interface.
  */
 static void
-guile_entry (int argc, char **argv)
+guile_entry (int argc __attribute__ ((unused)),
+             char **argv __attribute__ ((unused)))
 {
   /* Detect operating system. */
   svz_log (LOG_NOTICE, "%s\n", svz_sys_version ());
@@ -128,13 +128,6 @@ guile_entry (int argc, char **argv)
   svz_heap ();
 #endif
 #endif /* SVZ_ENABLE_DEBUG */
-
-#ifdef __MINGW32__
-  if (options->daemon)
-    {
-      svz_windoze_stop_daemon ();
-    }
-#endif
 
   svz_log (LOG_NOTICE, "serveez terminating\n");
 

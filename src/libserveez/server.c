@@ -28,6 +28,7 @@
 # include <config.h>
 #endif
 
+#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <string.h>
 

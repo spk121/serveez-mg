@@ -181,7 +181,7 @@ svz_servertype_t nut_server_definition =
  * GUIDs as keys instead of plain NULL terminated character strings.
  */
 static unsigned
-nut_hash_keylen (char *id)
+nut_hash_keylen (char *id __attribute__ ((unused)))
 {
   return NUT_GUID_SIZE;
 }
@@ -364,17 +364,8 @@ nut_init_ping (svz_socket_t *sock)
  * The gnutella servers global initializer.
  */
 int
-nut_global_init (svz_servertype_t *server)
+nut_global_init (svz_servertype_t *server __attribute__ ((unused)))
 {
-#ifdef __MINGW32__
-  /* try getting M$'s GUID creation routine */
-  if ((oleHandle = LoadLibrary ("ole32.dll")) != NULL)
-    {
-      CreateGuid = (CreateGuidProc) 
-	GetProcAddress (oleHandle, "CoCreateGuid");
-    }
-#endif /* __MINGW32__ */
-
   /* initialize random seed */
   srand (time (NULL));
 
@@ -536,13 +527,8 @@ nut_finalize (svz_server_t *server)
  * Global gnutella finalizer.
  */
 int
-nut_global_finalize (svz_servertype_t *server)
+nut_global_finalize (svz_servertype_t *server __attribute__ ((unused)))
 {
-#ifdef __MINGW32__
-  if (oleHandle) 
-    FreeLibrary (oleHandle);
-#endif /* __MINGW32__ */
-
   /* destroy confguration defaults */
   svz_config_strarray_destroy (nut_config.search);
 
@@ -902,7 +888,8 @@ nut_info_server (svz_server_t *server)
  * Gnutella client info callback.
  */
 char *
-nut_info_client (svz_server_t *server, svz_socket_t *sock)
+nut_info_client (svz_server_t *server __attribute__ ((unused)),
+                 svz_socket_t *sock)
 {
   static char info[80 * 3];
   static char text[128];

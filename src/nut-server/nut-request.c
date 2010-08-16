@@ -371,7 +371,8 @@ nut_pong (svz_socket_t *sock, nut_header_t *hdr, svz_uint8_t *packet)
  * reply with our own configuration.
  */
 int
-nut_ping (svz_socket_t *sock, nut_header_t *hdr, svz_uint8_t *null)
+nut_ping (svz_socket_t *sock, nut_header_t *hdr,
+          svz_uint8_t *null __attribute__ ((unused)))
 {
   nut_config_t *cfg = sock->cfg;
   nut_pong_t reply;

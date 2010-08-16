@@ -99,7 +99,7 @@ bzip2_data_t;
 
 /* Customized allocator functions. */
 void *
-bzip2_alloc (void *opaque, int n, int size)
+bzip2_alloc (void *opaque __attribute__((unused)), int n, int size)
 {
   void *ptr;
   
@@ -109,7 +109,7 @@ bzip2_alloc (void *opaque, int n, int size)
 }
 
 void
-bzip2_free (void *opaque, void *ptr)
+bzip2_free (void *opaque __attribute__((unused)), void *ptr)
 {
   svz_free (ptr);
 }

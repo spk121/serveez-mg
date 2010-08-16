@@ -26,7 +26,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = lib src data test doc
+SUBDIRS = src data test doc
 
 EXTRA_DIST = BUGS autogen.sh README-alpha THANKS README-Win32 README-cross \
 	serveez.dsw config.h.serveez version.h.serveez \

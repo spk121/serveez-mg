@@ -27,10 +27,4 @@
 #ifndef __SERVEEZ_H__
 #define __SERVEEZ_H__ 1
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#include <time.h>
-
 #endif /* not __SERVEEZ_H__ */

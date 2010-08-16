@@ -93,7 +93,7 @@ svz_servertype_t sntp_server_definition =
  * Initialize a SNTP server instance.
  */
 int
-sntp_init (svz_server_t *server)
+sntp_init (svz_server_t *server __attribute__ ((unused)))
 {
   return 0;
 }
@@ -102,7 +102,8 @@ sntp_init (svz_server_t *server)
  * No protocol detection for TCP/PIPE needed.
  */
 int
-sntp_detect_proto (svz_server_t *server, svz_socket_t *sock)
+sntp_detect_proto (svz_server_t *server __attribute__ ((unused)),
+                   svz_socket_t *sock __attribute__ ((unused)))
 {
   return -1;
 }
@@ -132,7 +133,8 @@ sntp_create_reply (unsigned char *reply)
  * connection for shutdown.
  */
 int
-sntp_connect_socket (svz_server_t *server, svz_socket_t *sock)
+sntp_connect_socket (svz_server_t *server __attribute__ ((unused)),
+                     svz_socket_t *sock)
 {
   int ret;
   unsigned char reply[8];
@@ -159,7 +161,8 @@ sntp_connect_socket (svz_server_t *server, svz_socket_t *sock)
  * The packet processor for the SNTP server.
  */
 int
-sntp_handle_request (svz_socket_t *sock, char *packet, int len)
+sntp_handle_request (svz_socket_t *sock, char *packet __attribute__ ((unused)),
+                     int len __attribute__ ((unused)))
 {
   int ret;
   unsigned char reply[8];

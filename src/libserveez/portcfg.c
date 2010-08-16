@@ -98,8 +98,8 @@ svz_portcfg_equal (svz_portcfg_t *a, svz_portcfg_t *b)
 		  if ((a->flags & PORTCFG_FLAG_DEVICE) && 
 		      (b->flags & PORTCFG_FLAG_DEVICE))
 		    {
-		      if (!strcmp (svz_portcfg_device (a), 
-				   svz_portcfg_device (b)))
+		      if (!strcmp (svz_portcfg_tcp_udp_device (a), 
+				   svz_portcfg_tcp_udp_device (b)))
 			return PORTCFG_EQUAL;
 		      return PORTCFG_NOMATCH;
 		    }
@@ -119,7 +119,8 @@ svz_portcfg_equal (svz_portcfg_t *a, svz_portcfg_t *b)
 		{
 		  if ((a->flags & PORTCFG_FLAG_DEVICE) && 
 		      (b->flags & PORTCFG_FLAG_DEVICE) &&
-		      !strcmp (svz_portcfg_device (a), svz_portcfg_device (b)))
+		      !strcmp (svz_portcfg_icmp_device (a), 
+                               svz_portcfg_icmp_device (b)))
 		    return PORTCFG_EQUAL;
 		  return PORTCFG_CONFLICT;
 		}
@@ -135,7 +136,8 @@ svz_portcfg_equal (svz_portcfg_t *a, svz_portcfg_t *b)
 	    {
 	      if ((a->flags & PORTCFG_FLAG_DEVICE) && 
 		  (b->flags & PORTCFG_FLAG_DEVICE) &&
-		  !strcmp (svz_portcfg_device (a), svz_portcfg_device (b)))
+		  !strcmp (svz_portcfg_raw_device (a),
+                           svz_portcfg_raw_device (b)))
 		return PORTCFG_EQUAL;
 	      return PORTCFG_CONFLICT;
 	    }

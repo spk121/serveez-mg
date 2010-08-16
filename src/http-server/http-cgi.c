@@ -940,7 +940,8 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
  * The http GET cgi request response.
  */
 int
-http_cgi_get_response (svz_socket_t *sock, char *request, int flags)
+http_cgi_get_response (svz_socket_t *sock, char *request,
+                       int flags __attribute__ ((unused)))
 {
   svz_t_handle cgi2s[2];
   char *file;
@@ -990,7 +991,8 @@ http_cgi_get_response (svz_socket_t *sock, char *request, int flags)
  * The http POST request response.
  */
 int
-http_post_response (svz_socket_t *sock, char *request, int flags)
+http_post_response (svz_socket_t *sock, char *request,
+                    int flags __attribute__ ((unused)))
 {
   char *file;
   char *length;

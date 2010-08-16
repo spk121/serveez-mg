@@ -41,7 +41,7 @@
    byte order and stores it into @var{addr}. Returns zero on success. This
    is a blocking operation. */
 static int
-guile_resolve (char *host, unsigned long *addr)
+guile_resolve (const char *host, uint32_t *addr)
 {
   struct hostent *ent;
 
@@ -54,6 +54,19 @@ guile_resolve (char *host, unsigned long *addr)
     }
   return -1;
 }
+
+void
+guile_lookup (SCM var, const char *name)
+{
+  var = scm_sym2var (scm_from_locale_symbol (name),
+                     scm_current_module_lookup_closure (),
+                     SCM_BOOL_F);
+  if (scm_is_false (var))
+    var = SCM_UNDEFINED;
+  else
+    var = scm_variable_ref (var);
+};
+
 
 /* Establishes a network connection to the given @var{host} [ :@var{port} ].
    If @var{proto} equals @code{PROTO_ICMP} the @var{port} argument is
@@ -144,10 +157,15 @@ static SCM
 guile_sock_receive_buffer (SCM sock)
 {
   svz_socket_t *xsock;
+  int i;
+  SCM bv;
 
   scm_assert_smob_type (guile_svz_socket_tag, sock);
   xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
-  return scm_c_take_bytevector (xsock->recv_buffer, xsock->recv_buffer_fill);
+  bv = scm_c_make_bytevector (xsock->recv_buffer_fill);
+  for (i = 0; i < xsock->recv_buffer_fill; i ++)
+    scm_c_bytevector_set_x (bv, i, (xsock->recv_buffer[i]));
+  return bv;
 }
 #undef FUNC_NAME
 
@@ -181,9 +199,14 @@ static SCM
 guile_sock_send_buffer (SCM sock)
 {
   svz_socket_t *xsock;
+  int i;
+  SCM bv;
   scm_assert_smob_type (guile_svz_socket_tag, sock);
   xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);
-  return scm_c_take_bytevector (xsock->send_buffer, xsock->send_buffer_fill);
+  bv = scm_c_make_bytevector (xsock->send_buffer_fill);
+  for (i = 0; i < xsock->send_buffer_fill; i ++)
+    scm_c_bytevector_set_x (bv, i, (xsock->send_buffer[i]));
+  return bv;
 }
 #undef FUNC_NAME
 
@@ -976,6 +999,7 @@ guile_api_init (void)
 		      2, 1, 0, guile_coserver_ident);
   scm_c_define_gsubr ("svz:read-file", 2, 0, 0, guile_read_file);
   scm_c_define_gsubr ("svz:sock:send-oob", 2, 0, 0, guile_sock_send_oob);
+  DEFINE_SOCK_CALLBACK ("svz:sock:condition", guile_sock_trigger_cond);
   DEFINE_SOCK_CALLBACK ("svz:sock:trigger", guile_sock_trigger_func);
   DEFINE_SOCK_CALLBACK ("svz:sock:disconnected", 
                         guile_sock_disconnected_socket);

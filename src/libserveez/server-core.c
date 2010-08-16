@@ -91,6 +91,8 @@
 #include "libserveez/server.h"
 #include "libserveez/server-core.h"
 
+static void svz_sock_print_list (void) __attribute__ ((used));
+
 /* 
  * When @var{svz_nuke_happened} is set to a non-zero value, the server
  * will terminate its main loop.

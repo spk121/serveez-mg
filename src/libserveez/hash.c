@@ -46,6 +46,9 @@
 #define HASH_EXPAND_LIMIT(hash) ((hash->buckets >> 1) + (hash->buckets >> 2))
 #define HASH_BUCKET(code, hash) (code & (hash->buckets - 1))
 
+static void svz_hash_analyse (svz_hash_t *hash) __attribute__ ((used));
+
+
 /*
  * Calculate the hash code for a given string @var{key}. This is the standard 
  * callback for any newly created hash table.

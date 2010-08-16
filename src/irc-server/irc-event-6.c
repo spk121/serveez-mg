@@ -112,8 +112,9 @@ irc_pong_callback (svz_socket_t *sock,
  * Parameters: <error message>
  */
 int
-irc_error_callback (svz_socket_t *sock, 
-		    irc_client_t *client, irc_request_t *request)
+irc_error_callback (svz_socket_t *sock __attribute__ ((unused)),
+		    irc_client_t *client __attribute__ ((unused)),
+                    irc_request_t *request)
 {
   svz_log (LOG_ERROR, "irc: %s\n", request->para[0]);
   return 0;

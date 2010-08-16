@@ -60,8 +60,6 @@ serveez_SOURCES = \
 	option.c option.h \
 	guile-server.c guile-server.h
 
-#	guile-bin.c guile-bin.h
-
 EXTRA_serveez_SOURCES = guile-api.c guile-api.h
 
 resource_OBJECTS = $(resource_FILES:.rc=.ro)
@@ -70,7 +68,7 @@ serveez_DEPENDENCIES = $(resource_OBJECTS) $(PROTOLIBS) \
 	libserveez/libserveez.la serveez.cfg $(GUILE_DEPENDENCY)
 
 serveez_LDADD = $(resource_OBJECTS) $(PROTOLIBS) \
-	libserveez/libserveez.la $(SERVEEZ_LIBS)
+	libserveez/libserveez.la $(SERVEEZ_LIBS) $(GUILE_LIBS)
 
 serveez_LDFLAGS = $(GUILE_LDFLAGS) $(SERVEEZ_LDFLAGS)
 AM_CPPFLAGS = $(GUILE_CFLAGS) $(SERVEEZ_CFLAGS)

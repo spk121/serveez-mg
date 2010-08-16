@@ -81,7 +81,7 @@ zlib_data_t;
    we assign here the Serveez core library's allocators it is possible to
    detect memory leaks within calls to the 'zlib' library. */
 voidpf
-zlib_alloc (voidpf data, uInt n, uInt size)
+zlib_alloc (voidpf data __attribute__((unused)), uInt n, uInt size)
 {
   voidpf ptr;
   if ((ptr = (voidpf) svz_malloc (n * size)) == NULL)
@@ -90,7 +90,7 @@ zlib_alloc (voidpf data, uInt n, uInt size)
 }
 
 void
-zlib_free (voidpf data, voidpf ptr)
+zlib_free (voidpf data __attribute__((unused)), voidpf ptr)
 {
   svz_free (ptr);
 }

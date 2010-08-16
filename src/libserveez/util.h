@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 /* `open ()' files with this additional flag */
 #ifndef O_BINARY

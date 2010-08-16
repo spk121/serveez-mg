@@ -25,28 +25,19 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
+#define _GNU_SOURCE 1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <sys/stat.h>
+#include <libguile.h>
 
 #if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#ifdef __MINGW32__
-# include <io.h>
-#endif
-
-#if GUILE_SOURCE
-# include <libguile/gh.h>
-#else
-# include <guile/gh.h>
 #endif
 
 #include "libserveez.h"
@@ -162,8 +153,8 @@ guile_error (char *format, ...)
   va_list args;
   /* FIXME: Why is this port undefined in guile exceptions ? */
   SCM lp = guile_get_current_load_port ();
-  char *file = (!SCM_UNBNDP (lp) && SCM_PORTP (lp)) ? 
-    scm_c_string2str (SCM_FILENAME (lp), NULL, NULL) : NULL;
+  char *file = (!SCM_UNBNDP (lp) && SCM_PORTP (lp)) ?
+    scm_to_locale_string (SCM_FILENAME (lp)) : NULL;
 
   /* guile counts lines from 0, we have to add one */
   fprintf (stderr, "%s:%d:%d: ", file ? file : "undefined",
@@ -412,7 +403,7 @@ guile_to_hash (SCM list, char *prefix)
   svz_hash_t *hash;
 
   /* Is this valid guile list at all ? */
-  if (!SCM_LISTP (list))
+  if (!scm_is_true (scm_list_p (list)))
     {
       err = -1;
       guile_error ("%s: Not a valid list for hash", prefix);
@@ -497,7 +488,7 @@ guile_to_strarray (SCM list, char *func)
   char *str;
 
   /* Check if the given scheme cell is a valid list. */
-  if (!SCM_LISTP (list))
+  if (!scm_is_true (scm_list_p (list)))
     {
       guile_error ("%s: String array is not a valid list", func);
       return NULL;
@@ -535,7 +526,7 @@ guile_to_intarray (SCM list, char *func)
   int i, n;
 
   /* Check if the given scheme cell is a valid associative list. */
-  if (!SCM_LISTP (list))
+  if (!scm_is_true (scm_list_p (list)))
     {
       guile_error ("%s: Integer array is not a valid list", func);
       return NULL;
@@ -658,11 +649,12 @@ optionhash_cb_before (char *server, void *arg)
 /* Integer callback for configuring a server. */
 static int
 optionhash_cb_integer (char *server, void *arg, char *key, int *target,
-		       int hasdef, int def)
+                       int hasdef, 
+                       int def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
-  
+
   if (scm_is_eq (hvalue, SCM_UNSPECIFIED))
     {
       if (hasdef)
@@ -685,7 +677,8 @@ optionhash_cb_integer (char *server, void *arg, char *key, int *target,
 /* Boolean callback for configuring a server. */
 static int
 optionhash_cb_boolean (char *server, void *arg, char *key, int *target,
-		       int hasdef, int def)
+		       int hasdef, 
+                       int def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -713,7 +706,7 @@ optionhash_cb_boolean (char *server, void *arg, char *key, int *target,
 static int
 optionhash_cb_intarray (char *server, void *arg, char *key,
 			svz_array_t **target, int hasdef,
-			svz_array_t *def)
+			svz_array_t *def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -746,7 +739,8 @@ optionhash_cb_intarray (char *server, void *arg, char *key,
 /* String callback for configuring a server. */
 static int
 optionhash_cb_string (char *server, void *arg, char *key, 
-		      char **target, int hasdef, char *def)
+		      char **target, int hasdef,
+                      char *def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -777,7 +771,7 @@ optionhash_cb_string (char *server, void *arg, char *key,
 static int
 optionhash_cb_strarray (char *server, void *arg, char *key,
 			svz_array_t **target, int hasdef,
-			svz_array_t *def)
+			svz_array_t *def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -809,7 +803,7 @@ optionhash_cb_strarray (char *server, void *arg, char *key,
 static int
 optionhash_cb_hash (char *server, void *arg, char *key,
 		    svz_hash_t **target, int hasdef,
-		    svz_hash_t *def)
+		    svz_hash_t *def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -841,7 +835,7 @@ optionhash_cb_hash (char *server, void *arg, char *key,
 static int
 optionhash_cb_portcfg (char *server, void *arg, char *key,
 		       svz_portcfg_t **target, int hasdef,
-		       svz_portcfg_t *def)
+		       svz_portcfg_t *def __attribute__ ((unused)))
 {
   svz_hash_t *options = arg;
   SCM hvalue = optionhash_get (options, key);
@@ -1601,7 +1595,8 @@ MAKE_STRING_ACCESSOR (guile_access_passwd, svz_config.password)
  * evaluator or a guile procedure call failed.
  */
 static SCM
-guile_exception (void *data, SCM tag, SCM args)
+guile_exception (void *data __attribute__ ((unused)),
+                 SCM tag, SCM args)
 {
   /* FIXME: current-load-port is not defined in this state. Why ? */
   char *str = guile_to_string (tag);
@@ -1749,7 +1744,7 @@ guile_eval_file (void *data)
 		       !S_ISCHR (buf.st_mode) && !S_ISBLK (buf.st_mode)))
     {
       SCM ret = SCM_BOOL_F, line;
-      while (!SCM_EOF_OBJECT_P (line = scm_read (scm_cur_inp)))
+      while (!SCM_EOF_OBJECT_P (line = scm_read (scm_current_input_port ())))
 	ret = scm_primitive_eval_x (line);
       return SCM_BOOL_T;
     }

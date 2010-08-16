@@ -25,6 +25,11 @@
 #ifndef __GUILE_API_H__
 #define __GUILE_API_H__ 1
 
+#include <libguile.h>
+void guile_lookup (SCM var, const char *name);
+
+
+#if 0
 /* Define this macro if Guile 1.7.x or better is in use. */
 #if defined (SCM_MINOR_VERSION) && (SCM_MINOR_VERSION >= 7) && \
     defined (SCM_MAJOR_VERSION) && (SCM_MAJOR_VERSION >= 1)
@@ -221,4 +226,5 @@ typedef scm_catch_handler_t scm_t_catch_handler;
 #define SCM_FPORT_FDES(port) fileno ((FILE *) SCM_STREAM (port))
 #endif
 
+#endif /* 0 */
 #endif /* not __GUILE_API_H__ */

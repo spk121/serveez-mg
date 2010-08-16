@@ -47,7 +47,6 @@
 #include "libserveez/server-core.h"
 #include "libserveez/server-loop.h"
 #include "libserveez/server-socket.h"
-#include "libserveez/windoze.h"
 #include "libserveez/coserver/coserver.h"
 #include "libserveez/interface.h"
 #include "libserveez/dynload.h"

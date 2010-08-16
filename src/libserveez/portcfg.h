@@ -226,7 +226,14 @@ svz_portcfg_t;
   (((port)->proto & PROTO_TCP) ? (port)->tcp_device :       \
    ((port)->proto & PROTO_UDP) ? (port)->udp_device :       \
    ((port)->proto & PROTO_ICMP) ? (port)->icmp_device :     \
-   ((port)->proto & PROTO_RAW) ? (port)->raw_device : NULL) \
+   ((port)->proto & PROTO_RAW) ? (port)->raw_device : NULL)
+
+#define svz_portcfg_tcp_udp_device(port)                                \
+  (((port)->proto & PROTO_TCP) ? (port)->tcp_device : (port)->udp_device )
+#define svz_portcfg_icmp_device(port)           \
+  ((port)->icmp_device)
+#define svz_portcfg_raw_device(port)            \
+  ((port)->raw_device)
 
 /*
  * Return the UDP or TCP port of the given port configuration or zero

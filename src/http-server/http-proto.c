@@ -173,11 +173,8 @@ http_request [HTTP_REQUESTS] =
  * Global http server initializer.
  */
 int
-http_global_init (svz_servertype_t *server)
+http_global_init (svz_servertype_t *server __attribute__ ((unused)))
 {
-#ifdef __MINGW32__
-  http_start_netapi ();
-#endif /* __MINGW32__ */
   http_alloc_cache (MAX_CACHE);
   return 0;
 }
@@ -186,12 +183,9 @@ http_global_init (svz_servertype_t *server)
  * Global http server finalizer.
  */
 int
-http_global_finalize (svz_servertype_t *server)
+http_global_finalize (svz_servertype_t *server __attribute__ ((unused)))
 {
   http_free_cache ();
-#ifdef __MINGW32__
-  http_stop_netapi ();
-#endif /* __MINGW32__ */
   return 0;
 }
 
@@ -624,7 +618,8 @@ http_file_read (svz_socket_t *sock)
  * the receive buffer looks like an HTTP request.
  */
 int
-http_detect_proto (svz_server_t *server, svz_socket_t *sock)
+http_detect_proto (svz_server_t *server __attribute__ ((unused)),
+                   svz_socket_t *sock)
 {
   int n;
 
@@ -901,7 +896,8 @@ http_info_server (svz_server_t *server)
  * Client info callback for the http protocol.
  */
 char *
-http_info_client (svz_server_t *server, svz_socket_t *sock)
+http_info_client (svz_server_t *server __attribute__ ((unused)),
+                  svz_socket_t *sock)
 {
   http_socket_t *http = sock->data;
   http_cache_t *cache = http->cache;
@@ -1358,7 +1354,9 @@ http_head_response (svz_socket_t *sock, char *request, int flags)
  * The default http response (Bad Request).
  */
 int
-http_default_response (svz_socket_t *sock, char *request, int flags)
+http_default_response (svz_socket_t *sock,
+                       char *request __attribute__ ((unused)),
+                       int flags __attribute__ ((unused)))
 {
   svz_sock_printf (sock, HTTP_NOT_IMPLEMENTED "\r\n");
   http_error_response (sock, 501);

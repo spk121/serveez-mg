@@ -119,7 +119,8 @@ foo_handle_coserver_result (char *host, int id, int version)
  * Handle a single request as found by the `sock_check_request ()'.
  */
 int 
-foo_handle_request (svz_socket_t *sock, char *request, int len)
+foo_handle_request (svz_socket_t *sock,
+                    char *request __attribute__ ((unused)), int len)
 {
   foo_config_t *cfg = sock->cfg;
 
@@ -132,7 +133,8 @@ foo_handle_request (svz_socket_t *sock, char *request, int len)
  * protocol.
  */
 int
-foo_detect_proto (svz_server_t *server, svz_socket_t *sock)
+foo_detect_proto (svz_server_t *server __attribute__ ((unused)),
+                  svz_socket_t *sock)
 {
   /* see if the stream starts with our identification string */
   if (sock->recv_buffer_fill >= 5 &&
@@ -194,7 +196,7 @@ foo_connect_socket (svz_server_t *server, svz_socket_t *sock)
  * values.
  */
 int
-foo_global_init (svz_servertype_t *server)
+foo_global_init (svz_servertype_t *server __attribute__ ((unused)))
 {
   char *strarray[] = { 
     "Hello !", "This", "is", "a", "default", "string", "array.", NULL };
@@ -228,7 +230,7 @@ foo_global_init (svz_servertype_t *server)
  * Called once for foo servers, free our default values.
  */
 int
-foo_global_finalize (svz_servertype_t *server)
+foo_global_finalize (svz_servertype_t *server __attribute__ ((unused)))
 {
   svz_config_intarray_destroy (foo_config.ports);
   svz_config_strarray_destroy (foo_config.messages);
@@ -251,7 +253,7 @@ foo_finalize (svz_server_t *server)
  * Initialize a foo server instance.
  */
 int
-foo_init (svz_server_t *server)
+foo_init (svz_server_t *server __attribute__ ((unused)))
 {
   return 0;
 }

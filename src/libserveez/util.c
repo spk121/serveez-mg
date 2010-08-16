@@ -68,7 +68,6 @@
 #include "libserveez/alloc.h"
 #include "libserveez/snprintf.h"
 #include "libserveez/boot.h"
-#include "libserveez/windoze.h"
 #include "libserveez/mutex.h"
 #include "libserveez/util.h"
 

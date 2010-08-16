@@ -59,6 +59,9 @@ int http_cache_entries = 0;                  /* amount of cache entries */
 http_cache_entry_t *http_cache_first = NULL; /* most recent entry */
 http_cache_entry_t *http_cache_last = NULL;  /* least recent entry */
 
+static void http_cache_print (void) __attribute ((unused));
+
+
 /*
  * This will initialize the http cache entries.
  */
