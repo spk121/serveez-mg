@@ -91,7 +91,7 @@ heap_hash_code (char *id)
 typedef struct
 {
   void *ptr;       /* memory pointer */
-  svz_t_size size; /* memory block's size */
+  size_t size; /* memory block's size */
   void *caller;    /* the caller */
 }
 heap_block_t;
@@ -133,11 +133,11 @@ heap_add (heap_block_t *block)
  * Allocate @var{size} bytes of memory and return a pointer to this block.
  */
 void * 
-svz_malloc (svz_t_size size)
+svz_malloc (size_t size)
 {
   void *ptr;
 #if SVZ_ENABLE_DEBUG
-  svz_t_size *p;
+  size_t *p;
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
@@ -148,11 +148,11 @@ svz_malloc (svz_t_size size)
 
 #if SVZ_ENABLE_DEBUG
   if ((ptr = (void *) svz_malloc_func (size + 2 * 
-				       sizeof (svz_t_size))) != NULL)
+				       sizeof (size_t))) != NULL)
     {
 #if ENABLE_HEAP_COUNT
       /* save size at the beginning of the block */
-      p = (svz_t_size *) ptr;
+      p = (size_t *) ptr;
       *p = size;
       p += 2;
       ptr = (void *) p;
@@ -187,7 +187,7 @@ svz_malloc (svz_t_size size)
  * The memory is cleared (filled with zeros).
  */
 void * 
-svz_calloc (svz_t_size size)
+svz_calloc (size_t size)
 {
   void *ptr = svz_malloc (size);
   memset (ptr, 0, size);
@@ -201,10 +201,10 @@ svz_calloc (svz_t_size size)
  * @code{NULL} if you want to allocate a new block.
  */
 void *
-svz_realloc (void *ptr, svz_t_size size)
+svz_realloc (void *ptr, size_t size)
 {
 #if SVZ_ENABLE_DEBUG
-  svz_t_size old_size, *p;
+  size_t old_size, *p;
 #endif /* SVZ_ENABLE_DEBUG */
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
@@ -229,18 +229,18 @@ svz_realloc (void *ptr, svz_t_size size)
 #endif /* DEBUG_MEMORY_LEAKS */
 
       /* get previous blocksize */
-      p = (svz_t_size *) ptr;
+      p = (size_t *) ptr;
       p -= 2;
       old_size = *p;
       ptr = (void *) p;
 #endif /* ENABLE_HEAP_COUNT */
 
       if ((ptr = (void *) svz_realloc_func (ptr, size + 2 * 
-					    sizeof (svz_t_size))) != NULL)
+					    sizeof (size_t))) != NULL)
 	{
 #if ENABLE_HEAP_COUNT
 	  /* save block size */
-	  p = (svz_t_size *) ptr;
+	  p = (size_t *) ptr;
 	  *p = size;
 	  p += 2;
 	  ptr = (void *) p;
@@ -286,7 +286,7 @@ svz_free (void *ptr)
 {
 #if SVZ_ENABLE_DEBUG
 #if ENABLE_HEAP_COUNT
-  svz_t_size size, *p;
+  size_t size, *p;
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
@@ -311,7 +311,7 @@ svz_free (void *ptr)
 #endif /* DEBUG_MEMORY_LEAKS */
 
       /* get blocksize */
-      p = (svz_t_size *) ptr;
+      p = (size_t *) ptr;
       p -= 2;
       size = *p;
       ptr = (void *) p;
@@ -336,13 +336,13 @@ svz_heap (void)
 {
   heap_block_t **block;
   unsigned long n;
-  svz_t_size *p;
+  size_t *p;
 
   if ((block = (heap_block_t **) svz_hash_values (heap)) != NULL)
     {
       for (n = 0; n < (unsigned long) svz_hash_size (heap); n++)
 	{
-	  p = (svz_t_size *) block[n]->ptr;
+	  p = (size_t *) block[n]->ptr;
 	  p -= 2;
 	  fprintf (stdout, "heap: caller = %p, ptr = %p, size = %u\n",
 		   block[n]->caller, block[n]->ptr, block[n]->size);
@@ -386,7 +386,7 @@ svz_strdup (char *src)
  * tracking.
  */
 void *
-svz_pmalloc (svz_t_size size)
+svz_pmalloc (size_t size)
 {
   void *ptr = svz_malloc_func (size);
   if (ptr == NULL) 
@@ -402,7 +402,7 @@ svz_pmalloc (svz_t_size size)
  * The memory block is cleared (filled with zeros) and considered permanently.
  */
 void * 
-svz_pcalloc (svz_t_size size)
+svz_pcalloc (size_t size)
 {
   void *ptr = svz_malloc (size);
   memset (ptr, 0, size);
@@ -414,7 +414,7 @@ svz_pcalloc (svz_t_size size)
  * routine also allocates memory permanently.
  */
 void *
-svz_prealloc (void *ptr, svz_t_size size)
+svz_prealloc (void *ptr, size_t size)
 {
   void *dst = svz_realloc_func (ptr, size);
   if (dst == NULL) 
