@@ -108,6 +108,8 @@ heap_add (heap_block_t *block)
   svz_hash_put (heap, (char *) &block->ptr, block);
 }
 
+#endif /* DEBUG_MEMORY_LEAKS */
+
 /*
  * Allocate @var{size} bytes of memory and return a pointer to this block.
  */
