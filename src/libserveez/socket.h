@@ -74,6 +74,8 @@
 #define VSNPRINTF_BUF_SIZE 2048 /* Size of the vsnprintf() buffer */
 
 typedef struct svz_socket svz_socket_t;
+typedef int svz_t_socket;
+typedef int svz_t_handle;
 
 struct svz_socket
 {

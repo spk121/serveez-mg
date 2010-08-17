@@ -26,18 +26,14 @@
 #ifndef __CORE_H__
 #define __CORE_H__ 1
 
+#include <stdio.h>              /* FILE * */
+#include <netinet/in.h>         /* struct sockaddr_in */
+#include <sys/types.h>          /* off_t */
+
 #include "libserveez/defines.h"
 #include "libserveez/array.h"
+#include "libserveez/socket.h"  /* svz_t_socket */
 
-#include <stdio.h>
-#include <sys/stat.h>
-
-#ifndef __MINGW32__
-# include <netinet/in.h>
-#endif
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
 
 /* protocol definitions */
 #define PROTO_TCP   0x00000001 /* tcp  - bidirectional, reliable */
@@ -60,7 +56,7 @@ SERVEEZ_API svz_t_socket svz_socket_create __PARAMS ((int));
 SERVEEZ_API int svz_socket_create_pair __PARAMS ((int, svz_t_socket desc[2]));
 SERVEEZ_API char *svz_inet_ntoa __PARAMS ((unsigned long));
 SERVEEZ_API int svz_inet_aton __PARAMS ((char *, struct sockaddr_in *));
-SERVEEZ_API int svz_sendfile __PARAMS ((int, int, svz_t_off *, unsigned int));
+SERVEEZ_API int svz_sendfile __PARAMS ((int, int, off_t *, unsigned int));
 SERVEEZ_API int svz_open __PARAMS ((const char *, int, unsigned int));
 SERVEEZ_API int svz_close __PARAMS ((int));
 SERVEEZ_API int svz_fstat __PARAMS ((int, struct stat *));
@@ -70,9 +66,7 @@ SERVEEZ_API int svz_fclose __PARAMS ((FILE *));
 SERVEEZ_API int svz_file_check __PARAMS ((char *));
 SERVEEZ_API char *svz_file_path __PARAMS ((char *, char *));
 
-#ifndef __MINGW32__
 SERVEEZ_API void svz_file_closeall __PARAMS ((void));
-#endif
 
 __END_DECLS
 
