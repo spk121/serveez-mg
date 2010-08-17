@@ -24,14 +24,12 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif 
+#include <config.h>
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <assert.h>             /* assert */
+#include <stdio.h>              /* fprintf */
+#include <stdlib.h>             /* exit */
+#include <string.h>             /* memcmp, memcpy */
 
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
@@ -68,7 +66,7 @@ static svz_hash_t *heap = NULL;
 static unsigned
 heap_hash_keylen (char *id)
 {
-  return SIZEOF_VOID_P;
+  return sizeof (void *);
 }
 
 /* compare two heap hash values */
@@ -110,25 +108,6 @@ heap_add (heap_block_t *block)
   svz_hash_put (heap, (char *) &block->ptr, block);
 }
 
-#ifdef _MSC_VER
-# include <windows.h>
-# include <imagehlp.h>
-# define __builtin_return_address(no) ((void *) (stack.AddrReturn.Offset))
-# define heap_caller()                                                     \
-    STACKFRAME stack;                                                      \
-    StackWalk (IMAGE_FILE_MACHINE_I386, GetCurrentProcess (),              \
-	       GetCurrentThread (), &stack, NULL, NULL, NULL, NULL, NULL)
-#else
-# ifndef __GNUC__
-#  define __builtin_return_address(no) 0
-# endif
-# define heap_caller()
-#endif
-
-#else /* !DEBUG_MEMORY_LEAKS */
-# define heap_caller()
-#endif /* !DEBUG_MEMORY_LEAKS */
-
 /*
  * Allocate @var{size} bytes of memory and return a pointer to this block.
  */
@@ -143,8 +122,7 @@ svz_malloc (size_t size)
 #endif /* DEBUG_MEMORY_LEAKS */
 #endif /* SVZ_ENABLE_DEBUG */
 
-  heap_caller ();
-  assert (size);
+   assert (size);
 
 #if SVZ_ENABLE_DEBUG
   if ((ptr = (void *) svz_malloc_func (size + 2 * 
@@ -210,7 +188,6 @@ svz_realloc (void *ptr, size_t size)
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
 
-  heap_caller ();
   assert (size);
 
   if (ptr)
@@ -292,8 +269,6 @@ svz_free (void *ptr)
 #endif /* DEBUG_MEMORY_LEAKS */
 #endif /* ENABLE_HEAP_COUNT */
 #endif /* SVZ_ENABLE_DEBUG */
-
-  heap_caller ();
 
   if (ptr)
     {
