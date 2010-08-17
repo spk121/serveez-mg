@@ -22,9 +22,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -43,12 +41,7 @@
    ((codec)->type == SVZ_CODEC_ENCODER) ? "encoder" : NULL)
 
 /* Include codec headers if any. */
-#if HAVE_ZLIB && HAVE_ZLIB_H
 #include "libserveez/codec/gzlib.h"
-#endif
-#if HAVE_BZ2LIB
-#include "libserveez/codec/bzip2.h"
-#endif
 
 /* Collection of available encoder and decoder provided by the libcodec
    archive or by external (shared) libraries. */
@@ -106,14 +99,8 @@ svz_codec_list (void)
 int
 svz_codec_init (void)
 {
-#if HAVE_ZLIB && HAVE_ZLIB_H
   svz_codec_register (&zlib_encoder);
   svz_codec_register (&zlib_decoder);
-#endif /* HAVE_ZLIB && HAVE_ZLIB_H */
-#if HAVE_BZ2LIB
-  svz_codec_register (&bzip2_encoder);
-  svz_codec_register (&bzip2_decoder);
-#endif /* HAVE_BZ2LIB */
   return 0;
 }
 

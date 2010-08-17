@@ -28,14 +28,14 @@ noinst_LTLIBRARIES = libcodec.la
 AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
 
 libcodec_la_LDFLAGS = @NOUNDEFINED@
-libcodec_la_SOURCES = codec.c gzlib.c bzip2.c
+libcodec_la_SOURCES = codec.c gzlib.c
 libcodec_la_LIBADD = $(CODECLIBS)
 
 libcodecdir = $(includedir)/libserveez/codec
 
 libcodec_HEADERS = codec.h
 
-noinst_HEADERS = gzlib.h bzip2.h
+noinst_HEADERS = gzlib.h
 
 CLEANFILES = *~
 MAINTAINERCLEANFILES = Makefile.in
