@@ -29,7 +29,7 @@ AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
 
 libcodec_la_LDFLAGS = @NOUNDEFINED@
 libcodec_la_SOURCES = codec.c gzlib.c
-libcodec_la_LIBADD = $(CODECLIBS)
+libcodec_la_LIBADD = -lz
 
 libcodecdir = $(includedir)/libserveez/codec
 
