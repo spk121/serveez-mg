@@ -1,6 +1,7 @@
 /*
  * guile-server.h - guile server module interface definitions
  *
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2001 Stefan Jahn <stefan@lkcc.org>
  *
  * This is free software; you can redistribute it and/or modify it
@@ -24,6 +25,8 @@
 
 #ifndef __GUILE_SERVER_H__
 #define __GUILE_SERVER_H__ 1
+
+#include "libserveez.h"
 
 void guile_server_init (void);
 void guile_server_finalize (void);

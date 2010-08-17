@@ -28,17 +28,15 @@
 #include <config.h>
 
 #define _GNU_SOURCE 1
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <stdarg.h>
-#include <sys/stat.h>
+#include <errno.h>              /* errno */
 #include <libguile.h>
+#include <stdarg.h>             /* va_start */
+#include <stdio.h>              /* fileno, fprintf, vfprintf, asprintf */
+#include <stdlib.h>             /* free, strtol */
+#include <string.h>             /* strcasecmp, strcmp */
+#include <unistd.h>            /* isatty  */
 
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <sys/stat.h>           /* S_ISCHR, S_ISBLK */
 
 #include "libserveez.h"
 #include "guile-api.h"

@@ -22,23 +22,13 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#if SVZ_HAVE_CRYPT
-#if __CRYPT_IMPORT__
-#include <crypt.h>
-#else
-extern char *crypt (const char *key, const char *salt);
-extern char *getpass (const char *prompt);
-#endif /* __CRYPT_IMPORT__ */
-#endif
+#include <config.h>
+#
+#include <stdio.h>              /* fprintf */
+#include <stdlib.h>             /* rand, srand */
+#include <string.h>             /* strchr  */
+#include <time.h>               /* time */
+#include <crypt.h>              /* getpass? crypt? */
 
 /*
  * Main entry point.
@@ -52,9 +42,7 @@ main (int argc, char **argv)
     "0123456789./";
 
   char salt[3];
-#if SVZ_HAVE_CRYPT
   char *plaintext;
-#endif
 
   if (argc < 2) 
     {

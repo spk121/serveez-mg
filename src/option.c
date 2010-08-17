@@ -1,6 +1,7 @@
 /*
  * option.c - getopt function implementation
  *
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  *
@@ -23,16 +24,15 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif 
+#include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h>              /* fprintf, stdout, EOF */
+#include <stdlib.h>             /* exit */
+#include <string.h>             /* atoi */
+#include <getopt.h>             /* getopt_long */
 
 #include "libserveez.h"
-#include "option.h"
+#include "option.h"             /* option_t */
 
 /*
  * Print program version.
@@ -172,11 +172,7 @@ handle_options (int argc, char **argv)
 	      usage ();
 	      exit (1);
 	    }
-#if SVZ_ENABLE_CRYPT
 	  options.pass = svz_pstrdup (crypt (optarg, optarg));
-#else
-	  options.pass = svz_pstrdup (optarg);
-#endif
 	  break;
 
 	case 'm':

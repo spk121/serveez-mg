@@ -1,6 +1,7 @@
 /*
  * option.h - getopt function interface
  *
+ * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2000, 2001 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  *
@@ -26,10 +27,9 @@
 #ifndef __OPTION_H__
 #define __OPTION_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
+#include <stdio.h>
 #include <getopt.h>
 
 /*

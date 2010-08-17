@@ -28,14 +28,10 @@
 #if ENABLE_GUILE_SERVER
 
 #define _GNU_SOURCE 1
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>             /* memset */
-#include <errno.h>
+#include <stdio.h>              /* sprintf, fprintf, stderr, asprintf */
+#include <stdlib.h>             /* free */
+#include <string.h>             /* memset, strcmp, memcpy */
 #include <stdarg.h>             /* va_start, etc */
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
 #include <libguile.h>
 
 #include "libserveez.h"
