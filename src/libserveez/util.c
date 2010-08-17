@@ -25,48 +25,20 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
-#ifdef _AIX
-# undef _NO_PROTO
-# ifndef _USE_IRS
-#  define _USE_IRS 1
-# endif
-# define _XOPEN_SOURCE_EXTENDED 1
-# define _ALL_SOURCE 1
-#endif /* _AIX */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-#include <errno.h>
-#include <sys/utsname.h>
-#include <strings.h>
-
-#if HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
-#if HAVE_SYS_RESOURCE_H && !defined (__MINGW32__)
-# include <sys/resource.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifndef __MINGW32__
-# include <netdb.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <stdio.h>       /* sprintf, fflush, vfprintf, fprintf, ferror, feof */
+#include <string.h>             /* strerror */
+#include <ctype.h>              /* isupper, tolower */
+#include <time.h>               /* ctime, time, localtime, struct tm */
+#include <errno.h>              /* errno */
+#include <sys/utsname.h>        /* uname */
+#include <stdarg.h>             /* va_start */
+#include <sys/types.h>          /* time_t */
+#include <unistd.h>             /* sysconf, getcwd */
+#include <sys/resource.h>       /* RLIMIT_NOFILE, struct rlimit */
 
 #include "libserveez/alloc.h"
-#include "libserveez/snprintf.h"
 #include "libserveez/boot.h"
 #include "libserveez/mutex.h"
 #include "libserveez/util.h"
@@ -189,12 +161,6 @@ svz_hexdump (FILE *out,    /* output FILE stream */
   return 0;
 }
 
-/* On some platforms @code{hstrerror()} can be resolved but is not declared
-   anywhere. That is why we do it here by hand. */
-#if defined (HAVE_HSTRERROR) && !defined (DECLARED_HSTRERROR)
-extern char * hstrerror (int);
-#endif
-
 /*
  * This is the @code{hstrerror()} wrapper function, depending on the 
  * configuration file @file{config.h}.
@@ -202,19 +168,7 @@ extern char * hstrerror (int);
 char *
 svz_hstrerror (void)
 {
-#if HAVE_HSTRERROR
-# if HAVE_H_ERRNO
-  return (char *) hstrerror (h_errno);
-# else
-  return (char *) hstrerror (errno);
-# endif
-#else /* not HAVE_HSTRERROR */
-# if HAVE_H_ERRNO
-  return (char *) strerror (h_errno);
-# else
   return (char *) strerror (errno);
-# endif
-#endif /* not HAVE_HSTRERROR */
 }
 
 /*
@@ -291,168 +245,6 @@ svz_tolower (char *str)
     }
   return str;
 }
-
-#ifdef __MINGW32__
-/*
- * This variable contains the last system or network error occurred if 
- * it was detected and printed. Needed for the "Resource unavailable" error
- * condition.
- */
-int svz_errno = 0;
-
-#define MESSAGE_BUF_SIZE 256
-
-/*
- * There is no text representation of network (Winsock API) errors in 
- * Win32. That is why we translate it by hand.
- */
-static char *
-svz_neterror (int error)
-{
-  static char message[MESSAGE_BUF_SIZE];
-
-  switch (error)
-    {
-    case WSAEACCES:
-      return "Permission denied.";
-    case WSAEADDRINUSE:
-      return "Address already in use.";
-    case WSAEADDRNOTAVAIL:
-      return "Cannot assign requested address.";
-    case WSAEAFNOSUPPORT:
-      return "Address family not supported by protocol family.";
-    case WSAEALREADY:
-      return "Operation already in progress.";
-    case WSAECONNABORTED:
-      return "Software caused connection abort.";
-    case WSAECONNREFUSED:
-      return "Connection refused.";
-    case WSAECONNRESET:
-      return "Connection reset by peer.";
-    case WSAEDESTADDRREQ:
-      return "Destination address required.";
-    case WSAEFAULT:
-      return "Bad address.";
-    case WSAEHOSTDOWN:
-      return "Host is down.";
-    case WSAEHOSTUNREACH:
-      return "No route to host.";
-    case WSAEINPROGRESS:
-      return "Operation now in progress.";
-    case WSAEINTR:
-      return "Interrupted function call.";
-    case WSAEINVAL:
-      return "Invalid argument.";
-    case WSAEISCONN:
-      return "Socket is already connected.";
-    case WSAEMFILE:
-      return "Too many open files.";
-    case WSAEMSGSIZE:
-      return "Message too long.";
-    case WSAENETDOWN:
-      return "Network is down.";
-    case WSAENETRESET:
-      return "Network dropped connection on reset.";
-    case WSAENETUNREACH:
-      return "Network is unreachable.";
-    case WSAENOBUFS:
-      return "No buffer space available.";
-    case WSAENOPROTOOPT:
-      return "Bad protocol option.";
-    case WSAENOTCONN:
-      return "Socket is not connected.";
-    case WSAENOTSOCK:
-      return "Socket operation on non-socket.";
-    case WSAEOPNOTSUPP:
-      return "Operation not supported.";
-    case WSAEPFNOSUPPORT:
-      return "Protocol family not supported.";
-    case WSAEPROCLIM:
-      return "Too many processes.";
-    case WSAEPROTONOSUPPORT:
-      return "Protocol not supported.";
-    case WSAEPROTOTYPE:
-      return "Protocol wrong type for socket.";
-    case WSAESHUTDOWN:
-      return "Cannot send after socket shutdown.";
-    case WSAESOCKTNOSUPPORT:
-      return "Socket type not supported.";
-    case WSAETIMEDOUT:
-      return "Connection timed out.";
-    case WSAEWOULDBLOCK:
-      return "Resource temporarily unavailable.";
-    case WSAHOST_NOT_FOUND:
-      return "Host not found.";
-    case WSANOTINITIALISED:
-      return "Successful WSAStartup not yet performed.";
-    case WSANO_DATA:
-      return "Valid name, no data record of requested type.";
-    case WSANO_RECOVERY:
-      return "This is a non-recoverable error.";
-    case WSASYSNOTREADY:
-      return "Network subsystem is unavailable.";
-    case WSATRY_AGAIN:
-      return "Non-authoritative host not found.";
-    case WSAVERNOTSUPPORTED:
-      return "WINSOCK.DLL version out of range.";
-    case WSAEDISCON:
-      return "Graceful shutdown in progress.";
-    default:
-      sprintf (message, "Network error code %d.", error);
-      break;
-    }
-  return message;
-}
-
-/*
- * Routine which forms a valid error message under Win32. It might either
- * use the @code{GetLastError()} or @code{WSAGetLastError()} in order to 
- * get a valid error code.
- */
-char *
-svz_syserror (int nr)
-{
-  static char message[MESSAGE_BUF_SIZE];
-
-  /* save the last error */
-  svz_errno = nr;
-
-  /* return a net error if necessary */
-  if (nr >= WSABASEERR)
-    return svz_neterror (nr);
-
-  /* 
-   * if the error is not valid (GetLastError returned zero)
-   * fall back to the errno variable of the usual crtdll.
-   */
-  if (!nr)
-    nr = errno;
-
-  /* return a sys error */
-  if (0 == FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM |
-			  FORMAT_MESSAGE_ARGUMENT_ARRAY, NULL, nr,
-			  MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),
-			  (char *) message, MESSAGE_BUF_SIZE, NULL))
-    {
-      sprintf (message, "FormatMessage (%d): error code %ld", 
-	       nr, GetLastError ());
-      return message;
-    }
-
-  message[strlen (message) - 2] = 0;
-  return message;
-}
-
-/*
- * This variable contains the the runtime detected Win32 version. Its value
- * is setup in @code{svz_version()} and can be @code{Win32s} for Windows 3.x,
- * @code{Win95} for Windows 95, @code{Win98} for Windows 98, @code{WinNT3x}
- * for Windows NT 3.x, @code{WinNT4x} for Windows NT 4.x, @code{Win2k} for
- * Windows 2000, @code{WinXP} for Windows XP and @code{WinME} for Windows ME.
- */
-int svz_os_version = 0;
-
-#endif /* __MINGW32__ */
 
 /*
  * This routine is for detecting the operating system version of Win32 
@@ -545,24 +337,16 @@ svz_getcwd (void)
 int
 svz_openfiles (int max_sockets)
 {
-#if HAVE_GETRLIMIT
   struct rlimit rlim;
-#endif
 
-  int openfiles;
+  long openfiles;
 
-  if ((openfiles = getdtablesize ()) == -1)
+  if ((openfiles = sysconf(_SC_OPEN_MAX)) == -1)
     {
       svz_log (LOG_ERROR, "getdtablesize: %s\n", SYS_ERROR);
       return -1;
     }
   svz_log (LOG_NOTICE, "file descriptor table size: %d\n", openfiles);
-
-#if HAVE_GETRLIMIT
-
-# ifndef RLIMIT_NOFILE
-#  define RLIMIT_NOFILE RLIMIT_OFILE
-# endif
 
   if (getrlimit (RLIMIT_NOFILE, &rlim) == -1)
     {
@@ -587,44 +371,6 @@ svz_openfiles (int max_sockets)
       svz_log (LOG_NOTICE, "open file limit set to: %d/%d\n",
 	       rlim.rlim_cur, rlim.rlim_max);
     }
-
-#elif defined (__MINGW32__)	/* HAVE_GETRLIMIT */
-
-  unsigned sockets = 100;
-
-  if (svz_os_version == Win95 || 
-      svz_os_version == Win98 || svz_os_version == WinME)
-    {
-      if (svz_os_version == Win95)
-	sockets = svz_windoze_get_reg_unsigned (MaxSocketKey,
-						MaxSocketSubKey,
-						MaxSocketSubSubKey, sockets);
-      else
-	sockets = svz_atoi (svz_windoze_get_reg_string (MaxSocketKey,
-							MaxSocketSubKey,
-							MaxSocketSubSubKey,
-							svz_itoa (sockets)));
-
-      svz_log (LOG_NOTICE, "current open file limit: %u\n", sockets);
-
-      if (sockets < (unsigned) max_sockets)
-	{
-	  sockets = max_sockets;
-
-	  if (svz_os_version == Win95)
-	    svz_windoze_set_reg_unsigned (MaxSocketKey,
-					  MaxSocketSubKey,
-					  MaxSocketSubSubKey, sockets);
-	  else
-	    svz_windoze_set_reg_string (MaxSocketKey,
-					MaxSocketSubKey,
-					MaxSocketSubSubKey, 
-					svz_itoa (sockets));
-
-	  svz_log (LOG_NOTICE, "open file limit set to: %u\n", sockets);
-	}
-    }
-#endif /* MINGW32__ */
 
   return 0;
 }

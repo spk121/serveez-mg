@@ -26,6 +26,7 @@
 #define __BOOT_H__ 1
 
 #include "libserveez/defines.h"
+#include "libserveez/socket.h"
 
 /*
  * General serveez configuration structure.
