@@ -50,8 +50,6 @@ svz_pipe_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_pipe_startup __PARAMS ((void));
-SERVEEZ_API int svz_pipe_cleanup __PARAMS ((void));
 SERVEEZ_API int svz_pipe_valid __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_pipe_read_socket __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_pipe_write_socket __PARAMS ((svz_socket_t *));

@@ -159,7 +159,6 @@ svz_boot (void)
   svz_init_config ();
   svz_interface_collect ();
   svz_net_startup ();
-  svz_pipe_startup ();
   svz_dynload_init ();
   svz_codec_init ();
   svz_config_type_init ();
@@ -176,7 +175,6 @@ svz_halt (void)
   svz_config_type_finalize ();
   svz_codec_finalize ();
   svz_dynload_finalize ();
-  svz_pipe_cleanup ();
   svz_net_cleanup ();
   svz_interface_free ();
   svz_signal_dn ();

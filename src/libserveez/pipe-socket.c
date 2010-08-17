@@ -23,20 +23,13 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -49,24 +42,12 @@
 # include <grp.h>
 #endif
 
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
 #include "libserveez/socket.h"
 #include "libserveez/core.h"
 #include "libserveez/server-core.h"
 #include "libserveez/pipe-socket.h"
-
-#ifdef __MINGW32__
-/* Some static data for the CancelIo() call. We need to load the symbol
-   dynamically because it is not available on all versions of Windows. */
-typedef BOOL (__stdcall * CancelIoProc) (HANDLE);
-static CancelIoProc CancelIoFunc = NULL;
-static HANDLE Kernel32Handle = NULL;
-#endif /* __MINGW32__ */
 
 /*
  * Startup the pipe interface of the core API of serveez. Returns zero on
@@ -75,23 +56,6 @@ static HANDLE Kernel32Handle = NULL;
 int
 svz_pipe_startup (void)
 {
-#ifdef __MINGW32__
-  if ((Kernel32Handle = LoadLibrary ("KERNEL32.DLL")) == NULL)
-    {
-      svz_log (LOG_ERROR, "pipe: LoadLibrary: %s\n", SYS_ERROR);
-      return -1;
-    }
-
-  /* obtain CancelIo() function */
-  CancelIoFunc = (CancelIoProc) GetProcAddress (Kernel32Handle, "CancelIo");
-  if (CancelIoFunc == NULL)
-    {
-      svz_log (LOG_ERROR, "pipe: GetProcAddress: %s\n", SYS_ERROR);
-      FreeLibrary (Kernel32Handle);
-      Kernel32Handle = NULL;
-      return -1;
-    }
-#endif /* __MINGW32__ */
   return 0;
 }
 
@@ -102,14 +66,6 @@ svz_pipe_startup (void)
 int
 svz_pipe_cleanup (void)
 {
-#ifdef __MINGW32__
-  if (Kernel32Handle != NULL)
-    {
-      FreeLibrary (Kernel32Handle);
-      Kernel32Handle = NULL;
-      CancelIoFunc = NULL;
-    }
-#endif /* __MINGW32__ */
   return 0;
 }
 
