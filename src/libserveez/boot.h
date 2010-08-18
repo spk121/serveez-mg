@@ -50,8 +50,6 @@ __BEGIN_DECLS
 SERVEEZ_API svz_config_t svz_config;
 
 /* Exported functions. */
-SERVEEZ_API int svz_net_startup __PARAMS ((void));
-SERVEEZ_API int svz_net_cleanup __PARAMS ((void));
 SERVEEZ_API void svz_init_config __PARAMS ((void));
 SERVEEZ_API void svz_boot __PARAMS ((void));
 SERVEEZ_API void svz_halt __PARAMS ((void));

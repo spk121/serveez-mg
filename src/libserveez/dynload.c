@@ -23,39 +23,12 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
-#if HAVE_DL_H
-# include <dl.h>
-#endif
-#ifdef __BEOS__
-# include <kernel/image.h>
-#endif
-#if HAVE_DLD_H
-# include <dld.h>
-#endif
-#if HAVE_DLFCN_H
-# include <dlfcn.h>
-# ifndef RTLD_GLOBAL
-#  define RTLD_GLOBAL 0
-# endif
-# ifndef RTLD_NOW
-#  define RTLD_NOW 0
-# endif
-#endif
-#if HAVE_MACH_O_DYLD_H
-#include <mach-o/dyld.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <stdio.h>              /* sprintf */
+#include <string.h>             /* strlen, strcmp */
+#include <stdlib.h>             /* putenv */
+#include <dlfcn.h>             /* RTLD_NOW, RTLD_GLOBAL, dlopen */
 
 #include "svzpath.h"
 #include "libserveez/alloc.h"
@@ -69,49 +42,11 @@
 static int dyn_libraries = 0;
 static dyn_library_t *dyn_library = NULL;
 
-/* Print the current shared library error description. */
-#if HAVE_DLOPEN
-# define dyn_error() dlerror ()
-#elif HAVE_NSADDIMAGE
-static char * 
-dyn_error (void)
-{
-  NSLinkEditErrors errors;
-  int n;
-  const char *file, *err;
-  NSLinkEditError (&errors, &n, &file, &err);
-  return (char *) err;
-}
-#else
-# define dyn_error() SYS_ERROR
-#endif
-
 /* Define library prefix and suffix. */
-#if defined (__MINGW32__) || defined (__CYGWIN__)
-# if defined (__CYGWIN__)
-#  define DYNLOAD_PREFIX "cyg"
-# else
-#  define DYNLOAD_PREFIX "lib"
-# endif
-# define DYNLOAD_SUFFIX "dll"
-# define DYNLOAD_PATH_SEPERATOR ';'
-# define DYNLOAD_SYMBOL_PREFIX ""
-#elif defined (HAVE_NSADDIMAGE)
-# define DYNLOAD_PREFIX "lib"
-# define DYNLOAD_SUFFIX "dylib"
-# define DYNLOAD_PATH_SEPERATOR ':'
-# define DYNLOAD_SYMBOL_PREFIX "_"
-#elif defined (__hpux)
-# define DYNLOAD_PREFIX "lib"
-# define DYNLOAD_SUFFIX "sl"
-# define DYNLOAD_PATH_SEPERATOR ':'
-# define DYNLOAD_SYMBOL_PREFIX ""
-#else
 # define DYNLOAD_PREFIX "lib"
 # define DYNLOAD_SUFFIX "so"
 # define DYNLOAD_PATH_SEPERATOR ':'
 # define DYNLOAD_SYMBOL_PREFIX ""
-#endif
 
 /* Name of the additional search path environment variable. */
 #define DYNLOAD_PATH "SERVEEZ_LOAD_PATH"
@@ -147,22 +82,8 @@ dyn_get_library (char *path, char *file)
 
   lib = svz_file_path (path, file);
 
-#if HAVE_DLOPEN
+
   handle = dlopen (lib, RTLD_NOW | RTLD_GLOBAL);
-#elif defined (__BEOS__)
-  handle = load_add_on (lib);
-  if ((image_id) handle <= 0)
-    handle = NULL;
-#elif HAVE_DLD_LINK
-  handle = dld_link (lib);
-#elif defined (__MINGW32__)
-  handle = LoadLibrary (lib);
-#elif HAVE_SHL_LOAD
-  handle = shl_load (lib, BIND_IMMEDIATE | BIND_NONFATAL | DYNAMIC_PATH, 0L);
-#elif HAVE_NSADDIMAGE
-  handle = (void *) NSAddImage (lib, NSADDIMAGE_OPTION_RETURN_ON_ERROR |
-				NSADDIMAGE_OPTION_WITH_SEARCHING);
-#endif
 
   svz_free (lib);
   return handle;
@@ -333,23 +254,10 @@ dyn_unload_library (dyn_library_t *lib)
 
 	/* unload the library */
 	handle = lib->handle;
-#if HAVE_DLOPEN
 	err = dlclose (handle);
-#elif defined (__BEOS__)
-	err = (unload_add_on ((image_id) handle) != B_OK);
-#elif HAVE_DLD_LINK
-	err = dld_unlink_by_file (lib->file);
-#elif defined (__MINGW32__)
-	err = (FreeLibrary (handle) == 0);
-#elif HAVE_SHL_LOAD
-	err = shl_unload ((shl_t) handle);
-#elif HAVE_NSADDIMAGE
-	/* TODO: Find out.  This isn't correct... */
-	/* err = (NSUnLinkModule ((void *) handle, 0) == 0); */
-#endif
 	if (err)
 	  {
-	    svz_log (LOG_ERROR, "unlink: %s (%s)\n", dyn_error (), lib->file);
+	    svz_log (LOG_ERROR, "unlink: %s (%s)\n", dlerror (), lib->file);
 	    return -1;
 	  }
 
@@ -384,31 +292,10 @@ dyn_load_symbol (dyn_library_t *lib, char *symbol)
   for (n = 0; n < dyn_libraries; n++)
     if (&dyn_library[n] == lib)
       {
-#if HAVE_DLOPEN
 	address = dlsym (lib->handle, symbol);
-#elif defined (__BEOS__)
-	if (get_image_symbol ((image_id) lib->handle, symbol, 
-			      B_SYMBOL_TYPE_ANY, &address) != B_OK)
-	  address = NULL;
-#elif HAVE_DLD_LINK
-	address = dld_get_func (symbol);
-#elif defined (__MINGW32__)
-	*((FARPROC *) &address) = GetProcAddress (lib->handle, symbol);
-#elif HAVE_SHL_LOAD
-	if (shl_findsym ((shl_t *) &lib->handle,
-			 symbol, TYPE_UNDEFINED, &address) != 0)
-	  address = NULL;
-#elif HAVE_NSADDIMAGE
-	address = NSLookupSymbolInImage 
-	  ((struct mach_header *) lib->handle, symbol,
-	   NSLOOKUPSYMBOLINIMAGE_OPTION_BIND_NOW |
-	   NSLOOKUPSYMBOLINIMAGE_OPTION_RETURN_ON_ERROR);
-        if (address != NULL)
-          address = NSAddressOfSymbol (address);
-#endif
 	if (address == NULL)
 	  {
-	    svz_log (LOG_ERROR, "lookup: %s (%s)\n", dyn_error (), symbol);
+	    svz_log (LOG_ERROR, "lookup: %s (%s)\n", dlerror (), symbol);
 	  }
 	return address;
       }

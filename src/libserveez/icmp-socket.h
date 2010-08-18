@@ -72,14 +72,6 @@ svz_icmp_header_t;
 
 __BEGIN_DECLS
 
-#ifdef __MINGW32__
-
-/* Exported `ICMP.DLL' functions. */
-SERVEEZ_API void svz_icmp_startup __PARAMS ((void));
-SERVEEZ_API void svz_icmp_cleanup __PARAMS ((void));
-
-#endif /* __MINGW32__ */
-
 /* Exported ICMP socket functions. */
 SERVEEZ_API int svz_icmp_read_socket __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_icmp_lazy_read_socket __PARAMS ((svz_socket_t *));

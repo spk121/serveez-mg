@@ -23,43 +23,19 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#ifndef __MINGW32__
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-#endif
-
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#if HAVE_NETINET_TCP_H
-# include <netinet/tcp.h>
-#endif
-#if HAVE_SYS_SENDFILE_H
-# include <sys/sendfile.h>
-#endif
-#if defined (HAVE_SYS_UIO_H) && defined (__FreeBSD__)
-# include <sys/uio.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#if HAVE_MSWSOCK_H && defined (__MINGW32__)
-# include <mswsock.h>
+#include <stdio.h>              /* sprintf */
+#include <string.h>             /* strcmp */
+#include <errno.h>              /* errno */
+#include <fcntl.h>              /* F_SETFL, fcntl */
+#include <sys/stat.h>           /* fstat */
+#include <sys/socket.h> /* SOL_SOCKET< struct sockaddr, connect getsockopt, socket, socketpair */
+#include <netinet/in.h>  /* struct in_addr */
+#include <arpa/inet.h>   /* inet_ntoa */
+#include <netinet/tcp.h>       /* SOL_TCP, TCP_NODELAY, TCP_CORK */
+#if HAVE_SYS_SENDFILE
+#include <sys/sendfile.h>      /* sendfile */
 #endif
 
 #include "libserveez/util.h"
@@ -74,15 +50,6 @@
 int
 svz_fd_nonblock (int fd)
 {
-#ifdef __MINGW32__
-  unsigned long blockMode = 1;
-
-  if (ioctlsocket (fd, FIONBIO, &blockMode) == SOCKET_ERROR)
-    {
-      svz_log (LOG_ERROR, "ioctlsocket: %s\n", NET_ERROR);
-      return -1;
-    }
-#else /* not __MINGW32__ */
   int flag;
 
   flag = fcntl (fd, F_GETFL);
@@ -91,7 +58,6 @@ svz_fd_nonblock (int fd)
       svz_log (LOG_ERROR, "fcntl: %s\n", NET_ERROR);
       return -1;
     }
-#endif /* not __MINGW32__ */
 
   return 0;
 }
@@ -103,15 +69,6 @@ svz_fd_nonblock (int fd)
 int
 svz_fd_block (int fd)
 {
-#ifdef __MINGW32__
-  unsigned long blockMode = 0;
-
-  if (ioctlsocket (fd, FIONBIO, &blockMode) == SOCKET_ERROR)
-    {
-      svz_log (LOG_ERROR, "ioctlsocket: %s\n", NET_ERROR);
-      return -1;
-    }
-#else /* not __MINGW32__ */
   int flag;
 
   flag = fcntl (fd, F_GETFL);
@@ -120,7 +77,6 @@ svz_fd_block (int fd)
       svz_log (LOG_ERROR, "fcntl: %s\n", NET_ERROR);
       return -1;
     }
-#endif /* not __MINGW32__ */
 
   return 0;
 }
@@ -132,8 +88,6 @@ svz_fd_block (int fd)
 int
 svz_fd_cloexec (int fd)
 {
-#ifndef __MINGW32__
-
   /* 
    * ... SNIP : from the cygwin mail archives 1999/05 ...
    * The problem is in socket() call on W95 - the socket returned 
@@ -156,7 +110,6 @@ svz_fd_cloexec (int fd)
       return -1;
     }
 
-#endif /* !__MINGW32__ */
 
   return 0;
 }
@@ -171,11 +124,6 @@ svz_fd_cloexec (int fd)
 int
 svz_socket_create_pair (int proto, svz_t_socket desc[2])
 {
-#ifndef HAVE_SOCKETPAIR
-  svz_log (LOG_FATAL, "socketpair() not available\n");
-  return -1;
-#else
-
   int stype, ptype;
 
   /* Assign the appropriate socket type. */
@@ -220,7 +168,6 @@ svz_socket_create_pair (int proto, svz_t_socket desc[2])
     }
 
   return 0;
-#endif /* HAVE_SOCKETPAIR */
 }
 
 /*
@@ -330,11 +277,7 @@ svz_socket_connect (svz_t_socket sockfd,
   /* Try to connect to the server, */
   if (connect (sockfd, (struct sockaddr *) &server, sizeof (server)) == -1)
     {
-#ifdef __MINGW32__
-      error = WSAGetLastError ();
-#else
       error = errno;
-#endif
       if (error != SOCK_INPROGRESS && error != SOCK_UNAVAILABLE)
         {
           svz_log (LOG_ERROR, "connect: %s\n", NET_ERROR);
@@ -356,29 +299,9 @@ svz_socket_connect (svz_t_socket sockfd,
 char *
 svz_inet_ntoa (unsigned long ip)
 {
-#if !BROKEN_INET_NTOA
-  struct in_addr addr;
-
-  addr.s_addr = ip;
-  return inet_ntoa (addr);
-
-#else /* BROKEN_INET_NTOA */
-
-  static char addr[16];
-
-  /* 
-   * Now, this is strange: IP is given in host byte order. Nevertheless
-   * conversion is endian-specific. To the binary AND and SHIFT operations
-   * work differently on different architectures ?
-   */
-  sprintf (addr, "%lu.%lu.%lu.%lu",
-#if WORDS_BIGENDIAN
-	   (ip >> 24) & 0xff, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
-#else /* Little Endian */
-	   ip & 0xff, (ip >> 8) & 0xff, (ip >> 16) & 0xff, (ip >> 24) & 0xff);
-#endif
-  return addr;
-#endif /* BROKEN_INET_NTOA */
+  static char str[INET_ADDRSTRLEN + 1];
+  inet_ntop(AF_INET, &ip, str, INET_ADDRSTRLEN);
+  return str;
 }
 
 /*
@@ -392,10 +315,6 @@ svz_inet_ntoa (unsigned long ip)
 int
 svz_inet_aton (char *str, struct sockaddr_in *addr)
 {
-#ifdef __MINGW32__
-  int len;
-#endif
-
   /* Handle "*" special: use INADDR_ANY for it */
   if (!strcmp (str, "*"))
     {
@@ -404,21 +323,10 @@ svz_inet_aton (char *str, struct sockaddr_in *addr)
       return 0;
     }
 
-#if HAVE_INET_ATON
-  if (inet_aton (str, &addr->sin_addr) == 0)
+  if (inet_pton (AF_INET, str, &addr->sin_addr) == 0)
     {
       return -1;
     }
-#elif defined (__MINGW32__)
-  len = sizeof (struct sockaddr_in);
-  if (WSAStringToAddress (str, AF_INET, NULL, 
-                          (struct sockaddr *) addr, &len) != 0)
-    {
-      return -1;
-    }
-#else /* not HAVE_INET_ATON and not __MINGW32__ */
-  addr->sin_addr.s_addr = inet_addr (str);
-#endif /* not HAVE_INET_ATON */
   return 0;
 }
 
@@ -429,9 +337,12 @@ svz_inet_aton (char *str, struct sockaddr_in *addr)
  * file to transmit. The function return zero on success, otherwise non-zero.
  */
 int
+#if HAVE_TCP_CORK
 svz_tcp_cork (svz_t_socket fd, int set)
+#else
+  svz_tcp_cork (svz_t_socket fd, int set __attribute__ ((unused)))
+#endif
 {
-#ifdef TCP_CORK
   int flags;
 
   /* get current socket options */
@@ -441,8 +352,10 @@ svz_tcp_cork (svz_t_socket fd, int set)
       return -1;
     }
 
+#if HAVE_TCP_CORK
   /* set or unset the cork option */
   flags = set ? flags | TCP_CORK : flags & ~TCP_CORK;
+#endif
 
   /* apply new socket option */
   if (fcntl (fd, F_SETFL, flags) < 0)
@@ -451,14 +364,8 @@ svz_tcp_cork (svz_t_socket fd, int set)
       return -1;
     }
 
-#endif /* TCP_CORK */
   return 0;
 }
-
-/* M$-Windows compatibility definition. */
-#ifndef SOL_TCP
-#define SOL_TCP IPPROTO_TCP
-#endif
 
 /*
  * Enable or disable the @code{TCP_NODELAY} setting for the given socket
@@ -471,7 +378,6 @@ svz_tcp_cork (svz_t_socket fd, int set)
 int
 svz_tcp_nodelay (svz_t_socket fd, int set, int *old)
 {
-#ifdef TCP_NODELAY
   int optval;
   socklen_t optlen = sizeof (optval);
 
@@ -495,12 +401,6 @@ svz_tcp_nodelay (svz_t_socket fd, int set, int *old)
       svz_log (LOG_ERROR, "setsockopt: %s\n", NET_ERROR);
       return -1;
     }
-#else /* not TCP_NODELAY */
-  if (old)
-    {
-      *old = 0;
-    }
-#endif /* not TCP_NODELAY */
   return 0;
 }
 
@@ -515,116 +415,24 @@ svz_tcp_nodelay (svz_t_socket fd, int set, int *old)
  * read/written or -1 on errors.
  */
 int
-svz_sendfile (int out_fd, int in_fd, svz_t_off *offset, unsigned int count)
-{
-#ifndef ENABLE_SENDFILE
-  svz_log (LOG_ERROR, "sendfile() disabled\n");
-  return -1;
+#if HAVE_SENDFILE
+svz_sendfile (int out_fd, int in_fd, off_t *offset, unsigned int count)
 #else
-#if defined (HAVE_SENDFILE) || defined (__MINGW32__)
-  int ret;
-#if defined (__osf__)
-
-  /* FIXME:
-     On True64 sendfile() is said to crash the machine. Moreover the
-     system call is not documented. Thus we do not know the exact meaning
-     of the remaining arguments. We definitely know that there must be
-     some kind of pointer (maybe specifying head and tail). */
-
-  ret = sendfile (out_fd, in_fd, *offset, count, NULL, NULL, 0);
-  *offset += ((ret >= 0) ? ret : 0);
-
-#elif defined (__FreeBSD__)
-
-  /* This was tested for FreeBSD4.3 on alpha. */
-  svz_t_off sbytes;
-  ret = sendfile (in_fd, out_fd, *offset, count, NULL, &sbytes, 0);
-  *offset += sbytes;
-  ret = ret ? -1 : (int) sbytes;
-
-#elif defined (__MINGW32__)
-
-  /* TransmitFile().
-     This system call provides something likely the Unix sendfile(). It
-     is a M$ specific extension to Winsock. The function comes from the
-     MSWSOCK.DLL and should be prototyped in MSWSOCK.H. It operates on
-     file handles gained from kernel32.CreateFile() only. We experienced
-     quite low performance on small (less than 4096 byte) file chunks. 
-     Performance is better with about 32 KB per chunk. The function is 
-     available on Windows NT, Windows 2000 and Windows XP only (not W95, 
-     W98 or ME). */
-
-  OVERLAPPED overlap = { 0, 0, 0, 0, NULL };
-  DWORD result;
-
-  /* Data transmission via overlapped I/O. 
-     The MSDN documentation tells nothing odd about passing NULL as 
-     overlapped structure argument, but we experienced that this does not
-     work. Thus we pass the overlapped structure with the Offset member
-     set to the current file position. */
-
-  overlap.Offset = *offset;
-  if (!TransmitFile ((svz_t_socket) out_fd, (svz_t_handle) in_fd, count, 0, 
-                     &overlap, NULL, 0))
-    {
-      /* Operation is pending. */
-      if (GetLastError () == ERROR_IO_PENDING)
-        {
-          /* Wait for the operation to complete (blocking). We could either
-	     wait here for the socket handle itself or for the hEvent member
-	     of the overlapped structure which must be created previously.
-	     If waiting for the socket handle we need to ensure that no other
-	     thread is operating on the socket. This is given since serveez 
-	     is single threaded. */
-
-          if ((result = WaitForSingleObject ((svz_t_handle) out_fd, 
-					     INFINITE)) != WAIT_OBJECT_0)
-            {
-              svz_log (LOG_ERROR, "WaitForSingleObject: %s\n", SYS_ERROR);
-              ret = -1;
-            }
-          /* Finally transmitted the data. */
-          else
-            {
-              *offset += count;
-              ret = count;
-            }
-        }
-      /* Some error occurred. */
-      else
-        {
-          svz_log (LOG_ERROR, "TransmitFile: %s\n", SYS_ERROR);
-          ret = -1;
-        }
-    }
-  /* Data transmission completed successfully at once. */
-  else
-    {
-      *offset += count;
-      ret = count;
-    }
-
-#elif defined (__hpux)
-  
-  /* HP-UX 11i */
-  ret = sendfile (out_fd, in_fd, *offset, (bsize_t) count, NULL, 0);
-  *offset += ((ret >= 0) ? ret : 0);
-
-#else 
-
-  /* Linux here. Works like charm... */
-  ret = sendfile (out_fd, in_fd, offset, count);
-
+  svz_sendfile (int out_fd __attribute__ ((unused)), \
+                int in_fd __attribute__ ((unused)), \
+                off_t *offset __attribute__ ((unused)), \
+                unsigned int count __attribute__ ((unused)))
 #endif
-  return ret;
+{
+#ifdef HAVE_SENDFILE
+  ssize_t ret;
+  ret = sendfile (out_fd, in_fd, offset, count);
+  return (int) ret;
 #else
   svz_log (LOG_ERROR, "sendfile() not available\n");
   return -1;
 #endif /* HAVE_SEND_FILE */
-#endif /* ENABLE_SENDFILE */
 }
-
-#ifndef __MINGW32__
 
 /* List for file descriptors. */
 static svz_array_t *svz_files = NULL;
@@ -674,8 +482,7 @@ svz_file_closeall (void)
   svz_array_foreach (svz_files, fd, n)
     close ((int) SVZ_PTR2NUM (fd));
 }
-#endif /* not __MINGW32__ */
-
+#
 /*
  * Open the filename @var{file} and convert it into a file handle. The
  * given @var{flags} specify the access mode and the @var{mode} argument
@@ -684,7 +491,6 @@ svz_file_closeall (void)
 int
 svz_open (const char *file, int flags, unsigned int mode)
 {
-#ifndef __MINGW32__
   int fd;
 
   if ((fd = open (file, flags, (mode_t) mode)) < 0)
@@ -699,48 +505,6 @@ svz_open (const char *file, int flags, unsigned int mode)
     }
   svz_file_add (fd);
   return fd;
-
-#else /* __MINGW32__ */
-  DWORD access = 0, creation = 0;
-  svz_t_handle fd;
-
-  /* drop this flag */
-  flags &= ~O_BINARY;
-
-  /* translate access */
-  if (flags == O_RDONLY)
-    access = GENERIC_READ;
-  else if (flags & O_WRONLY)
-    access = GENERIC_WRITE;
-  else if (flags & O_RDWR)
-    access = GENERIC_READ | GENERIC_WRITE;
-
-  /* creation necessary ? */
-  if (flags & O_CREAT)
-    {
-      creation |= CREATE_ALWAYS;
-      if (flags & O_EXCL)
-        creation |= CREATE_NEW;
-    }
-  else
-    {
-      creation |= OPEN_EXISTING;
-      if (flags & O_TRUNC)
-        creation |= TRUNCATE_EXISTING;
-    }
-
-  if ((fd = CreateFile (file, access, 0, NULL, creation, 0, NULL)) == 
-      INVALID_HANDLE)
-    {
-      svz_log (LOG_ERROR, "CreateFile (%s): %s\n", file, SYS_ERROR);
-      return -1;
-    }
-
-  if (flags & O_APPEND)
-    SetFilePointer (fd, 0, 0, FILE_END);
-  return (int) fd;
-
-#endif /* not __MINGW32__ */
 }
 
 /*
@@ -749,20 +513,12 @@ svz_open (const char *file, int flags, unsigned int mode)
 int
 svz_close (int fd)
 {
-#ifndef __MINGW32__
   if (close (fd) < 0)
     {
       svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
       return -1;
     }
   svz_file_del (fd);
-#else /* __MINGW32__ */
-  if (!CloseHandle ((svz_t_handle) fd))
-    {
-      svz_log (LOG_ERROR, "CloseHandle: %s\n", SYS_ERROR);
-      return -1;
-    }
-#endif /* not __MINGW32__ */
   return 0;
 }
 
@@ -786,42 +542,11 @@ svz_close (int fd)
 int
 svz_fstat (int fd, struct stat *buf)
 {
-#ifndef __MINGW32__
   if (fstat (fd, buf) < 0)
     {
       svz_log (LOG_ERROR, "fstat: %s\n", SYS_ERROR);
       return -1;
     }
-#else /* __MINGW32__ */
-  BY_HANDLE_FILE_INFORMATION info;
-
-  if (buf == NULL)
-    return -1;
-
-  if (!GetFileInformationByHandle ((svz_t_handle) fd, &info))
-    {
-      svz_log (LOG_ERROR, "GetFileInformationByHandle: %s\n", SYS_ERROR);
-      return -1;
-    }
-
-  buf->st_mode = 0;
-  if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-    buf->st_mode |= (S_IFDIR | _S_IREAD | _S_IWRITE | _S_IEXEC);
-  else if (!(info.dwFileAttributes & FILE_ATTRIBUTE_OFFLINE))
-    buf->st_mode |= (S_IFREG | _S_IREAD | _S_IWRITE | _S_IEXEC);
-
-  buf->st_dev = info.dwVolumeSerialNumber;
-  buf->st_ino = (short) info.nFileIndexLow;
-  buf->st_nlink = (short) info.nNumberOfLinks;
-  buf->st_uid = 0;
-  buf->st_gid = 0;
-  buf->st_rdev = 0;
-  buf->st_size = (svz_t_off) (((__int64) info.nFileSizeHigh << 32) | 
-			      info.nFileSizeLow);
-  buf->st_atime = ft2lt (info.ftLastAccessTime);
-  buf->st_mtime = ft2lt (info.ftLastWriteTime);
-  buf->st_ctime = ft2lt (info.ftCreationTime);
-#endif  /* not __MINGW32__ */
   return 0;
 }
 
@@ -839,14 +564,12 @@ svz_fopen (const char *file, const char *mode)
       svz_log (LOG_ERROR, "fopen (%s): %s\n", file, SYS_ERROR);
       return NULL;
     }
-#ifndef __MINGW32__
   if (svz_fd_cloexec (fileno (f)) < 0)
     {
       fclose (f);
       return NULL;
     }
   svz_file_add (fileno (f));
-#endif /* __MINGW32__ */
   return f;
 }
 
@@ -856,9 +579,7 @@ svz_fopen (const char *file, const char *mode)
 int
 svz_fclose (FILE *f)
 {
-#ifndef __MINGW32__
   svz_file_del (fileno (f));
-#endif
   if (fclose (f) < 0)
     {
       svz_log (LOG_ERROR, "fclose: %s\n", SYS_ERROR);

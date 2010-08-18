@@ -26,14 +26,8 @@
 #define __PORTCFG_H__ 1
 
 #define _GNU_SOURCE 1
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#ifndef __MINGW32__
-# include <netinet/in.h>
-#else
-# include <winsock2.h>
-#endif
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include "libserveez/defines.h"
 #include "libserveez/array.h"

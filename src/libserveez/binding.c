@@ -22,21 +22,13 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include <assert.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
-#ifndef __MINGW32__
-# include <sys/socket.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
 
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"

@@ -22,17 +22,12 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif 
+#include <config.h>
 
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
 
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
 
 #include "version.h"
 #include "libserveez/alloc.h"
@@ -87,54 +82,6 @@ int svz_have_floodprotect = 0;
 svz_mutex_declare (svz_log_mutex)
 
 /*
- * This routine has to be called once before you could use any of the
- * serveez core library functions.
- */
-int
-svz_net_startup (void)
-{
-#ifdef __MINGW32__
-  WSADATA WSAData;
- 
-  /* Call this once before using Winsock API. */
-  if (WSAStartup (WINSOCK_VERSION, &WSAData) == SOCKET_ERROR)
-    {
-      svz_log (LOG_ERROR, "WSAStartup: %s\n", NET_ERROR);
-      WSACleanup ();
-      return 0;
-    }
-  
-  /* Startup IP services. */
-  svz_icmp_startup ();
-
-#endif /* __MINGW32__ */
-
-  return 1;
-}
-
-/*
- * Shutdown the serveez core library.
- */
-int
-svz_net_cleanup (void)
-{
-#ifdef __MINGW32__
-  /* Shutdown IP services. */
-  svz_icmp_cleanup ();
-
-  /* Call this when disconnecting from Winsock API. */
-  if (WSACleanup () == SOCKET_ERROR)
-    {
-      svz_log (LOG_ERROR, "WSACleanup: %s\n", NET_ERROR);
-      return 0;
-    }
-
-#endif /* not __MINGW32__ */
-
-  return 1;
-}
-
-/*
  * Initialization of the configuration.
  */
 void
@@ -158,7 +105,6 @@ svz_boot (void)
   svz_signal_up ();
   svz_init_config ();
   svz_interface_collect ();
-  svz_net_startup ();
   svz_dynload_init ();
   svz_codec_init ();
   svz_config_type_init ();
@@ -175,7 +121,6 @@ svz_halt (void)
   svz_config_type_finalize ();
   svz_codec_finalize ();
   svz_dynload_finalize ();
-  svz_net_cleanup ();
   svz_interface_free ();
   svz_signal_dn ();
   svz_sock_table_destroy ();

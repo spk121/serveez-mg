@@ -24,22 +24,16 @@
  *
  */
 
-#if HAVE_CONFIG_H
 # include <config.h>
-#endif
 
 #define _GNU_SOURCE 1
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __MINGW32__
-# include <winsock2.h>
-#else
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
-#endif
 
 #include "libserveez/alloc.h"
 #include "libserveez/hash.h"

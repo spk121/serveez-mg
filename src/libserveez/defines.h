@@ -28,7 +28,7 @@
 /* Depending on the kind of build include either <config.h> (for internal
    build) or <svzconfig.h> for the external usage of the core library. */
 
-#if defined (HAVE_CONFIG_H) && defined (__BUILD_SVZ_LIBRARY__)
+#if defined (__BUILD_SVZ_LIBRARY__)
 # include <config.h>
 #else
 # include <svzconfig.h>
@@ -53,13 +53,7 @@
    compilers can issue warnings about type mismatches. */
 
 #undef __PARAMS
-#if defined (__STDC__) || defined (_AIX) \
-        || (defined (__mips) && defined (_SYSTYPE_SVR4)) \
-        || defined (__MINGW32__) || defined (_WIN32) || defined (__cplusplus)
-# define __PARAMS(protos) protos
-#else
-# define __PARAMS(protos) ()
-#endif
+#define __PARAMS(protos) protos
 
 /* SERVEEZ_API is a macro prepended to all function and data definitions
    which should be exported or imported in the resulting dynamic link
@@ -78,28 +72,5 @@
 #define NDEBUG 1
 #endif
 
-#if defined (__MINGW32__) || defined (__CYGWIN__)
-
-/* Make CygWin / MinGW32 use large FD sets. */
-#undef  FD_SETSIZE
-#define FD_SETSIZE 4096
-
-/* Define for faster code generation. */
-#undef  WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN 1
-
-#endif /* __MINGW32__ || __CYGWIN__ */
-
-#ifdef __MINGW32__
-
-/* Define if you are using Windows Socket-API (not CYGWIN). */
-#undef  Win32_Winsock
-#define Win32_Winsock 1
-
-/* When building the core library or any outside module on Win32 systems
-   include the Winsock interface here. */
-#include <winsock2.h>
-
-#endif /* __MINGW32__ */
 
 #endif /* !__DEFINES_H__ */

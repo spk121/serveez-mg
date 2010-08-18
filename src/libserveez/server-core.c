@@ -25,58 +25,28 @@
  *
  */
 
-#if HAVE_CONFIG_H
 # include <config.h>
-#endif
 
-#include <stdio.h>
+#include <stdio.h>              /* fprintf */
 #include <stdlib.h>
 
-/* Some Unices define the strsignal() function depending on 
-   this definition. */
-#ifndef __EXTENSIONS__
-# define __EXTENSIONS__
-#endif
-#include <string.h>
+#include <string.h>             /* strsignal */
 
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <signal.h>
+#include <signal.h>             /* SIGSEGV */
 #include <time.h>
 #include <strings.h>
 
-#if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
 
-#if HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
-
-#if HAVE_SYS_RESOURCE_H && !defined (__MINGW32__)
-# include <sys/resource.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#ifdef __MINGW32__
-# include <process.h>
-#else
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <netdb.h>
-# if HAVE_WAIT_H
-#  include <wait.h>
-# endif
-# if HAVE_SYS_WAIT_H
-#  include <sys/wait.h>
-# endif
-#endif
-
+#  include <sys/wait.h>         /* waitpid */
+#include <sys/resource.h>       /* setrlimit */
 #include "libserveez/alloc.h"
 #include "libserveez/util.h"
 #include "libserveez/array.h"
@@ -170,7 +140,6 @@ svz_executable (char *file)
   svz_executable_file = file;
 }
 
-#ifdef SIGSEGV
 #define SIGSEGV_TEXT                                                          \
   "\nFatal error (access violation)."                                         \
   "\nPlease report this bug to <bug-serveez@gnu.org>."                        \
@@ -180,29 +149,24 @@ svz_executable (char *file)
   "\nand include this info into your bug report. If you do not have gdb"      \
   "\ninstalled you can also try dbx. Also tell us your architecture and"      \
   "\noperating system you are currently working on.\n\n"
-#endif
 
-#if defined (SIGSEGV)
 /*
  * Segmentation fault exception handler.
  */
 void
 svz_segfault_exception (int sig)
 {
-#if HAVE_GETRLIMIT
   struct rlimit rlim;
 
   rlim.rlim_max = RLIM_INFINITY;
   rlim.rlim_cur = RLIM_INFINITY;
   setrlimit (RLIMIT_CORE, &rlim);
-#endif /* HAVE_GETRLIMIT */
 
   signal (sig, SIG_DFL);
   fprintf (stderr, SIGSEGV_TEXT,
 	   svz_executable_file ? svz_executable_file : "binary");
   raise (sig);
 }
-#endif /* SIGSEGV */
 
 /*
  * Handle some signals to handle server resets (SIGHUP), to ignore
@@ -214,21 +178,15 @@ svz_signal_handler (int sig)
 {
   switch (sig)
     {
-#ifdef SIGHUP
     case SIGHUP:
       svz_reset_happened = 1;
       signal (SIGHUP, svz_signal_handler);
       break;
-#endif
-#ifdef SIGPIPE
     case SIGPIPE:
       svz_pipe_broke = 1;
       signal (SIGPIPE, svz_signal_handler);
       break;
-#endif
-#ifdef SIGCHLD
     case SIGCHLD:
-#if HAVE_WAITPID
       {
 	int status, pid;
 	/* check if the child has been just stopped */
@@ -238,41 +196,21 @@ svz_signal_handler (int sig)
 	      svz_child_died = pid;
 	  }
       }
-#else /* HAVE_WAITPID */
-      if ((svz_child_died = wait (NULL)) == -1)
-	svz_child_died = 0;
-#endif /* not HAVE_WAITPID */
       signal (SIGCHLD, svz_signal_handler);
       break;
-#endif
-#ifdef SIGBREAK
-    case SIGBREAK:
-      /*
-       * reset signal handlers to the default, so the server
-       * can get killed on second try
-       */
-      svz_nuke_happened = 1;
-      signal (SIGBREAK, SIG_DFL);
-      break;
-#endif
-#ifdef SIGTERM
     case SIGTERM:
       svz_nuke_happened = 1;
       signal (SIGTERM, SIG_DFL);
       break;
-#endif
-#ifdef SIGINT
     case SIGINT:
       svz_nuke_happened = 1;
       signal (SIGINT, SIG_DFL);
       break;
-#endif
-#ifdef SIGQUIT
     case SIGQUIT:
       svz_nuke_happened = 1;
       signal (SIGQUIT, SIG_DFL);
       break;
-#endif
+
     default:
       svz_uncaught_signal = sig;
       break;
@@ -289,9 +227,6 @@ svz_signal_handler (int sig)
 static svz_array_t *svz_signal_strings = NULL;
 
 /* On some platforms strsignal() can be resolved but is nowhere declared. */
-#if defined (HAVE_STRSIGNAL) && !defined (DECLARED_STRSIGNAL)
-extern char * strsignal (int);
-#endif
 
 /*
  * Prepare library so that @code{svz_strsignal()} works. Called
@@ -310,7 +245,6 @@ svz_strsignal_init (void)
   svz_signal_strings = svz_array_create (SVZ_NUMBER_OF_SIGNALS, svz_free);
   for (i = 0; i < SVZ_NUMBER_OF_SIGNALS; i++)
     {
-#if HAVE_STRSIGNAL
       if (NULL == (str = (char *) strsignal (i)))
 	{
 	  str = svz_malloc (128);
@@ -322,12 +256,6 @@ svz_strsignal_init (void)
 	{
 	  svz_array_add (svz_signal_strings, svz_strdup (str));
 	}
-#else /* not HAVE_STRSIGNAL */
-      str = svz_malloc (128);
-      snprintf (str, 128, format, i);
-      svz_array_add (svz_signal_strings, svz_strdup (str));
-      svz_free (str);
-#endif /* HAVE_STRSIGNAL */
     }
 }
 
@@ -1028,9 +956,6 @@ svz_periodic_tasks (void)
 void
 svz_sock_check_bogus (void)
 {
-#ifdef __MINGW32__
-  unsigned long readBytes;
-#endif
   svz_socket_t *sock;
 
 #if SVZ_ENABLE_DEBUG
@@ -1041,20 +966,13 @@ svz_sock_check_bogus (void)
     {
       if (sock->flags & SOCK_FLAG_SOCK)
 	{
-#ifdef __MINGW32__
-	  if (ioctlsocket (sock->sock_desc, FIONREAD, &readBytes) == 
-	      SOCKET_ERROR)
-	    {
-#else /* not __MINGW32__ */
 	  if (fcntl (sock->sock_desc, F_GETFL) < 0)
 	    {
-#endif /* not __MINGW32__ */
 	      svz_log (LOG_ERROR, "socket %d has gone\n", sock->sock_desc);
 	      svz_sock_schedule_for_shutdown (sock);
 	    }
 	}
 
-#ifndef __MINGW32__
       if (sock->flags & SOCK_FLAG_RECV_PIPE)
 	{
 	  if (fcntl (sock->pipe_desc[READ], F_GETFL) < 0)
@@ -1073,7 +991,6 @@ svz_sock_check_bogus (void)
 	      svz_sock_schedule_for_shutdown (sock);
 	    }
 	}
-#endif /* not __MINGW32__ */
     }
 }
   
@@ -1083,33 +1000,14 @@ svz_sock_check_bogus (void)
 void
 svz_signal_up (void)
 {
-#ifdef SIGTERM
   signal (SIGTERM, svz_signal_handler);
-#endif
-#ifdef SIGQUIT
   signal (SIGQUIT, svz_signal_handler);
-#endif
-#ifdef SIGINT
   signal (SIGINT, svz_signal_handler);
-#endif
-#ifdef SIGBREAK
-  signal (SIGBREAK, svz_signal_handler);
-#endif
-#ifdef SIGCHLD
   signal (SIGCHLD, svz_signal_handler);
-#endif
-#ifdef SIGHUP
   signal (SIGHUP, svz_signal_handler);
-#endif
-#ifdef SIGPIPE
   signal (SIGPIPE, svz_signal_handler);
-#endif
-#ifdef SIGURG
   signal (SIGURG, svz_signal_handler);
-#endif
-#ifdef SIGSEGV
   signal (SIGSEGV, svz_segfault_exception);
-#endif
 }
 
 /*
@@ -1118,33 +1016,14 @@ svz_signal_up (void)
 void
 svz_signal_dn (void)
 {
-#ifdef SIGTERM
   signal (SIGTERM, SIG_DFL);
-#endif
-#ifdef SIGQUIT
   signal (SIGQUIT, SIG_DFL);
-#endif
-#ifdef SIGINT
   signal (SIGINT, SIG_DFL);
-#endif
-#ifdef SIGBREAK
-  signal (SIGBREAK, SIG_DFL);
-#endif
-#ifdef SIGCHLD
   signal (SIGCHLD, SIG_DFL);
-#endif
-#ifdef SIGHUP
   signal (SIGHUP, SIG_DFL);
-#endif
-#ifdef SIGPIPE
   signal (SIGPIPE, SIG_DFL);
-#endif
-#ifdef SIGURG
   signal (SIGURG, SIG_DFL);
-#endif
-#ifdef SIGSEGV
   signal (SIGSEGV, SIG_DFL);
-#endif
 }
 
 /*
@@ -1156,34 +1035,12 @@ svz_signal_dn (void)
 int
 svz_sock_child_died (svz_socket_t *sock)
 {
-#ifdef __MINGW32__
-
-  DWORD result;
-
-  result = WaitForSingleObject (sock->pid, LEAST_WAIT_OBJECT);
-  if (result == WAIT_FAILED)
-    {
-      svz_log (LOG_ERROR, "WaitForSingleObject: %s\n", SYS_ERROR);
-      return 0;
-    }
-  else if (result != WAIT_TIMEOUT)
-    {
-      if (closehandle (sock->pid) == -1)
-        svz_log (LOG_ERROR, "CloseHandle: %s\n", SYS_ERROR);
-      return -1;
-    }
-
-#else /* !__MINGW32__ */
-
   if (svz_child_died == sock->pid)
     return -1;
 
-#if HAVE_WAITPID
   if (waitpid (sock->pid, NULL, WNOHANG) == -1 && errno == ECHILD)
     return -1;
-#endif /* HAVE_WAITPID */
 
-#endif /* !__MINGW32__ */
   return 0;
 }
 

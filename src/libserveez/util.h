@@ -34,6 +34,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <unistd.h>
 
 /* `open ()' files with this additional flag */
 #ifndef O_BINARY
@@ -41,14 +42,7 @@
 #endif
 
 /* declare crypt interface if necessary */
-#if SVZ_ENABLE_CRYPT
-#if __CRYPT_IMPORT__
 #include <crypt.h>
-#else
-extern char *crypt __PARAMS ((const char *, const char *));
-extern char *getpass __PARAMS ((const char *));
-#endif /* __CRYPT_IMPORT__ */
-#endif
 
 typedef unsigned char svz_uint8_t;
 
@@ -139,79 +133,20 @@ SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
 #define SVZ_PTR2NUM(p) \
   ((unsigned long) ((void *) (p)))
 
-#ifdef __MINGW32__
-# define INVALID_HANDLE    INVALID_HANDLE_VALUE
-# define LEAST_WAIT_OBJECT 1
-# define SOCK_UNAVAILABLE  WSAEWOULDBLOCK
-# define SOCK_INPROGRESS   WSAEINPROGRESS
-#else /* !__MINGW32__ */
-# define INVALID_SOCKET    ((svz_t_socket) -1)
-# define INVALID_HANDLE    ((svz_t_handle) -1)
-# define SOCK_UNAVAILABLE  EAGAIN
-# define SOCK_INPROGRESS   EINPROGRESS
-#endif /* !__MINGW32__ */
+#define INVALID_SOCKET    ((svz_t_socket) -1)
+#define INVALID_HANDLE    ((svz_t_handle) -1)
+#define SOCK_UNAVAILABLE  EAGAIN
+#define SOCK_INPROGRESS   EINPROGRESS
 
-#ifdef __MINGW32__
-/*
- * The variable @code{svz_os_version} could be used to differentiate 
- * between some Win32 versions.
- */
-#define Win32s  0
-#define Win95   1
-#define Win98   2
-#define WinNT3x 3
-#define WinNT4x 4
-#define Win2k   5
-#define WinXP   6
-#define WinME   7
-
-SERVEEZ_API int svz_os_version;
-SERVEEZ_API int svz_errno;
-SERVEEZ_API char *svz_syserror __PARAMS ((int));
-
-#endif /* __MINGW32__ */
 
 __END_DECLS
 
 /* Definition of very system dependent routines. */
-#ifdef __MINGW32__
-# define closehandle(handle) (CloseHandle (handle) ? 0 : -1)
-# define SYS_ERROR svz_syserror (GetLastError ())
-# define NET_ERROR svz_syserror (WSAGetLastError ())
-# define H_NET_ERROR svz_syserror (WSAGetLastError ())
-# define getcwd(buf, size) (GetCurrentDirectory (size, buf) ? buf : NULL)
-# define chdir(path) (SetCurrentDirectory (path) ? 0 : -1)
-#else /* Unices here */
-# define closesocket(sock) close (sock)
-# define closehandle(handle) close (handle)
-# define SYS_ERROR strerror (errno)
-# define NET_ERROR strerror (errno)
-# define H_NET_ERROR svz_hstrerror ()
-# define svz_errno errno
-#endif /* !__MINGW32__ */
-
-#ifdef __MINGW32__
-
-/* Sometimes this is not defined for some reason. */
-#ifndef WINSOCK_VERSION
-# define WINSOCK_VERSION 0x0202 /* this is version 2.02 */
-#endif
-
-/* 
- * This little modification is necessary for the native Win32 compiler.
- * We do have these macros defined in the MinGW32 and Cygwin headers
- * but not within the native Win32 headers.
- */
-#ifndef S_ISDIR
-# ifndef S_IFBLK
-#  define S_IFBLK 0x3000
-# endif
-# define S_ISDIR(Mode) (((Mode) & S_IFMT) == S_IFDIR)
-# define S_ISCHR(Mode) (((Mode) & S_IFMT) == S_IFCHR)
-# define S_ISREG(Mode) (((Mode) & S_IFMT) == S_IFREG)
-# define S_ISBLK(Mode) (((Mode) & S_IFMT) == S_IFBLK)
-#endif /* not S_ISDIR */
-
-#endif /* __MINGW32__ */
+#define closesocket(sock) close (sock)
+#define closehandle(handle) close (handle)
+#define SYS_ERROR strerror (errno)
+#define NET_ERROR strerror (errno)
+#define H_NET_ERROR svz_hstrerror ()
+#define svz_errno errno
 
 #endif /* not __UTIL_H__ */

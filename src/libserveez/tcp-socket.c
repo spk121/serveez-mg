@@ -23,9 +23,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
 # include <config.h>
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,33 +31,14 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <time.h>
-#if 0
-#include <poll.h>
-#endif
-
-#if HAVE_UNISTD_H
+#include <time.h>               /* time */
 # include <unistd.h>
-#endif
-
-#if HAVE_SYS_TIME_H
 # include <sys/time.h>
-#endif
-
-#if HAVE_SYS_IOCTL_H
 # include <sys/ioctl.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#ifndef __MINGW32__
 # include <sys/types.h>
-# include <sys/socket.h>
+# include <sys/socket.h>        /* recv, send */
 # include <netinet/in.h>
 # include <netdb.h>
-#endif
 
 #include "libserveez/util.h"
 #include "libserveez/socket.h"
@@ -217,27 +196,8 @@ svz_tcp_read_socket (svz_socket_t *sock)
 int
 svz_tcp_recv_oob (svz_socket_t *sock)
 {
-#ifdef MSG_OOB
   svz_t_socket desc = sock->sock_desc;
   int num_read, ret;
-
-#if 0
-#if ENABLE_POLL && defined (__linux__)
-#ifdef SIOCATMARK
-  /* FIXME: fails for poll() on GNU/Linux ???  This is a hack !!! 
-            With this hack you are missing some OOB data bytes if sent too
-            frequently.  It is *not* necessary for `select()'.  Don't ask. 
-            The symptom is: `recv(..., MSG_OOB)' return `EINVAL'.  */
-  ret = ioctl (desc, SIOCATMARK, &num_read);
-  if (ret != -1 && num_read == 0)
-    {
-      svz_log (LOG_FATAL, "cannot read OOB data byte\n");
-      num_read = 0;
-    }
-  else
-#endif /* SIOCATMARK */
-#endif /* ENABLE_POLL && linux */
-#endif
 
   num_read = recv (desc, (void *) &sock->oob, 1, MSG_OOB);
   if (num_read < 0)
@@ -252,9 +212,6 @@ svz_tcp_recv_oob (svz_socket_t *sock)
 	  return ret;
     }
   return 0;
-#else /* not MSG_OOB */
-  return -1;
-#endif /* not MSG_OOB */
 }
 
 /*
@@ -267,7 +224,6 @@ svz_tcp_recv_oob (svz_socket_t *sock)
 int
 svz_tcp_send_oob (svz_socket_t *sock)
 {
-#ifdef MSG_OOB
   svz_t_socket desc = sock->sock_desc;
   int num_written;
 
@@ -283,9 +239,6 @@ svz_tcp_send_oob (svz_socket_t *sock)
 	       sock->oob);
     }
   return 0;
-#else /* not MSG_OOB */
-  return -1;
-#endif /* not MSG_OOB */
 }
 
 /*
@@ -347,11 +300,7 @@ svz_tcp_default_connect (svz_socket_t *sock)
   /* any errors ? */
   if (error)
     {
-#ifdef __MINGW32__
-      WSASetLastError (error);
-#else
       errno = error;
-#endif
       if (error != SOCK_INPROGRESS && error != SOCK_UNAVAILABLE)
 	{
 	  svz_log (LOG_ERROR, "connect: %s\n", NET_ERROR);
