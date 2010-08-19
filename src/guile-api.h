@@ -28,7 +28,6 @@
 #include <libguile.h>
 void guile_lookup (SCM var, const char *name);
 
-
 #if 0
 /* Define this macro if Guile 1.7.x or better is in use. */
 #if defined (SCM_MINOR_VERSION) && (SCM_MINOR_VERSION >= 7) && \

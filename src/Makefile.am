@@ -25,33 +25,19 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-EXTRA_DIST = serveez.rc serveez.dsp svzconfig.h.in svzconfig.h.serveez \
-	serveez.m4 serveez.scm serveez-config.in serveez.ap mkpassword.ap \
-	mkpassword.dsp
 
-#
-# Installation of the autoconf macro used to locate Serveez
-#
-aclocaldir = $(datadir)/aclocal
-aclocal_DATA = serveez.m4
-
-# Yet another script
-bin_SCRIPTS = serveez-config
-pkgdata_DATA = serveez.scm
+pkgdata_DATA = serveez.scm serveez.cfg
 
 #
 # Add your server subdirectory here
 #
-SUBDIRS = libserveez foo-server guile-server $(SERVERDIRS)
+SUBDIRS = foo-server guile-server $(SERVERDIRS)
 
 #
 # Add your library here
 #
-PROTOLIBS = foo-server/libfoo.a $(SERVERLIBS)
 
-bin_PROGRAMS = serveez mkpassword
-
-include_HEADERS = libserveez.h svzconfig.h
+bin_PROGRAMS = serveez
 
 serveez_SOURCES = \
 	serveez.c serveez.h \
@@ -61,35 +47,10 @@ serveez_SOURCES = \
 	guile-api.c guile-api.h \
 	guile-server.c guile-server.h
 
-EXTRA_serveez_SOURCES = guile-api.c guile-api.h
+LDADD = ../libserveez/libserveez.a $(GUILE_LIBS) -lz 
 
-resource_OBJECTS = $(resource_FILES:.rc=.ro)
+AM_CPPFLAGS = $(GUILE_CFLAGS)
 
-serveez_DEPENDENCIES = $(resource_OBJECTS) $(PROTOLIBS) \
-	libserveez/libserveez.la serveez.cfg $(GUILE_DEPENDENCY)
+# mkpassword_SOURCES = mkpassword.c getpass.c getpass.h
+# mkpassword_LDADD = -lcrypt
 
-serveez_LDADD = $(resource_OBJECTS) $(PROTOLIBS) \
-	libserveez/libserveez.la $(SERVEEZ_LIBS) $(GUILE_LIBS)
-
-serveez_LDFLAGS = $(GUILE_LDFLAGS) $(SERVEEZ_LDFLAGS)
-AM_CPPFLAGS = $(GUILE_CFLAGS) $(SERVEEZ_CFLAGS)
-
-mkpassword_SOURCES = mkpassword.c
-
-CLEANFILES = *~ *.ro serveez.cfg *.orig *.rej
-MAINTAINERCLEANFILES = Makefile.in serveez.dsp mkpassword.dsp
-
-dist-hook:
-	rm -f $(distdir)/svzconfig.h
-
-serveez.cfg: $(top_srcdir)/data/serveez.cfg
-	cp -p $(top_srcdir)/data/serveez.cfg $@
-
-SUFFIXES = .rc .ro
-
-.rc.ro:
-	$(WINDRES) -i $< -o $@
-
-$(GUILE_RULE):
-	@GUILE_MAKE_LTDL@
-	@GUILE_MAKE_LIB@

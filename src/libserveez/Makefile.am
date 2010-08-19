@@ -23,53 +23,17 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-EXTRA_DIST = libserveez.dsp libserveez.ap ChangeLog svzpath.h.in \
-	svzpath.h.serveez
 SUBDIRS = coserver codec
 
 # the serveez core library rules
 
-lib_LTLIBRARIES = libserveez.la
+lib_LIBRARIES = libserveez.a
 
-libserveez_la_LDFLAGS = -export-dynamic @NOUNDEFINED@ -release @VERSION@
-libserveez_la_DEPENDENCIES = coserver/libcoserver.la codec/libcodec.la
-libserveez_la_LIBADD = coserver/libcoserver.la codec/libcodec.la \
-  -ldl \
-  $(LIBSERVEEZLIBS) $(LIBSOCKET) $(GETHOSTNAME_LIB) $(LTLIBINTL)
+libserveez_a_LIBADD = coserver/libcoserver.a codec/libcodec.a -ldl
 
-libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c      \
+libserveez_a_SOURCES = alloc.c util.c hash.c sparsevec.c      \
   tcp-socket.c pipe-socket.c udp-socket.c icmp-socket.c raw-socket.c      \
   server-core.c server-loop.c boot.c server.c server-socket.c   \
   interface.c dynload.c vector.c core.c socket.c array.c portcfg.c        \
   binding.c passthrough.c cfg.c mutex.c
 
-# these file are available by #include <libserveez/foo.h>
-
-libserveezdir = $(includedir)/libserveez
-
-libserveez_HEADERS = alloc.h util.h hash.h sparsevec.h socket.h \
-  tcp-socket.h pipe-socket.h udp-socket.h icmp-socket.h raw-socket.h       \
-  server-core.h server-loop.h defines.h boot.h server.h          \
-  server-socket.h interface.h dynload.h vector.h core.h array.h portcfg.h  \
-  binding.h passthrough.h cfg.h mutex.h
-
-# generate path info (included in <libserveez/dynload.c>
-
-SED = sed
-
-$(srcdir)/dynload.c: svzpath.h
-svzpath.h: $(srcdir)/svzpath.h.in $(srcdir)/Makefile.in
-	@echo "Generating svzpath.h..."
-	@$(SED) < $(srcdir)/svzpath.h.in \
-	  -e 's,@BINDIR@,@bindir@,g' \
-	  -e 's,@PKGDATADIR@,@datadir@/serveez,g' \
-	  -e 's,@LIBDIR@,@libdir@,g' \
-	  > svzpath.h
-
-noinst_HEADERS = ipdata.h iphlpapi.h
-
-AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
-
-CLEANFILES = *~ *.orig *.rej svzpath.h
-
-MAINTAINERCLEANFILES = Makefile.in libserveez.dsp

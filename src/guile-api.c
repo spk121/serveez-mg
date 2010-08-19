@@ -36,11 +36,19 @@
 
 #include <arpa/inet.h>          /* htonl, htons */
 #include <netinet/in.h>         /* IPPROTO_UDP */
+#if HAVE_PMAP_CLNT_H
 #include <rpc/pmap_clnt.h>      /* pmap_set, pmap_unset */
+#endif
 
 #include "libserveez.h"
 #include "guile.h"
 #include "guile-server.h"
+
+extern scm_t_bits guile_svz_socket_tag;
+extern scm_t_bits guile_svz_server_tag;
+static SCM guile_sock_idle_counter (SCM sock, SCM counter);
+
+
 
 /* Converts the given hostname @var{host} into a Internet address in host
    byte order and stores it into @var{addr}. Returns zero on success. This
@@ -500,7 +508,7 @@ guile_server_p (SCM server)
    runs whenever the socket is lost for some external reason. The procedure 
    returns the previously set handler if there is one. */
 #define FUNC_NAME "svz:sock:disconnected"
-MAKE_SOCK_CALLBACK (guile_sock_disconnected_socket, 
+MAKE_SOCK_CALLBACK (guile_sock_disconnected_socket,
                     guile_func_disconnected_socket,
                     disconnected_socket,
                     "disconnected")

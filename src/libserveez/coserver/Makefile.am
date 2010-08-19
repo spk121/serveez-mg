@@ -24,19 +24,9 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-noinst_LTLIBRARIES = libcoserver.la
+noinst_LIBRARIES = libcoserver.a
 
-AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
-
-libcoserver_la_LDFLAGS = @NOUNDEFINED@
-libcoserver_la_SOURCES = coserver.c dns.c ident.c reverse-dns.c
+libcoserver_a_SOURCES = coserver.c dns.c ident.c reverse-dns.c \
+	coserver.h dns.h ident.h reverse-dns.h
 
 libcoserverdir = $(includedir)/libserveez/coserver
-
-libcoserver_HEADERS = coserver.h
-
-noinst_HEADERS = dns.h ident.h reverse-dns.h
-
-CLEANFILES = *~
-
-MAINTAINERCLEANFILES = Makefile.in

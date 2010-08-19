@@ -59,22 +59,6 @@ static char *guile_functions[] = {
 /* If set to zero exception handling is disabled. */
 static int guile_use_exceptions = 1;
 
-#define MAKE_SOCK_CALLBACK(C_FUNCNAME, C_CALLBACK, TYPE, SCM_FUNCNAME)  \
-  static SCM                                                            \
-  C_FUNCNAME (SCM sock, SCM proc)                                       \
-  {                                                                     \
-    svz_socket_t *xsock;                                                \
-    scm_assert_smob_type (guile_svz_socket_tag, sock);                  \
-    xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);                      \
-    if (!SCM_UNBNDP (proc))                                             \
-      {                                                                 \
-        SCM_ASSERT (scm_is_true (scm_procedure_p (proc)), proc,         \
-                                 SCM_ARG2, FUNC_NAME);                  \
-        xsock->TYPE = C_CALLBACK;                                       \
-        return guile_sock_setfunction (xsock, SCM_FUNCNAME, proc);      \
-      }                                                                 \
-    return guile_sock_getfunction (xsock, SCM_FUNCNAME);                \
-  } 
 
 /* Provides a socket callback setter/getter. */
 #define DEFINE_SOCK_CALLBACK(assoc, func) \
@@ -206,7 +190,7 @@ guile_servertype_getfunction (svz_servertype_t *server, char *func)
  * Return the procedure @var{func} associated with the socket structure
  * @var{sock} or SCM_UNDEFINED if there is no such function yet.
  */
-static SCM
+SCM
 guile_sock_getfunction (svz_socket_t *sock, char *func)
 {
   svz_hash_t *gsock;
@@ -241,7 +225,7 @@ guile_unprotect (SCM proc)
  * with the socket structure @var{sock}. The function returns the previously
  * set procedure if there is such a.
  */
-static SCM
+SCM
 guile_sock_setfunction (svz_socket_t *sock, char *func, SCM proc)
 {
   svz_hash_t *gsock;
@@ -526,7 +510,7 @@ guile_func_disconnected_socket (svz_socket_t *sock)
 
 /* Wrapper for the kicked socket callback. */
 #define FUNC_NAME "guile_func_kicked_socket"
-static int
+int
 guile_func_kicked_socket (svz_socket_t *sock, int reason)
 {
   SCM ret, kicked = guile_sock_getfunction (sock, "kicked");
@@ -792,7 +776,7 @@ guile_func_handle_request (svz_socket_t *sock, char *request, int len)
 
 /* Wrapper for the socket idle func callback. */
 #define FUNC_NAME "guile_func_idle_func"
-static int
+int
 guile_func_idle_func (svz_socket_t *sock)
 {
   SCM ret, idle_func = guile_sock_getfunction (sock, "idle");
@@ -813,7 +797,7 @@ guile_func_idle_func (svz_socket_t *sock)
 
 /* Wrapper for the socket trigger condition func callback. */
 #define FUNC_NAME "guile_func_trigger_cond"
-static int
+int
 guile_func_trigger_cond (svz_socket_t *sock)
 {
   SCM ret, trigger_cond = guile_sock_getfunction (sock, "trigger-condition");
@@ -831,7 +815,7 @@ guile_func_trigger_cond (svz_socket_t *sock)
 
 /* Wrapper for the socket trigger func callback. */
 #define FUNC_NAME "guile_func_trigger_func"
-static int
+int
 guile_func_trigger_func (svz_socket_t *sock)
 {
   SCM ret, trigger_func = guile_sock_getfunction (sock, "trigger");
@@ -852,7 +836,7 @@ guile_func_trigger_func (svz_socket_t *sock)
 
 /* Wrapper for the socket check oob request callback. */
 #define FUNC_NAME "guile_func_check_request_oob"
-static int
+int
 guile_func_check_request_oob (svz_socket_t *sock)
 {
   SCM ret, check_request_oob;

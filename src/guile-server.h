@@ -27,10 +27,41 @@
 #define __GUILE_SERVER_H__ 1
 
 #include "libserveez.h"
+#include <libguile.h>
 
 void guile_server_init (void);
 void guile_server_finalize (void);
+SCM guile_sock_setfunction (svz_socket_t *sock, char *func, SCM proc);
+SCM guile_sock_getfunction (svz_socket_t *sock, char *func);
+int guile_func_kicked_socket (svz_socket_t *sock, int reason);
+int guile_func_trigger_cond (svz_socket_t *sock);
+int guile_func_idle_func (svz_socket_t *sock);
+int guile_func_check_request_oob (svz_socket_t *sock);
+int guile_func_trigger_func (svz_socket_t *sock);
+
+
+
+
+
 
 int guile_func_disconnected_socket (svz_socket_t *sock);
+
+#define MAKE_SOCK_CALLBACK(C_FUNCNAME, C_CALLBACK, TYPE, SCM_FUNCNAME)  \
+  SCM                                                                   \
+  C_FUNCNAME (SCM sock, SCM proc)                                       \
+  {                                                                     \
+    svz_socket_t *xsock;                                                \
+    scm_assert_smob_type (guile_svz_socket_tag, sock);                  \
+    xsock = (svz_socket_t *) SCM_SMOB_DATA (sock);                      \
+    if (!SCM_UNBNDP (proc))                                             \
+      {                                                                 \
+        SCM_ASSERT (scm_is_true (scm_procedure_p (proc)), proc,         \
+                                 SCM_ARG2, FUNC_NAME);                  \
+        xsock->TYPE = C_CALLBACK;                                       \
+        return guile_sock_setfunction (xsock, SCM_FUNCNAME, proc);      \
+      }                                                                 \
+    return guile_sock_getfunction (xsock, SCM_FUNCNAME);                \
+  } 
+
 
 #endif /* not __GUILE_SERVER_H__ */

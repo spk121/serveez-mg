@@ -23,12 +23,12 @@
  */
 
 #include <config.h>
-#
 #include <stdio.h>              /* fprintf */
 #include <stdlib.h>             /* rand, srand */
 #include <string.h>             /* strchr  */
 #include <time.h>               /* time */
 #include <crypt.h>              /* getpass? crypt? */
+#include "getpass.h"
 
 /*
  * Main entry point.

@@ -23,19 +23,8 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-noinst_LTLIBRARIES = libcodec.la
+noinst_LIBRARIES = libcodec.a
 
-AM_CPPFLAGS = -D__BUILD_SVZ_LIBRARY__ -I$(top_srcdir)/src
+libcodec_a_SOURCES = codec.c gzlib.c gzlib.h codec.h
 
-libcodec_la_LDFLAGS = @NOUNDEFINED@
-libcodec_la_SOURCES = codec.c gzlib.c
-libcodec_la_LIBADD = -lz
-
-libcodecdir = $(includedir)/libserveez/codec
-
-libcodec_HEADERS = codec.h
-
-noinst_HEADERS = gzlib.h
-
-CLEANFILES = *~
-MAINTAINERCLEANFILES = Makefile.in
+# libcodec_a_LIBADD = libz.a
