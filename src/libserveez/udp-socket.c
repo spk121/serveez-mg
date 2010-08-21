@@ -23,17 +23,15 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <time.h>
-#include <stdarg.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <stdio.h>              /* vsnprintf */
+#include <string.h>             /* memcpy */
+#include <errno.h>              /* EAGAIN, errno */
+#include <time.h>               /* time */
+#include <stdarg.h>             /* va_list */
+#include <unistd.h>             /* close */
+#include <sys/socket.h>         /* send, sendto, AF_INET, recvfrom, 
+                                   struct sockaddr, socklen_t */
+#include <arpa/inet.h>          /* ntohs */
 
 #include "alloc.h"
 #include "util.h"
@@ -116,7 +114,7 @@ svz_udp_read_socket (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "udp: recv%s: %s\n",
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "from", NET_ERROR);
-      if (svz_errno != SOCK_UNAVAILABLE)
+      if (errno != EAGAIN)
 	return -1;
     }
   return 0;
@@ -188,7 +186,7 @@ svz_udp_write_socket (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "udp: send%s: %s\n", 
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "to", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
 	num_written = 0;
     }
   /* packet data could be transmitted */
@@ -375,7 +373,7 @@ svz_udp_connect (unsigned long host, unsigned short port)
   /* Create socket structure and enqueue it. */
   if ((sock = svz_sock_alloc ()) == NULL)
     {
-      closesocket (sockfd);
+      close (sockfd);
       return NULL;
     }
 

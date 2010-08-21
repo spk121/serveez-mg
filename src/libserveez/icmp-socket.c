@@ -290,7 +290,7 @@ svz_icmp_read_socket (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "icmp: recv%s: %s\n", 
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "from", NET_ERROR);
-      if (svz_errno != SOCK_UNAVAILABLE)
+      if (errno != EAGAIN)
 	return -1;
     }
   return 0;
@@ -361,7 +361,7 @@ svz_icmp_write_socket (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "icmp: send%s: %s\n", 
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "to", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
         num_written = 0;
     }
   /* Packet data could be transmitted. */
@@ -588,7 +588,7 @@ svz_icmp_connect (unsigned long host, unsigned short port,
   /* Create socket structure and enqueue it. */
   if ((sock = svz_sock_alloc ()) == NULL)
     {
-      closesocket (sockfd);
+      close (sockfd);
       return NULL;
     }
 

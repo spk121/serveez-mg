@@ -35,3 +35,5 @@ libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c tcp-socket.c	\
   codec/codec.h codec/gzlib.h libserveez.h
 
 libserveez_la_LIBADD = -ldl -lz
+
+AM_CPPFLAGS = -DDATADIR='$(datadir)'

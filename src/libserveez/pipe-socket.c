@@ -213,7 +213,7 @@ svz_pipe_disconnect (svz_socket_t *sock)
 	{
 	  /* close sending pipe only */
 	  if (sock->pipe_desc[WRITE] != INVALID_HANDLE)
-	    if (closehandle (sock->pipe_desc[WRITE]) < 0)
+	    if (close (sock->pipe_desc[WRITE]) < 0)
 	      svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
 
 	  /* FIXME: reset receiving pipe ??? */
@@ -229,10 +229,10 @@ svz_pipe_disconnect (svz_socket_t *sock)
 	{
 	  /* close both pipes */
 	  if (sock->pipe_desc[READ] != INVALID_HANDLE)
-	    if (closehandle (sock->pipe_desc[READ]) < 0)
+	    if (close (sock->pipe_desc[READ]) < 0)
 	      svz_log (LOG_ERROR, "pipe: close: %s\n", SYS_ERROR);
 	  if (sock->pipe_desc[WRITE] != INVALID_HANDLE)
-	    if (closehandle (sock->pipe_desc[WRITE]) < 0)
+	    if (close (sock->pipe_desc[WRITE]) < 0)
 	      svz_log (LOG_ERROR, "pipe: close: %s\n", SYS_ERROR);
 	}
 
@@ -253,7 +253,7 @@ svz_pipe_disconnect (svz_socket_t *sock)
 
       /* close listening pipe */
       if (sock->pipe_desc[READ] != INVALID_HANDLE)
-	if (closehandle (sock->pipe_desc[READ]) < 0)
+	if (close (sock->pipe_desc[READ]) < 0)
 	  svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
 
       /* delete named pipes on file system */
@@ -351,7 +351,7 @@ svz_pipe_write_socket (svz_socket_t *sock)
 			    sock->send_buffer, do_write)) == -1)
     {
       svz_log (LOG_ERROR, "pipe: write: %s\n", SYS_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
 	{
 	  sock->unavailable = time (NULL) + RELAX_FD_TIME;
 	  num_written = 0;

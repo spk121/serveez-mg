@@ -247,7 +247,6 @@ svz_portcfg_expand (svz_portcfg_t *this)
   svz_array_t *ports = svz_array_create (1, NULL);
   svz_portcfg_t *port;
   struct sockaddr_in *addr;
-  int n;
   svz_interface_t *ifc;
   int is_nonflag_device; 
 

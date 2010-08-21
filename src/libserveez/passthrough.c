@@ -282,7 +282,7 @@ svz_process_send_pipe (svz_socket_t *sock)
 			    sock->send_buffer, do_write)) == -1)
     {
       svz_log (LOG_ERROR, "passthrough: write: %s\n", SYS_ERROR);
-      if (svz_errno == EAGAIN)
+      if (errno == EAGAIN)
 	num_written = 0;
     }
   else if (num_written > 0)
@@ -348,7 +348,7 @@ svz_process_recv_pipe (svz_socket_t *sock)
 			do_read)) == -1)
     {
       svz_log (LOG_ERROR, "passthrough: read: %s\n", SYS_ERROR);
-      if (svz_errno == EAGAIN)
+      if (errno == EAGAIN)
 	return 0;
     }
   else if (num_read > 0)
@@ -384,7 +384,7 @@ svz_process_send_socket (svz_socket_t *sock)
 			   sock->send_buffer, do_write, 0)) == -1)
     {
       svz_log (LOG_ERROR, "passthrough: send: %s\n", SYS_ERROR);
-      if (svz_errno == EAGAIN)
+      if (errno == EAGAIN)
 	num_written = 0;
     }
   else if (num_written > 0)
@@ -421,7 +421,7 @@ svz_process_recv_socket (svz_socket_t *sock)
 			do_read, 0)) == -1)
     {
       svz_log (LOG_ERROR, "passthrough: recv: %s\n", SYS_ERROR);
-      if (svz_errno == EAGAIN)
+      if (errno == EAGAIN)
 	return 0;
     }
   else if (num_read > 0)
@@ -594,9 +594,9 @@ svz_process_shuffle (svz_process_t *proc)
       return -1;
     }
   /* close the passed descriptors */
-  closehandle (proc->in);
+  close (proc->in);
   if (proc->flag == SVZ_PROCESS_SHUFFLE_PIPE)
-    closehandle (proc->out);
+    close (proc->out);
 
   /* setup child checking callback */
   xsock->pid = (svz_t_handle) pid;

@@ -30,12 +30,9 @@
 
 #include "defines.h"
 
-#include <stdio.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <crypt.h>
+#include <stdio.h>              /* FILE * */
+#include <string.h>             /* strerror */
+#include <errno.h>              /* errno */
 
 /* 
  * level of server's verbosity:
@@ -125,17 +122,11 @@ SERVEEZ_API char *svz_sys_version (void);
 
 #define INVALID_SOCKET    ((svz_t_socket) -1)
 #define INVALID_HANDLE    ((svz_t_handle) -1)
-#define SOCK_UNAVAILABLE  EAGAIN
-#define SOCK_INPROGRESS   EINPROGRESS
-
 
 __END_DECLS
 
 /* Definition of very system dependent routines. */
-#define closesocket(sock) close (sock)
-#define closehandle(handle) close (handle)
 #define SYS_ERROR strerror (errno)
 #define NET_ERROR strerror (errno)
-#define svz_errno errno
 
 #endif /* not __UTIL_H__ */

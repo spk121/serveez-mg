@@ -32,13 +32,12 @@
 
 __BEGIN_DECLS
 
-SERVEEZ_API svz_socket_t *svz_tcp_connect __PARAMS ((unsigned long, 
-						     unsigned short));
-SERVEEZ_API int svz_tcp_default_connect __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_tcp_read_socket __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_tcp_write_socket __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_tcp_recv_oob __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_tcp_send_oob __PARAMS ((svz_socket_t *));
+SERVEEZ_API svz_socket_t *svz_tcp_connect (unsigned long, unsigned short);
+SERVEEZ_API int svz_tcp_default_connect (svz_socket_t *);
+SERVEEZ_API int svz_tcp_read_socket (svz_socket_t *);
+SERVEEZ_API int svz_tcp_write_socket (svz_socket_t *);
+SERVEEZ_API int svz_tcp_recv_oob (svz_socket_t *);
+SERVEEZ_API int svz_tcp_send_oob (svz_socket_t *);
 
 __END_DECLS
 

@@ -28,11 +28,12 @@
 #include <errno.h>              /* errno */
 #include <fcntl.h>              /* F_SETFL, fcntl */
 #include <sys/stat.h>           /* fstat */
-#include <sys/socket.h> /* SOL_SOCKET< struct sockaddr, connect getsockopt, socket, socketpair */
-#include <netinet/in.h>  /* struct in_addr */
-#include <arpa/inet.h>   /* inet_ntoa */
-#include <netinet/tcp.h>       /* SOL_TCP, TCP_NODELAY, TCP_CORK */
-#include <sys/sendfile.h>      /* sendfile */
+#include <sys/socket.h> /* SOL_SOCKET, struct sockaddr, connect getsockopt, socket, socketpair */
+#include <netinet/in.h>         /* struct in_addr */
+#include <arpa/inet.h>          /* inet_ntoa */
+#include <netinet/tcp.h>        /* SOL_TCP, TCP_NODELAY, TCP_CORK */
+#include <sys/sendfile.h>       /* sendfile */
+#include <unistd.h>             /* close */
 
 #include "core.h"
 #include "util.h"
@@ -158,8 +159,8 @@ svz_socket_create_pair (int proto, svz_t_socket desc[2])
   if (svz_fd_nonblock (desc[0]) != 0 || svz_fd_nonblock (desc[1]) != 0 ||
       svz_fd_cloexec (desc[0]) != 0 || svz_fd_cloexec (desc[1]) != 0)
     {
-      closesocket (desc[0]);
-      closesocket (desc[1]);
+      close (desc[0]);
+      close (desc[1]);
       return -1;
     }
 
@@ -216,14 +217,14 @@ svz_socket_create (int proto)
   /* Make the socket non-blocking. */
   if (svz_fd_nonblock (sockfd) != 0)
     {
-      closesocket (sockfd);
+      close (sockfd);
       return (svz_t_socket) -1;
     }
   
   /* Do not inherit this socket. */
   if (svz_fd_cloexec (sockfd) != 0)
     {
-      closesocket (sockfd);
+      close (sockfd);
       return (svz_t_socket) -1;
     }
 
@@ -274,10 +275,10 @@ svz_socket_connect (svz_t_socket sockfd,
   if (connect (sockfd, (struct sockaddr *) &server, sizeof (server)) == -1)
     {
       error = errno;
-      if (error != SOCK_INPROGRESS && error != SOCK_UNAVAILABLE)
+      if (error != EINPROGRESS && error != EAGAIN)
         {
           svz_log (LOG_ERROR, "connect: %s\n", NET_ERROR);
-          closesocket (sockfd);
+          close (sockfd);
           return -1;
         }
       svz_log (LOG_DEBUG, "connect: %s\n", NET_ERROR);

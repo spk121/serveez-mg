@@ -86,7 +86,7 @@ svz_server_create (svz_portcfg_t *port)
       /* Set this ip option if we are using raw sockets. */
       if (port->proto & PROTO_RAW)
 	{
-	  closesocket (server_socket);
+	  close (server_socket);
 	  svz_log (LOG_ERROR, "setsockopt: IP_HDRINCL undefined\n");
 	  return NULL;
 	}
@@ -100,7 +100,7 @@ svz_server_create (svz_portcfg_t *port)
 		      (void *) &optval, sizeof (optval)) < 0)
 	{
 	  svz_log (LOG_ERROR, "setsockopt: %s\n", NET_ERROR);
-	  if (closesocket (server_socket) < 0)
+	  if (close (server_socket) < 0)
 	    svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	  return NULL;
 	}
@@ -113,7 +113,7 @@ svz_server_create (svz_portcfg_t *port)
 		sizeof (struct sockaddr)) < 0)
 	{
 	  svz_log (LOG_ERROR, "bind: %s\n", NET_ERROR);
-	  if (closesocket (server_socket) < 0)
+	  if (close (server_socket) < 0)
 	    svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	  return NULL;
 	}
@@ -124,7 +124,7 @@ svz_server_create (svz_portcfg_t *port)
 	  if (listen (server_socket, port->tcp_backlog) < 0)
 	    {
 	      svz_log (LOG_ERROR, "listen: %s\n", NET_ERROR);
-	      if (closesocket (server_socket) < 0)
+	      if (close (server_socket) < 0)
 		svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	      return NULL;
 	    }
@@ -134,7 +134,7 @@ svz_server_create (svz_portcfg_t *port)
       if ((sock = svz_sock_create (server_socket)) == NULL)
 	{
 	  /* Close the server socket if this routine failed. */
-	  if (closesocket (server_socket) < 0)
+	  if (close (server_socket) < 0)
 	    svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	  return NULL;
 	}
@@ -233,7 +233,7 @@ svz_tcp_accept (svz_socket_t *server_sock)
     {
       svz_log (LOG_WARNING, "socket descriptor exceeds "
 	       "socket limit %d\n", svz_config.max_sockets);
-      if (closesocket (client_socket) < 0)
+      if (close (client_socket) < 0)
 	{
 	  svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	}
@@ -253,7 +253,7 @@ svz_tcp_accept (svz_socket_t *server_sock)
   if (sock)
     {
       svz_log (LOG_FATAL, "socket %d already in use\n", sock->sock_desc);
-      if (closesocket (client_socket) < 0)
+      if (close (client_socket) < 0)
 	{
 	  svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 	}

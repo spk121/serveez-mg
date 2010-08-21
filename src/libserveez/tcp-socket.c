@@ -26,15 +26,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
+#include <errno.h>              /* errno, EAGAIN */
 #include <fcntl.h>
-#include <sys/types.h>
+#include <sys/types.h>          /* socklen_t */
 #include <time.h>               /* time */
-# include <unistd.h>
+# include <unistd.h>            /* close */
 # include <sys/time.h>
 # include <sys/ioctl.h>
 # include <sys/types.h>
-# include <sys/socket.h>        /* recv, send */
+# include <sys/socket.h>        /* getsockopt, MSG_OOB, recv, send */
 # include <netinet/in.h>
 # include <netdb.h>
 
@@ -53,7 +53,7 @@
 int
 svz_tcp_write_socket (svz_socket_t *sock)
 {
-  int num_written;
+  ssize_t num_written;
   int do_write;
   svz_t_socket desc;
 
@@ -83,7 +83,7 @@ svz_tcp_write_socket (svz_socket_t *sock)
   else if (num_written < 0)
     {
       svz_log (LOG_ERROR, "tcp: send: %s\n", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
 	{
 	  sock->unavailable = time (NULL) + RELAX_FD_TIME;
 	  num_written = 0;
@@ -147,7 +147,7 @@ svz_tcp_read_socket (svz_socket_t *sock)
        * value.
        */
       svz_log (LOG_ERROR, "tcp: recv: %s\n", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
 	num_read = 0;
       else
 	return -1;
@@ -259,7 +259,7 @@ svz_tcp_connect (unsigned long host, unsigned short port)
   /* Create socket structure and enqueue it. */
   if ((sock = svz_sock_alloc ()) == NULL)
     {
-      closesocket (sockfd);
+      close (sockfd);
       return NULL;
     }
 
@@ -297,7 +297,7 @@ svz_tcp_default_connect (svz_socket_t *sock)
   if (error)
     {
       errno = error;
-      if (error != SOCK_INPROGRESS && error != SOCK_UNAVAILABLE)
+      if (error != EINPROGRESS && error != EAGAIN)
 	{
 	  svz_log (LOG_ERROR, "connect: %s\n", NET_ERROR);
 	  return -1;

@@ -29,6 +29,7 @@
 #include <stdio.h>              /* FILE * */
 #include <netinet/in.h>         /* struct sockaddr_in */
 #include <sys/types.h>          /* off_t */
+#include <sys/stat.h>           /* struct stat */
 
 #include "defines.h"
 #include "array.h"
