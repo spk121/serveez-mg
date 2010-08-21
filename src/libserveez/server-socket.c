@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 # include <sys/types.h>
-# include <sys/socket.h>
+# include <sys/socket.h>        /* sockaddr_in */
 # include <netinet/in.h>
 # include <netdb.h>
 

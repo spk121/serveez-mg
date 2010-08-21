@@ -22,9 +22,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_GNUTELLA
 
@@ -33,24 +31,14 @@
 #include <string.h>
 #include <time.h>
 #include <sys/stat.h>
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-# include <io.h>
-#endif
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #if HAVE_DIRECT_H
 # include <direct.h>
@@ -333,12 +321,12 @@ nut_init_ping (svz_socket_t *sock)
   nut_client_t *client = sock->data;
   nut_packet_t *pkt;
   nut_header_t hdr;
-  svz_uint8_t *header;
+  uint8_t *header;
 
   /* create new gnutella header */
   nut_calc_guid (hdr.id);
   hdr.function = NUT_PING_REQ;
-  hdr.ttl = (svz_uint8_t) cfg->ttl;
+  hdr.ttl = (uint8_t) cfg->ttl;
   hdr.hop = 0;
   hdr.length = 0;
   header = nut_put_header (&hdr);
@@ -544,18 +532,18 @@ nut_disconnect (svz_socket_t *sock)
 {
   nut_config_t *cfg = sock->cfg;
   nut_host_t *host;
-  svz_uint8_t *id;
+  uint8_t *id;
   char *key, **keys;
   int size, n;
   nut_packet_t *pkt;
   nut_client_t *client = sock->data;
 
   /* delete all push request routing information for this connection */
-  while ((id = (svz_uint8_t *) svz_hash_contains (cfg->reply, sock)) != NULL)
+  while ((id = (uint8_t *) svz_hash_contains (cfg->reply, sock)) != NULL)
     svz_hash_delete (cfg->reply, (char *) id);
 
   /* delete all routing information for this connection */
-  while ((id = (svz_uint8_t *) svz_hash_contains (cfg->route, sock)) != NULL)
+  while ((id = (uint8_t *) svz_hash_contains (cfg->route, sock)) != NULL)
     svz_hash_delete (cfg->route, (char *) id);
 
   /* drop all packet information for this connection */
@@ -681,20 +669,20 @@ nut_check_request (svz_socket_t *sock)
 {
   nut_client_t *client = sock->data;
   nut_header_t *hdr;
-  svz_uint8_t *packet;
+  uint8_t *packet;
   int len = strlen (NUT_OK);
   unsigned fill = sock->recv_buffer_fill;
 
   /* go through all packets in the receive queue */
   while ((fill = sock->recv_buffer_fill) >= SIZEOF_NUT_HEADER)
     {
-      hdr = nut_get_header ((svz_uint8_t *) sock->recv_buffer);
+      hdr = nut_get_header ((uint8_t *) sock->recv_buffer);
 
       /* is there enough data to fulfill a complete packet ? */
       if (fill >= SIZEOF_NUT_HEADER + hdr->length)
 	{
 	  len = SIZEOF_NUT_HEADER + hdr->length;
-	  packet = (svz_uint8_t *) sock->recv_buffer + SIZEOF_NUT_HEADER;
+	  packet = (uint8_t *) sock->recv_buffer + SIZEOF_NUT_HEADER;
 	  client->packets++;
 #if 0
 	  svz_hexdump (stdout, "gnutella packet", sock->sock_desc,
@@ -753,7 +741,7 @@ nut_idle_searching (svz_socket_t *sock)
   nut_packet_t *pkt;
   nut_header_t hdr;
   nut_query_t query;
-  svz_uint8_t *header, *search;
+  uint8_t *header, *search;
   char *text;
 
   /* search strings given ? */
@@ -774,7 +762,7 @@ nut_idle_searching (svz_socket_t *sock)
       /* create new gnutella packet */
       nut_calc_guid (hdr.id);
       hdr.function = NUT_SEARCH_REQ;
-      hdr.ttl = (svz_uint8_t) cfg->ttl;
+      hdr.ttl = (uint8_t) cfg->ttl;
       hdr.hop = 0;
       hdr.length = SIZEOF_NUT_QUERY + strlen (text) + 1;
       query.speed = (unsigned short) cfg->min_speed;

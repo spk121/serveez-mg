@@ -1262,7 +1262,6 @@ guile_servertype_config_free (svz_servertype_t *server)
   svz_free (prototype->items);
 }
 
-#if SVZ_ENABLE_DEBUG
 /*
  * Debug helper: Display a text representation of the configuration items
  * of a guile servertype.
@@ -1280,13 +1279,21 @@ guile_servertype_config_print (svz_servertype_t *server)
   fprintf (stderr, "Configuration of `%s':\n", server->prefix);
   for (n = 0; prototype->items[n].type != SVZ_ITEM_END; n++)
     {
+#if 1
+      fprintf (stderr, " * %s `%s' is ", 
+	       SVZ_ITEM_TEXT (prototype->items[n].type),
+	       prototype->items[n].name);
+#else
       fprintf (stderr, " * %s `%s' is %sdefaultable\n", 
 	       SVZ_ITEM_TEXT (prototype->items[n].type),
 	       prototype->items[n].name, prototype->items[n].defaultable ?
 	       "" : "not ");
+#endif
       if (prototype->items[n].defaultable)
 	{
+#if 0
 	  fprintf (stderr, "   Default value: ");
+#endif
 	  switch (prototype->items[n].type)
 	    {
 	    case SVZ_ITEM_INT:
@@ -1325,11 +1332,14 @@ guile_servertype_config_print (svz_servertype_t *server)
 	      fprintf (stderr, "%d", *(int *) prototype->items[n].address);
 	      break;
 	  }
+#if 1
+          fprintf (stderr, "\n");
+#else
 	  fprintf (stderr, " at %p\n", prototype->items[n].address);
+#endif
 	}
     }
 }
-#endif /* SVZ_ENABLE_DEBUG */
 
 /*
  * Obtain a default value from the scheme cell @var{value}. The configuration
@@ -1566,9 +1576,7 @@ guile_servertype_config (svz_servertype_t *server, SCM cfg)
   server->config_prototype.size = size;
   server->config_prototype.items = items;
 
-#if 0
   guile_servertype_config_print (server);
-#endif
 
  out:
   optionhash_destroy (options);

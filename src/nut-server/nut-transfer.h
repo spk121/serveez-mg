@@ -57,7 +57,7 @@ typedef struct
   int id;            /* original socket id */
   int version;       /* original socket version */
   int index;         /* file index */
-  svz_uint8_t guid[NUT_GUID_SIZE]; /* guid of host providing the file */
+  uint8_t guid[NUT_GUID_SIZE]; /* guid of host providing the file */
 }
 nut_transfer_t;
 

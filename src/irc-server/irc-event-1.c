@@ -118,9 +118,6 @@ irc_send_init_block (svz_socket_t *sock, irc_client_t *client)
   irc_printf (sock, "NOTICE %s :*** " RPL_YOURHOST_TEXT "\n",
 	      client->nick, cfg->host, svz_library, svz_version);
   
-  irc_printf (sock, ":%s %03d %s :" RPL_CREATED_TEXT "\n",
-	      cfg->host, RPL_CREATED, client->nick, svz_build);
-
   irc_printf (sock, ":%s %03d %s " RPL_MYINFO_TEXT "\n",
 	      cfg->host, RPL_MYINFO, client->nick,
 	      cfg->host, svz_library, svz_version, USER_MODES, CHANNEL_MODES);

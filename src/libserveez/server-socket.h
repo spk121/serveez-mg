@@ -29,9 +29,9 @@
 
 __BEGIN_DECLS
 
-SERVEEZ_API svz_socket_t *svz_server_create __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API int svz_tcp_accept __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_pipe_accept __PARAMS ((svz_socket_t *));
+SERVEEZ_API svz_socket_t *svz_server_create (svz_portcfg_t *);
+SERVEEZ_API int svz_tcp_accept (svz_socket_t *);
+SERVEEZ_API int svz_pipe_accept (svz_socket_t *);
 
 __END_DECLS
 

@@ -25,11 +25,9 @@
 #ifndef __GNUTELLA_H__
 #define __GNUTELLA_H__ 1
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
+#include <config.h>
 #include <time.h>
+#include <stdint.h>
 
 /* general defines */
 #define NUT_VERSION   "0.48"
@@ -86,10 +84,10 @@
 /* gnutella header */
 typedef struct
 {
-  svz_uint8_t id[NUT_GUID_SIZE]; /* message ID */
-  svz_uint8_t function;          /* function ID */
-  svz_uint8_t ttl;               /* remaining TTL */
-  svz_uint8_t hop;               /* hop count */
+  uint8_t id[NUT_GUID_SIZE];    /* message ID */
+  uint8_t function;             /* function ID */
+  uint8_t ttl;                  /* remaining TTL */
+  uint8_t hop;                  /* hop count */
   unsigned int length;           /* data length */
 }
 nut_header_t;
@@ -128,13 +126,13 @@ nut_record_t;
 /* search reply header */
 typedef struct
 {
-  svz_uint8_t records;    /* number of records which follow this header */
-  unsigned short port;    /* listening port number of the host */
-  unsigned long ip;       /* ip address of the host, network byte order */
-  unsigned short speed;   /* speed of the host which found the results */
-  unsigned short pad;     /* dunno */
-  nut_record_t record[1]; /* array of records */
-  svz_uint8_t id[NUT_GUID_SIZE]; /* clientID128 sending the reply */
+  uint8_t records;    /* number of records which follow this header */
+  unsigned short port;         /* listening port number of the host */
+  unsigned long ip;            /* ip address of the host, network byte order */
+  unsigned short speed;        /* speed of the host which found the results */
+  unsigned short pad;          /* dunno */
+  nut_record_t record[1];      /* array of records */
+  uint8_t id[NUT_GUID_SIZE];   /* clientID128 sending the reply */
 }
 nut_reply_t;
 #define SIZEOF_NUT_REPLY (11)
@@ -143,7 +141,7 @@ nut_reply_t;
 typedef struct
 {
   /* servers GUID the client wishes the push from */
-  svz_uint8_t id[NUT_GUID_SIZE];
+  uint8_t id[NUT_GUID_SIZE];
   unsigned int index;     /* index of file requested */
   unsigned long ip;       /* ip address of the host requesting the push */
   unsigned short port;    /* port number of the host requesting the push */
@@ -154,7 +152,7 @@ nut_push_t;
 /* gnutella host structure */
 typedef struct
 {
-  svz_uint8_t id[NUT_GUID_SIZE]; /* clientID128 GUID */
+  uint8_t id[NUT_GUID_SIZE]; /* clientID128 GUID */
   unsigned long ip;              /* IP address */
   unsigned short port;           /* TCP port */
   time_t last_reply;             /* last packet received */
@@ -210,7 +208,7 @@ typedef struct
   int max_ttl;              /* maximum ttl for a gnutella packet */
   int ttl;                  /* initial ttl for a gnutella packet */
   svz_array_t *hosts;       /* array of initial hosts */
-  svz_uint8_t guid[NUT_GUID_SIZE]; /* this servers GUID */
+  uint8_t guid[NUT_GUID_SIZE]; /* this servers GUID */
   svz_hash_t *route;        /* routing table */
   svz_hash_t *conn;         /* connected hosts hash */
   svz_array_t *search;      /* search pattern array */

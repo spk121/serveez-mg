@@ -22,9 +22,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
 # include <config.h>
-#endif
 
 #if ENABLE_GNUTELLA
 
@@ -32,10 +30,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
 
 #include "libserveez.h"
 #include "gnutella.h"
@@ -61,9 +55,9 @@ nut_canonize_query (nut_config_t *cfg, char *query)
   key = extract = p = svz_strdup (query);
   while (*p)
     {
-      if (isalnum ((svz_uint8_t) *p)) 
-	*extract++ = (char) (isupper ((svz_uint8_t) *p) ? 
-			     tolower ((svz_uint8_t) *p) : *p);
+      if (isalnum ((uint8_t) *p)) 
+	*extract++ = (char) (isupper ((uint8_t) *p) ? 
+			     tolower ((uint8_t) *p) : *p);
       p++;
     }
   *extract = '\0';
@@ -100,7 +94,7 @@ nut_canonize_query (nut_config_t *cfg, char *query)
  */
 int
 nut_validate_packet (svz_socket_t *sock, nut_header_t *hdr, 
-		     svz_uint8_t *packet)
+		     uint8_t *packet)
 {
   nut_config_t *cfg = sock->cfg;
   nut_client_t *client = sock->data;
@@ -210,7 +204,7 @@ nut_validate_packet (svz_socket_t *sock, nut_header_t *hdr,
       svz_log (LOG_DEBUG, "nut: decreasing packet TTL (%d -> %d)\n",
 	       hdr->ttl, cfg->max_ttl);
 #endif
-      hdr->ttl = (svz_uint8_t) cfg->max_ttl;
+      hdr->ttl = (uint8_t) cfg->max_ttl;
     }
 
   if (hdr->ttl + hdr->hop > cfg->max_ttl)
@@ -219,7 +213,7 @@ nut_validate_packet (svz_socket_t *sock, nut_header_t *hdr,
       svz_log (LOG_DEBUG, "nut: decreasing packet TTL (%d -> %d)\n",
 	       hdr->ttl, cfg->max_ttl - hdr->hop);
 #endif
-      hdr->ttl = (svz_uint8_t) (cfg->max_ttl - hdr->hop);
+      hdr->ttl = (uint8_t) (cfg->max_ttl - hdr->hop);
     }
 
   return 1;
@@ -231,13 +225,13 @@ nut_validate_packet (svz_socket_t *sock, nut_header_t *hdr,
  * zero.
  */
 int
-nut_route (svz_socket_t *sock, nut_header_t *hdr, svz_uint8_t *packet)
+nut_route (svz_socket_t *sock, nut_header_t *hdr, uint8_t *packet)
 {
   nut_config_t *cfg = sock->cfg;
   nut_packet_t *pkt;
   svz_socket_t *xsock;
   svz_socket_t **conn;
-  svz_uint8_t *header;
+  uint8_t *header;
   int n;
 
   /* packet validation */

@@ -22,9 +22,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_GNUTELLA
 
@@ -32,17 +30,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "libserveez.h"
 #include "gnutella.h"
@@ -173,7 +164,7 @@ HMODULE oleHandle = NULL;
  * and stores it in the given argument.
  */
 void
-nut_calc_guid (svz_uint8_t *guid)
+nut_calc_guid (uint8_t *guid)
 {
   int n;
 
@@ -189,7 +180,7 @@ nut_calc_guid (svz_uint8_t *guid)
   for (n = 0; n < NUT_GUID_SIZE; n++)
     {
       /* guid[n] = 256 * rand () / RAND_MAX; */
-      guid[n] = (svz_uint8_t) ((rand () >> 1) & 0xff);
+      guid[n] = (uint8_t) ((rand () >> 1) & 0xff);
     }
 }
 
@@ -198,7 +189,7 @@ nut_calc_guid (svz_uint8_t *guid)
  * GUID. The format is taken from he M$ headers.
  */
 char *
-nut_print_guid (svz_uint8_t *guid)
+nut_print_guid (uint8_t *guid)
 {
   static char id[NUT_GUID_SIZE * 2 + 4];
 
@@ -217,7 +208,7 @@ nut_print_guid (svz_uint8_t *guid)
 }
 
 char *
-nut_text_guid (svz_uint8_t *guid)
+nut_text_guid (uint8_t *guid)
 {
   static char id[NUT_GUID_SIZE * 2 + 1];
   char idpart[3];
@@ -236,7 +227,7 @@ nut_text_guid (svz_uint8_t *guid)
  * Convert gnutella header to binary data and back.
  */
 nut_header_t *
-nut_get_header (svz_uint8_t *data)
+nut_get_header (uint8_t *data)
 {
   static nut_header_t hdr;
   unsigned int uint32;
@@ -251,11 +242,11 @@ nut_get_header (svz_uint8_t *data)
   return (&hdr);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_header (nut_header_t *hdr)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_HEADER];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_HEADER];
+  uint8_t *data = buffer;
   unsigned int uint32;
 
   memcpy (data, hdr->id, NUT_GUID_SIZE);
@@ -272,7 +263,7 @@ nut_put_header (nut_header_t *hdr)
  * Convert gnutella ping response to binary data and back.
  */
 nut_pong_t *
-nut_get_pong (svz_uint8_t *data)
+nut_get_pong (uint8_t *data)
 {
   static nut_pong_t reply;
   unsigned short uint16;
@@ -291,11 +282,11 @@ nut_get_pong (svz_uint8_t *data)
   return (&reply);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_pong (nut_pong_t *reply)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_PONG];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_PONG];
+  uint8_t *data = buffer;
   unsigned short uint16;
   unsigned int uint32;
   
@@ -316,7 +307,7 @@ nut_put_pong (nut_pong_t *reply)
  * Convert gnutella search query to binary data and back.
  */
 nut_query_t *
-nut_get_query (svz_uint8_t *data)
+nut_get_query (uint8_t *data)
 {
   static nut_query_t query;
   unsigned short uint16;
@@ -326,11 +317,11 @@ nut_get_query (svz_uint8_t *data)
   return (&query);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_query (nut_query_t *query)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_QUERY];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_QUERY];
+  uint8_t *data = buffer;
   unsigned short uint16;
 
   uint16 = htols (query->speed);
@@ -342,7 +333,7 @@ nut_put_query (nut_query_t *query)
  * Convert gnutella file records to binary data and back.
  */
 nut_record_t *
-nut_get_record (svz_uint8_t *data)
+nut_get_record (uint8_t *data)
 {
   static nut_record_t record;
   unsigned int uint32;
@@ -355,11 +346,11 @@ nut_get_record (svz_uint8_t *data)
   return (&record);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_record (nut_record_t *record)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_RECORD];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_RECORD];
+  uint8_t *data = buffer;
   unsigned int uint32;
 
   uint32 = htoll (record->index);
@@ -374,7 +365,7 @@ nut_put_record (nut_record_t *record)
  * Convert gnutella query hits to binary data and back.
  */
 nut_reply_t *
-nut_get_reply (svz_uint8_t *data)
+nut_get_reply (uint8_t *data)
 {
   static nut_reply_t reply;
   unsigned short uint16;
@@ -390,11 +381,11 @@ nut_get_reply (svz_uint8_t *data)
   return (&reply);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_reply (nut_reply_t *reply)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_REPLY];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_REPLY];
+  uint8_t *data = buffer;
   unsigned short uint16;
 
   *data++ = reply->records;
@@ -412,7 +403,7 @@ nut_put_reply (nut_reply_t *reply)
  * Convert gnutella push request to binary data and back.
  */
 nut_push_t *
-nut_get_push (svz_uint8_t *data)
+nut_get_push (uint8_t *data)
 {
   static nut_push_t push;
   unsigned int uint32;
@@ -430,11 +421,11 @@ nut_get_push (svz_uint8_t *data)
   return (&push);
 }
 
-svz_uint8_t *
+uint8_t *
 nut_put_push (nut_push_t *push)
 {
-  static svz_uint8_t buffer[SIZEOF_NUT_PUSH];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[SIZEOF_NUT_PUSH];
+  uint8_t *data = buffer;
   unsigned int uint32;
   unsigned short uint16;
 
@@ -458,7 +449,7 @@ nut_canonize_file (char *file)
 {
   while (*file)
     {
-      if (!isalnum ((svz_uint8_t) *file) && !isprint ((svz_uint8_t) *file))
+      if (!isalnum ((uint8_t) *file) && !isprint ((uint8_t) *file))
 	*file = '_';
       file++;
     }

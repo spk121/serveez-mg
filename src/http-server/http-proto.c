@@ -23,9 +23,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_HTTP_PROTO
 
@@ -39,24 +37,10 @@
 #include <errno.h>
 #include <time.h>
 #include <strings.h>
-
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-# include <io.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-#endif
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 #include "libserveez.h"
 #include "http-proto.h"
@@ -383,8 +367,6 @@ http_idle (svz_socket_t *sock)
   return http_cgi_died (sock);
 }
 
-#if ENABLE_SENDFILE
-#if defined (HAVE_SENDFILE) || defined (__MINGW32__)
 /*
  * This routine is using sendfile() to transport large file's content
  * to a network socket. It is replacing HTTP_DEFAULT_WRITE on systems where
@@ -425,9 +407,7 @@ http_send_file (svz_socket_t *sock)
   /* Read all file data ? */
   if (http->filelength <= 0)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "http: file successfully sent\n");
-#endif
       /* 
        * no further read()s from the file descriptor, signaling 
        * the writers there will not be additional data from now on
@@ -443,8 +423,6 @@ http_send_file (svz_socket_t *sock)
 
   return (num_written < 0) ? -1 : 0;
 }
-#endif /* HAVE_SENDFILE */
-#endif /* ENABLE_SENDFILE */
 
 /*
  * HTTP_DEFAULT_WRITE will shutdown the connection immediately when 
@@ -482,7 +460,7 @@ http_default_write (svz_socket_t *sock)
   else if (num_written < 0)
     {
       svz_log (LOG_ERROR, "http: send: %s\n", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
 	{
 	  sock->unavailable = time (NULL) + RELAX_FD_TIME;
 	  num_written = 0;
@@ -496,9 +474,7 @@ http_default_write (svz_socket_t *sock)
    */
   if ((sock->userflags & HTTP_FLAG_DONE) && sock->send_buffer_fill == 0)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "http: response successfully sent\n");
-#endif
       num_written = http_keep_alive (sock);
     }
 
@@ -513,20 +489,11 @@ http_default_write (svz_socket_t *sock)
 	  sock->send_buffer_fill = 42;
 	  sock->write_socket = http_cache_write;
 	}
-#if ENABLE_SENDFILE
-#if defined (HAVE_SENDFILE) || defined (__MINGW32__)
-# ifdef __MINGW32__
-      else if (sock->userflags & HTTP_FLAG_SENDFILE && 
-	       svz_os_version >= WinNT4x)
-# else
       else if (sock->userflags & HTTP_FLAG_SENDFILE)
-# endif
 	{
 	  sock->send_buffer_fill = 42;
 	  sock->write_socket = http_send_file;
 	}
-#endif /* HAVE_SENDFILE || __MINGW32__ */
-#endif /* ENABLE_SENDFILE */
     }
 
   /*
@@ -560,8 +527,7 @@ http_file_read (svz_socket_t *sock)
       return 0;
     }
 
-#ifndef __MINGW32__
-  /*
+#  /*
    * Try to read as much data as possible from the file.
    */
   num_read = read (sock->file_desc,
@@ -573,15 +539,6 @@ http_file_read (svz_socket_t *sock)
       svz_log (LOG_ERROR, "http: read: %s\n", SYS_ERROR);
       return -1;
     }
-#else
-  if (!ReadFile ((HANDLE) sock->file_desc,
-		 sock->send_buffer + sock->send_buffer_fill,
-		 do_read, (DWORD *) &num_read, NULL))
-    {
-      svz_log (LOG_ERROR, "http: ReadFile: %s\n", SYS_ERROR);
-      return -1;
-    }
-#endif
 
   /* Bogus file. File size from stat() was not true. */
   if (num_read == 0 && http->filelength != 0)
@@ -597,9 +554,7 @@ http_file_read (svz_socket_t *sock)
   /* Read all file data ? */
   if (http->filelength <= 0)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "http: file successfully read\n");
-#endif
       /* 
        * no further read()s from the file descriptor, signaling 
        * the writers there will not be additional data from now on
@@ -631,9 +586,7 @@ http_detect_proto (svz_server_t *server __attribute__ ((unused)),
 	  if (!memcmp (sock->recv_buffer, http_request[n].ident, 
 		       http_request[n].len))
 	    {
-#if SVZ_ENABLE_DEBUG
 	      svz_log (LOG_DEBUG, "http client detected\n");
-#endif
 	      return -1;
 	    }
 	}
@@ -800,9 +753,7 @@ http_handle_request (svz_socket_t *sock, int len)
     {
       if (!memcmp (request, http_request[n].ident, http_request[n].len))
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "http: %s received\n", request);
-#endif
 	  http_request[n].response (sock, uri, flag);
 	  break;
 	}
@@ -905,16 +856,12 @@ http_info_client (svz_server_t *server __attribute__ ((unused)),
   int n;
 
   sprintf (info, "This is a http client connection.\r\n\r\n");
-#if ENABLE_SENDFILE
-#if defined (HAVE_SENDFILE) || defined (__MINGW32__)
   if (sock->userflags & HTTP_FLAG_SENDFILE)
     {
       sprintf (text, "  * delivering via sendfile() (offset: %lu)\r\n",
 	       (unsigned long) http->fileoffset);
       strcat (info, text);
     }
-#endif /* HAVE_SENDFILE || __MINGW32__ */
-#endif /* ENABLE_SENDFILE */
   if (sock->userflags & HTTP_FLAG_KEEP)
     {
       sprintf (text, 
@@ -1079,9 +1026,7 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 
   /* make sure we do not send any devices or strange files */
   if (!(S_ISREG (buf.st_mode) ||
-#ifdef S_ISLNK
 	S_ISLNK (buf.st_mode) ||
-#endif /* S_ISLNK */
 	S_ISDIR (buf.st_mode)))
     {
       svz_log (LOG_ERROR, "http: %s is not a regular file\n", file);
@@ -1107,7 +1052,7 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
     }
 
   /* open the file for reading */
-  if ((fd = svz_open (file, O_RDONLY | O_BINARY, 0)) == -1)
+  if ((fd = svz_open (file, O_RDONLY, 0)) == -1)
     {
       svz_sock_printf (sock, HTTP_FILE_NOT_FOUND "\r\n");
       http_error_response (sock, 404);
@@ -1131,9 +1076,7 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
       date = http_parse_date (p);
       if (date >= buf.st_mtime)
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "http: %s not changed\n", file);
-#endif
 	  http->response = 304;
 	  http_set_header (HTTP_NOT_MODIFIED);
 	  http_check_keepalive (sock);
@@ -1169,10 +1112,8 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 	  if (http->range.last == 0)
 	    http->range.last = http->range.length - 1;
 
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "http: partial content: %ld-%ld/%ld\n",
 		   http->range.first, http->range.last, http->range.length);
-#endif
 
 	  /* setup file descriptor and size */
 	  buf.st_size = http->range.last - http->range.first + 1;
@@ -1262,9 +1203,7 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 	  buf.st_size != cache->entry->size)
 	{
 	  /* the file on disk has changed ? */
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "cache: %s has changed\n", file);
-#endif
 	  http_refresh_cache (cache);
 	  cache->entry->date = buf.st_mtime;
 	  sock->flags |= SOCK_FLAG_FILE;
@@ -1312,25 +1251,10 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
        */
       else
 	{
-#if ENABLE_SENDFILE && (HAVE_SENDFILE || defined (__MINGW32__))
-# ifdef __MINGW32__
-	  if (svz_os_version >= WinNT4x)
-	    {
-	      sock->read_socket = NULL;
-	      sock->flags &= ~SOCK_FLAG_FILE;
-	      sock->userflags |= HTTP_FLAG_SENDFILE;
-	    }
-	  else
-	    sock->read_socket = http_file_read;
-# else
 	  sock->read_socket = NULL;
 	  sock->flags &= ~SOCK_FLAG_FILE;
 	  sock->userflags |= HTTP_FLAG_SENDFILE;
 	  svz_tcp_cork (sock->sock_desc, 1);
-# endif
-#else /* not HAVE_SENDFILE */
-	  sock->read_socket = http_file_read;
-#endif /* HAVE_SENDFILE || __MINGW32__ && ENABLE_SENDFILE */
 	}
     }
 

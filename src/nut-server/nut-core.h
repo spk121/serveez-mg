@@ -25,22 +25,13 @@
 #ifndef __NUT_CORE_H__
 #define __NUT_CORE_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-/* These definitions are for the GUID creating functions in Win32. */
-#ifdef __MINGW32__
-typedef int (__stdcall *CreateGuidProc) (svz_uint8_t *);
-extern CreateGuidProc CreateGuid;
-extern HMODULE oleHandle;
-#endif /* __MINGW32__ */
+#include <config.h>
 
 /* Gnutella core functions. */
 nut_client_t *nut_create_client (void);
-void nut_calc_guid (svz_uint8_t *guid);
-char *nut_print_guid (svz_uint8_t *guid);
-char *nut_text_guid (svz_uint8_t *guid);
+void nut_calc_guid (uint8_t *guid);
+char *nut_print_guid (uint8_t *guid);
+char *nut_text_guid (uint8_t *guid);
 char *nut_parse_host (char *addr, unsigned short *port);
 int nut_parse_addr (char *addr, unsigned long *ip, unsigned short *port);
 char *nut_client_key (unsigned long ip, unsigned short port);
@@ -51,23 +42,23 @@ void nut_canonize_file (char *file);
  * Because the gnutella protocol is a binary protocol we need to convert
  * packets to structures and backwards.
  */
-nut_header_t * nut_get_header (svz_uint8_t *data);
-svz_uint8_t * nut_put_header (nut_header_t *hdr);
+nut_header_t * nut_get_header (uint8_t *data);
+uint8_t * nut_put_header (nut_header_t *hdr);
 
-nut_pong_t * nut_get_pong (svz_uint8_t *data);
-svz_uint8_t * nut_put_pong (nut_pong_t *reply);
+nut_pong_t * nut_get_pong (uint8_t *data);
+uint8_t * nut_put_pong (nut_pong_t *reply);
 
-nut_query_t * nut_get_query (svz_uint8_t *data);
-svz_uint8_t * nut_put_query (nut_query_t *query);
+nut_query_t * nut_get_query (uint8_t *data);
+uint8_t * nut_put_query (nut_query_t *query);
 
-nut_record_t * nut_get_record (svz_uint8_t *data);
-svz_uint8_t * nut_put_record (nut_record_t *record);
+nut_record_t * nut_get_record (uint8_t *data);
+uint8_t * nut_put_record (nut_record_t *record);
 
-nut_reply_t * nut_get_reply (svz_uint8_t *data);
-svz_uint8_t * nut_put_reply (nut_reply_t *reply);
+nut_reply_t * nut_get_reply (uint8_t *data);
+uint8_t * nut_put_reply (nut_reply_t *reply);
 
-nut_push_t * nut_get_push (svz_uint8_t *data);
-svz_uint8_t * nut_put_push (nut_push_t *push);
+nut_push_t * nut_get_push (uint8_t *data);
+uint8_t * nut_put_push (nut_push_t *push);
 
 /*
  * Little / Big Endian conversions for 4 byte (long) and 2 byte (short)

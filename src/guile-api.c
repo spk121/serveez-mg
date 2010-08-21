@@ -44,6 +44,7 @@
 
 extern scm_t_bits guile_svz_socket_tag;
 extern scm_t_bits guile_svz_server_tag;
+
 static SCM guile_sock_idle_counter (SCM sock, SCM counter);
 
 

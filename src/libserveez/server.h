@@ -116,38 +116,34 @@ __BEGIN_DECLS
 
 SERVEEZ_API svz_hash_t *svz_servers;
 
-SERVEEZ_API svz_server_t *svz_server_add __PARAMS ((svz_server_t *));
-SERVEEZ_API svz_server_t *svz_server_get __PARAMS ((char *));
-SERVEEZ_API void svz_server_del __PARAMS ((char *));
-SERVEEZ_API void svz_server_free __PARAMS ((svz_server_t *));
-SERVEEZ_API svz_server_t *svz_server_find __PARAMS ((void *));
-SERVEEZ_API svz_array_t *svz_server_clients __PARAMS ((svz_server_t *));
-SERVEEZ_API void svz_server_notifiers __PARAMS ((void));
-SERVEEZ_API void svz_server_reset __PARAMS ((void));
-SERVEEZ_API svz_server_t *svz_server_instantiate __PARAMS ((svz_servertype_t *,
-							    char *));
-SERVEEZ_API int svz_server_init __PARAMS ((svz_server_t *));
-SERVEEZ_API void svz_server_finalize __PARAMS ((svz_server_t *));
+SERVEEZ_API svz_server_t *svz_server_add (svz_server_t *);
+SERVEEZ_API svz_server_t *svz_server_get (char *);
+SERVEEZ_API void svz_server_del (char *);
+SERVEEZ_API void svz_server_free (svz_server_t *);
+SERVEEZ_API svz_server_t *svz_server_find (void *);
+SERVEEZ_API svz_array_t *svz_server_clients (svz_server_t *);
+SERVEEZ_API void svz_server_notifiers (void);
+SERVEEZ_API void svz_server_reset (void);
+SERVEEZ_API svz_server_t *svz_server_instantiate (svz_servertype_t *, char *);
+SERVEEZ_API int svz_server_init (svz_server_t *);
+SERVEEZ_API void svz_server_finalize (svz_server_t *);
 
-SERVEEZ_API void *svz_server_configure __PARAMS ((svz_servertype_t *, char *, 
-						  void *, 
-						  svz_config_accessor_t *));
+SERVEEZ_API void *svz_server_configure (svz_servertype_t *, char *, void *,
+                                        svz_config_accessor_t *);
 
-SERVEEZ_API int svz_server_init_all __PARAMS ((void));
-SERVEEZ_API int svz_server_finalize_all __PARAMS ((void));
+SERVEEZ_API int svz_server_init_all (void);
+SERVEEZ_API int svz_server_finalize_all (void);
 
 SERVEEZ_API svz_array_t *svz_servertypes;
-SERVEEZ_API void svz_servertype_add __PARAMS ((svz_servertype_t *));
-SERVEEZ_API void svz_servertype_del __PARAMS ((unsigned long));
-SERVEEZ_API svz_servertype_t *svz_servertype_get __PARAMS ((char *, int));
-SERVEEZ_API void svz_servertype_finalize __PARAMS ((void));
-SERVEEZ_API svz_servertype_t *svz_servertype_find __PARAMS ((svz_server_t *));
+SERVEEZ_API void svz_servertype_add (svz_servertype_t *);
+SERVEEZ_API void svz_servertype_del (unsigned long);
+SERVEEZ_API svz_servertype_t *svz_servertype_get (char *, int);
+SERVEEZ_API void svz_servertype_finalize (void);
+SERVEEZ_API svz_servertype_t *svz_servertype_find (svz_server_t *);
 
 SERVEEZ_API svz_config_type_t svz_servertype_definition;
 
-#if SVZ_ENABLE_DEBUG
-SERVEEZ_API void svz_servertype_print __PARAMS ((void));
-#endif /* SVZ_ENABLE_DEBUG */
+SERVEEZ_API void svz_servertype_print (void);
 
 __END_DECLS
 

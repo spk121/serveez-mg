@@ -138,7 +138,7 @@ struct irc_client
   int channels;            /* amount of channels the client joined */
   svz_socket_t *sock;      /* this clients socket structure */
   int flag;                /* this client's user flags */
-  svz_uint8_t key;         /* the key */
+  uint8_t key;             /* the key */
   char *pass;              /* the given password */
   char *away;              /* the away message if UMODE_AWAY is set */
   int hopcount;            /* the client's hopcount (server distance) */

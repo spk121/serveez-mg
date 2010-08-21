@@ -41,19 +41,19 @@
 /*
  * Generate a key for the de- and encryption routine.
  */
-svz_uint8_t
+uint8_t
 irc_gen_key (char *pass)
 {
-  svz_uint8_t *p;
+  uint8_t *p;
   int n;
-  svz_uint8_t key;
+  uint8_t key;
 
   key = 0;
   n = 0;
-  p = (svz_uint8_t *) pass;
+  p = (uint8_t *) pass;
   while (*p)
     {
-      key += (svz_uint8_t) ((*p + n) ^ IRC_CRYPT_BYTE);
+      key += (uint8_t) ((*p + n) ^ IRC_CRYPT_BYTE);
       n++;
       p++;
     }
@@ -64,11 +64,11 @@ irc_gen_key (char *pass)
  * Encrypt a string by a given key.
  */
 void
-irc_encrypt_text (char *text, svz_uint8_t key)
+irc_encrypt_text (char *text, uint8_t key)
 {
   char crypt[MAX_MSG_LEN];
   char *t, *c;
-  svz_uint8_t code;
+  uint8_t code;
 
   memset (crypt, 0, MAX_MSG_LEN);
   t = text;
@@ -76,8 +76,8 @@ irc_encrypt_text (char *text, svz_uint8_t key)
 
   while (*t)
     {
-      code = (svz_uint8_t) (*t ^ key);
-      if (code < (svz_uint8_t) 0x20 || code == IRC_CRYPT_PREFIX)
+      code = (uint8_t) (*t ^ key);
+      if (code < (uint8_t) 0x20 || code == IRC_CRYPT_PREFIX)
 	{
 	  *c++ = IRC_CRYPT_PREFIX;
 	  *c++ = (char) (code + IRC_CRYPT_PREFIX);
@@ -95,7 +95,7 @@ irc_encrypt_text (char *text, svz_uint8_t key)
  * Decrypt a string by a given key.
  */
 char *
-irc_decrypt_text (char *crypt, svz_uint8_t key)
+irc_decrypt_text (char *crypt, uint8_t key)
 {
   static char text[MAX_MSG_LEN];
   char *t, *c;

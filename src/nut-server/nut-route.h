@@ -25,14 +25,12 @@
 #ifndef __NUT_ROUTE_H__
 #define __NUT_ROUTE_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #define NUT_QUERY_TOO_RECENT 10 /* drop "unpatient" queries in seconds */
 #define NUT_INVALID_PACKETS  20 /* close connection after x invalid packets */
 
 /* routing function */
-int nut_route (svz_socket_t *sock, nut_header_t *hdr, svz_uint8_t *packet);
+int nut_route (svz_socket_t *sock, nut_header_t *hdr, uint8_t *packet);
 
 #endif /* __NUT_ROUTE_H__ */

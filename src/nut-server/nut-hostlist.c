@@ -22,9 +22,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #if ENABLE_GNUTELLA
 
@@ -32,16 +30,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
 
 #include "libserveez.h"
 #include "gnutella.h"
@@ -80,7 +72,7 @@ nut_hosts_write (svz_socket_t *sock)
   else if (num_written < 0)
     {
       svz_log (LOG_ERROR, "nut: send: %s\n", NET_ERROR);
-      if (svz_errno == SOCK_UNAVAILABLE)
+      if (errno == EAGAIN)
         {
           sock->unavailable = time (NULL) + RELAX_FD_TIME;
           num_written = 0;
