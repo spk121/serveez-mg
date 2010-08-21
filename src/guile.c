@@ -167,6 +167,9 @@ guile_error (char *format, ...)
   vfprintf (stderr, format, args);
   va_end (args);
   fprintf (stderr, "\n");
+  scm_display_backtrace (scm_make_stack (SCM_BOOL_T, SCM_EOL),
+                         scm_current_error_port(), SCM_BOOL_F, 
+                         SCM_BOOL_F);
 }
 
 /*

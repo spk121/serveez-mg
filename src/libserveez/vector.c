@@ -22,13 +22,10 @@
  *
  */
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <assert.h>             /* assert */
+#include <string.h>             /* memcmp memmove memcpy memset */
 
 #include "alloc.h"
-#include "util.h"
 #include "vector.h"
 
 /*

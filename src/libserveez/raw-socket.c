@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>             /* uint8_t */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -44,7 +45,7 @@
  * Get IP header from plain data.
  */
 svz_ip_header_t *
-svz_raw_get_ip_header (svz_uint8_t *data)
+svz_raw_get_ip_header (uint8_t *data)
 {
   static svz_ip_header_t hdr;
   unsigned short uint16;
@@ -79,11 +80,11 @@ svz_raw_get_ip_header (svz_uint8_t *data)
  * Put IP header to plain data. This is currently not in use but can be
  * used when creating raw sockets with setsockopt (SOL_IP, IP_HDRINCL).
  */
-svz_uint8_t *
+uint8_t *
 svz_raw_put_ip_header (svz_ip_header_t *hdr)
 {
-  static svz_uint8_t buffer[IP_HEADER_SIZE];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[IP_HEADER_SIZE];
+  uint8_t *data = buffer;
   unsigned short uint16;
   unsigned int uint32;
 
@@ -116,7 +117,7 @@ svz_raw_put_ip_header (svz_ip_header_t *hdr)
  * Recalculate any IP checksum.
  */
 unsigned short
-svz_raw_ip_checksum (svz_uint8_t *data, int len)
+svz_raw_ip_checksum (uint8_t *data, int len)
 {
   register unsigned checksum = 0;
 
@@ -151,7 +152,7 @@ svz_raw_ip_checksum (svz_uint8_t *data, int len)
  * is valid, otherwise -1.
  */
 int
-svz_raw_check_ip_header (svz_uint8_t *data, int len)
+svz_raw_check_ip_header (uint8_t *data, int len)
 {
   svz_ip_header_t *ip_header;
 

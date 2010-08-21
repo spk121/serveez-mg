@@ -25,6 +25,7 @@
 #ifndef __RAW_SOCKET_H__
 #define __RAW_SOCKET_H__ 1
 
+#include <stdint.h>             /* uint8_t */
 #include "defines.h"
 
 /* local definitions */
@@ -52,13 +53,13 @@
 /* IP header structure. */
 typedef struct
 {
-  svz_uint8_t version_length; /* header length (in DWORDs) and ip version */
-  svz_uint8_t tos;            /* type of service = 0 */
+  uint8_t version_length;     /* header length (in DWORDs) and ip version */
+  uint8_t tos;                /* type of service = 0 */
   unsigned short length;      /* total ip packet length */
   unsigned short ident;       /* ip identifier */
   unsigned short frag_offset; /* fragment offset (in 8 bytes) and flags */
-  svz_uint8_t ttl;            /* time to live */
-  svz_uint8_t protocol;       /* ip protocol */
+  uint8_t ttl;                /* time to live */
+  uint8_t protocol;           /* ip protocol */
   unsigned short checksum;    /* ip header checksum */
   unsigned long src;          /* source address */
   unsigned long dst;          /* destination address */
@@ -68,10 +69,10 @@ svz_ip_header_t;
 __BEGIN_DECLS
 
 /* Exported RAW IP socket functions. */
-SERVEEZ_API svz_ip_header_t * svz_raw_get_ip_header __PARAMS ((svz_uint8_t *));
-SERVEEZ_API svz_uint8_t * svz_raw_put_ip_header __PARAMS ((svz_ip_header_t *));
-SERVEEZ_API unsigned short svz_raw_ip_checksum __PARAMS ((svz_uint8_t *, int));
-SERVEEZ_API int svz_raw_check_ip_header __PARAMS ((svz_uint8_t *, int));
+SERVEEZ_API svz_ip_header_t * svz_raw_get_ip_header __PARAMS ((uint8_t *));
+SERVEEZ_API uint8_t * svz_raw_put_ip_header __PARAMS ((svz_ip_header_t *));
+SERVEEZ_API unsigned short svz_raw_ip_checksum __PARAMS ((uint8_t *, int));
+SERVEEZ_API int svz_raw_check_ip_header __PARAMS ((uint8_t *, int));
 
 __END_DECLS
 

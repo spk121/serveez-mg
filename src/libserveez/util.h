@@ -35,16 +35,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-
-/* `open ()' files with this additional flag */
-#ifndef O_BINARY
-# define O_BINARY 0
-#endif
-
-/* declare crypt interface if necessary */
 #include <crypt.h>
-
-typedef unsigned char svz_uint8_t;
 
 /* 
  * level of server's verbosity:
@@ -63,18 +54,18 @@ typedef unsigned char svz_uint8_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API void svz_log __PARAMS ((int, const char *, ...));
-SERVEEZ_API void svz_log_setfile __PARAMS ((FILE *));
+SERVEEZ_API void svz_log (int, const char *, ...);
+SERVEEZ_API void svz_log_setfile (FILE *);
 
-SERVEEZ_API int svz_hexdump __PARAMS ((FILE *, char *, int, char *, int, int));
-SERVEEZ_API char *svz_itoa __PARAMS ((unsigned int));
-SERVEEZ_API unsigned int svz_atoi __PARAMS ((char *));
-SERVEEZ_API char *svz_getcwd __PARAMS ((void));
-SERVEEZ_API int svz_openfiles __PARAMS ((int));
-SERVEEZ_API char *svz_time __PARAMS ((long));
-SERVEEZ_API char *svz_uptime __PARAMS ((long));
-SERVEEZ_API char *svz_tolower __PARAMS ((char *));
-SERVEEZ_API char *svz_sys_version __PARAMS ((void));
+SERVEEZ_API int svz_hexdump (FILE *, char *, int, char *, int, int);
+SERVEEZ_API char *svz_itoa (unsigned int);
+SERVEEZ_API unsigned int svz_atoi (char *);
+SERVEEZ_API char *svz_getcwd (void);
+SERVEEZ_API int svz_openfiles (int);
+SERVEEZ_API char *svz_time (long);
+SERVEEZ_API char *svz_uptime (long);
+SERVEEZ_API char *svz_tolower (char *);
+SERVEEZ_API char *svz_sys_version (void);
 
 /*
  * Convert the byte array pointed to by @var{p} to a signed 32 bit integer. 

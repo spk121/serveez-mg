@@ -35,6 +35,7 @@
 #include <sys/types.h>          /* time_t */
 #include <unistd.h>             /* sysconf, getcwd */
 #include <sys/resource.h>       /* RLIMIT_NOFILE, struct rlimit */
+#include <stdint.h>             /* uint8_t */
 
 #include "alloc.h"
 #include "boot.h"
@@ -227,8 +228,8 @@ svz_tolower (char *str)
 
   while (*p)
     {
-      *p = (char) (isupper ((svz_uint8_t) * p) ? 
-		   tolower ((svz_uint8_t) * p) : *p);
+      *p = (char) (isupper ((uint8_t) * p) ? 
+		   tolower ((uint8_t) * p) : *p);
       p++;
     }
   return str;

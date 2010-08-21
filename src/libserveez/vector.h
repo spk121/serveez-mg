@@ -55,22 +55,18 @@ __BEGIN_DECLS
  * either decremented or incremented.
  */
 
-SERVEEZ_API svz_vector_t *svz_vector_create __PARAMS ((unsigned long));
-SERVEEZ_API void svz_vector_destroy __PARAMS ((svz_vector_t *));
-SERVEEZ_API unsigned long int svz_vector_clear __PARAMS ((svz_vector_t *));
-SERVEEZ_API unsigned long svz_vector_add __PARAMS ((svz_vector_t *, void *));
-SERVEEZ_API void *svz_vector_get __PARAMS ((svz_vector_t *, 
-					    unsigned long));
-SERVEEZ_API void *svz_vector_set __PARAMS ((svz_vector_t *, 
-					    unsigned long, void *));
-SERVEEZ_API unsigned long svz_vector_del __PARAMS ((svz_vector_t *, 
-						    unsigned long));
-SERVEEZ_API unsigned long svz_vector_ins __PARAMS ((svz_vector_t *, 
-						    unsigned long, void *));
-SERVEEZ_API unsigned long svz_vector_idx __PARAMS ((svz_vector_t *, void *));
-SERVEEZ_API unsigned long svz_vector_contains __PARAMS ((svz_vector_t *, 
-							 void *));
-SERVEEZ_API unsigned long svz_vector_length __PARAMS ((svz_vector_t *));
+SERVEEZ_API svz_vector_t *svz_vector_create (unsigned long);
+SERVEEZ_API void svz_vector_destroy (svz_vector_t *);
+SERVEEZ_API unsigned long int svz_vector_clear (svz_vector_t *);
+SERVEEZ_API unsigned long svz_vector_add (svz_vector_t *, void *);
+SERVEEZ_API void *svz_vector_get (svz_vector_t *, unsigned long);
+SERVEEZ_API void *svz_vector_set (svz_vector_t *, unsigned long, void *);
+SERVEEZ_API unsigned long svz_vector_del (svz_vector_t *, unsigned long);
+SERVEEZ_API unsigned long svz_vector_ins (svz_vector_t *, unsigned long,
+                                          void *);
+SERVEEZ_API unsigned long svz_vector_idx (svz_vector_t *, void *);
+SERVEEZ_API unsigned long svz_vector_contains (svz_vector_t *, void *);
+SERVEEZ_API unsigned long svz_vector_length (svz_vector_t *);
 
 __END_DECLS
 

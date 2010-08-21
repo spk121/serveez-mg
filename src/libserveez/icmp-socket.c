@@ -28,6 +28,7 @@
 #include <string.h>             /* memmove, memcpy */
 #include <time.h>               /* time */
 #include <stdarg.h>             /* va_start */
+#include <stdint.h>             /* uint8_t */
 
 # include <unistd.h>            /* getpid */
 
@@ -73,7 +74,7 @@ static char svz_icmp_buffer[IP_HEADER_SIZE + ICMP_HEADER_SIZE + ICMP_MSG_SIZE];
  * Get ICMP header from plain data.
  */
 static svz_icmp_header_t *
-svz_icmp_get_header (svz_uint8_t *data)
+svz_icmp_get_header (uint8_t *data)
 {
   static svz_icmp_header_t hdr;
   unsigned short uint16;
@@ -98,11 +99,11 @@ svz_icmp_get_header (svz_uint8_t *data)
 /*
  * Create ICMP header (data block) from given structure.
  */
-static svz_uint8_t *
+static uint8_t *
 svz_icmp_put_header (svz_icmp_header_t *hdr)
 {
-  static svz_uint8_t buffer[ICMP_HEADER_SIZE];
-  svz_uint8_t *data = buffer;
+  static uint8_t buffer[ICMP_HEADER_SIZE];
+  uint8_t *data = buffer;
   unsigned short uint16;
 
   *data++ = hdr->type;
@@ -131,10 +132,10 @@ svz_icmp_put_header (svz_icmp_header_t *hdr)
  * ICMP_DISCONNECT when we received an disconnection signal.
  */
 static int
-svz_icmp_check_packet (svz_socket_t *sock, svz_uint8_t *data, int len)
+svz_icmp_check_packet (svz_socket_t *sock, uint8_t *data, int len)
 {
   int length;
-  svz_uint8_t *p = data;
+  uint8_t *p = data;
   svz_icmp_header_t *header;
 
   /* First check the IP header. */
@@ -255,7 +256,7 @@ svz_icmp_read_socket (svz_socket_t *sock)
        * Check the ICMP packet and put the packet load only into the
        * receive buffer of the socket structure.
        */
-      trunc = svz_icmp_check_packet (sock, (svz_uint8_t *) svz_icmp_buffer, 
+      trunc = svz_icmp_check_packet (sock, (uint8_t *) svz_icmp_buffer, 
 				     num_read);
       if (trunc >= 0)
 	{
@@ -389,7 +390,7 @@ svz_icmp_write_socket (svz_socket_t *sock)
  * signaling that this connection is going down soon.
  */
 int
-svz_icmp_send_control (svz_socket_t *sock, svz_uint8_t type)
+svz_icmp_send_control (svz_socket_t *sock, uint8_t type)
 {
   static char *buffer = svz_icmp_buffer;
   svz_icmp_header_t hdr;
@@ -453,7 +454,7 @@ svz_icmp_write (svz_socket_t *sock, char *buf, int length)
       /* Create ICMP header and put it in front of packet load. */
       hdr.type = sock->itype;
       hdr.code = ICMP_SERVEEZ_DATA;
-      hdr.checksum = svz_raw_ip_checksum ((svz_uint8_t *) buf, size);
+      hdr.checksum = svz_raw_ip_checksum ((uint8_t *) buf, size);
       hdr.ident = (unsigned short) (getpid () + sock->id);
       hdr.sequence = sock->send_seq++;
       hdr.port = sock->remote_port;

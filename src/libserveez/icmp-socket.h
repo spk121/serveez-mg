@@ -26,6 +26,7 @@
 #ifndef __ICMP_SOCKET_H__
 #define __ICMP_SOCKET_H__ 1
 
+#include <stdint.h>             /* uint8_t */
 #include "defines.h"
 #include "socket.h"
 
@@ -61,8 +62,8 @@
 /* ICMP header structure. */
 typedef struct
 {
-  svz_uint8_t type;        /* message type */
-  svz_uint8_t code;        /* type sub-code */
+  uint8_t type;        /* message type */
+  uint8_t code;        /* type sub-code */
   unsigned short checksum; /* check sum */
   unsigned short ident;    /* identifier */
   unsigned short sequence; /* sequence number */
@@ -80,7 +81,7 @@ SERVEEZ_API int svz_icmp_check_request __PARAMS ((svz_socket_t *));
 SERVEEZ_API svz_socket_t *svz_icmp_connect __PARAMS ((unsigned long,
 						      unsigned short,
 						      unsigned char));
-SERVEEZ_API int svz_icmp_send_control __PARAMS ((svz_socket_t *, svz_uint8_t));
+SERVEEZ_API int svz_icmp_send_control __PARAMS ((svz_socket_t *, uint8_t));
 SERVEEZ_API int svz_icmp_write __PARAMS ((svz_socket_t *, char *, int));
 SERVEEZ_API int svz_icmp_printf __PARAMS ((svz_socket_t *, 
 					   const char *, ...));

@@ -53,9 +53,14 @@
   " This is the eval server.")
 
 (define (eval-handle-request sock request len)
-  (let ((idx (bytevector-search request (svz:server:config-ref sock "quit"))))
+  (let ((idx (bytevector-contains request 
+                                  (string->utf8 (svz:server:config-ref sock "quit")))))
     (if (and idx (= idx 0))
-	-1
+        ;; If REQUEST begins with 'quit' string that was defined in
+        ;; eval-server's instantiation, return now
+        -1
+        ;; Otherwise, try to evaluate REQUEST by converting it to a
+        ;; string an trying to evaluate it in the Guile evaluator
 	(let ((safe-module (interaction-environment)))
 	  (catch #t
 		 (lambda ()
