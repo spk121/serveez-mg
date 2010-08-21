@@ -38,12 +38,12 @@ dyn_library_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API void svz_dynload_init __PARAMS ((void));
-SERVEEZ_API void svz_dynload_finalize __PARAMS ((void));
-SERVEEZ_API svz_servertype_t *svz_servertype_load __PARAMS ((char *));
-SERVEEZ_API int svz_servertype_unload __PARAMS ((char *));
-SERVEEZ_API void svz_dynload_path_set __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_dynload_path_get __PARAMS ((void));
+SERVEEZ_API void svz_dynload_init (void);
+SERVEEZ_API void svz_dynload_finalize (void);
+SERVEEZ_API svz_servertype_t *svz_servertype_load (char *);
+SERVEEZ_API int svz_servertype_unload (char *);
+SERVEEZ_API void svz_dynload_path_set (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_dynload_path_get (void);
 
 __END_DECLS
 
