@@ -26,16 +26,6 @@
 ;; Some awkward compatibility kluges for making this run with Guile
 ;; 1.4 and 1.6/later.
 ;;
-(if (defined? 'micro-version)
-    (use-modules (ice-9 safe))
-    (begin
-      (let ((real-eval eval))
-        (set! eval (lambda (expr env)
-                     (real-eval expr))))
-      (define (object->string obj)
-        (format #f "~S" obj))
-      (define (make-safe-module) #t)))
-
 (serveez-load "serveez.scm")
 
 (define (eval-global-init servertype)
@@ -66,7 +56,7 @@
   (let ((idx (bytevector-search request (svz:server:config-ref sock "quit"))))
     (if (and idx (= idx 0))
 	-1
-	(let ((safe-module (make-safe-module)))
+	(let ((safe-module (interaction-environment)))
 	  (catch #t
 		 (lambda ()
 		   (let ((expr (call-with-input-string

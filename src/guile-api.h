@@ -26,7 +26,7 @@
 #define __GUILE_API_H__ 1
 
 #include <libguile.h>
-void guile_lookup (SCM var, const char *name);
+SCM guile_lookup (const char *name);
 void guile_api_init (void);
 void guile_api_finalize (void);
 

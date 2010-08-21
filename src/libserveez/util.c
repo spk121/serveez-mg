@@ -160,16 +160,6 @@ svz_hexdump (FILE *out,    /* output FILE stream */
 }
 
 /*
- * This is the @code{hstrerror()} wrapper function, depending on the 
- * configuration file @file{config.h}.
- */
-char *
-svz_hstrerror (void)
-{
-  return (char *) strerror (errno);
-}
-
-/*
  * Transform the given binary data @var{t} (UTC time) to an ASCII time text
  * representation without any trailing characters.
  */

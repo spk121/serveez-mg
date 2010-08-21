@@ -93,8 +93,8 @@ reverse_dns_handle_request (char *inbuf)
       if ((host = gethostbyaddr ((char *) addr, sizeof (addr[0]), AF_INET))
 	  == NULL)
 	{
-	  svz_log (LOG_ERROR, "reverse dns: gethostbyaddr: %s (%s)\n", 
-		   H_NET_ERROR, ip);
+          svz_log (LOG_ERROR, "reverse dns: gethostbyaddr: %s (%s)\n",
+                   strerror (errno), ip);
 	  return NULL;
 	} 
       else 
@@ -106,9 +106,7 @@ reverse_dns_handle_request (char *inbuf)
 	      reverse_dns_cache.entries++;
 	    }
 
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "reverse dns: %s is %s\n", ip, host->h_name);
-#endif /* SVZ_ENABLE_DEBUG */
 	  sprintf (resolved, "%s", host->h_name);
 	  return resolved;
 	}

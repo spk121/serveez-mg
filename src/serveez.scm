@@ -126,6 +126,62 @@
       (setrpc #f)))
 (define (endrpcent) (setrpc))
 
+;; Create a new bytevector that is a copy of BV from START (inclusive)
+;; to END (exclusive)
+(define (subbytevector bv start end)
+  (let ((end (or end (bytevector-length bv))))
+    (if (or (> 0 start)
+            (> start end)
+            (> end (bytevector-length bv)))
+        (error "bad start/end values" start end))
+    (let* ((len (- end start))
+           (bv2 (make-bytevector len)))
+      (bytevector-copy! bv start bv2 0 len)
+      bv2)))
+
+;; Search for BV1 in BV2.  If it is found, return the index in BV2 where
+;; BV1 is located.  Otherwise, return #f.
+(define (bytevector-contains bv2 bv1)
+  (let ((len1 (bytevector-length bv1))
+        (len2 (bytevector-length bv2)))
+    (if (<= len1 len2)
+        ;; If BV1 fits in BV2, begin searching
+        (let loop ((i 0))
+          ;; (format #t "~a  ~a ~%" bv1 (subbytevector bv2 i (+ i len1))) 
+          (cond
+           ;; If it is found at index I, return I
+           ((bytevector=? bv1 (subbytevector bv2 i (+ i len1)))
+            i)
+           ;; If we've reached the end of BV2, return #f
+           ((>= (+ i len1) len2)
+            #f)
+           ;; Else keep looping
+           (else
+            (loop (+ i 1)))))
+        ;; If BV1 is longer than BV2, return #f
+        #f)))
+
+(define (bytevector-search haystack needle)
+  (if (not (bytevector? haystack))
+      (error "not a bytevector " haystack))
+  (if (not (or (string? needle)
+               (char? needle)
+               (exact? needle)
+               (bytevector? needle)))
+      (error "not a string, character, integer, or bytevector" needle))
+  (let ((bv1 haystack)
+        (bv2 (cond 
+              ((string? needle)
+               (string->utf8 needle))
+              ((char? needle)
+               (make-bytevector 1 (char->integer needle)))
+              ((exact? needle)
+               (make-bytevector 1 needle))
+              (else
+               needle))))
+    (bytevector-contains bv1 bv2)))
+
+
 ;;
 ;; === Include documentation file into Guile help system
 ;;

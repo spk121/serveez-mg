@@ -54,8 +54,8 @@ dns_handle_request (char *inbuf)
       if ((host = gethostbyname (resolved)) == NULL)
         {
           svz_log (LOG_ERROR, "dns: gethostbyname: %s (%s)\n", 
-		   H_NET_ERROR, resolved);
-	  return NULL;
+                   strerror (errno), resolved);
+          return NULL;
         }
 
       /* get the inet address in network byte order */
@@ -63,10 +63,8 @@ dns_handle_request (char *inbuf)
         {
           memcpy (&addr, host->h_addr_list[0], host->h_length);
 
-#if SVZ_ENABLE_DEBUG
-	  svz_log (LOG_DEBUG, "dns: %s is %s\n",
-		   host->h_name, svz_inet_ntoa (addr));
-#endif /* SVZ_ENABLE_DEBUG */
+          svz_log (LOG_DEBUG, "dns: %s is %s\n", host->h_name, 
+                   svz_inet_ntoa (addr));
 	  sprintf (resolved, "%s", svz_inet_ntoa (addr));
 	  return resolved;
 	}

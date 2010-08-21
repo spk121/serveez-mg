@@ -75,7 +75,6 @@ SERVEEZ_API char *svz_time __PARAMS ((long));
 SERVEEZ_API char *svz_uptime __PARAMS ((long));
 SERVEEZ_API char *svz_tolower __PARAMS ((char *));
 SERVEEZ_API char *svz_sys_version __PARAMS ((void));
-SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
 
 /*
  * Convert the byte array pointed to by @var{p} to a signed 32 bit integer. 
@@ -146,7 +145,6 @@ __END_DECLS
 #define closehandle(handle) close (handle)
 #define SYS_ERROR strerror (errno)
 #define NET_ERROR strerror (errno)
-#define H_NET_ERROR svz_hstrerror ()
 #define svz_errno errno
 
 #endif /* not __UTIL_H__ */

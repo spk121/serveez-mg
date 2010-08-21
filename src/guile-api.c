@@ -67,15 +67,17 @@ guile_resolve (const char *host, uint32_t *addr)
 }
 
 void
-guile_lookup (SCM var, const char *name)
+guile_lookup (const char *name)
 {
+  SCM var;
+
   var = scm_sym2var (scm_from_locale_symbol (name),
                      scm_current_module_lookup_closure (),
                      SCM_BOOL_F);
   if (scm_is_false (var))
-    var = SCM_UNDEFINED;
+    return SCM_UNDEFINED;
   else
-    var = scm_variable_ref (var);
+    return scm_variable_ref (var);
 };
 
 

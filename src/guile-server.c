@@ -129,7 +129,7 @@ optionhash_extract_proc (svz_hash_t *hash,
     *target = hvalue;
   else if ((str = guile_to_string (hvalue)) != NULL)
     {
-      guile_lookup (proc, str);
+      proc = guile_lookup (str);
       if (!SCM_UNBNDP (proc) && scm_is_true (scm_procedure_p (proc)))
 	*target = proc;
       else
