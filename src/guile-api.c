@@ -691,6 +691,7 @@ scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
   SCM_ASSERT (scm_is_integer (prognum), prognum, SCM_ARG1, FUNC_NAME);
   SCM_ASSERT (scm_is_integer (versnum), prognum, SCM_ARG2, FUNC_NAME);
 
+#if HAVE_PMAP_SET
   if (SCM_UNBNDP (protocol) && SCM_UNBNDP (port))
     {
       if (!pmap_unset (scm_to_ulong(prognum), scm_to_ulong (versnum)))
@@ -711,6 +712,9 @@ scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port)
 				      prognum, versnum, protocol, port, 
 				      SCM_UNDEFINED), errno);
     }
+#else
+  scm_misc_error (FUNC_NAME, "no portmap support", SCM_EOL);
+#endif
   return SCM_UNSPECIFIED;
 }
 #undef FUNC_NAME

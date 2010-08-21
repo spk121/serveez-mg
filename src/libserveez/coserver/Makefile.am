@@ -24,9 +24,7 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-noinst_LIBRARIES = libcoserver.a
+noinst_LTLIBRARIES = libcoserver.la
 
-libcoserver_a_SOURCES = coserver.c dns.c ident.c reverse-dns.c \
+libcoserver_la_SOURCES = coserver.c dns.c ident.c reverse-dns.c \
 	coserver.h dns.h ident.h reverse-dns.h
-
-libcoserverdir = $(includedir)/libserveez/coserver

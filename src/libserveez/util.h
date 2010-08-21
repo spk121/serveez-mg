@@ -84,7 +84,7 @@ SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
  */
 #define SVZ_INT32(p) \
   ((unsigned char) *p | ((unsigned char) *(p + 1) << 8) | \
-  ((unsigned char) *(p + 2) << 16) | ((svz_c_signed char) *(p + 3) << 24))
+  ((unsigned char) *(p + 2) << 16) | ((signed char) *(p + 3) << 24))
 
 /*
  * Convert the byte array pointed to by @var{p} to a signed 64 bit integer.
@@ -93,13 +93,13 @@ SERVEEZ_API char *svz_hstrerror __PARAMS ((void));
   ((unsigned char) *p | ((unsigned char) *(p + 1) << 8) | \
   ((unsigned char) *(p + 2) << 16) | ((unsigned char) *(p + 3) << 24) \
   ((unsigned char) *(p + 2) << 32) | ((unsigned char) *(p + 3) << 40) \
-  ((unsigned char) *(p + 2) << 48) | ((svz_c_signed char) *(p + 3) << 54))
+  ((unsigned char) *(p + 2) << 48) | ((signed char) *(p + 3) << 54))
 
 /*
  * Convert the byte array pointed to by @var{p} to a signed 16 bit integer.
  */
 #define SVZ_INT16(p) \
-  ((unsigned char) *p | ((svz_c_signed char) *(p + 1) << 8))
+  ((unsigned char) *p | ((signed char) *(p + 1) << 8))
 
 /*
  * Convert the byte array pointed to by @var{p} to an unsigned 32 bit integer.

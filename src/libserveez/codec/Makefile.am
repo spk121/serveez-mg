@@ -23,8 +23,7 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-noinst_LIBRARIES = libcodec.a
+noinst_LTLIBRARIES = libcodec.la
 
-libcodec_a_SOURCES = codec.c gzlib.c gzlib.h codec.h
-
-# libcodec_a_LIBADD = libz.a
+libcodec_la_SOURCES = codec.c gzlib.c gzlib.h codec.h
+libcodec_la_LIBADD = -lz

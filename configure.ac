@@ -33,8 +33,8 @@ dnl
 AC_INIT([serveez],[0.1.7],[bug-serveez@gnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([gnu -Wall])
-AC_CONFIG_HEADERS([config.h])
-
+AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_SRCDIR([src/serveez.c])
 dnl
 dnl Determine if maintainer portions of the Makefiles should be included.
 dnl
@@ -45,9 +45,9 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for a proper C compiler.
 dnl
-AC_PROG_CC
+dnl AC_PROG_CC
 AC_C_BIGENDIAN
-AC_PROG_RANLIB
+LT_INIT
 
 dnl ----------------------------------------------------------------------
 
@@ -143,7 +143,6 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check whether the SNTP server should be included.
 dnl
-
 AC_MSG_CHECKING([whether to enable the SNTP server])
 AC_ARG_ENABLE([sntp-proto],
   [  --disable-sntp-proto    Include the SNTP server @<:@default=yes@:>@],
@@ -499,7 +498,7 @@ dnl
 dnl Check whether to include support for named pipes under Linux.
 dnl
 AC_CHECK_HEADERS([rpc/pmap_clnt.h])
-AC_CHECK_FUNCS(sendfile)
+AC_CHECK_FUNCS([sendfile pmap_set])
 
 dnl ----------------------------------------------------------------------
 
@@ -528,9 +527,12 @@ unset define_enable_heap
 dnl
 dnl Output files.
 dnl
+AC_CONFIG_SUBDIRS([libserveez])
+
 AC_CONFIG_FILES([
     Makefile
-    src/Makefile src/libserveez/Makefile
+    src/Makefile 
+    src/libserveez/Makefile
     src/libserveez/coserver/Makefile
     src/libserveez/codec/Makefile
     src/serveez-config
@@ -550,7 +552,7 @@ AC_CONFIG_FILES([
     test/Makefile
     redhat.sh
     debian.sh
-    version.h])
+    src/version.h])
 AC_OUTPUT
 
 dnl

@@ -50,7 +50,7 @@
 svz_config_t svz_config = { NULL, 0, 0, 0 };
 
 /* The symbolic name of the core library. */
-char *svz_library = "serveez";
+char *svz_library = PACKAGE_NAME;
 /* The version of the core library. */
 char *svz_version = __serveez_version;
 /* Timestamp when core library has been build. */

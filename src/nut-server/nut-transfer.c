@@ -35,56 +35,21 @@
 #include <ctype.h>
 #include <time.h>
 #include <sys/stat.h>
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
-#if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
 
-#ifndef __MINGW32__
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
 
-# if HAVE_DIRENT_H
 #  include <dirent.h>
 #  define NAMLEN(dirent) strlen((dirent)->d_name)
-# else
-#  define dirent direct
-#  define NAMLEN(dirent) (dirent)->d_namlen
-#  if HAVE_SYS_NDIR_H
-#   include <sys/ndir.h>
-#  endif
-#  if HAVE_SYS_DIR_H
-#   include <sys/dir.h>
-#  endif
-#  if HAVE_NDIR_H
-#   include <ndir.h>
-#  endif
-# endif
-#endif /* not __MINGW32__ */
 
-#ifdef __MINGW32__
-# include <windows.h>
-# include <winsock2.h>
-# include <io.h>
-#endif
-
-#if HAVE_SYS_DIRENT_H && !defined (HAVE_DIRENT_H)
-# include <sys/dirent.h>
-#endif
-
-#ifndef __MINGW32__
 # define FILENAME de->d_name
-#else 
-# define FILENAME de.cFileName
-# define closedir(dir) FindClose (dir)
-#endif
+
 
 #include "libserveez.h"
 #include "gnutella.h"

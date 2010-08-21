@@ -603,9 +603,9 @@ static SCM GUILE_CONCAT3 (guile_bin_,ctype,_ref) (SCM binary, SCM index) {   \
       if (uval != (unsigned long) cval) SCM_OUT_OF_RANGE (pos, value);     \
       val = (unsigned long) uval;                                          \
     } else {                                                               \
-      svz_c_signed long ival = SCM_NUM2LONG (pos, value);                  \
-      svz_c_signed ctype cval = (svz_c_signed ctype) ival;                 \
-      if (ival != (svz_c_signed long) cval) SCM_OUT_OF_RANGE (pos, value); \
+      long ival = SCM_NUM2LONG (pos, value);                  \
+      ctype cval = (ctype) ival;                 \
+      if (ival != (long) cval) SCM_OUT_OF_RANGE (pos, value); \
       val = (unsigned long) ival;                                          \
     }                                                                      \
   } while (0)

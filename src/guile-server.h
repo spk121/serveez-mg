@@ -38,6 +38,7 @@ int guile_func_trigger_cond (svz_socket_t *sock);
 int guile_func_idle_func (svz_socket_t *sock);
 int guile_func_check_request_oob (svz_socket_t *sock);
 int guile_func_trigger_func (svz_socket_t *sock);
+SCM guile_call (SCM code, int args, ...);
 
 
 
@@ -62,6 +63,11 @@ int guile_func_disconnected_socket (svz_socket_t *sock);
       }                                                                 \
     return guile_sock_getfunction (xsock, SCM_FUNCNAME);                \
   } 
+
+/* Provides a socket callback setter/getter. */
+#define DEFINE_SOCK_CALLBACK(assoc, func) \
+  scm_c_define_gsubr (assoc, 1, 1, 0, func)
+
 
 
 #endif /* not __GUILE_SERVER_H__ */

@@ -60,10 +60,6 @@ static char *guile_functions[] = {
 static int guile_use_exceptions = 1;
 
 
-/* Provides a socket callback setter/getter. */
-#define DEFINE_SOCK_CALLBACK(assoc, func) \
-  scm_c_define_gsubr (assoc, 1, 1, 0, func)
-
 scm_t_bits guile_svz_socket_tag = 0;
 scm_t_bits guile_svz_server_tag = 0;
 scm_t_bits guile_svz_servertype_tag = 0;
@@ -349,7 +345,7 @@ guile_call_handler (SCM data, SCM tag, SCM args)
  * @var{code}. On success (no exception) the routine returns the value 
  * returned by @code{scm_apply()} otherwise @code{SCM_BOOL_F}.
  */
-static SCM
+SCM
 guile_call (SCM code, int args, ...)
 {
   va_list list;

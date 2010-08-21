@@ -38,24 +38,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#ifndef __MINGW32__
-# if HAVE_DIRENT_H
 #  include <dirent.h>
 #  define NAMLEN(dirent) strlen((dirent)->d_name)
-# else
-#  define dirent direct
-#  define NAMLEN(dirent) (dirent)->d_namlen
-#  if HAVE_SYS_NDIR_H
-#   include <sys/ndir.h>
-#  endif
-#  if HAVE_SYS_DIR_H
-#   include <sys/dir.h>
-#  endif
-#  if HAVE_NDIR_H
-#   include <ndir.h>
-#  endif
-# endif
-#endif /* not __MINGW32__ */
 
 #if HAVE_SYS_DIRENT_H && !defined (HAVE_DIRENT_H)
 # include <sys/dirent.h>
@@ -75,12 +59,7 @@
 #include "http-core.h"
 #include "http-dirlist.h"
 
-#ifndef __MINGW32__
 # define FILENAME dir[n]->d_name
-#else 
-# define FILENAME de.cFileName
-# define closedir(dir) FindClose (dir)
-#endif
 
 /* Size of last buffer allocated. */
 int http_dirlist_size = 0;

@@ -27,13 +27,14 @@ SUBDIRS = coserver codec
 
 # the serveez core library rules
 
-lib_LIBRARIES = libserveez.a
+lib_LTLIBRARIES = libserveez.la
 
-libserveez_a_LIBADD = coserver/libcoserver.a codec/libcodec.a -ldl
-
-libserveez_a_SOURCES = alloc.c util.c hash.c sparsevec.c      \
+libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c      \
   tcp-socket.c pipe-socket.c udp-socket.c icmp-socket.c raw-socket.c      \
   server-core.c server-loop.c boot.c server.c server-socket.c   \
   interface.c dynload.c vector.c core.c socket.c array.c portcfg.c        \
   binding.c passthrough.c cfg.c mutex.c
+
+libserveez_la_LIBADD = coserver/libcoserver.la codec/libcodec.la -ldl
+
 
