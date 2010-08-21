@@ -105,7 +105,8 @@ optionhash_extract_proc (svz_hash_t *hash,
 			 SCM *target,      /* where to put it       */
 			 char *txt)        /* appended to error     */
 {
-  SCM proc, hvalue = optionhash_get (hash, key);
+  SCM proc = SCM_BOOL_F;
+  SCM hvalue = optionhash_get (hash, key);
   int err = 0;
   char *str = NULL;
 

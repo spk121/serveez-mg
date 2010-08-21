@@ -25,7 +25,7 @@
 #ifndef __MUTEX_H__
 #define __MUTEX_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 #include <pthread.h>
 

@@ -29,10 +29,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "libserveez/defines.h"
-#include "libserveez/array.h"
-#include "libserveez/hash.h"
-#include "libserveez/pipe-socket.h"
+#include "defines.h"
+#include "array.h"
+#include "hash.h"
+#include "pipe-socket.h"
 
 /* Port configuration items. */
 #define PORTCFG_PORT    "port"

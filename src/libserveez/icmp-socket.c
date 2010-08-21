@@ -23,8 +23,6 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>             /* assert */
 #include <stdio.h>              /* vsnprint */
 #include <string.h>             /* memmove, memcpy */
@@ -36,14 +34,14 @@
 # include <sys/socket.h>        /* recv, recvfrom */
 # include <netinet/in.h>        /* sockaddr_in */
 
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server-core.h"
-#include "libserveez/icmp-socket.h"
-#include "libserveez/raw-socket.h"
-#include "libserveez/server.h"
-#include "libserveez/binding.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server-core.h"
+#include "icmp-socket.h"
+#include "raw-socket.h"
+#include "server.h"
+#include "binding.h"
 
 /* Text representation of ICMP type codes. */
 static char *svz_icmp_request[] = {
@@ -154,18 +152,14 @@ svz_icmp_check_packet (svz_socket_t *sock, svz_uint8_t *data, int len)
       /* validate the ICMP data checksum */
       if (header->checksum != svz_raw_ip_checksum (p, len))
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "icmp: invalid data checksum\n");
-#endif
 	  return ICMP_ERROR;
 	}
 
       /* check the ICMP header identification */
       if (header->ident == getpid () + sock->id)
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "icmp: rejecting native packet\n");
-#endif
 	  return ICMP_ERROR;
 	}
 
@@ -173,16 +167,13 @@ svz_icmp_check_packet (svz_socket_t *sock, svz_uint8_t *data, int len)
       if ((header->port != sock->remote_port) && 
 	  !(sock->flags & SOCK_FLAG_LISTENING))
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "icmp: rejecting filtered packet\n");
-#endif
 	  return ICMP_ERROR;
 	}
       sock->remote_port = header->port;
     }
 
   /* What kind of packet is this ? */
-#if SVZ_ENABLE_DEBUG
   else if (header->type <= ICMP_MAX_TYPE)
     {
       if (svz_icmp_request[header->type])
@@ -193,7 +184,6 @@ svz_icmp_check_packet (svz_socket_t *sock, svz_uint8_t *data, int len)
 		 header->type);
       return ICMP_ERROR;
     }
-#endif /* SVZ_ENABLE_DEBUG */
 
   if (header->type == sock->itype)
     {
@@ -209,13 +199,11 @@ svz_icmp_check_packet (svz_socket_t *sock, svz_uint8_t *data, int len)
 	}
       return (length + ICMP_HEADER_SIZE);
     }
-#if SVZ_ENABLE_DEBUG
   else
     {
       svz_log (LOG_DEBUG, "unsupported protocol 0x%02X received\n", 
 	       header->type);
     }
-#endif /* SVZ_ENABLE_DEBUG */
 
   return ICMP_ERROR;
 }
@@ -259,11 +247,9 @@ svz_icmp_read_socket (svz_socket_t *sock)
         {
 	  sock->remote_addr = sender.sin_addr.s_addr;
 	}
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "icmp: recv%s: %s (%u bytes)\n",
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "from",
 	       svz_inet_ntoa (sock->remote_addr), num_read);
-#endif /* SVZ_ENABLE_DEBUG */
 
       /* 
        * Check the ICMP packet and put the packet load only into the
@@ -390,12 +376,10 @@ svz_icmp_write_socket (svz_socket_t *sock)
       sock->send_buffer_fill -= do_write;
     }
 
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "icmp: send%s: %s (%u bytes)\n",
 	   sock->flags & SOCK_FLAG_CONNECTED ? "" : "to",
 	   svz_inet_ntoa (receiver.sin_addr.s_addr),
 	   do_write - (p - sock->send_buffer));
-#endif /* SVZ_ENABLE_DEBUG */
 
   return num_written < 0 ? -1 : 0;
 }
@@ -572,10 +556,8 @@ svz_icmp_check_request (svz_socket_t *sock)
   /* Check if any server processed this packet. */
   if (sock->recv_buffer_fill)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "rejecting icmp packet on socket %d\n",
 	       sock->sock_desc);
-#endif
       sock->recv_buffer_fill = 0;
     }
 

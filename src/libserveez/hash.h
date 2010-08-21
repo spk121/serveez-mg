@@ -25,7 +25,7 @@
 #ifndef __HASH_H__
 #define __HASH_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /* useful defines */
 #define HASH_SHRINK   4

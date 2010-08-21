@@ -30,9 +30,9 @@
 #include <netinet/in.h>         /* struct sockaddr_in */
 #include <sys/types.h>          /* off_t */
 
-#include "libserveez/defines.h"
-#include "libserveez/array.h"
-#include "libserveez/socket.h"  /* svz_t_socket */
+#include "defines.h"
+#include "array.h"
+#include "socket.h"  /* svz_t_socket */
 
 
 /* protocol definitions */

@@ -24,28 +24,24 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>             /* assert */
 #include <stdio.h>              /* fprintf */
 #include <stdlib.h>             /* exit */
 #include <string.h>             /* memcmp, memcpy */
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
+#include "alloc.h"
+#include "util.h"
 
 #if DEBUG_MEMORY_LEAKS
 # include "libserveez/hash.h"
 #endif /* DEBUG_MEMORY_LEAKS */
 
-#if SVZ_ENABLE_DEBUG
 /* The variable @var{svz_allocated_bytes} holds the overall number of bytes 
    allocated by the core library. */
 unsigned int svz_allocated_bytes = 0;
 /* This variable holds the number of memory blocks reserved by the core
    library. */
 unsigned int svz_allocated_blocks = 0;
-#endif /* SVZ_ENABLE_DEBUG */
 
 /* The @var{svz_malloc_func} variable is a function pointer for allocating 
    dynamic memory. */
@@ -58,13 +54,12 @@ svz_realloc_func_t svz_realloc_func = realloc;
 svz_free_func_t svz_free_func = free;
 
 #if DEBUG_MEMORY_LEAKS
-
-/* heap hash table */
-static svz_hash_t *heap = NULL;
+  /* heap hash table */
+  static svz_hash_t *heap = NULL;
 
 /* return static heap hash code key length */
 static unsigned
-heap_hash_keylen (char *id)
+heap_hash_keylen (char *id __attribute__ ((unused)))
 {
   return sizeof (void *);
 }
@@ -73,7 +68,7 @@ heap_hash_keylen (char *id)
 static int 
 heap_hash_equals (char *id1, char *id2)
 {
-  return memcmp (id1, id2, SIZEOF_VOID_P);
+  return memcmp (id1, id2, sizeof (void *));
 }
 
 /* calculate heap hash code */
@@ -84,6 +79,7 @@ heap_hash_code (char *id)
   code >>= 3;
   return code;
 }
+#endif
 
 /* structure for heap management */
 typedef struct
@@ -94,6 +90,7 @@ typedef struct
 }
 heap_block_t;
 
+#if DEBUG_MEMORY_LEAKS
 /* add another heap block to the heap management */
 static void
 heap_add (heap_block_t *block)
@@ -107,8 +104,7 @@ heap_add (heap_block_t *block)
     }
   svz_hash_put (heap, (char *) &block->ptr, block);
 }
-
-#endif /* DEBUG_MEMORY_LEAKS */
+#endif 
 
 /*
  * Allocate @var{size} bytes of memory and return a pointer to this block.
@@ -117,16 +113,15 @@ void *
 svz_malloc (size_t size)
 {
   void *ptr;
-#if SVZ_ENABLE_DEBUG
+#if ENABLE_HEAP_COUNT
   size_t *p;
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
-#endif /* SVZ_ENABLE_DEBUG */
+#endif /* ENABLE_HEAP_COUNT */
 
    assert (size);
 
-#if SVZ_ENABLE_DEBUG
   if ((ptr = (void *) svz_malloc_func (size + 2 * 
 				       sizeof (size_t))) != NULL)
     {
@@ -149,12 +144,6 @@ svz_malloc (size_t size)
       svz_allocated_blocks++;
       return ptr;
     }
-#else /* not SVZ_ENABLE_DEBUG */
-  if ((ptr = (void *) svz_malloc_func (size)) != NULL)
-    {
-      return ptr;
-    }
-#endif /* not SVZ_ENABLE_DEBUG */
   else
     {
       svz_log (LOG_FATAL, "malloc: virtual memory exhausted\n");
@@ -183,18 +172,18 @@ svz_calloc (size_t size)
 void *
 svz_realloc (void *ptr, size_t size)
 {
-#if SVZ_ENABLE_DEBUG
-  size_t old_size, *p;
-#endif /* SVZ_ENABLE_DEBUG */
+#if ENABLE_HEAP_COUNT
+  size_t*p;
+  size_t old_size;
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
+#endif /* ENABLE_HEAP_COUNT */
 
   assert (size);
 
   if (ptr)
     {
-#if SVZ_ENABLE_DEBUG
 #if ENABLE_HEAP_COUNT
 #if DEBUG_MEMORY_LEAKS
       if ((block = svz_hash_delete (heap, (char *) &ptr)) == NULL ||
@@ -237,12 +226,6 @@ svz_realloc (void *ptr, size_t size)
 
 	  return ptr;
 	}
-#else /* not SVZ_ENABLE_DEBUG */
-      if ((ptr = (void *) svz_realloc_func (ptr, size)) != NULL)
-	{
-	  return ptr;
-	}
-#endif /* not SVZ_ENABLE_DEBUG */
       else
 	{
 	  svz_log (LOG_FATAL, "realloc: virtual memory exhausted\n");
@@ -263,18 +246,15 @@ svz_realloc (void *ptr, size_t size)
 void
 svz_free (void *ptr)
 {
-#if SVZ_ENABLE_DEBUG
 #if ENABLE_HEAP_COUNT
   size_t size, *p;
 #if DEBUG_MEMORY_LEAKS
   heap_block_t *block;
 #endif /* DEBUG_MEMORY_LEAKS */
 #endif /* ENABLE_HEAP_COUNT */
-#endif /* SVZ_ENABLE_DEBUG */
 
   if (ptr)
     {
-#if SVZ_ENABLE_DEBUG
 #if ENABLE_HEAP_COUNT
 #if DEBUG_MEMORY_LEAKS
       if ((block = svz_hash_delete (heap, (char *) &ptr)) == NULL ||
@@ -297,7 +277,6 @@ svz_free (void *ptr)
 #endif /* ENABLE_HEAP_COUNT */
 
       svz_allocated_blocks--;
-#endif /* SVZ_ENABLE_DEBUG */
       svz_free_func (ptr);
     }
 }

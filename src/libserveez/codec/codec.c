@@ -22,18 +22,16 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/array.h"
-#include "libserveez/socket.h"
-#include "libserveez/codec/codec.h"
+#include "alloc.h"
+#include "util.h"
+#include "array.h"
+#include "socket.h"
+#include "codec/codec.h"
 
 /* Return text representation for codec type. */
 #define SVZ_CODEC_TYPE_TEXT(codec)                          \
@@ -41,7 +39,7 @@
    ((codec)->type == SVZ_CODEC_ENCODER) ? "encoder" : NULL)
 
 /* Include codec headers if any. */
-#include "libserveez/codec/gzlib.h"
+#include "codec/gzlib.h"
 
 /* Collection of available encoder and decoder provided by the libcodec
    archive or by external (shared) libraries. */

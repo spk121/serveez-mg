@@ -22,33 +22,20 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-# include <arpa/inet.h>
-#endif
-
-#include "libserveez/util.h"
-#include "libserveez/coserver/coserver.h"
-#include "libserveez/coserver/reverse-dns.h"
+#include "util.h"
+#include "coserver/coserver.h"
+#include "coserver/reverse-dns.h"
 
 #define MAX_CACHE_ENTRIES 1024 /* nslookup cache entries */
 

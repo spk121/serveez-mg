@@ -25,7 +25,7 @@
 #ifndef __SPARSEVEC_H__
 #define __SPARSEVEC_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /* general sparse vector defines */
 #define SVZ_SPVEC_BITS 4                     /* values 1 .. 6 possible */

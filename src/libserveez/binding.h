@@ -25,7 +25,7 @@
 #ifndef __BINDING_H__
 #define __BINDING_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /*
  * A server can typically be bound to different port configurations.  This

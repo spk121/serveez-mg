@@ -23,8 +23,6 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>              /* fileno, stderr */
 #include <stdlib.h>             /* exit */
 #include <errno.h>              /* errno */
@@ -40,13 +38,13 @@
 
 #include <sys/socket.h>        /* recv, send */
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server-core.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/passthrough.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server-core.h"
+#include "pipe-socket.h"
+#include "passthrough.h"
 
 /*
  * This variable is meant to hold the @code{environ} variable of the 
@@ -158,10 +156,8 @@ svz_process_disconnect (svz_socket_t *sock)
     {
       svz_sock_setreferrer (sock, NULL);
       svz_sock_setreferrer (xsock, NULL);
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n", 
 	       xsock->id);
-#endif
       svz_sock_schedule_for_shutdown (xsock);
     }
   return 0;
@@ -183,10 +179,8 @@ svz_process_disconnect_passthrough (svz_socket_t *sock)
       svz_sock_setreferrer (xsock, NULL);
       if (sock->flags & (PROTO_TCP | PROTO_PIPE))
 	{
-#if SVZ_ENABLE_DEBUG
 	  svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n", 
 		   xsock->id);
-#endif
 	  svz_sock_schedule_for_shutdown (xsock);
 	}
     }
@@ -608,9 +602,7 @@ svz_process_shuffle (svz_process_t *proc)
   xsock->pid = (svz_t_handle) pid;
   xsock->idle_func = svz_process_idle;
   xsock->idle_counter = 1;
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "process `%s' got pid %d\n", proc->bin, pid);
-#endif
   return pid;
 }
 
@@ -640,9 +632,7 @@ svz_process_fork (svz_process_t *proc)
     }
 
   /* The parent process. */
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "process `%s' got pid %d\n", proc->bin, pid);
-#endif
   return pid;
 }
 

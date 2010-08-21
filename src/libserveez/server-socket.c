@@ -23,45 +23,30 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
 
 #include <stdio.h>
 #include <string.h>
-#if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/stat.h>
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-# if HAVE_WS2TCPIP_H
-#  include <ws2tcpip.h>
-# endif
-#endif
-
-#ifndef __MINGW32__
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <netdb.h>
-#endif
 
-#include "libserveez/boot.h"
-#include "libserveez/util.h"
-#include "libserveez/alloc.h"
-#include "libserveez/core.h"
-#include "libserveez/socket.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/udp-socket.h"
-#include "libserveez/icmp-socket.h"
-#include "libserveez/server-core.h"
-#include "libserveez/server.h"
-#include "libserveez/portcfg.h"
-#include "libserveez/server-socket.h"
+#include "boot.h"
+#include "util.h"
+#include "alloc.h"
+#include "core.h"
+#include "socket.h"
+#include "pipe-socket.h"
+#include "udp-socket.h"
+#include "icmp-socket.h"
+#include "server-core.h"
+#include "server.h"
+#include "portcfg.h"
+#include "server-socket.h"
 
 /*
  * Create a listening server socket (network or pipe). @var{port} is the 
@@ -101,21 +86,9 @@ svz_server_create (svz_portcfg_t *port)
       /* Set this ip option if we are using raw sockets. */
       if (port->proto & PROTO_RAW)
 	{
-#ifdef IP_HDRINCL
-	  optval = 1;
-	  if (setsockopt (server_socket, IPPROTO_IP, IP_HDRINCL,
-			  (void *) &optval, sizeof (optval)) < 0)
-	    {
-	      svz_log (LOG_ERROR, "setsockopt: %s\n", NET_ERROR);
-	      if (closesocket (server_socket) < 0)
-		svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
-	      return NULL;
-	    }
-#else /* not IP_HDRINCL */
 	  closesocket (server_socket);
 	  svz_log (LOG_ERROR, "setsockopt: IP_HDRINCL undefined\n");
 	  return NULL;
-#endif /* IP_HDRINCL */
 	}
 
       /* 
@@ -134,26 +107,6 @@ svz_server_create (svz_portcfg_t *port)
 
       /* Fetch the bind() address. */
       addr = svz_portcfg_addr (port);
-
-#ifdef SO_BINDTODEVICE
-      /* On a Linux 2.x.x you can bind to `eth0' by this control setting 
-	 if root priviledges are ensured. Includes aliases. Connections can
-	 be established from the physical outside only. */
-      if (svz_portcfg_device (port))
-	{
-	  char *device = svz_portcfg_device (port);
-	  if (setsockopt (server_socket, SOL_SOCKET, SO_BINDTODEVICE,
-			  (void *) device, strlen (device) + 1) < 0)
-	    {
-	      svz_log (LOG_ERROR, "setsockopt (%s): %s\n", 
-		       device, NET_ERROR);
-	      if (closesocket (server_socket) < 0)
-		svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
-	      return NULL;
-	    }
-	  memset (&addr->sin_addr, 0, sizeof (&addr->sin_addr));
-	}
-#endif /* SO_BINDTODEVICE */
 
       /* Second, bind the socket to a port. */
       if (bind (server_socket, (struct sockaddr *) addr,
@@ -352,10 +305,6 @@ svz_tcp_accept (svz_socket_t *server_sock)
 int
 svz_pipe_accept (svz_socket_t *server_sock)
 {
-#ifdef __MINGW32__
-  DWORD connect;
-#endif
-
   svz_t_handle recv_pipe, send_pipe;
   svz_socket_t *sock;
   svz_portcfg_t *port = server_sock->port;

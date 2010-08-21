@@ -49,6 +49,8 @@
 # include <io.h>
 #endif
 
+#include "libserveez.h"
+
 /*
  * Main entry point for test.
  */

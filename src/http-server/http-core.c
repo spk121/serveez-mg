@@ -23,9 +23,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
 # include <config.h>
-#endif
 
 #if ENABLE_HTTP_PROTO
 
@@ -36,23 +34,9 @@
 #include <time.h>
 #include <stdarg.h>
 #include <sys/types.h>
-#if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#if HAVE_PWD_H && !defined (__MINGW32__)
 # include <pwd.h>
-#endif
-
-#ifndef __MINGW32__
 # include <netinet/in.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-# include <io.h>
-# include <lm.h>
-# include <lmerr.h>
-#endif
 
 #include "libserveez.h"
 #include "http-proto.h"
@@ -64,67 +48,6 @@ http_header_t http_header;
 /*
  * In Win32 OS's both of these defines are necessary for portability.
  */
-#if defined (__CYGWIN__) || defined (__MINGW32__)
-# define timezone _timezone
-# ifndef daylight
-#  define daylight _daylight
-# endif
-
-#elif !HAVE_TIMEZONE
-/*
- * For some reason FreeBSD 3.2 does not provide `timezone' and `daylight'.
- */
-# define timezone ((long int) 0)
-# define daylight ((int) 0)
-#endif
-
-#ifdef __MINGW32__
-
-/* 
- * Handle and function definitions for the NetApi interface. 
- */
-typedef NET_API_STATUS (__stdcall *GetUserInfoProc) (WCHAR *, WCHAR *,
-						     DWORD, LPBYTE *);
-typedef NET_API_STATUS (__stdcall *FreeUserInfoProc) (void *);
-static FreeUserInfoProc FreeUserInfo = NULL;
-static GetUserInfoProc GetUserInfo = NULL;
-static HMODULE netapiHandle = NULL;
-
-/* 
- * Unload the `netapi32.dll'.
- */
-void
-http_stop_netapi (void)
-{
-  if (netapiHandle)
-    {
-      FreeLibrary (netapiHandle);
-      netapiHandle = NULL;
-    }
-}
-
-/* 
- * Load `netapi32.dll' and get function pointers necessary to obtain
- * a user's home directory.
- */
-void
-http_start_netapi (void)
-{
-  if ((netapiHandle = LoadLibrary ("netapi32.dll")) != NULL)
-    {
-      FreeUserInfo = (FreeUserInfoProc) 
-	GetProcAddress (netapiHandle, "NetApiBufferFree");
-      GetUserInfo = (GetUserInfoProc) 
-	GetProcAddress (netapiHandle, "NetUserGetInfo");
-      if (GetUserInfo == NULL)
-	{
-	  svz_log (LOG_ERROR, "http: GetProcAddress: %s\n", SYS_ERROR);
-	  FreeLibrary (netapiHandle);
-	  netapiHandle = NULL;
-	}
-    }
-}
-#endif /* not __MINGW32__ */
 
 /*
  * If the given request has a leading `~' we try to get the appropriate

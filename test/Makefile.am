@@ -45,7 +45,8 @@ codec_test_SOURCES = codec-test.c
 codec_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 prog_test_SOURCES = prog-test.c
 
-AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src
+AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src \
+	-I$(top_srcdir)/src/libserveez
 
 CLEANFILES = *~ *.orig *.rej
 MAINTAINERCLEANFILES = Makefile.in \

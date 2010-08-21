@@ -24,10 +24,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,42 +34,27 @@
 #include <signal.h>
 #include <time.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#if HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-#endif
-
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/tcp-socket.h"
-#include "libserveez/server-core.h"
-#include "libserveez/server.h"
-#include "libserveez/binding.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "pipe-socket.h"
+#include "tcp-socket.h"
+#include "server-core.h"
+#include "server.h"
+#include "binding.h"
 
 /*
  * Count the number of currently connected sockets.
  */
 int svz_sock_connections = 0;
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
 /*
  * This routine can be called if flood protection is wished for
  * socket readers. Return non-zero if the socket should be kicked
@@ -99,7 +80,6 @@ svz_sock_flood_protect (svz_socket_t *sock, int num_read)
     }
   return 0;
 }
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 
 /*
  * The default function which gets called when a client shuts down
@@ -108,9 +88,7 @@ svz_sock_flood_protect (svz_socket_t *sock, int num_read)
 static int
 svz_sock_default_disconnect (svz_socket_t *sock)
 {
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "socket id %d disconnected\n", sock->id);
-#endif
 
   return 0;
 }
@@ -179,9 +157,7 @@ svz_sock_detect_proto (svz_socket_t *sock)
    */
   if (sock->recv_buffer_fill > port->detection_fill)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "socket id %d detection failed\n", sock->id);
-#endif
       return -1;
     }
 
@@ -200,9 +176,7 @@ svz_sock_idle_protect (svz_socket_t *sock)
 
   if (time (NULL) - sock->last_recv > port->detection_wait)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "socket id %d detection failed\n", sock->id);
-#endif
       return -1;
     }
 
@@ -395,9 +369,7 @@ svz_sock_alloc (void)
   sock->last_send = time (NULL);
   sock->last_recv = time (NULL);
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
   sock->flood_limit = 100;
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 
   return sock;
 }
@@ -462,13 +434,6 @@ svz_sock_free (svz_socket_t *sock)
     svz_free (sock->recv_pipe);
   if (sock->send_pipe)
     svz_free (sock->send_pipe);
-
-#ifdef __MINGW32__
-  if (sock->overlap[READ])
-    svz_free (sock->overlap[READ]);
-  if (sock->overlap[WRITE])
-    svz_free (sock->overlap[WRITE]);
-#endif /* __MINGW32__ */
 
   svz_free (sock);
 
@@ -558,11 +523,7 @@ svz_sock_error_info (svz_socket_t *sock)
     }
   if (error)
     {
-#ifdef __MINGW32__
-      WSASetLastError (error);
-#else
       errno = error;
-#endif
       svz_log (LOG_ERROR, "%s\n", NET_ERROR);
       return -1;
     }
@@ -632,9 +593,7 @@ svz_sock_disconnect (svz_socket_t *sock)
   if (closesocket (sock->sock_desc) < 0)
     svz_log (LOG_ERROR, "close: %s\n", NET_ERROR);
 
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "socket %d disconnected\n", sock->sock_desc);
-#endif
 
   sock->sock_desc = INVALID_SOCKET;
   return 0;

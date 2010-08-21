@@ -26,8 +26,8 @@
 #ifndef __UDP_SOCKET_H__
 #define __UDP_SOCKET_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/socket.h"
+#include "defines.h"
+#include "socket.h"
 
 /* general defines */
 #define UDP_MSG_SIZE (64 * 1024)               /* maximum size of udp packet */

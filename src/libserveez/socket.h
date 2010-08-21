@@ -27,7 +27,7 @@
 #ifndef __SOCKET_H__
 #define __SOCKET_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /* How much data is accepted before valid detection. */
 #define SOCK_MAX_DETECTION_FILL 16
@@ -96,12 +96,6 @@ struct svz_socket
   int file_desc;		/* Used for files descriptors. */
   svz_t_handle pipe_desc[2];    /* Used for the pipes and coservers. */
   svz_t_handle pid;             /* Process id. */
-
-#ifdef __MINGW32__
-  LPOVERLAPPED overlap[2];      /* Overlap info for WinNT. */
-  int recv_pending;             /* Number of pending read bytes. */
-  int send_pending;             /* Number of pending write bytes. */
-#endif /* not __MINGW32__ */
 
   char *recv_pipe;              /* File of the receive pipe. */
   char *send_pipe;              /* File of the send pipe. */
@@ -217,10 +211,8 @@ struct svz_socket
   long last_send;		/* Timestamp of last send to socket. */
   long last_recv;		/* Timestamp of last receive from socket */
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
   int flood_points;		/* Accumulated flood points. */
   int flood_limit;		/* Limit of the above before kicking. */
-#endif
 
   /* Out-of-band data for TCP protocol. This byte is used for both, 
      receiving and sending. */
@@ -269,9 +261,7 @@ SERVEEZ_API int svz_sock_detect_proto __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_sock_check_request __PARAMS ((svz_socket_t *));
 SERVEEZ_API int svz_sock_idle_protect __PARAMS ((svz_socket_t *));
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
 SERVEEZ_API int svz_sock_flood_protect __PARAMS ((svz_socket_t *, int));
-#endif
 
 __END_DECLS
 

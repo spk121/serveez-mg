@@ -27,8 +27,8 @@
 #ifndef __TCP_SOCKET_H__
 #define __TCP_SOCKET_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/socket.h"
+#include "defines.h"
+#include "socket.h"
 
 __BEGIN_DECLS
 

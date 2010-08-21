@@ -22,27 +22,25 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <time.h>
 #include <sys/types.h>
 
 
 #include "version.h"
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/vector.h"
-#include "libserveez/interface.h"
-#include "libserveez/socket.h"
-#include "libserveez/icmp-socket.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/server.h"
-#include "libserveez/dynload.h"
-#include "libserveez/boot.h"
-#include "libserveez/mutex.h"
-#include "libserveez/server-core.h"
-#include "libserveez/codec/codec.h"
+#include "alloc.h"
+#include "util.h"
+#include "vector.h"
+#include "interface.h"
+#include "socket.h"
+#include "icmp-socket.h"
+#include "pipe-socket.h"
+#include "server.h"
+#include "dynload.h"
+#include "boot.h"
+#include "mutex.h"
+#include "server-core.h"
+#include "codec/codec.h"
 
 /*
  * The configuration structure of the core library.
@@ -64,19 +62,11 @@ int svz_have_Win32 = 0;
 #endif
 
 /* Runtime flag if this is the debug version or not. */
-#ifdef SVZ_ENABLE_DEBUG
 int svz_have_debug = 1;
-#else
-int svz_have_debug = 0;
-#endif
 
 /* Runtime checkable flags for configuration language and code if flood
    protection has been enabled or not. */
-#ifdef SVZ_ENABLE_FLOOD_PROTECTION
 int svz_have_floodprotect = 1;
-#else
-int svz_have_floodprotect = 0;
-#endif
 
 /* Extern declaration of the logging mutex. */
 svz_mutex_declare (svz_log_mutex)

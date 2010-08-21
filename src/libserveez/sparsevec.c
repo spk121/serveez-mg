@@ -22,18 +22,14 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/sparsevec.h"
+#include "alloc.h"
+#include "util.h"
+#include "sparsevec.h"
 
 /* check if a given sparse vector index can be in this chunk */
 #define svz_spvec_range_all(SPVEC, IDX) \

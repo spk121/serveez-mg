@@ -24,8 +24,6 @@
  *
  */
 
-# include <config.h>
-
 #define _GNU_SOURCE 1
 #include <stdio.h>
 #include <string.h>
@@ -35,16 +33,17 @@
 # include <netinet/in.h>
 # include <arpa/inet.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/hash.h"
-#include "libserveez/util.h"
-#include "libserveez/core.h"
-#include "libserveez/array.h"
-#include "libserveez/socket.h"
-#include "libserveez/server-core.h"
-#include "libserveez/server.h"
-#include "libserveez/binding.h"
-#include "libserveez/dynload.h"
+#include "alloc.h"
+#include "cfg.h"
+#include "hash.h"
+#include "util.h"
+#include "core.h"
+#include "array.h"
+#include "socket.h"
+#include "server-core.h"
+#include "server.h"
+#include "binding.h"
+#include "dynload.h"
 
 /*
  * The list of registered servers. Feel free to add yours.
@@ -203,7 +202,6 @@ svz_servertype_find (svz_server_t *server)
   return server ? server->type : NULL;
 }
 
-#if SVZ_ENABLE_DEBUG
 /*
  * Debug helper function to traverse all currently known server types.
  */
@@ -222,7 +220,6 @@ svz_servertype_print (void)
       svz_config_prototype_print (&stype->config_prototype);
     }
 }
-#endif /* SVZ_ENABLE_DEBUG */
 
 /*
  * This is the list of actually instantiated servers. The hash table 

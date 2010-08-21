@@ -27,13 +27,9 @@
 
 #define _GNU_SOURCE 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
-#ifdef __MINGW32__
-typedef char * svz_envp_t;
-#else
 typedef char ** svz_envp_t;
-#endif
 
 /* Structure containing a system independent environment. */
 typedef struct

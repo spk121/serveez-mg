@@ -23,15 +23,16 @@
  *
  */
 
-#include <config.h>
-
 #include <string.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/core.h"
-#include "libserveez/vector.h"
-#include "libserveez/interface.h"
+#include "alloc.h"
+#include "util.h"
+#include "core.h"
+#include "vector.h"
+#include "interface.h"
 
 /*
  * The available interface list.
@@ -70,12 +71,21 @@ svz_interface_collect (void)
       ifc.ifc_len = sizeof (struct ifreq) * numreqs;
       ifc.ifc_buf = svz_realloc (ifc.ifc_buf, ifc.ifc_len);
 
+      if (ioctl (fd, SIOCGIFCONF, &ifc) < 0) 
+	{
+	  perror ("SIOCGIFCONF");
+	  close (fd);
+	  svz_free (ifc.ifc_buf);
+	  return;
+	}
+#if 1
       if ((unsigned) ifc.ifc_len == sizeof (struct ifreq) * numreqs) 
 	{
 	  /* Assume it overflowed and try again. */
 	  numreqs += 10;
 	  continue;
 	}
+#endif
       break;
     }
 
@@ -87,8 +97,23 @@ svz_interface_collect (void)
 
       strcpy (ifr2.ifr_name, ifr->ifr_name);
       ifr2.ifr_addr.sa_family = AF_INET;
+      if (ioctl (fd, SIOCGIFADDR, &ifr2) == 0)
+	{
+	  static int index = 0;
+	  /* 
+	   * The following cast looks bogus. ifr2.ifr_addr is a
+	   * (struct sockaddr), but we know that we deal with a 
+	   * (struct sockaddr_in) here. Since you cannot cast structures
+	   * in C, I cast addresses just to get a (struct sockaddr_in) in 
+	   * the end ...
+	   */
+	  index++;
+	  svz_interface_add (index, ifr->ifr_name,
+			     (*(struct sockaddr_in *)
+			      (void *) &ifr2.ifr_addr).sin_addr.s_addr, 1);
+	}
     }
-  
+
   close (fd);
   svz_free (ifc.ifc_buf);
 }

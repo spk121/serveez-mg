@@ -23,16 +23,14 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/array.h"
+#include "alloc.h"
+#include "util.h"
+#include "array.h"
 
 /*
  * Create a new array with the initial capacity @var{capacity} and return

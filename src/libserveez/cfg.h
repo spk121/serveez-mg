@@ -26,9 +26,9 @@
 #ifndef __CFG_H__
 #define __CFG_H__ 1
 
-#include "libserveez/array.h"
-#include "libserveez/hash.h"
-#include "libserveez/portcfg.h"
+#include "array.h"
+#include "hash.h"
+#include "portcfg.h"
 
 /*
  * Each server can have a an array of key-value-pairs specific for it.
@@ -217,10 +217,7 @@ SERVEEZ_API int svz_config_type_instantiate __PARAMS ((char *, char *,
 SERVEEZ_API void svz_config_type_init __PARAMS ((void));
 SERVEEZ_API void svz_config_type_finalize __PARAMS ((void));
 
-#if SVZ_ENABLE_DEBUG
 SERVEEZ_API void svz_config_prototype_print __PARAMS ((svz_config_prototype_t *));
-#endif
-
 SERVEEZ_API svz_array_t *svz_config_intarray_create __PARAMS ((int *));
 SERVEEZ_API void svz_config_intarray_destroy __PARAMS ((svz_array_t *));
 SERVEEZ_API svz_array_t *svz_config_intarray_dup __PARAMS ((svz_array_t *));

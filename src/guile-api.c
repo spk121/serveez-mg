@@ -36,9 +36,7 @@
 
 #include <arpa/inet.h>          /* htonl, htons */
 #include <netinet/in.h>         /* IPPROTO_UDP */
-#if HAVE_PMAP_CLNT_H
 #include <rpc/pmap_clnt.h>      /* pmap_set, pmap_unset */
-#endif
 
 #include "libserveez.h"
 #include "guile.h"

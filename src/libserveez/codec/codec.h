@@ -25,8 +25,8 @@
 #ifndef __CODEC_H__
 #define __CODEC_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/socket.h"
+#include "defines.h"
+#include "socket.h"
 
 /* Modes of operation. */
 #define SVZ_CODEC_INIT   0x0001

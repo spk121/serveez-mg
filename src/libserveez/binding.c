@@ -22,23 +22,21 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server.h"
-#include "libserveez/server-core.h"
-#include "libserveez/portcfg.h"
-#include "libserveez/server-socket.h"
-#include "libserveez/binding.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server.h"
+#include "server-core.h"
+#include "portcfg.h"
+#include "server-socket.h"
+#include "binding.h"
 
 /*
  * Return a static text representation of the server instance's @var{server}

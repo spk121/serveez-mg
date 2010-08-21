@@ -22,16 +22,14 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <pthread.h>
 
-#include "libserveez/util.h"
-#include "libserveez/mutex.h"
+#include "util.h"
+#include "mutex.h"
 
 /* Creates and initializes the given @var{mutex} object.  The mutex is
    in an unlocked state.  The function must be called before using

@@ -22,26 +22,15 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#include "libserveez/util.h"
-#include "libserveez/core.h"
-#include "libserveez/raw-socket.h"
+#include "util.h"
+#include "core.h"
+#include "raw-socket.h"
 
 /*
  * The raw socket support on Windoze machines is quite doubtful and
@@ -196,40 +185,32 @@ svz_raw_check_ip_header (svz_uint8_t *data, int len)
   /* Is this IPv4 version ? */
   if (IP_HDR_VERSION (ip_header) != IP_VERSION_4)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "raw: cannot handle IPv%d\n", 
 	       IP_HDR_VERSION (ip_header));
-#endif
       return -1;
     }
 
   /* Check Internet Header Length. */
   if (IP_HDR_LENGTH (ip_header) > len)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "raw: invalid IHL (%d > %d)\n",
 	       IP_HDR_LENGTH (ip_header), len);
-#endif
       return -1;
     }
 
   /* Check total length. */
   if (ip_header->length < len)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "raw: invalid total length (%d < %d)\n",
 	       ip_header->length, len);
-#endif
       return -1;
     }
 
   /* Check protocol type. */
   if (ip_header->protocol != ICMP_PROTOCOL)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "raw: invalid protocol 0x%02X\n",
 	       ip_header->protocol);
-#endif
       return -1;
     }
 
@@ -238,12 +219,10 @@ svz_raw_check_ip_header (svz_uint8_t *data, int len)
       ip_header->checksum)
     {
       /* FIXME: Why are header checksums invalid on big packets ? */
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, 
 	       "raw: invalid ip header checksum (%04X != %04X)\n",
 	       svz_raw_ip_checksum (data, IP_HDR_LENGTH (ip_header)),
 	       ip_header->checksum);
-#endif
     }
 
   return IP_HDR_LENGTH (ip_header);

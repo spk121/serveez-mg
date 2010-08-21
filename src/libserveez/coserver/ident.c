@@ -22,31 +22,19 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <string.h>
 #include <errno.h>
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <netdb.h>
-# include <arpa/inet.h>
-#endif
-
-#include "libserveez/socket.h"
-#include "libserveez/util.h"
-#include "libserveez/coserver/coserver.h"
-#include "libserveez/coserver/ident.h"
+#include "socket.h"
+#include "util.h"
+#include "coserver/coserver.h"
+#include "coserver/ident.h"
 
 #define IDENT_PORT 113 /* the identd port */
 

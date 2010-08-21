@@ -32,14 +32,12 @@ dnl Initialize autoconf and automake
 dnl
 AC_INIT([serveez],[0.1.7],[bug-serveez@gnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([gnu -Wall])
+AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_SRCDIR([src/serveez.c])
 dnl
 dnl Determine if maintainer portions of the Makefiles should be included.
 dnl
-AM_MAINTAINER_MODE
-
 dnl ----------------------------------------------------------------------
 
 dnl
@@ -527,14 +525,11 @@ unset define_enable_heap
 dnl
 dnl Output files.
 dnl
-AC_CONFIG_SUBDIRS([libserveez])
+AC_CONFIG_SUBDIRS([src/libserveez])
 
 AC_CONFIG_FILES([
     Makefile
     src/Makefile 
-    src/libserveez/Makefile
-    src/libserveez/coserver/Makefile
-    src/libserveez/codec/Makefile
     src/serveez-config
     src/awcs-server/Makefile
     src/ctrl-server/Makefile

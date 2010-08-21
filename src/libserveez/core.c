@@ -23,8 +23,6 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>              /* sprintf */
 #include <string.h>             /* strcmp */
 #include <errno.h>              /* errno */
@@ -34,12 +32,10 @@
 #include <netinet/in.h>  /* struct in_addr */
 #include <arpa/inet.h>   /* inet_ntoa */
 #include <netinet/tcp.h>       /* SOL_TCP, TCP_NODELAY, TCP_CORK */
-#if HAVE_SYS_SENDFILE
 #include <sys/sendfile.h>      /* sendfile */
-#endif
 
-#include "libserveez/util.h"
-#include "libserveez/core.h"
+#include "core.h"
+#include "util.h"
 
 /*
  * Set the given file descriptor to nonblocking I/O. This heavily differs
@@ -284,9 +280,7 @@ svz_socket_connect (svz_t_socket sockfd,
           closesocket (sockfd);
           return -1;
         }
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "connect: %s\n", NET_ERROR);
-#endif
     }
   return 0;
 }
@@ -337,11 +331,7 @@ svz_inet_aton (char *str, struct sockaddr_in *addr)
  * file to transmit. The function return zero on success, otherwise non-zero.
  */
 int
-#if HAVE_TCP_CORK
 svz_tcp_cork (svz_t_socket fd, int set)
-#else
-  svz_tcp_cork (svz_t_socket fd, int set __attribute__ ((unused)))
-#endif
 {
   int flags;
 
@@ -352,10 +342,8 @@ svz_tcp_cork (svz_t_socket fd, int set)
       return -1;
     }
 
-#if HAVE_TCP_CORK
   /* set or unset the cork option */
   flags = set ? flags | TCP_CORK : flags & ~TCP_CORK;
-#endif
 
   /* apply new socket option */
   if (fcntl (fd, F_SETFL, flags) < 0)
@@ -415,23 +403,11 @@ svz_tcp_nodelay (svz_t_socket fd, int set, int *old)
  * read/written or -1 on errors.
  */
 int
-#if HAVE_SENDFILE
 svz_sendfile (int out_fd, int in_fd, off_t *offset, unsigned int count)
-#else
-  svz_sendfile (int out_fd __attribute__ ((unused)), \
-                int in_fd __attribute__ ((unused)), \
-                off_t *offset __attribute__ ((unused)), \
-                unsigned int count __attribute__ ((unused)))
-#endif
 {
-#ifdef HAVE_SENDFILE
   ssize_t ret;
   ret = sendfile (out_fd, in_fd, offset, count);
   return (int) ret;
-#else
-  svz_log (LOG_ERROR, "sendfile() not available\n");
-  return -1;
-#endif /* HAVE_SEND_FILE */
 }
 
 /* List for file descriptors. */

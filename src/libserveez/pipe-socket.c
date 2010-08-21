@@ -23,8 +23,6 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <string.h>             /* memmove, strcmp */
 #include <errno.h>              /* errno  */
@@ -36,12 +34,12 @@
 #include <pwd.h>                /* getpwuid, getpwnam, struct passwd */
 #include <grp.h>                /* getgrnam, getgrgid, struct group */
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server-core.h"
-#include "libserveez/pipe-socket.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server-core.h"
+#include "pipe-socket.h"
 
 /*
  * Startup the pipe interface of the core API of serveez. Returns zero on
@@ -238,10 +236,8 @@ svz_pipe_disconnect (svz_socket_t *sock)
 	      svz_log (LOG_ERROR, "pipe: close: %s\n", SYS_ERROR);
 	}
 
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "pipe (%d-%d) disconnected\n",
 	       sock->pipe_desc[READ], sock->pipe_desc[WRITE]);
-#endif
 
       sock->pipe_desc[READ] = INVALID_HANDLE;
       sock->pipe_desc[WRITE] = INVALID_HANDLE;
@@ -266,9 +262,7 @@ svz_pipe_disconnect (svz_socket_t *sock)
       if (unlink (sock->send_pipe) == -1)
 	svz_log (LOG_ERROR, "unlink: %s\n", SYS_ERROR);
 
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "pipe listener (%s) destroyed\n", sock->recv_pipe);
-#endif
 
       sock->pipe_desc[READ] = INVALID_HANDLE;
       sock->pipe_desc[WRITE] = INVALID_HANDLE;
@@ -314,14 +308,12 @@ svz_pipe_read_socket (svz_socket_t *sock)
     {
       sock->last_recv = time (NULL);
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
       if (svz_sock_flood_protect (sock, num_read))
 	{
 	  svz_log (LOG_ERROR, "kicked pipe %d (flood)\n", 
 		   sock->pipe_desc[READ]);
 	  return -1;
 	}
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 
       sock->recv_buffer_fill += num_read;
 

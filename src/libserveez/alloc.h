@@ -27,7 +27,7 @@
 #ifndef __XALLOC_H__
 #define __XALLOC_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 #include <sys/types.h>
 
@@ -40,10 +40,8 @@
 
 __BEGIN_DECLS
 
-#if SVZ_ENABLE_DEBUG
 SERVEEZ_API unsigned int svz_allocated_bytes;
 SERVEEZ_API unsigned int svz_allocated_blocks;
-#endif /* SVZ_ENABLE_DEBUG */
 
 /* Function type definitions. */
 typedef void * (* svz_malloc_func_t) __PARAMS ((size_t));

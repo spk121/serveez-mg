@@ -25,7 +25,7 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /* Definition of an vector structure. */
 typedef struct

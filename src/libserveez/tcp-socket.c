@@ -23,8 +23,6 @@
  *
  */
 
-# include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,11 +38,11 @@
 # include <netinet/in.h>
 # include <netdb.h>
 
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server-core.h"
-#include "libserveez/tcp-socket.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server-core.h"
+#include "tcp-socket.h"
 
 /*
  * Default function for writing to the socket @var{sock}. Simply flushes 
@@ -159,13 +157,11 @@ svz_tcp_read_socket (svz_socket_t *sock)
     {
       sock->last_recv = time (NULL);
 
-#if SVZ_ENABLE_FLOOD_PROTECTION
       if (svz_sock_flood_protect (sock, num_read))
 	{
 	  svz_log (LOG_ERROR, "kicked socket %d (flood)\n", desc);
 	  return -1;
 	}
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 
       sock->recv_buffer_fill += num_read;
 
@@ -306,9 +302,7 @@ svz_tcp_default_connect (svz_socket_t *sock)
 	  svz_log (LOG_ERROR, "connect: %s\n", NET_ERROR);
 	  return -1;
 	}
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "connect: %s\n", NET_ERROR);
-#endif
       return 0;
     }
 

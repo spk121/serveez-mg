@@ -26,8 +26,8 @@
 #ifndef __ARRAY_H__
 #define __ARRAY_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/alloc.h"
+#include "defines.h"
+#include "alloc.h"
 
 typedef struct svz_array
 {

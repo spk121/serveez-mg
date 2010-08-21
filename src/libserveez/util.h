@@ -28,7 +28,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 #include <stdio.h>
 #include <sys/stat.h>

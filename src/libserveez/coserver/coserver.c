@@ -23,10 +23,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <assert.h>             /* assert */
 #include <stdio.h>              /* snprintf, FILE *, fdopen, fgets, fflush, 
                                    fclose */
@@ -38,14 +34,14 @@
 #include <arpa/inet.h>          /* ntohs */
 #include <sys/wait.h>           /* waitpid, WNOHANG */
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/core.h"
-#include "libserveez/hash.h"
-#include "libserveez/array.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/server-core.h"
-#include "libserveez/coserver/coserver.h"
+#include "alloc.h"
+#include "util.h"
+#include "core.h"
+#include "hash.h"
+#include "array.h"
+#include "pipe-socket.h"
+#include "server-core.h"
+#include "coserver/coserver.h"
 
 /* coserver-TODO: include header here */
 #include "dns.h"

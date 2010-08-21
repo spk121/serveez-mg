@@ -25,15 +25,13 @@
  *
  */
 
-#include <config.h>
-
 #define _GNU_SOURCE 1
 #include <stdio.h>
 #include <string.h>
 
-#include "libserveez/cfg.h"
-#include "libserveez/util.h"
-#include "libserveez/server.h"
+#include "cfg.h"
+#include "util.h"
+#include "server.h"
 
 /*
  * Create an array (@code{svz_array_t}) of integers. The given integer
@@ -572,7 +570,6 @@ svz_config_type_finalize (void)
   svz_hash_destroy (svz_config_types);
 }
 
-#if SVZ_ENABLE_DEBUG
 /*
  * This function is a debug helper for checking the layout of the
  * configuration prototype @var{prototype}.
@@ -629,4 +626,3 @@ svz_config_prototype_print (svz_config_prototype_t *prototype)
       printf ("  no configuration option\n");
     }
 }
-#endif /* SVZ_ENABLE_DEBUG */

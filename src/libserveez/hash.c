@@ -22,18 +22,14 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/hash.h"
+#include "alloc.h"
+#include "util.h"
+#include "hash.h"
 
 #if DEBUG_MEMORY_LEAKS
 # define svz_free(ptr) svz_free_func (ptr)
@@ -144,12 +140,10 @@ svz_hash_analyse (svz_hash_t *hash)
 	    depth = e;
 	}
     }
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, 
 	   "%d/%d buckets (%d), %d entries (%d), depth: %d\n",
 	   buckets, hash->buckets, hash->fill, 
 	   entries, hash->keys, depth + 1);
-#endif /* SVZ_ENABLE_DEBUG */
 }
 
 /*

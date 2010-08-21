@@ -25,9 +25,9 @@
 #ifndef __COSERVER_H__
 #define __COSERVER_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/array.h"
-#include "libserveez/socket.h"
+#include "defines.h"
+#include "array.h"
+#include "socket.h"
 
 /*
  * Every invoked internal coserver has got such a structure.

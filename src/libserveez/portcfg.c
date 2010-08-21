@@ -22,24 +22,21 @@
  *
  */
 
-#include <config.h>
-
 #include <assert.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 
-# include <sys/socket.h>
-
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/core.h"
-#include "libserveez/vector.h"
-#include "libserveez/array.h"
-#include "libserveez/portcfg.h"
-#include "libserveez/udp-socket.h"
-#include "libserveez/icmp-socket.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/interface.h"
+#include "alloc.h"
+#include "util.h"
+#include "core.h"
+#include "vector.h"
+#include "array.h"
+#include "portcfg.h"
+#include "udp-socket.h"
+#include "icmp-socket.h"
+#include "pipe-socket.h"
+#include "interface.h"
 
 /*
  * This hash holds all port configurations created by the configuration
@@ -180,9 +177,7 @@ svz_portcfg_add (char *name, svz_portcfg_t *port)
   /* Try adding a new port configuration. */
   if ((replace = svz_hash_get (svz_portcfgs, name)) != NULL)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "portcfg `%s' already registered\n", name);
-#endif
       svz_hash_put (svz_portcfgs, name, port);
       return replace;
     }
@@ -254,20 +249,29 @@ svz_portcfg_expand (svz_portcfg_t *this)
   struct sockaddr_in *addr;
   int n;
   svz_interface_t *ifc;
+  int is_nonflag_device; 
 
   /* Is this a network port configuration and should it be expanded ? */
-  if ((addr = svz_portcfg_addr (this)) != NULL && 
-      (this->flags & PORTCFG_FLAG_ALL) && !(this->flags & PORTCFG_FLAG_DEVICE))
+  addr = svz_portcfg_addr (this);
+  is_nonflag_device = ((this->flags & PORTCFG_FLAG_ALL) 
+                       && !(this->flags & PORTCFG_FLAG_DEVICE));
+  if (addr != NULL && is_nonflag_device)
     {
-      svz_interface_foreach (ifc, n)
-	{
-	  port = svz_portcfg_dup (this);
-	  addr = svz_portcfg_addr (port);
-	  addr->sin_addr.s_addr = ifc->ipaddr;
-	  svz_portcfg_set_ipaddr (port, 
-				  svz_strdup (svz_inet_ntoa (ifc->ipaddr)));
-	  svz_array_add (ports, port);
-	}
+      if (svz_interfaces != NULL)
+        {
+          unsigned long i;
+          for (i = 0, ifc = svz_vector_get (svz_interfaces, 0);
+               i < svz_vector_length (svz_interfaces);
+               ifc = svz_vector_get (svz_interfaces, ++i))
+            {
+              port = svz_portcfg_dup (this);
+              addr = svz_portcfg_addr (port);
+              addr->sin_addr.s_addr = ifc->ipaddr;
+              svz_portcfg_set_ipaddr (port, 
+                                      svz_strdup (svz_inet_ntoa (ifc->ipaddr)));
+              svz_array_add (ports, port);
+            }
+        }
     }
   /* No, just add the given port configuration. */
   else
@@ -477,10 +481,8 @@ svz_portcfg_convert_addr (char *str, struct sockaddr_in *addr)
 
   if ((ifc = svz_interface_search (str)) != NULL)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "`%s' is %s\n", ifc->description, 
 	       svz_inet_ntoa (ifc->ipaddr));
-#endif
       addr->sin_addr.s_addr = ifc->ipaddr;
       return 0;
     }

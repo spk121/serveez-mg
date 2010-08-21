@@ -27,6 +27,9 @@
 
 #include <libguile.h>
 void guile_lookup (SCM var, const char *name);
+void guile_api_init (void);
+void guile_api_finalize (void);
+
 
 #if 0
 /* Define this macro if Guile 1.7.x or better is in use. */

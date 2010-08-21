@@ -23,10 +23,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -34,30 +30,20 @@
 #include <fcntl.h>
 #include <time.h>
 #include <stdarg.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <netinet/in.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/core.h"
-#include "libserveez/server-core.h"
-#include "libserveez/server.h"
-#include "libserveez/portcfg.h"
-#include "libserveez/binding.h"
-#include "libserveez/udp-socket.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "core.h"
+#include "server-core.h"
+#include "server.h"
+#include "portcfg.h"
+#include "binding.h"
+#include "udp-socket.h"
 
 /*
  * This routine is the default reader for UDP sockets. Whenever the socket
@@ -111,12 +97,10 @@ svz_udp_read_socket (svz_socket_t *sock)
 	  sock->remote_addr = sender.sin_addr.s_addr;
 	}
 
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "udp: recv%s: %s:%u (%d bytes)\n",
 	       sock->flags & SOCK_FLAG_CONNECTED ? "" : "from",
 	       svz_inet_ntoa (sock->remote_addr),
 	       ntohs (sock->remote_port), num_read);
-#endif /* SVZ_ENABLE_DEBUG */
 
       /* Check access lists. */
       if (svz_sock_check_access (sock, sock) < 0)
@@ -214,12 +198,10 @@ svz_udp_write_socket (svz_socket_t *sock)
       svz_sock_reduce_send (sock, (int) do_write);
     }
 
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "udp: send%s: %s:%u (%u bytes)\n",
 	   sock->flags & SOCK_FLAG_CONNECTED ? "" : "to", 
 	   svz_inet_ntoa (receiver.sin_addr.s_addr),
 	   ntohs (receiver.sin_port), do_write - (p - sock->send_buffer));
-#endif /* SVZ_ENABLE_DEBUG */
 
   return num_written < 0 ? -1 : 0;
 }
@@ -279,10 +261,8 @@ svz_udp_check_request (svz_socket_t *sock)
   /* check if any server processed this packet */
   if (sock->recv_buffer_fill)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "rejecting udp packet on socket %d\n",
 	       sock->sock_desc);
-#endif
       sock->recv_buffer_fill = 0;
     }
 

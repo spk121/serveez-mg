@@ -28,12 +28,6 @@
 /* Depending on the kind of build include either <config.h> (for internal
    build) or <svzconfig.h> for the external usage of the core library. */
 
-#if defined (__BUILD_SVZ_LIBRARY__)
-# include <config.h>
-#else
-# include <svzconfig.h>
-#endif
-
 /* __BEGIN_DECLS should be used at the beginning of your declarations,
    so that C++ compilers don't mangle their names.  Use __END_DECLS at
    the end of C declarations. */

@@ -23,20 +23,17 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>              /* sprintf */
 #include <string.h>             /* strlen, strcmp */
 #include <stdlib.h>             /* putenv */
 #include <dlfcn.h>             /* RTLD_NOW, RTLD_GLOBAL, dlopen */
 
-#include "svzpath.h"
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/server.h"
-#include "libserveez/core.h"
-#include "libserveez/dynload.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "server.h"
+#include "core.h"
+#include "dynload.h"
 
 /* Internal list of shared libraries. */
 static int dyn_libraries = 0;
@@ -139,9 +136,9 @@ svz_dynload_path_get (void)
 
   /* Add some default paths. */
   svz_array_add (paths, svz_strdup ("."));
-  svz_array_add (paths, svz_strdup (SVZ_LIBDIR));
-  svz_array_add (paths, svz_strdup (SVZ_BINDIR));
-  svz_array_add (paths, svz_strdup (SVZ_PKGDATADIR));
+  // svz_array_add (paths, svz_strdup (SVZ_LIBDIR));
+  // svz_array_add (paths, svz_strdup (SVZ_BINDIR));
+  // svz_array_add (paths, svz_strdup (SVZ_PKGDATADIR));
 
   /* Add environment variable paths. */
   if ((p = getenv (DYNLOAD_PATH)) != NULL)

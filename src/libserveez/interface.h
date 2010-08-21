@@ -26,7 +26,7 @@
 #ifndef __INTERFACE_H__
 #define __INTERFACE_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 /*
  * Structure for collecting IP interfaces.

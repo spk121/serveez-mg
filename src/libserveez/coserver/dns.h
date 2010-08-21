@@ -25,7 +25,7 @@
 #ifndef __DNS_H__
 #define __DNS_H__ 1
 
-#include "libserveez/defines.h"
+#include "defines.h"
 
 __BEGIN_DECLS
 

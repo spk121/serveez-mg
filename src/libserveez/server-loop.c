@@ -23,19 +23,6 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#ifdef _AIX
-# undef _NO_PROTO
-# ifndef _USE_IRS
-#  define _USE_IRS 1
-# endif
-# define _XOPEN_SOURCE_EXTENDED 1
-# define _ALL_SOURCE 1
-#endif /* _AIX */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,24 +30,15 @@
 #include <time.h>
 #include <poll.h>
 #include <strings.h>
-
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
-#if HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
 #include <sys/types.h>
-#if HAVE_UNISTD_H
 # include <unistd.h>
-#endif
 
-#include "libserveez/alloc.h"
-#include "libserveez/util.h"
-#include "libserveez/socket.h"
-#include "libserveez/pipe-socket.h"
-#include "libserveez/server-core.h"
-#include "libserveez/server-loop.h"
+#include "alloc.h"
+#include "util.h"
+#include "socket.h"
+#include "pipe-socket.h"
+#include "server-core.h"
+#include "server-loop.h"
 
 static int svz_check_sockets_select (void) __attribute__ ((used));
 
@@ -88,8 +66,6 @@ static int svz_check_sockets_select (void) __attribute__ ((used));
   (!((sock)->flags & SOCK_FLAG_NOOVERFLOW) ||		   \
    ((sock)->recv_buffer_fill < (sock)->recv_buffer_size && \
     (sock)->recv_buffer_size > 0))
-
-#ifndef __MINGW32__
 
 /*
  * Check the server and client sockets for incoming connections 
@@ -348,10 +324,6 @@ svz_check_sockets_select (void)
   
   return 0;
 }
-
-#endif /* not __MINGW32__ */
-
-#if ENABLE_POLL /* configured */
 
 /* re-allocate static buffers if necessary */
 #define FD_EXPAND()                                                 \
@@ -612,8 +584,6 @@ svz_check_sockets_poll (void)
   return 0;
 }
 
-#endif /* ENABLE_POLL */
-
 /*
  * Check the server and client sockets for incoming connections 
  * and data, and process outgoing data.
@@ -621,9 +591,5 @@ svz_check_sockets_poll (void)
 int
 svz_check_sockets (void)
 {
-#if ENABLE_POLL
   return svz_check_sockets_poll ();
-#else
-  return svz_check_sockets_select ();
-#endif
 }

@@ -22,15 +22,13 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>              /* stdio.h */
 #include <string.h>             /* strcpy, memset */
 #include <zlib.h>               /* inflate, deflate, Z_NULL, voidpf, z_stream */
 
-#include "libserveez/alloc.h"
-#include "libserveez/codec/codec.h"
-#include "libserveez/codec/gzlib.h"
+#include "alloc.h"
+#include "codec/codec.h"
+#include "codec/gzlib.h"
 
 /* Definition of the 'zlib' encoder. */
 svz_codec_t zlib_encoder = {

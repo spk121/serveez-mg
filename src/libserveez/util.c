@@ -25,8 +25,6 @@
  *
  */
 
-#include <config.h>
-
 #include <stdio.h>       /* sprintf, fflush, vfprintf, fprintf, ferror, feof */
 #include <string.h>             /* strerror */
 #include <ctype.h>              /* isupper, tolower */
@@ -38,10 +36,10 @@
 #include <unistd.h>             /* sysconf, getcwd */
 #include <sys/resource.h>       /* RLIMIT_NOFILE, struct rlimit */
 
-#include "libserveez/alloc.h"
-#include "libserveez/boot.h"
-#include "libserveez/mutex.h"
-#include "libserveez/util.h"
+#include "alloc.h"
+#include "boot.h"
+#include "mutex.h"
+#include "util.h"
 
 /* 
  * Level of the logging interfaces verbosity:

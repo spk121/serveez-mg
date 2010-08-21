@@ -25,14 +25,13 @@
 # Boston, MA 02111-1307, USA.  
 #
 
+SUBDIRS = libserveez
 
 pkgdata_DATA = serveez.scm serveez.cfg
 
 #
 # Add your server subdirectory here
 #
-SUBDIRS = libserveez
-
 #
 # Add your library here
 #
@@ -102,12 +101,9 @@ serveez_SOURCES = \
 	tunnel-server/tunnel.h
 
 LDADD = libserveez/libserveez.la \
-	libserveez/codec/libcodec.la \
-	libserveez/coserver/libcoserver.la \
 	$(GUILE_LIBS)
 
-
-AM_CPPFLAGS = $(GUILE_CFLAGS)
+AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 
 # mkpassword_SOURCES = mkpassword.c getpass.c getpass.h
 # mkpassword_LDADD = -lcrypt

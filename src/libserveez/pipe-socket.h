@@ -25,8 +25,8 @@
 #ifndef __PIPE_SOCKET_H__
 #define __PIPE_SOCKET_H__ 1
 
-#include "libserveez/defines.h"
-#include "libserveez/socket.h"
+#include "defines.h"
+#include "socket.h"
 
 #define READ           0      /* read pipe index */
 #define WRITE          1      /* write pipe index */
