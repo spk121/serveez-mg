@@ -371,9 +371,7 @@ ctrl_stat_id (svz_socket_t *sock, int flag, char *arg)
 		   " sendbuf  : %d (size), %d (fill), %s (last send)\r\n"
 		   " recvbuf  : %d (size), %d (fill), %s (last recv)\r\n"
 		   " idle     : %d\r\n"
-#if SVZ_ENABLE_FLOOD_PROTECTION
 		   " flood    : %d (points), %d (limit)\r\n"
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 		   " avail    : %s\r\n\r\n",
 		   xsock->send_buffer_size,
 		   xsock->send_buffer_fill,
@@ -382,10 +380,8 @@ ctrl_stat_id (svz_socket_t *sock, int flag, char *arg)
 		   xsock->recv_buffer_fill,
 		   svz_time (xsock->last_recv),
 		   xsock->idle_counter,
-#if SVZ_ENABLE_FLOOD_PROTECTION
 		   xsock->flood_points,
 		   xsock->flood_limit,
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 		   xsock->unavailable ? "no" : "yes");
 
   return flag;
@@ -439,9 +435,7 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 		   " IDENT"
 		   " REVERSE-DNS"
 		   " DNS"
-#ifdef SVZ_ENABLE_FLOOD_PROTECTION
 		   " FLOOD"
-#endif /* SVZ_ENABLE_FLOOD_PROTECTION */
 		   " DEBUG"
 		   "\r\n");
 
