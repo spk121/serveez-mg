@@ -196,7 +196,6 @@ AC_CONFIG_FILES([
     Makefile
     doc/Makefile
     src/Makefile 
-    src/serveez-config
     src/ctrl-server/Makefile
     src/http-server/Makefile
     src/prog-server/Makefile
