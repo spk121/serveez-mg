@@ -31,34 +31,9 @@
 /* 
  * Include headers of servers.
  */
-#include "foo-server/foo-proto.h"
-#if ENABLE_AWCS_PROTO
-# include "awcs-server/awcs-proto.h"
-#endif
-#if ENABLE_HTTP_PROTO
 # include "http-server/http-proto.h"
-#endif
-#if ENABLE_IRC_PROTO
-# include "irc-server/irc-proto.h"
-#endif
-#if ENABLE_CONTROL_PROTO
 # include "ctrl-server/control-proto.h"
-#endif
-#if ENABLE_SNTP_PROTO
-# include "sntp-server/sntp-proto.h"
-#endif
-#if ENABLE_GNUTELLA
-# include "nut-server/gnutella.h"
-#endif
-#if ENABLE_TUNNEL
-# include "tunnel-server/tunnel.h"
-#endif
-#if ENABLE_FAKEIDENT
-# include "fakeident-server/ident-proto.h"
-#endif
-#if ENABLE_PROG_SERVER
 # include "prog-server/prog-server.h"
-#endif
 
 /* 
  * Initialize all static server definitions. 
@@ -66,32 +41,7 @@
 void
 init_server_definitions (void)
 {
-  svz_servertype_add (&foo_server_definition);
-#if ENABLE_AWCS_PROTO
-  svz_servertype_add (&awcs_server_definition);
-#endif
-#if ENABLE_HTTP_PROTO
   svz_servertype_add (&http_server_definition);
-#endif
-#if ENABLE_IRC_PROTO
-  svz_servertype_add (&irc_server_definition);
-#endif
-#if ENABLE_CONTROL_PROTO
   svz_servertype_add (&ctrl_server_definition);
-#endif
-#if ENABLE_SNTP_PROTO
-  svz_servertype_add (&sntp_server_definition);
-#endif
-#if ENABLE_GNUTELLA
-  svz_servertype_add (&nut_server_definition);
-#endif
-#if ENABLE_TUNNEL
-  svz_servertype_add (&tnl_server_definition);
-#endif
-#if ENABLE_FAKEIDENT
-  svz_servertype_add (&fakeident_server_definition);
-#endif
-#if ENABLE_PROG_SERVER
   svz_servertype_add (&prog_server_definition);
-#endif
 }

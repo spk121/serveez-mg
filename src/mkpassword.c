@@ -64,11 +64,7 @@ main (int argc, char **argv)
 	}
     }
 
-#if SVZ_HAVE_CRYPT
   plaintext = getpass ("Password: ");
   fprintf (stdout, "%s\n", crypt (plaintext, salt));
-#else
-  fprintf (stderr, "please --enable-crypt\n");
-#endif
   return 0;
 }

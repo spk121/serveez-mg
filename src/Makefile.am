@@ -27,7 +27,11 @@
 
 SUBDIRS = libserveez
 
-pkgdata_DATA = serveez.scm serveez.cfg
+pkgsysconfdir = ${sysconfdir}/${PACKAGE}
+pkgsysconf_DATA = serveez.cfg
+
+pkgguilesitedir = ${GUILE_SITEDIR}/${PACKAGE}
+pkgguilesite_DATA = serveez.scm
 
 #
 # Add your server subdirectory here
@@ -45,14 +49,8 @@ serveez_SOURCES = \
 	option.c option.h \
 	guile-api.c guile-api.h \
 	guile-server.c guile-server.h \
-	awcs-server/awcs-proto.c \
-	awcs-server/awcs-proto.h \
 	ctrl-server/control-proto.c \
 	ctrl-server/control-proto.h \
-	fakeident-server/ident-proto.c \
-	fakeident-server/ident-proto.h \
-	foo-server/foo-proto.c \
-	foo-server/foo-proto.h \
 	http-server/http-cache.c \
 	http-server/http-cache.h \
 	http-server/http-cgi.c \
@@ -63,48 +61,14 @@ serveez_SOURCES = \
 	http-server/http-dirlist.h \
 	http-server/http-proto.c \
 	http-server/http-proto.h \
-	irc-core/irc-core.c \
-	irc-core/irc-core.h \
-	irc-server/irc-config.c \
-	irc-server/irc-config.h \
-	irc-server/irc-crypt.c \
-	irc-server/irc-crypt.h \
-	irc-server/irc-event-1.c \
-	irc-server/irc-event-2.c \
-	irc-server/irc-event-3.c \
-	irc-server/irc-event-4.c \
-	irc-server/irc-event-5.c \
-	irc-server/irc-event-6.c \
-	irc-server/irc-event-7.c \
-	irc-server/irc-event.h \
-	irc-server/irc-proto.c \
-	irc-server/irc-proto.h \
-	irc-server/irc-server.c \
-	irc-server/irc-server.h \
-	nut-server/gnutella.c \
-	nut-server/gnutella.h \
-	nut-server/nut-core.c \
-	nut-server/nut-core.h \
-	nut-server/nut-hostlist.c \
-	nut-server/nut-hostlist.h \
-	nut-server/nut-request.c \
-	nut-server/nut-request.h \
-	nut-server/nut-route.c \
-	nut-server/nut-route.h \
-	nut-server/nut-transfer.c \
-	nut-server/nut-transfer.h \
 	prog-server/prog-server.c \
-	prog-server/prog-server.h \
-	sntp-server/sntp-proto.c \
-	sntp-server/sntp-proto.h \
-	tunnel-server/tunnel.c \
-	tunnel-server/tunnel.h
+	prog-server/prog-server.h
 
 LDADD = libserveez/libserveez.la \
 	$(GUILE_LIBS)
 
 AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 
-# mkpassword_SOURCES = mkpassword.c getpass.c getpass.h
-# mkpassword_LDADD = -lcrypt
+mkpassword_SOURCES = mkpassword.c getpass.c getpass.h
+mkpassword_LDADD = -lcrypt
 

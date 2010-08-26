@@ -25,9 +25,7 @@
 #ifndef __HTTP_CACHE_H__
 #define __HTTP_CACHE_H__ 1
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include <time.h>
 

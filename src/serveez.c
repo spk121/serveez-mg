@@ -84,9 +84,7 @@ guile_entry (int argc __attribute__ ((unused)),
       svz_config.password = svz_strdup (options->pass);
     }
 
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_NOTICE, "serveez starting, debugging enabled\n");
-#endif /* SVZ_ENABLE_DEBUG */
 
   svz_openfiles (svz_config.max_sockets);
   svz_log (LOG_NOTICE, "using %d socket descriptors\n",
@@ -114,20 +112,16 @@ guile_entry (int argc __attribute__ ((unused)),
   svz_log (LOG_NOTICE, "destroying internal coservers\n");
   svz_coserver_finalize ();
 
-#if ENABLE_GUILE_SERVER
   guile_server_finalize ();
-#endif /* ENABLE_GUILE_SERVER */
 
   svz_halt ();
 
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "%d byte(s) of memory in %d block(s) wasted\n", 
 	   svz_allocated_bytes, svz_allocated_blocks);
 
 #if DEBUG_MEMORY_LEAKS
   svz_heap ();
 #endif
-#endif /* SVZ_ENABLE_DEBUG */
 
   svz_log (LOG_NOTICE, "serveez terminating\n");
 

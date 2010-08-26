@@ -25,8 +25,6 @@
 
 #include <config.h>
 
-#if ENABLE_HTTP_PROTO
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -812,9 +810,3 @@ http_post_response (svz_socket_t *sock, char *request,
   svz_free (file);
   return 0;
 }
-
-#else /* ENABLE_HTTP_PROTO */
-
-int http_cgi_dummy; /* Shut up compiler warnings. */
-
-#endif /* not ENABLE_HTTP_PROTO */

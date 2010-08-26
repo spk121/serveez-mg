@@ -23,11 +23,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#if ENABLE_CONTROL_PROTO
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,35 +31,13 @@
 #include <time.h>
 #include <sys/times.h>
 
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <netinet/in.h>
-#endif
-
-#if HAVE_LIBKSTAT
-# include <kstat.h>
-# include <sys/sysinfo.h>
-#elif HAVE_PSTAT
-# include <sys/pstat.h>
-#elif HAVE_SYSGET
-# include <sys/sysget.h>
-# include <sys/sysinfo.h>
-#elif HAVE_HOST_STATISTICS
-# include <mach/mach_init.h>
-# include <mach/mach_host.h>
-#endif
-
+#include <sys/types.h>
+#include <netinet/in.h>
 
 #include "libserveez.h"
 #include "control-proto.h"
 
-#if ENABLE_HTTP_PROTO
-# include "http-server/http-cache.h"
-#endif
+#include "http-server/http-cache.h"
 
 /*
  * The control server instance configuration.
@@ -186,9 +160,7 @@ ctrl_detect_proto (svz_server_t *server __attribute__ ((unused)),
 		   sock->recv_buffer_fill - ret);
 	}
       sock->recv_buffer_fill -= ret;
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "control protocol client detected\n");
-#endif
       return -1;
     }
 
@@ -212,14 +184,8 @@ ctrl_connect_socket (svz_server_t *server __attribute__ ((unused)),
   sock->idle_func = ctrl_idle;
   sock->idle_counter = CTRL_LOAD_UPDATE;
 
-#if HAVE_PROC_STAT
   cpu_state.cpufile = CPU_FILE_NAME;
   cpu_state.cpuline = CPU_LINE_FORMAT;
-#elif HAVE_LIBKSTAT /* not HAVE_PROC_STAT */
-
-#else /* neither HAVE_PROC_STAT nor HAVE_LIBKSTAT */
-  strcpy (cpu_state.info, CPU_FORMAT);
-#endif
 
   cpu_state.cpuinfoline = CPU_FORMAT;
 
@@ -263,10 +229,8 @@ ctrl_help (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
     "   * stat con            - connection statistics\r\n"
     "   * stat id NUM         - NUM's connection info\r\n"
     "   * stat all            - server and coserver state\r\n"
-#if ENABLE_HTTP_PROTO
     "   * stat cache          - http cache statistics\r\n"
     "   * kill cache          - free all http cache entries\r\n"
-#endif /* ENABLE_HTTP_PROTO */
     "\r\n");
 
   return flag;
@@ -465,33 +429,9 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 
   /* display compile time feature list */
   svz_sock_printf (sock, "Features  : FOO"
-#ifdef ENABLE_AWCS_PROTO
-		   " AWCS"
-#endif /* ENABLE_AWCS_PROTO */
-#ifdef ENABLE_HTTP_PROTO
 		   " HTTP"
-#endif /* ENABLE_HTTP_PROTO */
-#ifdef ENABLE_IRC_PROTO
-		   " IRC"
-#endif /* ENABLE_IRC_PROTO */
-#if ENABLE_CONTROL_PROTO
 		   " CTRL"
-#endif /* ENABLE_CONTROL_PROTO */
-#if ENABLE_SNTP_PROTO
-		   " SNTP"
-#endif /* ENABLE_SNTP_PROTO */
-#if ENABLE_GNUTELLA
-		   " NUT"
-#endif /* ENABLE_GNUTELLA */
-#if ENABLE_TUNNEL
-		   " TUNNEL"
-#endif /* ENABLE_TUNNEL */
-#if ENABLE_FAKEIDENT
-		   " IDENTD"
-#endif /* ENABLE_FAKEIDENT */
-#if ENABLE_PROG_SERVER
 		   " PROG"
-#endif /* ENABLE_PROG_SERVER */
 		   "\r\n");
   
   /* second feature line */
@@ -502,12 +442,7 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 #ifdef SVZ_ENABLE_FLOOD_PROTECTION
 		   " FLOOD"
 #endif /* SVZ_ENABLE_FLOOD_PROTECTION */
-#ifdef SVZ_ENABLE_DEBUG
 		   " DEBUG"
-#endif /* SVZ_ENABLE_DEBUG */
-#if defined (__MINGW32__) || defined (__CYGWIN__)
-		   " WIN32"
-#endif /* __MINGW32__, __CYGWIN__ */
 		   "\r\n");
 
   /* display system and process information */
@@ -520,10 +455,8 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 		   svz_sock_connections, svz_config.max_sockets);
   svz_sock_printf (sock, " * uptime is %s\r\n", 
 		   svz_uptime (time (NULL) - svz_config.start));
-#if SVZ_ENABLE_DEBUG
   svz_sock_printf (sock, " * %d bytes of memory in %d blocks allocated\r\n", 
 		   svz_allocated_bytes, svz_allocated_blocks);
-#endif /* SVZ_ENABLE_DEBUG */
   svz_sock_printf (sock, "\r\n");
 
   return flag;
@@ -578,7 +511,6 @@ ctrl_stat_con (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
   return flag;
 }
 
-#if ENABLE_HTTP_PROTO
 /*
  * HTTP cache statistics. The following displayed information is a
  * visual representation of the http cache structures.
@@ -628,7 +560,6 @@ ctrl_kill_cache (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)
   http_alloc_cache (http_cache_entries);
   return flag;
 }
-#endif /* ENABLE_HTTP_PROTO */
 
 /*
  * Show all Co-Server instances statistics.
@@ -650,11 +581,7 @@ ctrl_stat_coservers (svz_socket_t *sock, int flag,
 		       " %s %d\r\n"
 		       " requests   : %d\r\n",
 		       coserver->sock->id,
-#ifndef __MINGW32__
 		       "process id :", coserver->pid,
-#else /* __MINGW32__ */
-		       "thread id  :", coserver->tid,
-#endif /* __MINGW32__ */
 		       coserver->busy);
     }
 
@@ -785,10 +712,8 @@ ctrl[] =
   { CTRL_CMD_STAT_CON,      ctrl_stat_con, 0 },
   { CTRL_CMD_STAT_ID,       ctrl_stat_id, 0 },
   { CTRL_CMD_STAT_ALL,      ctrl_stat_all, 0 },
-#if ENABLE_HTTP_PROTO
   { CTRL_CMD_STAT_CACHE,    ctrl_stat_cache, 0 },
   { CTRL_CMD_KILL_CACHE,    ctrl_kill_cache, 0 },
-#endif
   { CTRL_CMD_STAT,          ctrl_stat, 0 },
   { CTRL_CMD_KILLALL,       ctrl_killall, 0 },
   { CTRL_CMD_KILL_ID,       ctrl_kill_id, 0 },
@@ -822,15 +747,9 @@ ctrl_handle_request (svz_socket_t *sock, char *request, int len)
        * check here the control protocol password
        */
       if (len <= 2) return -1;
-#if SVZ_ENABLE_CRYPT
       request[len] = '\0';
       if (svz_config.password == NULL ||
 	  !strcmp (crypt (request, svz_config.password), svz_config.password))
-#else
-      if (svz_config.password == NULL ||
-	  (!memcmp (request, svz_config.password, len) &&
-	   (unsigned) len >= strlen (svz_config.password)))
-#endif
 	{
 	  sock->userflags |= CTRL_FLAG_PASSED;
 	  svz_sock_printf (sock, "Login ok.\r\n%s", CTRL_PROMPT);
@@ -889,22 +808,8 @@ ctrl_get_cpu_state (void)
 {
   int n;
 
-#if HAVE_LIBKSTAT
-  static kstat_ctl_t *kc;
-  static kstat_t *ksp = NULL;
-  static cpu_stat_t cs;
-#elif HAVE_PROC_STAT
   FILE *f;
   static char stat[STAT_BUFFER_SIZE];
-#elif HAVE_PSTAT
-  struct pst_dynamic stats;
-#elif HAVE_SYSGET
-  struct sysinfo_cpu info;
-  sgt_cookie_t cookie;
-#elif HAVE_HOST_STATISTICS
-  host_cpu_load_info_data_t info;
-  mach_msg_type_number_t count;
-#endif
 
   struct tms proc_tms;
 
@@ -915,33 +820,6 @@ ctrl_get_cpu_state (void)
   cpu_state.proc[n][1] = proc_tms.tms_stime;
   cpu_state.proc[n][2] = proc_tms.tms_cutime;
   cpu_state.proc[n][3] = proc_tms.tms_cstime;
-
-#if HAVE_LIBKSTAT /* Solaris */
-
-  if (ksp == NULL)
-    {
-      kc = kstat_open ();
-
-      for (ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) 
-	if (strncmp (ksp->ks_name, "cpu_stat", 8) == 0) 
-	  break;
-    }
-  else
-    {
-      if (kstat_read (kc, ksp, &cs) == -1) 
-	{
-          snprintf (cpu_state.info, STAT_BUFFER_SIZE,
-                   "kstat_read() failed");
-	  return -1;
-	}
-
-      cpu_state.cpu[n][0] = cs.cpu_sysinfo.cpu[CPU_USER];
-      cpu_state.cpu[n][1] = cs.cpu_sysinfo.cpu[CPU_KERNEL];
-      cpu_state.cpu[n][2] = cs.cpu_sysinfo.cpu[CPU_WAIT];
-      cpu_state.cpu[n][3] = cs.cpu_sysinfo.cpu[CPU_IDLE];
-    }
-
-#elif HAVE_PROC_STAT /* Linux */
 
   /* open the statistics file */
   if ((f = svz_fopen (cpu_state.cpufile, "r")) == NULL)
@@ -970,36 +848,6 @@ ctrl_get_cpu_state (void)
             "cpu line not found in %s", cpu_state.cpufile);
   svz_fclose (f);
 
-#elif HAVE_PSTAT /* HP Unix */
-
-  pstat_getdynamic (&stats, sizeof (struct pst_dynamic), 1, 0);
-
-  cpu_state.cpu[n][0] = stats.psd_cpu_time[0];
-  cpu_state.cpu[n][1] = stats.psd_cpu_time[1];
-  cpu_state.cpu[n][2] = stats.psd_cpu_time[2];
-  cpu_state.cpu[n][3] = stats.psd_cpu_time[3];
-
-#elif HAVE_SYSGET /* Irix */
-
-  SGT_COOKIE_INIT (&cookie);
-  sysget (SGT_SINFO_CPU, (char *) &info, sizeof (info), SGT_READ, &cookie);
-
-  cpu_state.cpu[n][0] = info.cpu[CPU_USER];
-  cpu_state.cpu[n][1] = info.cpu[CPU_KERNEL];
-  cpu_state.cpu[n][2] = info.cpu[CPU_WAIT];
-  cpu_state.cpu[n][3] = info.cpu[CPU_IDLE];
-
-#elif HAVE_HOST_STATISTICS /* MacOS */
-
-  host_statistics (mach_host_self (), 
-		   HOST_CPU_LOAD_INFO, (host_info_t) &info, &count);
-
-  cpu_state.cpu[n][0] = info.cpu_ticks[CPU_STATE_USER];
-  cpu_state.cpu[n][1] = info.cpu_ticks[CPU_STATE_SYSTEM];
-  cpu_state.cpu[n][2] = info.cpu_ticks[CPU_STATE_IDLE];
-  cpu_state.cpu[n][3] = info.cpu_ticks[CPU_STATE_NICE];
-
-#endif
   return 0;
 }
 
@@ -1064,9 +912,3 @@ ctrl_idle (svz_socket_t *sock)
 }
 
 int have_ctrl = 1;
-
-#else /* ENABLE_CONTROL_PROTO */
-
-int have_ctrl = 0; /* shut up compiler */
-
-#endif /* ENABLE_CONTROL_PROTO */

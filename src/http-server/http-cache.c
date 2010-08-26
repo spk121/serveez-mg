@@ -22,32 +22,15 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#if ENABLE_HTTP_PROTO
+#include <config.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#if HAVE_FLOSS_H
-# include <floss.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-# include <io.h>
-#endif
-
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-#endif
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include "libserveez.h"
 #include "http-proto.h"
@@ -74,9 +57,7 @@ http_alloc_cache (int entries)
 	http_free_cache ();
       http_cache = svz_hash_create (entries, NULL);
       http_cache_entries = entries;
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "cache: created %d cache entries\n", entries);
-#endif
     }
 }
 
@@ -103,12 +84,9 @@ http_free_cache (void)
   svz_hash_destroy (http_cache);
   http_cache_first = http_cache_last = NULL;
   http_cache = NULL;
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "cache: freeing %d byte in %d entries\n", total, files); 
-#endif
 }
 
-#if SVZ_ENABLE_DEBUG
 /*
  * Check consistency of the http cache. Remove this function once the 
  * server is stable.
@@ -139,11 +117,7 @@ http_cache_consistency (void)
 	}
     }
 }
-#else /* not SVZ_ENABLE_DEBUG */
-# define http_cache_consistency()
-#endif /* not SVZ_ENABLE_DEBUG */
 
-#if SVZ_ENABLE_DEBUG
 static void
 http_cache_print (void)
 {
@@ -158,9 +132,6 @@ http_cache_print (void)
     }
   printf ("cache last: %p\n", (void *) http_cache_last);
 }
-#else
-# define http_cache_print()
-#endif /* SVZ_ENABLE_DEBUG */
 
 /*
  * Returns the urgency value of the given http cache entry CACHE.
@@ -431,9 +402,7 @@ http_cache_write (svz_socket_t *sock)
    */
   if (cache->size <= 0)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "cache: file successfully sent\n");
-#endif
       num_written = http_keep_alive (sock);
     }
   
@@ -473,26 +442,13 @@ http_cache_read (svz_socket_t *sock)
   /*
    * Try to read as much data as possible from the file.
    */
-#ifndef __MINGW32__
   num_read = read (sock->file_desc,
 		   sock->send_buffer + sock->send_buffer_fill, do_read);
-#else
-  if (!ReadFile ((svz_t_handle) sock->file_desc,
-		 sock->send_buffer + sock->send_buffer_fill,
-		 do_read, (DWORD *) &num_read, NULL))
-    {
-      num_read = -1;
-    }
-#endif
-  
+
   /* Read error occurred. */
   if (num_read < 0)
     {
-#ifndef __MINGW32__
       svz_log (LOG_ERROR, "cache: read: %s\n", SYS_ERROR);
-#else
-      svz_log (LOG_ERROR, "cache: ReadFile: %s\n", SYS_ERROR);
-#endif
 
       /* release the actual cache entry previously reserved */
       if (cache->size > 0) 
@@ -533,10 +489,8 @@ http_cache_read (svz_socket_t *sock)
   /* EOF reached and set the appropriate flags */
   if (http->filelength <= 0)
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "cache: `%s' successfully read\n", 
 	       cache->entry->file);
-#endif
 
       /* fill in the actual cache entry */
       cache->entry->size = cache->size;
@@ -553,8 +507,3 @@ http_cache_read (svz_socket_t *sock)
   return 0;
 }
 
-#else /* ENABLE_HTTP_PROTO */
- 
-int http_cache_dummy; /* Silence compiler. */
-
-#endif /* not ENABLE_HTTP_PROTO */

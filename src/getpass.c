@@ -22,9 +22,6 @@
 #include <unistd.h>
 
 
-#ifndef TCSASOFT
-#define TCSASOFT 0
-#endif
 #define PWD_BUFFER_SIZE 256
 
 char *
@@ -45,7 +42,7 @@ getpasswd (const char *prompt)
       s = t;
       /* Tricky, tricky. */
       t.c_lflag &= ~(ECHO | ISIG);
-      tty_changed = (tcsetattr (fileno (in), TCSAFLUSH | TCSASOFT, &t) == 0);
+      tty_changed = (tcsetattr (fileno (in), TCSAFLUSH, &t) == 0);
     }
   else
     tty_changed = 0;
@@ -74,7 +71,7 @@ getpasswd (const char *prompt)
   /* Restore the original setting.  */
   if (tty_changed)
     {
-      tcsetattr (fileno (stdin), TCSAFLUSH | TCSASOFT, &s);
+      tcsetattr (fileno (stdin), TCSAFLUSH, &s);
     }
 
   return buf;

@@ -25,6 +25,10 @@
 #ifndef __GUILE_H__
 #define __GUILE_H__ 1
 
+/*! \file guile.h
+    \brief Low-level conversion functions between Scheme and C types.
+*/
+
 #include <libguile.h>
 #include "libserveez.h"
 /*
@@ -45,7 +49,20 @@
 int guile_global_error;
 
 /* Export these functions. */
+
+/*! \fn int guile_to_integer (SCM source, int *target);
+ * \brief Converts guile type to integer.
+
+ * Parse an integer value from a scheme value. Returns zero when
+ * successful.  Stores the integer value where target points to. Does
+ * not emit error messages.
+
+ * \param source a scheme integer or string
+ * \param target a pointer to an integer store
+ * \return 0 on sucess.  Non-zero on failure.
+ */
 int guile_to_integer (SCM, int *);
+
 int guile_to_boolean (SCM, int *);
 svz_array_t *guile_to_intarray (SCM, char *);
 svz_array_t *guile_to_strarray (SCM, char *);

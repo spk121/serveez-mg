@@ -23,24 +23,14 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#if ENABLE_PROG_SERVER
+#include <config.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-#ifndef __MINGW32__
-# include <sys/types.h>
-# include <sys/socket.h>
-#endif
-
-#ifdef __MINGW32__
-# include <winsock2.h>
-#endif
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #include "libserveez.h"
 #include "prog-server.h"
@@ -170,11 +160,7 @@ prog_passthrough (svz_socket_t *sock)
   argv = (char **) svz_array_values (cfg->argv);
   if ((pid = svz_sock_process (sock, cfg->bin, cfg->dir, argv, NULL,
 			       cfg->fork ? SVZ_PROCESS_FORK :
-#if HAVE_SOCKETPAIR
 			       SVZ_PROCESS_SHUFFLE_SOCK,
-#else
-			       SVZ_PROCESS_SHUFFLE_PIPE,
-#endif
 			       cfg->user ? cfg->user :	SVZ_PROCESS_NONE)) < 0)
     {
       svz_log (LOG_ERROR, "prog: cannot execute `%s'\n", cfg->bin);
@@ -271,10 +257,8 @@ prog_read_sock_drop (svz_socket_t *sock)
 
   if ((ret = recv (sock->sock_desc, buffer, UDP_MSG_SIZE, 0)) < 0)
     return -1;
-#if SVZ_ENABLE_DEBUG
   svz_log (LOG_DEBUG, "prog: dropped %d bytes on %s socket %d\n", ret, 
 	   sock->proto & PROTO_UDP ? "UDP" : "TCP", sock->sock_desc);
-#endif
   return 0;
 }
 
@@ -413,8 +397,3 @@ prog_info_server (svz_server_t *server)
   return NULL;
 }
 
-#else /* not ENABLE_PROG_SERVER */
-
-static int have_prog = 0;
-
-#endif /* not ENABLE_PROG_SERVER */

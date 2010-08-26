@@ -82,7 +82,7 @@ guile_value_t;
 
 /*
  * Create a guile value structure with the given @var{value}. Initializes 
- * the usage counter to zero. The define counter is set to 1.
+ * the usage counter to zero. The define counter is set to 1. 
  */
 static guile_value_t *
 guile_value_create (SCM value)
@@ -94,7 +94,7 @@ guile_value_create (SCM value)
   return v;
 }
 
-/*
+/*!
  * Create a fresh option-hash.
  */
 svz_hash_t *
@@ -1736,11 +1736,7 @@ guile_eval_file (void *data)
   int error;
 
   /* Parse configuration from standard input stream. */
-#ifdef __MINGW32__
-  error = svz_fstat ((int) GetStdHandle (STD_INPUT_HANDLE), &buf);
-#else
   error = svz_fstat (fileno (stdin), &buf);
-#endif
   if (file == NULL || (error != -1 && !isatty (fileno (stdin)) &&
 		       !S_ISCHR (buf.st_mode) && !S_ISBLK (buf.st_mode)))
     {

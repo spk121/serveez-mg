@@ -26,9 +26,7 @@
 #ifndef __HTTP_DIRLIST_H__
 #define __HTTP_DIRlIST_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 /*
  * Create a directory listing of the directory given as dirname. If the

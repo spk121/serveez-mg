@@ -25,8 +25,6 @@
 
 #include <config.h>
 
-#if ENABLE_GUILE_SERVER
-
 #define _GNU_SOURCE 1
 #include <stdio.h>              /* sprintf, fprintf, stderr, asprintf */
 #include <stdlib.h>             /* free */
@@ -1782,9 +1780,3 @@ guile_server_finalize (void)
       guile_sock = NULL;
     }
 }
-
-#else /* not ENABLE_GUILE_SERVER */
-
-static int have_guile_server = 0;
-
-#endif /* ENABLE_GUILE_SERVER */

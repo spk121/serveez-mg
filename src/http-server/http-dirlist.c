@@ -24,11 +24,7 @@
  *
  */
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
-#if ENABLE_HTTP_PROTO
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,21 +34,10 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#  include <dirent.h>
-#  define NAMLEN(dirent) strlen((dirent)->d_name)
+#include <dirent.h>
+#define NAMLEN(dirent) strlen((dirent)->d_name)
 
-#if HAVE_SYS_DIRENT_H && !defined (HAVE_DIRENT_H)
-# include <sys/dirent.h>
-#endif
-
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifdef __MINGW32__
-# include <windows.h>
-# include <winsock2.h>
-#endif
+#include <unistd.h>
 
 #include "libserveez.h"
 #include "http-proto.h"
@@ -256,8 +241,3 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
   return dirdata;
 }
 
-#else /* ENABLE_HTTP_PROTO */
- 
-int http_dirlist_dummy; /* Silence compiler. */
-
-#endif /* not ENABLE_HTTP_PROTO */

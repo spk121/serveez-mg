@@ -25,9 +25,7 @@
 #ifndef __HTTP_CGI_H__
 #define __HTTP_CGI_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #include "http-proto.h"
 

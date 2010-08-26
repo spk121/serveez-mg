@@ -25,8 +25,6 @@
 
 #include <config.h>
 
-#if ENABLE_GUILE_SERVER
-
 #include <errno.h>              /* errno */
 #include <libguile.h>
 #include <netdb.h>              /* gethostbyname */
@@ -1032,5 +1030,3 @@ void
 guile_api_finalize (void)
 {
 }
-
-#endif /* ENABLE_GUILE_SERVER */

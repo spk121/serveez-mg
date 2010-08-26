@@ -136,291 +136,6 @@ AC_ARG_WITH([thread-safety],
   esac],
   enable_threads="no")
 
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the SNTP server should be included.
-dnl
-AC_MSG_CHECKING([whether to enable the SNTP server])
-AC_ARG_ENABLE([sntp-proto],
-  [  --disable-sntp-proto    Include the SNTP server @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_sntp=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_sntp=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_sntp=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_sntp = yes ; then
-  AC_DEFINE(ENABLE_SNTP_PROTO,
-    1, [Define if the SNTP server should be included.])
-  SERVERLIBS="$SERVERLIBS sntp-server/libsntp.a"
-  SERVERDIRS="$SERVERDIRS sntp-server"
-fi
-unset define_enable_sntp
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the Gnutella server should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable the Gnutella spider])
-AC_ARG_ENABLE([gnutella],
-  [  --disable-gnutella      Include the Gnutella spider @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_nut=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_nut=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_nut=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_nut = yes ; then
-  AC_DEFINE(ENABLE_GNUTELLA,
-    1, [Define if the Gnutella spider should be included.])
-  SERVERLIBS="$SERVERLIBS nut-server/libnut.a"
-  SERVERDIRS="$SERVERDIRS nut-server"
-fi
-unset define_enable_nut
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the Tunnel server should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable the port forwarder])
-AC_ARG_ENABLE([tunnel],
-  [  --disable-tunnel        Include port forwarder @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_tunnel=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_tunnel=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_tunnel=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_tunnel = yes ; then
-  AC_DEFINE(ENABLE_TUNNEL,
-    1, [Define if the port forwarder should be included.])
-  SERVERLIBS="$SERVERLIBS tunnel-server/libtunnel.a"
-  SERVERDIRS="$SERVERDIRS tunnel-server"
-fi
-unset define_enable_tunnel
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the control protocol should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable support for the control protocol])
-AC_ARG_ENABLE([control-proto],
-  [  --disable-control-proto Include the control protocol @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_control_proto=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_control_proto=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_control_proto=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_control_proto = yes ; then
-  AC_DEFINE(ENABLE_CONTROL_PROTO,
-    1, [Define if the control protocol should be supported.])
-  SERVERLIBS="$SERVERLIBS ctrl-server/libctrl.a"
-  SERVERDIRS="$SERVERDIRS ctrl-server"
-fi
-unset define_enable_control_proto
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the IRC protocol should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable support for the IRC protocol])
-AC_ARG_ENABLE([irc-proto],
-  [  --disable-irc-proto     Include the IRC protocol @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_irc_proto=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_irc_proto=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_irc_proto=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_irc_proto = yes ; then
-  AC_DEFINE(ENABLE_IRC_PROTO,
-    1, [Define if the IRC protocol should be supported.])
-  SERVERLIBS="$SERVERLIBS irc-server/libircserver.a irc-core/libirccore.a"
-  SERVERDIRS="$SERVERDIRS irc-server irc-core"
-fi
-unset define_enable_irc_proto
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the IRC protocol "TimeStamp" extension should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable TimeStamp for the IRC protocol])
-AC_ARG_ENABLE([irc-ts],
-  [  --disable-irc-ts        Include TimeStamp in IRC protocol @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_irc_ts=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_irc_ts=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_irc_ts=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_irc_ts = yes ; then
-  AC_DEFINE(ENABLE_TIMESTAMP,
-    1, [Define if the IRC protocol TimeStamp extension should be supported.])
-fi
-unset define_enable_irc_ts
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the password encryption should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable password encryption])
-AC_ARG_ENABLE([crypt],
-  [  --enable-crypt          Include password encryption @<:@default=no@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_crypt=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_crypt=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_crypt=no
-  AC_MSG_RESULT([no]))
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the aWCS protocol should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable support for the aWCS protocol])
-AC_ARG_ENABLE([awcs-proto],
-  [  --disable-awcs-proto    Include the aWCS protocol @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_awcs_proto=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_awcs_proto=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_awcs_proto=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_awcs_proto = yes ; then
-  AC_DEFINE(ENABLE_AWCS_PROTO,
-    1, [Define if the aWCS protocol should be supported.])
-  SERVERLIBS="$SERVERLIBS awcs-server/libawcs.a"
-  SERVERDIRS="$SERVERDIRS awcs-server"
-fi
-unset define_enable_awcs_proto
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the HTTP protocol should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable support for the HTTP protocol])
-AC_ARG_ENABLE([http-proto],
-  [  --disable-http-proto    Include the HTTP protocol @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_http_proto=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_http_proto=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_http_proto=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_http_proto = yes ; then
-  AC_DEFINE(ENABLE_HTTP_PROTO,
-    1, [Define if the HTTP protocol should be supported.])
-  SERVERLIBS="$SERVERLIBS http-server/libhttp.a"
-  SERVERDIRS="$SERVERDIRS http-server"
-fi
-unset define_enable_http_proto
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the Fake Ident Server should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable the fake ident server])
-AC_ARG_ENABLE([fakeident],
-  [  --disable-fakeident     Include the fake ident server @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_fakeident=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_fakeident=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_fakeident=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_fakeident = yes ; then
-  AC_DEFINE(ENABLE_FAKEIDENT,
-    1, [Define if the Fake Ident Server should be included.])
-  SERVERLIBS="$SERVERLIBS fakeident-server/libfakeident.a"
-  SERVERDIRS="$SERVERDIRS fakeident-server"
-fi
-unset define_enable_fakeident
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether the passthrough server should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable the passthrough server])
-AC_ARG_ENABLE([passthrough],
-  [  --disable-passthrough   Include the passthrough server @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_prog=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_prog=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_prog=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_prog = yes ; then
-  AC_DEFINE(ENABLE_PROG_SERVER,
-    1, [Define if the program passthrough server should be included.])
-  SERVERLIBS="$SERVERLIBS prog-server/libprog.a"
-  SERVERDIRS="$SERVERDIRS prog-server"
-fi
-unset define_enable_prog
 
 dnl ----------------------------------------------------------------------
 
@@ -447,13 +162,6 @@ if test $define_enable_flood = yes; then
 fi
 unset define_enable_flood
 
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Checking for libtool support.
-dnl 
-
-dnl LT_INIT([win32-dll])
 
 dnl ----------------------------------------------------------------------
 
@@ -461,46 +169,23 @@ dnl
 dnl Check Guile installation.
 dnl
 
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check if guile servers should be included.
-dnl
-
-AC_MSG_CHECKING([whether to include guile server support])
-AC_ARG_ENABLE([guile-server],
-  [  --disable-guile-server  Include guile servers @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_guile=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_guile=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_guile=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_guile = yes ; then
-  AC_DEFINE(ENABLE_GUILE_SERVER, 
-    1, [Define if guile servers should be supported.])
-  PKG_CHECK_MODULES([GUILE], [guile-2.0])
-  AC_SUBST([GUILE_CFLAGS])
-  AC_SUBST([GUILE_LIBS])
-  AC_ARG_VAR([GUILE_SITEDIR],
-          [Directory where Guile Scheme files specific to your site should be installed])
-  if test -z "$GUILE_SITEDIR"
-  then
-    GUILE_SITEDIR=`guile -c "(display (%site-dir))"`
-  fi
-  AC_SUBST([GUILE_SITEDIR])
+PKG_CHECK_MODULES([GUILE], [guile-2.0])
+AC_SUBST([GUILE_CFLAGS])
+AC_SUBST([GUILE_LIBS])
+AC_ARG_VAR([GUILE_SITEDIR],
+           [Directory where Guile Scheme files specific to your site should be installed])
+if test -z "$GUILE_SITEDIR"
+then
+  GUILE_SITEDIR=`guile -c "(display (%site-dir))"`
 fi
-unset define_enable_guile
+AC_SUBST([GUILE_SITEDIR])
 
 dnl ----------------------------------------------------------------------
 
 dnl
 dnl Check whether to include support for named pipes under Linux.
 dnl
+
 AC_CHECK_HEADERS([rpc/pmap_clnt.h])
 AC_CHECK_FUNCS([sendfile pmap_set])
 
@@ -535,18 +220,11 @@ AC_CONFIG_SUBDIRS([src/libserveez])
 
 AC_CONFIG_FILES([
     Makefile
+    doc/Makefile
     src/Makefile 
     src/serveez-config
-    src/awcs-server/Makefile
     src/ctrl-server/Makefile
     src/http-server/Makefile
-    src/irc-core/Makefile
-    src/irc-server/Makefile
-    src/foo-server/Makefile
-    src/sntp-server/Makefile
-    src/nut-server/Makefile
-    src/tunnel-server/Makefile
-    src/fakeident-server/Makefile
     src/prog-server/Makefile
     src/guile-server/Makefile
     data/Makefile

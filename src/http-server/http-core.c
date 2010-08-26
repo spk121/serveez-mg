@@ -23,9 +23,7 @@
  *
  */
 
-# include <config.h>
-
-#if ENABLE_HTTP_PROTO
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,9 +32,9 @@
 #include <time.h>
 #include <stdarg.h>
 #include <sys/types.h>
-# include <unistd.h>
-# include <pwd.h>
-# include <netinet/in.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <netinet/in.h>
 
 #include "libserveez.h"
 #include "http-proto.h"
@@ -59,12 +57,7 @@ http_userdir (svz_socket_t *sock, char *uri)
   http_config_t *cfg = sock->cfg;
   char *p = uri + 1;
   char *user, *file;
-#if HAVE_GETPWNAM
   struct passwd *entry;
-#elif defined (__MINGW32__)
-  USER_INFO_1 *entry = NULL;
-  NET_API_STATUS status;
-#endif
 
   if (*uri && *p++ == '~' && cfg->userdir)
     {
@@ -78,7 +71,6 @@ http_userdir (svz_socket_t *sock, char *uri)
       memcpy (user, uri + 2, p - uri - 2);
       user[p - uri - 2] = '\0';
       
-#if HAVE_GETPWNAM
       if ((entry = getpwnam (user)) != NULL)
 	{
 	  file = svz_malloc (strlen (entry->pw_dir) + strlen (cfg->userdir) + 
@@ -87,61 +79,6 @@ http_userdir (svz_socket_t *sock, char *uri)
 	  svz_free (user);
 	  return file;
 	}
-#elif defined (__MINGW32__)
-      if (GetUserInfo == NULL)
-	{
-	  svz_free (user);
-	  return NULL;
-	}
-
-      status = GetUserInfo (NULL,                       /* server name */
-			    svz_windoze_asc2uni (user), /* user name */
-			    1,                          /* type of info */
-			    (LPBYTE *) &entry);         /* info buffer */
-
-      if (status != NERR_Success)
-	{
-	  char *error;
-	  switch (status)
-	    {
-	    case ERROR_ACCESS_DENIED:
-	      error = "The user does not have access to the requested "
-		"information.";
-	      break;
-	    case NERR_InvalidComputer:
-	      error = "The computer name is invalid.";
-	      break;
-	    case NERR_UserNotFound:
-	      error = "The user name could not be found.";
-	      break;
-	    default:
-	      error = "Unknown error.";
-	      break;
-	    }
-	  svz_log (LOG_ERROR, "NetUserGetInfo: %s\n", error);
-	}
-      /* successfully got the user information ? */
-      else if (entry && entry->usri1_home_dir && entry->usri1_home_dir[0])
-	{
-	  file = 
-	    svz_malloc (strlen (svz_windoze_uni2asc (entry->usri1_home_dir)) +
-			strlen (cfg->userdir) + strlen (p) + 2);
-	  sprintf (file, "%s/%s%s", 
-		   svz_windoze_uni2asc (entry->usri1_home_dir), 
-		   cfg->userdir, p);
-	  FreeUserInfo (entry);
-	  svz_free (user);
-	  return file;
-	}
-#if SVZ_ENABLE_DEBUG
-      else if (entry)
-	{
-	  svz_log (LOG_DEBUG, "http: home directory for %s not set\n",
-		   svz_windoze_uni2asc (entry->usri1_name));
-	}
-#endif /* SVZ_ENABLE_DEBUG */
-#endif /* not HAVE_GETPWNAM and not __MINGW32__ */
-
       svz_free (user);
     }
   return NULL;
@@ -383,11 +320,9 @@ http_check_range (http_range_t *range, off_t filesize)
       (range->last != 0 && range->last <= range->first) ||
       (range->last >= filesize || range->length > filesize))
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG,
 	       "http: invalid content range (%ld-%ld/%ld not in %ld) \n",
 	       range->first, range->last, range->length, filesize);
-#endif
       return -1;
     }
   return 0;
@@ -414,9 +349,7 @@ http_get_range (char *line, http_range_t *range)
   if (strlen (p) >= HTTP_BYTES_LENGTH && 
       memcmp (p, HTTP_BYTES, HTTP_BYTES_LENGTH))
     {
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "http: invalid byte-range specifier (%s)\n", p);
-#endif
       return -1;
     }
   p += HTTP_BYTES_LENGTH;
@@ -588,9 +521,7 @@ http_keep_alive (svz_socket_t *sock)
       sock->write_socket = http_default_write;
       sock->send_buffer_fill = 0;
       sock->idle_func = http_idle;
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "http: keeping connection alive\n");
-#endif
       return 0;
     }
   return -1;
@@ -995,9 +926,7 @@ http_absolute_file (char *file)
     {
       *p = '/';
       svz_log (LOG_ERROR, "chdir: %s\n", SYS_ERROR);
-#if SVZ_ENABLE_DEBUG
       svz_log (LOG_DEBUG, "cannot change dir: %s\n", file);
-#endif
       svz_free (savefile);
       svz_free (savedir);
       return file;
@@ -1020,8 +949,3 @@ http_absolute_file (char *file)
   return dir;
 }
 
-#else /* ENABLE_HTTP_PROTO */
-
-int http_core_dummy; /* Shut compiler warnings up. */
-
-#endif /* not ENABLE_HTTP_PROTO */

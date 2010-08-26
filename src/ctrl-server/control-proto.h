@@ -25,9 +25,7 @@
 #ifndef __CONTROL_PROTO_H__
 #define __CONTROL_PROTO_H__
 
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
+#include <config.h>
 
 #define STAT_BUFFER_SIZE 256
 
@@ -36,10 +34,8 @@
  */
 typedef struct
 {
-#if HAVE_PROC_STAT
   char *cpufile;                /* CPU state file under Linux */
   char *cpuline;                /* CPU line format under Linux */
-#endif /* HAVE_PROC_STAT */
   char *cpuinfoline;            /* the info format string */
   char info[STAT_BUFFER_SIZE];  /* the info line itself */
   char pinfo[STAT_BUFFER_SIZE]; /* process info itself */
@@ -83,33 +79,15 @@ int ctrl_handle_request (svz_socket_t *sock, char *request, int len);
 /*
  * Format string for system business output on different systems.
  */
-#ifdef HAVE_LIBKSTAT
-# define CPU_FORMAT \
-  "user %ld.%01ld%%, sys %ld.%01ld%%, wait %ld.%01ld%%, idle %ld.%01ld%%"
-#elif HAVE_PROC_STAT
 # define CPU_FORMAT \
   "user %ld.%01ld%%, nice %ld.%01ld%%, sys %ld.%01ld%%, idle %ld.%01ld%%"
-#elif HAVE_PSTAT
-# define CPU_FORMAT \
-  "user %ld.%01ld%%, nice %ld.%01ld%%, sys %ld.%01ld%%, idle %ld.%01ld%%"
-#elif HAVE_SYSGET
-# define CPU_FORMAT \
-  "user %ld.%01ld%%, sys %ld.%01ld%%, wait %ld.%01ld%%, idle %ld.%01ld%%"
-#elif HAVE_HOST_STATISTICS
-# define CPU_FORMAT \
-  "user %ld.%01ld%%, sys %ld.%01ld%%, idle %ld.%01ld%%, nice %ld.%01ld%%"
-#else
-# define CPU_FORMAT "no cpu info available"
-#endif
 
 #define PROC_FORMAT \
   "user %ld.%01ld%%, sys %ld.%01ld%%, " \
   "child user %ld.%01ld%%, child sys %ld.%01ld%%"
 
-#if HAVE_PROC_STAT
-# define CPU_FILE_NAME   "/proc/stat"
-# define CPU_LINE_FORMAT "cpu  %lu %lu %lu %lu"
-#endif /* HAVE_PROC_STAT */
+#define CPU_FILE_NAME   "/proc/stat"
+#define CPU_LINE_FORMAT "cpu  %lu %lu %lu %lu"
 
 /* welcome message */
 #define CTRL_PASSWD "Welcome to serveez control center. " \
