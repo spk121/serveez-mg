@@ -17,7 +17,8 @@
 -- Boston, MA 02111-1307, USA.  
 --
 
-Here are listed all the hackers who helped creating this package:
+Here are listed all the hackers who helped creating the original
+GNU Serveez.
 
 Andreas Rottmann <a.rottmann@gmx.at> for contributing the "configurable
 	type" idea and appropriate patches.  Also thanks for sending

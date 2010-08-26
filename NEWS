@@ -25,6 +25,26 @@ This file lists user visible changes that were made between releases.  For
 more verbose descriptions of these and internal changes see the ChangeLog
 files.
 
+The following are releases of Serveez-MG, a hack and fork of the original
+GNU Serveez.
+
+Version 0.1.8-mg
+-------------
+ * remove support for Windows, Solaris, HP, Cygwin and various other
+   platforms
+ * remove the fakeident, foo, irc, Gnutella, SNTP, and tunnel
+   servers
+ * update for use with Guile 2.0.x
+ * remove documentation for libserveez
+ * remove bzip2 support
+ * remove scripts to generate RPMs and Debian packages
+ * remove all configure options to choose which servers to install
+ * remove tests for the existence of files and functions
+
+
+=======================================================
+The following were releases of the official GNU Serveez
+
 Version 0.1.7
 -------------
 
