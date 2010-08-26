@@ -25,10 +25,13 @@
 
 #include <config.h>
 
-#include <stdio.h>
+#define _XOPEN_SOURCE           /* to get crypt in unistd.h */
+#define _GNU_SOURCE 1           /* to get snprintf */
+#include <stdio.h>              /* snprintf */
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>             /* crypt */
 #include <sys/times.h>
 
 #include <sys/types.h>

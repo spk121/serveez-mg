@@ -65,7 +65,7 @@ guile_resolve (const char *host, uint32_t *addr)
   return -1;
 }
 
-void
+SCM
 guile_lookup (const char *name)
 {
   SCM var;

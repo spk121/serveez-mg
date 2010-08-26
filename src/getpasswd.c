@@ -16,9 +16,10 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include <stdio.h>
-#include <string.h>
-#include <termios.h>
+#include <stdio.h> /* putc, fputs, fflush, fgets, _IONBF, setvbuf, fileno, stdin, fopen, FILE * */
+#include <stdlib.h>             /* malloc, free */
+#include <string.h>             /* strlen */
+#include <termios.h>       /* TCSAFLUSH, ISIG, ECHO, struct termios, tcgetattr */
 #include <unistd.h>
 
 
@@ -27,29 +28,49 @@
 char *
 getpasswd (const char *prompt)
 {
+  static char *buf;
+
   FILE *in, *out;
   struct termios s, t;
   int tty_changed;
-  static char buf[PWD_BUFFER_SIZE];
   int nread;
 
+  free(buf);
+  buf = malloc(PWD_BUFFER_SIZE);
+
+  /* Try to write to and read from the terminal if we can.
+     If we can't open the terminal, use stderr and stdin.  */
+
+  in = fopen ("/dev/tty", "r+");
+  if (in == NULL)
+    {
+      in = stdin;
+      out = stderr;
+    }
+  else
+    out = in;
 
   /* Turn echoing off if it is on now.  */
 
-  if (tcgetattr (fileno (stdin), &t) == 0)
+  if (tcgetattr (fileno (in), &t) == 0)
     {
       /* Save the old one. */
       s = t;
       /* Tricky, tricky. */
       t.c_lflag &= ~(ECHO | ISIG);
       tty_changed = (tcsetattr (fileno (in), TCSAFLUSH, &t) == 0);
+      if (in != stdin) {
+	/* Disable buffering for read/write FILE to prevent problems with
+	 * fseek and buffering for read/write auto-transitioning. */
+	setvbuf(in, NULL, _IONBF, 0);
+      }
     }
   else
     tty_changed = 0;
 
   /* Write the prompt.  */
-  fputs (prompt, stderr);
-  fflush (stderr);
+  fputs(prompt, out);
+  fflush(out);
 
   /* Read the password.  */
   fgets (buf, PWD_BUFFER_SIZE - 1, in);
@@ -69,10 +90,13 @@ getpasswd (const char *prompt)
     }
 
   /* Restore the original setting.  */
-  if (tty_changed)
-    {
-      tcsetattr (fileno (stdin), TCSAFLUSH, &s);
-    }
+  if (tty_changed) {
+    (void) tcsetattr (fileno (in), TCSAFLUSH, &s);
+  }
+
+  if (in != stdin)
+    /* We opened the terminal; now close it.  */
+    fclose (in);
 
   return buf;
 }

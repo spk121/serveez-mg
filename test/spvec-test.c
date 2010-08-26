@@ -49,7 +49,8 @@
  * Main entry point for sparse vector tests.
  */
 int
-main (int argc, char **argv)
+main (int argc __attribute__ ((unused)), 
+      char **argv __attribute__ ((unused)))
 {
   int result = 0;
   svz_spvec_t *list;

@@ -47,7 +47,8 @@
  * Main entry point for hash tests.
  */
 int
-main (int argc, char **argv)
+main (int argc __attribute__ ((unused)), 
+      char **argv __attribute__ ((unused)))
 {
   int result = 0;
   svz_hash_t *hash;

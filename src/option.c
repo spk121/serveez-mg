@@ -26,10 +26,12 @@
 
 #include <config.h>
 
+#define _XOPEN_SOURCE           /* to get crypt in unistd.h */
 #include <stdio.h>              /* fprintf, stdout, EOF */
 #include <stdlib.h>             /* exit */
 #include <string.h>             /* atoi */
 #include <getopt.h>             /* getopt_long */
+#include <unistd.h>             /* crypt */
 
 #include "libserveez.h"
 #include "option.h"             /* option_t */

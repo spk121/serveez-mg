@@ -1721,10 +1721,8 @@ guile_init (void)
   /* configurable types */
   scm_c_define_gsubr ("instantiate-config-type!", 3, 1, 0, 
 		      guile_config_instantiate);
-  
-#if ENABLE_GUILE_SERVER
+
   guile_server_init ();
-#endif /* ENABLE_GUILE_SERVER */
 }
 
 /* Wrapper function for the file loader exception handler. */
