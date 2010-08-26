@@ -30,7 +30,7 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Initialize autoconf and automake
 dnl
-AC_INIT([serveez],[0.1.7],[bug-serveez@gnu.org])
+AC_INIT([Serveez-MG],[0.1.8],[spk121@yahoo.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([src/config.h])
@@ -461,10 +461,6 @@ dnl
 dnl Check Guile installation.
 dnl
 
-PKG_CHECK_MODULES(GUILE, guile-2.0)
-AC_SUBST(GUILE_CFLAGS)
-AC_SUBST(GUILE_LIBS)
-
 dnl ----------------------------------------------------------------------
 
 dnl
@@ -487,6 +483,16 @@ AC_ARG_ENABLE([guile-server],
 if test $define_enable_guile = yes ; then
   AC_DEFINE(ENABLE_GUILE_SERVER, 
     1, [Define if guile servers should be supported.])
+  PKG_CHECK_MODULES([GUILE], [guile-2.0])
+  AC_SUBST([GUILE_CFLAGS])
+  AC_SUBST([GUILE_LIBS])
+  AC_ARG_VAR([GUILE_SITEDIR],
+          [Directory where Guile Scheme files specific to your site should be installed])
+  if test -z "$GUILE_SITEDIR"
+  then
+    GUILE_SITEDIR=`guile -c "(display (%site-dir))"`
+  fi
+  AC_SUBST([GUILE_SITEDIR])
 fi
 unset define_enable_guile
 
