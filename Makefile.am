@@ -28,9 +28,9 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src data test
 
-EXTRA_DIST = BUGS autogen.sh README-alpha THANKS README-Win32 README-cross \
-	serveez.dsw config.h.serveez version.h.serveez \
-	RELEASE vcgen.bat autodsp serveez.ap depcomp m4/gnulib-cache.m4
+EXTRA_DIST = autogen.sh README-alpha THANKS README-Win32 README-cross	\
+	serveez.dsw config.h.serveez version.h.serveez RELEASE		\
+	vcgen.bat autodsp serveez.ap depcomp m4/gnulib-cache.m4
 
 redhat: @MAINTAINER_MODE_TRUE@ dist redhat.sh
 	@MAINTAINER_MODE_TRUE@ @sh redhat.sh && echo "Redhat packages done."
