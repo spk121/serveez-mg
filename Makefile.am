@@ -28,5 +28,5 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src data test doc
 
-EXTRA_DIST = THANKS RELEASE m4/gnulib-cache.m4
+EXTRA_DIST = THANKS
 

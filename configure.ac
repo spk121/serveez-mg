@@ -196,14 +196,8 @@ AC_CONFIG_FILES([
     Makefile
     doc/Makefile
     src/Makefile 
-    src/ctrl-server/Makefile
-    src/http-server/Makefile
-    src/prog-server/Makefile
-    src/guile-server/Makefile
     data/Makefile
     test/Makefile
-    redhat.sh
-    debian.sh
     src/version.h])
 AC_OUTPUT
 
