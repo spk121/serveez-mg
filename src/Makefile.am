@@ -69,6 +69,6 @@ LDADD = libserveez/libserveez.la \
 
 AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 
-mkpassword_SOURCES = mkpassword.c getpass.c getpass.h
+mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt
 

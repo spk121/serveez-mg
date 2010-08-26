@@ -23,12 +23,14 @@
  */
 
 #include <config.h>
+
+#define _XOPEN_SOURCE           /* to get crypt in unistd.h */
 #include <stdio.h>              /* fprintf */
 #include <stdlib.h>             /* rand, srand */
 #include <string.h>             /* strchr  */
 #include <time.h>               /* time */
-#include <crypt.h>              /* getpass? crypt? */
-#include "getpass.h"
+#include <unistd.h>             /* crypt */
+#include "getpasswd.h"
 
 /*
  * Main entry point.
@@ -64,7 +66,7 @@ main (int argc, char **argv)
 	}
     }
 
-  plaintext = getpass ("Password: ");
+  plaintext = getpasswd ("Password: ");
   fprintf (stdout, "%s\n", crypt (plaintext, salt));
   return 0;
 }
