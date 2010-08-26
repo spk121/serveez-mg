@@ -40,7 +40,7 @@ pkgguilesite_DATA = serveez.scm
 # Add your library here
 #
 
-bin_PROGRAMS = serveez
+bin_PROGRAMS = serveez mkpassword
 
 serveez_SOURCES = \
 	serveez.c serveez.h \
