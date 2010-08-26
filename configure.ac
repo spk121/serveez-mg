@@ -43,35 +43,9 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for a proper C compiler.
 dnl
-dnl AC_PROG_CC
+AC_PROG_CC
 AC_C_BIGENDIAN
 LT_INIT
-
-dnl ----------------------------------------------------------------------
-
-dnl
-dnl Check whether debug output should be included.
-dnl
-
-AC_MSG_CHECKING([whether to enable debug output])
-AC_ARG_ENABLE([debug],
-  [  --disable-debug         Include debug output @<:@default=yes@:>@],
-  if test x$enableval = "xyes" ; then
-    define_enable_debug=yes
-    AC_MSG_RESULT([yes])
-  else
-    define_enable_debug=no
-    AC_MSG_RESULT([no])
-  fi,
-  define_enable_debug=yes
-  AC_MSG_RESULT([yes]))
-
-if test $define_enable_debug = yes ; then
-  AC_DEFINE(SVZ_ENABLE_DEBUG, 1, [Define if debug output should be supported.])
-else
-  AC_DEFINE(NDEBUG, 1, [Define if debug code should be suppressed.])
-fi
-unset define_enable_debug
 
 dnl ----------------------------------------------------------------------
 
