@@ -27,7 +27,6 @@
 #include <sys/types.h>
 
 
-#include "version.h"
 #include "alloc.h"
 #include "util.h"
 #include "vector.h"
@@ -48,9 +47,9 @@
 svz_config_t svz_config = { NULL, 0, 0, 0 };
 
 /* The symbolic name of the core library. */
-char *svz_library = __serveez_package_name;
+char *svz_library = PACKAGE;
 /* The version of the core library. */
-char *svz_version = __serveez_package_version;
+char *svz_version = VERSION;
 
 /* Runtime flag if this is Win32 or not. */
 #if defined (__MINGW32__) || defined (__CYGWIN__)
