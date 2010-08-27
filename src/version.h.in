@@ -1,2 +1,0 @@
-#define __serveez_version "@VERSION@"
-#define __serveez_timestamp "@TIMESTAMP@"
