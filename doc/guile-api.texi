@@ -32,12 +32,16 @@ Serveez-MG adds a few additional bytevector routines, for convenience.
 
 @defun subbytevector bv start end
 Create a new bytevector that is a copy of BV from START (inclusive)
-to END (exclusive)
+to END (exclusive).
+
+This procedure in the @code{(serveez-mg lib)} library.
 @end defun
 
 @defun bytevector-contains bv1 bv2
 Search for bytevector BV2 in bytevector BV1.  If it is found, return
 the index in BV1 where BV2 is located.  Otherwise, return #f.
+
+This procedure in the @code{(serveez-mg lib)} library.
 @end defun
 
 @subsubsection Server Definition

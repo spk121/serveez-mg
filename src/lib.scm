@@ -26,7 +26,7 @@
 ;;
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
-(define-module (serveez lib)
+(define-module (serveez-mg lib)
   #:export (println
             printsln
             interface-add!

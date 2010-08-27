@@ -497,12 +497,13 @@ that happens. The server just will not work then.
 
 @subsection Additional configuration possibilities
 
-The three functions @code{(define-port!)}, @code{(define-server!)} and 
-@code{(bind-server!)} return @code{#t} on success and @code{#f} on failure.
-For your convenience we provide some more Guile functions.  Some of these
-are based upon the above.  You will find the additional functions in the
-file @file{serveez.scm}.  In order to include this convenience 
-functionality you can @code{(primitive-load "serveez.scm")} at the top
+The three functions @code{(define-port!)}, @code{(define-server!)} and
+@code{(bind-server!)} return @code{#t} on success and @code{#f} on
+failure.  For your convenience we provide some more Guile functions.
+Some of these are based upon the above.  You will find the additional
+functions in @code{(serveez-mg lib)} library that will be copied into
+Guile's site directory.  In order to include this convenience
+functionality you can @code{(use-modules (serveez-mg lib))} at the top
 of the configuration file.
 
 @table @code
