@@ -69,10 +69,10 @@ svz_ip_header_t;
 __BEGIN_DECLS
 
 /* Exported RAW IP socket functions. */
-SERVEEZ_API svz_ip_header_t * svz_raw_get_ip_header __PARAMS ((uint8_t *));
-SERVEEZ_API uint8_t * svz_raw_put_ip_header __PARAMS ((svz_ip_header_t *));
-SERVEEZ_API unsigned short svz_raw_ip_checksum __PARAMS ((uint8_t *, int));
-SERVEEZ_API int svz_raw_check_ip_header __PARAMS ((uint8_t *, int));
+SERVEEZ_API svz_ip_header_t * svz_raw_get_ip_header (uint8_t *);
+SERVEEZ_API uint8_t * svz_raw_put_ip_header (svz_ip_header_t *);
+SERVEEZ_API unsigned short svz_raw_ip_checksum (uint8_t *, int);
+SERVEEZ_API int svz_raw_check_ip_header (uint8_t *, int);
 
 __END_DECLS
 

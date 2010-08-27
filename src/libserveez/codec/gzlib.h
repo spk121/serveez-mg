@@ -31,15 +31,15 @@ __BEGIN_DECLS
 
 extern svz_codec_t zlib_encoder;
 extern svz_codec_t zlib_decoder;
-char * zlib_error __PARAMS ((svz_codec_data_t *));
-int zlib_encoder_init __PARAMS ((svz_codec_data_t *));
-int zlib_encoder_finalize __PARAMS ((svz_codec_data_t *));
-int zlib_encode __PARAMS ((svz_codec_data_t *));
-int zlib_decoder_init __PARAMS ((svz_codec_data_t *));
-int zlib_decoder_finalize __PARAMS ((svz_codec_data_t *));
-int zlib_decode __PARAMS ((svz_codec_data_t *));
-int zlib_ratio __PARAMS ((svz_codec_data_t *, unsigned long *, 
-			  unsigned long *));
+char * zlib_error (svz_codec_data_t *);
+int zlib_encoder_init (svz_codec_data_t *);
+int zlib_encoder_finalize (svz_codec_data_t *);
+int zlib_encode (svz_codec_data_t *);
+int zlib_decoder_init (svz_codec_data_t *);
+int zlib_decoder_finalize (svz_codec_data_t *);
+int zlib_decode (svz_codec_data_t *);
+int zlib_ratio (svz_codec_data_t *, unsigned long *, 
+                unsigned long *);
 
 __END_DECLS
 

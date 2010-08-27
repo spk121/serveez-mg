@@ -44,9 +44,9 @@ SERVEEZ_API unsigned int svz_allocated_bytes;
 SERVEEZ_API unsigned int svz_allocated_blocks;
 
 /* Function type definitions. */
-typedef void * (* svz_malloc_func_t) __PARAMS ((size_t));
-typedef void * (* svz_realloc_func_t) __PARAMS ((void *, size_t));
-typedef void (* svz_free_func_t) __PARAMS ((void *));
+typedef void * (* svz_malloc_func_t) (size_t);
+typedef void * (* svz_realloc_func_t) (void *, size_t);
+typedef void (* svz_free_func_t) (void *);
 
 /* Global allocator functions. */
 SERVEEZ_API svz_malloc_func_t svz_malloc_func;
@@ -54,19 +54,19 @@ SERVEEZ_API svz_realloc_func_t svz_realloc_func;
 SERVEEZ_API svz_free_func_t svz_free_func;
 
 /* Internal allocator functions. */
-SERVEEZ_API void *svz_malloc __PARAMS ((size_t));
-SERVEEZ_API void *svz_calloc __PARAMS ((size_t));
-SERVEEZ_API void *svz_realloc __PARAMS ((void *, size_t));
-SERVEEZ_API void svz_free __PARAMS ((void *));
-SERVEEZ_API char *svz_strdup __PARAMS ((char *));
+SERVEEZ_API void *svz_malloc (size_t);
+SERVEEZ_API void *svz_calloc (size_t);
+SERVEEZ_API void *svz_realloc (void *, size_t);
+SERVEEZ_API void svz_free (void *);
+SERVEEZ_API char *svz_strdup (char *);
 
 /* Internal permanent allocator functions. */
-SERVEEZ_API void *svz_pmalloc __PARAMS ((size_t));
-SERVEEZ_API void *svz_prealloc __PARAMS ((void *, size_t));
-SERVEEZ_API char *svz_pstrdup __PARAMS ((char *));
+SERVEEZ_API void *svz_pmalloc (size_t);
+SERVEEZ_API void *svz_prealloc (void *, size_t);
+SERVEEZ_API char *svz_pstrdup (char *);
 
 #if DEBUG_MEMORY_LEAKS
-SERVEEZ_API void svz_heap __PARAMS ((void));
+SERVEEZ_API void svz_heap (void);
 #endif /* DEBUG_MEMORY_LEAKS */
 
 __END_DECLS

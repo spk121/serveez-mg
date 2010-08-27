@@ -32,12 +32,12 @@ __BEGIN_DECLS
 /*
  * Initialize the reserve DNS's cache.
  */
-void reverse_dns_init __PARAMS ((void));
+void reverse_dns_init (void);
 
 /*
  * Proceed a reverse DNS lookup.
  */
-char *reverse_dns_handle_request __PARAMS ((char *));
+char *reverse_dns_handle_request (char *);
 
 __END_DECLS
 

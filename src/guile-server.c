@@ -35,7 +35,6 @@
 #include "libserveez.h"
 #include "guile-api.h"
 #include "guile.h"
-#include "guile-bin.h"
 #include "guile-server.h"
 
 static void 

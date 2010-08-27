@@ -239,25 +239,25 @@ svz_portcfg_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API svz_portcfg_t *svz_portcfg_create __PARAMS ((void));
-SERVEEZ_API int svz_portcfg_equal __PARAMS ((svz_portcfg_t *, 
-					     svz_portcfg_t *));
-SERVEEZ_API svz_portcfg_t *svz_portcfg_add __PARAMS ((char *, 
-						      svz_portcfg_t *));
-SERVEEZ_API svz_portcfg_t *svz_portcfg_del __PARAMS ((char *));
-SERVEEZ_API svz_portcfg_t *svz_portcfg_get __PARAMS ((char *));
-SERVEEZ_API void svz_portcfg_destroy __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API void svz_portcfg_free __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API void svz_portcfg_finalize __PARAMS ((void));
-SERVEEZ_API int svz_portcfg_mkaddr __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API void svz_portcfg_prepare __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API void svz_portcfg_print __PARAMS ((svz_portcfg_t *, FILE *));
-SERVEEZ_API char *svz_portcfg_text __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API svz_portcfg_t *svz_portcfg_dup __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API svz_array_t *svz_portcfg_expand __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API int svz_portcfg_set_ipaddr __PARAMS ((svz_portcfg_t *, char *));
-SERVEEZ_API void svz_portcfg_destroy_access __PARAMS ((svz_portcfg_t *));
-SERVEEZ_API void svz_portcfg_destroy_accepted __PARAMS ((svz_portcfg_t *));
+SERVEEZ_API svz_portcfg_t *svz_portcfg_create (void);
+SERVEEZ_API int svz_portcfg_equal (svz_portcfg_t *, 
+					     svz_portcfg_t *);
+SERVEEZ_API svz_portcfg_t *svz_portcfg_add (char *, 
+						      svz_portcfg_t *);
+SERVEEZ_API svz_portcfg_t *svz_portcfg_del (char *);
+SERVEEZ_API svz_portcfg_t *svz_portcfg_get (char *);
+SERVEEZ_API void svz_portcfg_destroy (svz_portcfg_t *);
+SERVEEZ_API void svz_portcfg_free (svz_portcfg_t *);
+SERVEEZ_API void svz_portcfg_finalize (void);
+SERVEEZ_API int svz_portcfg_mkaddr (svz_portcfg_t *);
+SERVEEZ_API void svz_portcfg_prepare (svz_portcfg_t *);
+SERVEEZ_API void svz_portcfg_print (svz_portcfg_t *, FILE *);
+SERVEEZ_API char *svz_portcfg_text (svz_portcfg_t *);
+SERVEEZ_API svz_portcfg_t *svz_portcfg_dup (svz_portcfg_t *);
+SERVEEZ_API svz_array_t *svz_portcfg_expand (svz_portcfg_t *);
+SERVEEZ_API int svz_portcfg_set_ipaddr (svz_portcfg_t *, char *);
+SERVEEZ_API void svz_portcfg_destroy_access (svz_portcfg_t *);
+SERVEEZ_API void svz_portcfg_destroy_accepted (svz_portcfg_t *);
 
 __END_DECLS
 

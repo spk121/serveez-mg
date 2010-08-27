@@ -43,10 +43,10 @@ typedef pthread_mutex_t svz_mutex_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_mutex_create __PARAMS ((svz_mutex_t *));
-SERVEEZ_API int svz_mutex_destroy __PARAMS ((svz_mutex_t *));
-SERVEEZ_API int svz_mutex_lock __PARAMS ((svz_mutex_t *));
-SERVEEZ_API int svz_mutex_unlock __PARAMS ((svz_mutex_t *));
+SERVEEZ_API int svz_mutex_create (svz_mutex_t *);
+SERVEEZ_API int svz_mutex_destroy (svz_mutex_t *);
+SERVEEZ_API int svz_mutex_lock (svz_mutex_t *);
+SERVEEZ_API int svz_mutex_unlock (svz_mutex_t *);
 
 __END_DECLS
 

@@ -25,9 +25,7 @@
 
 TESTS = vector-test array-test hash-test spvec-test
 
-EXTRA_DIST = hash.dsp vector.dsp array.dsp spvec.dsp codec.dsp prog.dsp \
-	hash.ap vector.ap array.ap spvec.ap codec.ap prog.ap \
-	prog-test.cfg test-suite.scm binary-test.scm server-test.scm \
+EXTRA_DIST = prog-test.cfg test-suite.scm binary-test.scm server-test.scm \
 	guile-server-test.scm
 
 noinst_PROGRAMS = hash-test spvec-test array-test vector-test codec-test \
@@ -47,7 +45,3 @@ prog_test_SOURCES = prog-test.c
 
 AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/libserveez
-
-CLEANFILES = *~ *.orig *.rej
-MAINTAINERCLEANFILES = Makefile.in \
-	hash.dsp vector.dsp array.dsp spvec.dsp codec.dsp prog.dsp

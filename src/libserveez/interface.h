@@ -45,13 +45,13 @@ __BEGIN_DECLS
 SERVEEZ_API svz_vector_t *svz_interfaces;
 
 /* Export these functions. */
-SERVEEZ_API void svz_interface_list __PARAMS ((void));
-SERVEEZ_API void svz_interface_collect __PARAMS ((void));
-SERVEEZ_API int svz_interface_free __PARAMS ((void));
-SERVEEZ_API int svz_interface_add __PARAMS ((int, char *, unsigned long, int));
-SERVEEZ_API svz_interface_t *svz_interface_search __PARAMS ((char *));
-SERVEEZ_API svz_interface_t *svz_interface_get __PARAMS ((unsigned long));
-SERVEEZ_API void svz_interface_check __PARAMS ((void));
+SERVEEZ_API void svz_interface_list (void);
+SERVEEZ_API void svz_interface_collect (void);
+SERVEEZ_API int svz_interface_free (void);
+SERVEEZ_API int svz_interface_add (int, char *, unsigned long, int);
+SERVEEZ_API svz_interface_t *svz_interface_search (char *);
+SERVEEZ_API svz_interface_t *svz_interface_get (unsigned long);
+SERVEEZ_API void svz_interface_check (void);
 
 __END_DECLS
 

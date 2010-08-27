@@ -77,19 +77,19 @@ __BEGIN_DECLS
 /*
  * Basic hash table functions.
  */
-SERVEEZ_API svz_hash_t *svz_hash_create __PARAMS ((int, svz_free_func_t));
-SERVEEZ_API void svz_hash_destroy __PARAMS ((svz_hash_t *));
-SERVEEZ_API void svz_hash_clear __PARAMS ((svz_hash_t *));
-SERVEEZ_API void *svz_hash_delete __PARAMS ((svz_hash_t *, char *));
-SERVEEZ_API void *svz_hash_put __PARAMS ((svz_hash_t *, char *, void *));
-SERVEEZ_API void *svz_hash_get __PARAMS ((svz_hash_t *, char *));
-SERVEEZ_API void **svz_hash_values __PARAMS ((svz_hash_t *));
-SERVEEZ_API char **svz_hash_keys __PARAMS ((svz_hash_t *));
-SERVEEZ_API int svz_hash_size __PARAMS ((svz_hash_t *));
-SERVEEZ_API int svz_hash_capacity __PARAMS ((svz_hash_t *));
-SERVEEZ_API char *svz_hash_contains __PARAMS ((svz_hash_t *, void *));
-SERVEEZ_API void svz_hash_rehash __PARAMS ((svz_hash_t *, int));
-SERVEEZ_API int svz_hash_exists __PARAMS ((svz_hash_t *, char *));
+SERVEEZ_API svz_hash_t *svz_hash_create (int, svz_free_func_t);
+SERVEEZ_API void svz_hash_destroy (svz_hash_t *);
+SERVEEZ_API void svz_hash_clear (svz_hash_t *);
+SERVEEZ_API void *svz_hash_delete (svz_hash_t *, char *);
+SERVEEZ_API void *svz_hash_put (svz_hash_t *, char *, void *);
+SERVEEZ_API void *svz_hash_get (svz_hash_t *, char *);
+SERVEEZ_API void **svz_hash_values (svz_hash_t *);
+SERVEEZ_API char **svz_hash_keys (svz_hash_t *);
+SERVEEZ_API int svz_hash_size (svz_hash_t *);
+SERVEEZ_API int svz_hash_capacity (svz_hash_t *);
+SERVEEZ_API char *svz_hash_contains (svz_hash_t *, void *);
+SERVEEZ_API void svz_hash_rehash (svz_hash_t *, int);
+SERVEEZ_API int svz_hash_exists (svz_hash_t *, char *);
 
 __END_DECLS
 

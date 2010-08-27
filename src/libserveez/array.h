@@ -40,26 +40,26 @@ svz_array_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API svz_array_t * svz_array_create __PARAMS ((unsigned long, 
-						      svz_free_func_t));
-SERVEEZ_API void svz_array_clear __PARAMS ((svz_array_t *));
-SERVEEZ_API void svz_array_destroy __PARAMS ((svz_array_t *));
-SERVEEZ_API void *svz_array_get __PARAMS ((svz_array_t *, unsigned long));
-SERVEEZ_API void *svz_array_set __PARAMS ((svz_array_t *, unsigned long, 
-					   void *));
-SERVEEZ_API void svz_array_add __PARAMS ((svz_array_t *, void *));
-SERVEEZ_API void *svz_array_del __PARAMS ((svz_array_t *, unsigned long));
-SERVEEZ_API unsigned long svz_array_capacity __PARAMS ((svz_array_t *));
-SERVEEZ_API unsigned long svz_array_size __PARAMS ((svz_array_t *));
-SERVEEZ_API unsigned long svz_array_ins __PARAMS ((svz_array_t *, 
-						   unsigned long, void *));
-SERVEEZ_API unsigned long svz_array_idx __PARAMS ((svz_array_t *, void *));
-SERVEEZ_API unsigned long svz_array_contains __PARAMS ((svz_array_t *, 
-							void *));
-SERVEEZ_API svz_array_t *svz_array_dup __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_array_strdup __PARAMS ((svz_array_t *));
-SERVEEZ_API void **svz_array_values __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_array_destroy_zero __PARAMS ((svz_array_t *));
+SERVEEZ_API svz_array_t * svz_array_create (unsigned long, 
+						      svz_free_func_t);
+SERVEEZ_API void svz_array_clear (svz_array_t *);
+SERVEEZ_API void svz_array_destroy (svz_array_t *);
+SERVEEZ_API void *svz_array_get (svz_array_t *, unsigned long);
+SERVEEZ_API void *svz_array_set (svz_array_t *, unsigned long, 
+					   void *);
+SERVEEZ_API void svz_array_add (svz_array_t *, void *);
+SERVEEZ_API void *svz_array_del (svz_array_t *, unsigned long);
+SERVEEZ_API unsigned long svz_array_capacity (svz_array_t *);
+SERVEEZ_API unsigned long svz_array_size (svz_array_t *);
+SERVEEZ_API unsigned long svz_array_ins (svz_array_t *, 
+						   unsigned long, void *);
+SERVEEZ_API unsigned long svz_array_idx (svz_array_t *, void *);
+SERVEEZ_API unsigned long svz_array_contains (svz_array_t *, 
+							void *);
+SERVEEZ_API svz_array_t *svz_array_dup (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_array_strdup (svz_array_t *);
+SERVEEZ_API void **svz_array_values (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_array_destroy_zero (svz_array_t *);
 
 __END_DECLS
 

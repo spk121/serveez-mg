@@ -130,22 +130,22 @@ struct svz_codec
 __BEGIN_DECLS
 
 /* Exported functions. */
-SERVEEZ_API void svz_codec_list __PARAMS ((void));
-SERVEEZ_API svz_codec_t * svz_codec_get __PARAMS ((char *, int));
-SERVEEZ_API int svz_codec_init __PARAMS ((void));
-SERVEEZ_API int svz_codec_finalize __PARAMS ((void));
-SERVEEZ_API int svz_codec_register __PARAMS ((svz_codec_t *));
-SERVEEZ_API int svz_codec_unregister __PARAMS ((svz_codec_t *));
-SERVEEZ_API int svz_codec_sock_receive_setup __PARAMS ((svz_socket_t *, 
-							svz_codec_t *));
-SERVEEZ_API int svz_codec_sock_receive __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_codec_sock_send_setup __PARAMS ((svz_socket_t *, 
-						     svz_codec_t *));
-SERVEEZ_API int svz_codec_sock_send __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_codec_sock_disconnect __PARAMS ((svz_socket_t *));
-SERVEEZ_API void svz_codec_ratio __PARAMS ((svz_codec_t *, 
-					    svz_codec_data_t *));
-SERVEEZ_API svz_codec_t * svz_codec_sock_detect __PARAMS ((svz_socket_t *));
+SERVEEZ_API void svz_codec_list (void);
+SERVEEZ_API svz_codec_t * svz_codec_get (char *, int);
+SERVEEZ_API int svz_codec_init (void);
+SERVEEZ_API int svz_codec_finalize (void);
+SERVEEZ_API int svz_codec_register (svz_codec_t *);
+SERVEEZ_API int svz_codec_unregister (svz_codec_t *);
+SERVEEZ_API int svz_codec_sock_receive_setup (svz_socket_t *, 
+                                              svz_codec_t *);
+SERVEEZ_API int svz_codec_sock_receive (svz_socket_t *);
+SERVEEZ_API int svz_codec_sock_send_setup (svz_socket_t *, 
+                                           svz_codec_t *);
+SERVEEZ_API int svz_codec_sock_send (svz_socket_t *);
+SERVEEZ_API int svz_codec_sock_disconnect (svz_socket_t *);
+SERVEEZ_API void svz_codec_ratio (svz_codec_t *, 
+                                  svz_codec_data_t *);
+SERVEEZ_API svz_codec_t * svz_codec_sock_detect (svz_socket_t *);
 
 __END_DECLS
 

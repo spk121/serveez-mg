@@ -32,7 +32,7 @@ __BEGIN_DECLS
 /*
  * Opens a connection to ident server and receives / parses the response.
  */
-char *ident_handle_request __PARAMS ((char *));
+char *ident_handle_request (char *);
 
 __END_DECLS
 

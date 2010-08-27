@@ -205,28 +205,28 @@ svz_config_type_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API void *svz_config_instantiate __PARAMS ((svz_config_prototype_t *,
-                                                    char *, void *,
-                                                    svz_config_accessor_t *));
-SERVEEZ_API void svz_config_free __PARAMS ((svz_config_prototype_t *, void *));
-SERVEEZ_API void svz_config_type_add __PARAMS ((svz_config_type_t *));
-SERVEEZ_API int svz_config_type_instantiate __PARAMS ((char *, char *,
-						       char *, void *,
-						       svz_config_accessor_t *,
-						       char **));
-SERVEEZ_API void svz_config_type_init __PARAMS ((void));
-SERVEEZ_API void svz_config_type_finalize __PARAMS ((void));
+SERVEEZ_API void *svz_config_instantiate (svz_config_prototype_t *,
+                                          char *, void *,
+                                          svz_config_accessor_t *);
+SERVEEZ_API void svz_config_free (svz_config_prototype_t *, void *);
+SERVEEZ_API void svz_config_type_add (svz_config_type_t *);
+SERVEEZ_API int svz_config_type_instantiate (char *, char *,
+                                             char *, void *,
+                                             svz_config_accessor_t *,
+                                             char **);
+SERVEEZ_API void svz_config_type_init (void);
+SERVEEZ_API void svz_config_type_finalize (void);
 
-SERVEEZ_API void svz_config_prototype_print __PARAMS ((svz_config_prototype_t *));
-SERVEEZ_API svz_array_t *svz_config_intarray_create __PARAMS ((int *));
-SERVEEZ_API void svz_config_intarray_destroy __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_config_intarray_dup __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_config_strarray_create __PARAMS ((char **));
-SERVEEZ_API void svz_config_strarray_destroy __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_array_t *svz_config_strarray_dup __PARAMS ((svz_array_t *));
-SERVEEZ_API svz_hash_t *svz_config_hash_create __PARAMS ((char **));
-SERVEEZ_API void svz_config_hash_destroy __PARAMS ((svz_hash_t *));
-SERVEEZ_API svz_hash_t *svz_config_hash_dup __PARAMS ((svz_hash_t *));
+SERVEEZ_API void svz_config_prototype_print (svz_config_prototype_t *);
+SERVEEZ_API svz_array_t *svz_config_intarray_create (int *);
+SERVEEZ_API void svz_config_intarray_destroy (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_config_intarray_dup (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_config_strarray_create (char **);
+SERVEEZ_API void svz_config_strarray_destroy (svz_array_t *);
+SERVEEZ_API svz_array_t *svz_config_strarray_dup (svz_array_t *);
+SERVEEZ_API svz_hash_t *svz_config_hash_create (char **);
+SERVEEZ_API void svz_config_hash_destroy (svz_hash_t *);
+SERVEEZ_API svz_hash_t *svz_config_hash_dup (svz_hash_t *);
 
 __END_DECLS
 

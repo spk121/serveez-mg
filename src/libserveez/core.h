@@ -45,29 +45,29 @@
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_fd_nonblock __PARAMS ((int));
-SERVEEZ_API int svz_fd_block __PARAMS ((int));
-SERVEEZ_API int svz_fd_cloexec __PARAMS ((int));
-SERVEEZ_API int svz_tcp_cork __PARAMS ((svz_t_socket, int));
-SERVEEZ_API int svz_tcp_nodelay __PARAMS ((svz_t_socket, int, int *));
-SERVEEZ_API int svz_socket_type __PARAMS ((svz_t_socket, int *));
-SERVEEZ_API int svz_socket_connect __PARAMS ((svz_t_socket, unsigned long, 
-					      unsigned short));
-SERVEEZ_API svz_t_socket svz_socket_create __PARAMS ((int));
-SERVEEZ_API int svz_socket_create_pair __PARAMS ((int, svz_t_socket desc[2]));
-SERVEEZ_API char *svz_inet_ntoa __PARAMS ((unsigned long));
-SERVEEZ_API int svz_inet_aton __PARAMS ((char *, struct sockaddr_in *));
-SERVEEZ_API int svz_sendfile __PARAMS ((int, int, off_t *, unsigned int));
-SERVEEZ_API int svz_open __PARAMS ((const char *, int, unsigned int));
-SERVEEZ_API int svz_close __PARAMS ((int));
-SERVEEZ_API int svz_fstat __PARAMS ((int, struct stat *));
-SERVEEZ_API FILE *svz_fopen __PARAMS ((const char *, 
-				       const char *));
-SERVEEZ_API int svz_fclose __PARAMS ((FILE *));
-SERVEEZ_API int svz_file_check __PARAMS ((char *));
-SERVEEZ_API char *svz_file_path __PARAMS ((char *, char *));
+SERVEEZ_API int svz_fd_nonblock (int);
+SERVEEZ_API int svz_fd_block (int);
+SERVEEZ_API int svz_fd_cloexec (int);
+SERVEEZ_API int svz_tcp_cork (svz_t_socket, int);
+SERVEEZ_API int svz_tcp_nodelay (svz_t_socket, int, int *);
+SERVEEZ_API int svz_socket_type (svz_t_socket, int *);
+SERVEEZ_API int svz_socket_connect (svz_t_socket, unsigned long, 
+					      unsigned short);
+SERVEEZ_API svz_t_socket svz_socket_create (int);
+SERVEEZ_API int svz_socket_create_pair (int, svz_t_socket desc[2]);
+SERVEEZ_API char *svz_inet_ntoa (unsigned long);
+SERVEEZ_API int svz_inet_aton (char *, struct sockaddr_in *);
+SERVEEZ_API int svz_sendfile (int, int, off_t *, unsigned int);
+SERVEEZ_API int svz_open (const char *, int, unsigned int);
+SERVEEZ_API int svz_close (int);
+SERVEEZ_API int svz_fstat (int, struct stat *);
+SERVEEZ_API FILE *svz_fopen (const char *, 
+				       const char *);
+SERVEEZ_API int svz_fclose (FILE *);
+SERVEEZ_API int svz_file_check (char *);
+SERVEEZ_API char *svz_file_path (char *, char *);
 
-SERVEEZ_API void svz_file_closeall __PARAMS ((void));
+SERVEEZ_API void svz_file_closeall (void);
 
 __END_DECLS
 

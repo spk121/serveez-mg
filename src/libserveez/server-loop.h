@@ -29,7 +29,7 @@
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_check_sockets __PARAMS ((void));
+SERVEEZ_API int svz_check_sockets (void);
 
 __END_DECLS
 

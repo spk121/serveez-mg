@@ -28,17 +28,10 @@
 SUBDIRS = libserveez
 
 pkgsysconfdir = ${sysconfdir}/${PACKAGE}
-pkgsysconf_DATA = serveez.cfg
+dist_pkgsysconf_DATA = serveez.cfg
 
 pkgguilesitedir = ${GUILE_SITEDIR}/${PACKAGE}
-pkgguilesite_DATA = lib.scm
-
-#
-# Add your server subdirectory here
-#
-#
-# Add your library here
-#
+dist_pkgguilesite_DATA = lib.scm
 
 bin_PROGRAMS = serveez mkpassword
 
@@ -72,3 +65,9 @@ AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt
 
+
+# If Guile's sitedir isn't under this package's $(prefix), distcheck
+# will fail.  This is pretty common.  So, for distcheck, Guile's
+# sitedir is always under $(prefix).
+distcheck-hook:
+  GUILE_SITEDIR=${datarootdir}/guile/site

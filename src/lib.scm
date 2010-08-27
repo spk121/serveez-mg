@@ -1,6 +1,6 @@
 ;; -*-scheme-*-
 ;;
-;; serveez.scm - convenience functions
+;; (serveez lib) - convenience functions
 ;;
 ;; Copyright (C) 2001 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
 ;; Copyright (C) 2001 Stefan Jahn <stefan@lkcc.org>

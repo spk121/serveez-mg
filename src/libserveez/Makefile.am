@@ -25,14 +25,19 @@
 
 lib_LTLIBRARIES = libserveez.la
 
-libserveez_la_SOURCES = alloc.c util.c hash.c sparsevec.c tcp-socket.c	\
-  pipe-socket.c udp-socket.c icmp-socket.c raw-socket.c server-core.c	\
-  server-loop.c boot.c server.c server-socket.c interface.c dynload.c	\
-  vector.c core.c socket.c array.c portcfg.c binding.c passthrough.c	\
-  cfg.c mutex.c coserver/coserver.c coserver/dns.c coserver/ident.c	\
-  coserver/reverse-dns.c coserver/coserver.h coserver/dns.h		\
-  coserver/ident.h coserver/reverse-dns.h codec/codec.c codec/gzlib.c	\
-  codec/codec.h codec/gzlib.h libserveez.h
+libserveez_la_SOURCES = alloc.c alloc.h array.c array.h binding.c	\
+  binding.h boot.c boot.h cfg.c cfg.h codec/codec.c codec/codec.h	\
+  codec/gzlib.c codec/gzlib.h core.c core.h coserver/coserver.c	\
+  coserver/coserver.h coserver/dns.c coserver/dns.h coserver/ident.c	\
+  coserver/ident.h coserver/reverse-dns.c coserver/reverse-dns.h	\
+  defines.h dynload.c dynload.h hash.c hash.h icmp-socket.c		\
+  icmp-socket.h interface.c interface.h libserveez.h mutex.c mutex.h	\
+  passthrough.c passthrough.h pipe-socket.c pipe-socket.h portcfg.c	\
+  portcfg.h raw-socket.c raw-socket.h server-core.c server-core.h	\
+  server-loop.c server-loop.h server-socket.c server-socket.h server.c	\
+  server.h socket.c socket.h sparsevec.c sparsevec.h tcp-socket.c	\
+  tcp-socket.h udp-socket.c udp-socket.h util.c util.h vector.c	\
+  vector.h
 
 libserveez_la_LIBADD = -ldl -lz
 

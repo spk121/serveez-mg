@@ -42,13 +42,6 @@
 # define __END_DECLS
 #endif
 
-/* __PARAMS is a macro used to wrap function prototypes, so that compilers
-   that don't understand ANSI C prototypes still work, and ANSI C
-   compilers can issue warnings about type mismatches. */
-
-#undef __PARAMS
-#define __PARAMS(protos) protos
-
 /* SERVEEZ_API is a macro prepended to all function and data definitions
    which should be exported or imported in the resulting dynamic link
    library in the Win32 port. */

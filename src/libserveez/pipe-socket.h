@@ -50,21 +50,21 @@ svz_pipe_t;
 
 __BEGIN_DECLS
 
-SERVEEZ_API int svz_pipe_valid __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_pipe_read_socket __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_pipe_write_socket __PARAMS ((svz_socket_t *));
-SERVEEZ_API int svz_pipe_disconnect __PARAMS ((svz_socket_t *));
-SERVEEZ_API svz_socket_t *svz_pipe_create __PARAMS ((svz_t_handle, 
-						     svz_t_handle));
-SERVEEZ_API int svz_pipe_create_pair __PARAMS ((svz_t_handle pipe_desc[2]));
-SERVEEZ_API svz_socket_t *svz_pipe_connect __PARAMS ((svz_pipe_t *, 
-						      svz_pipe_t *));
-SERVEEZ_API int svz_pipe_listener __PARAMS ((svz_socket_t *, 
-					     svz_pipe_t *, svz_pipe_t *));
-SERVEEZ_API int svz_pipe_check_user __PARAMS ((svz_pipe_t *));
-SERVEEZ_API int svz_pipe_check_group __PARAMS ((svz_pipe_t *));
-SERVEEZ_API svz_pipe_t *svz_pipe_alloc __PARAMS ((void));
-SERVEEZ_API void svz_pipe_destroy __PARAMS ((svz_pipe_t *));
+SERVEEZ_API int svz_pipe_valid (svz_socket_t *);
+SERVEEZ_API int svz_pipe_read_socket (svz_socket_t *);
+SERVEEZ_API int svz_pipe_write_socket (svz_socket_t *);
+SERVEEZ_API int svz_pipe_disconnect (svz_socket_t *);
+SERVEEZ_API svz_socket_t *svz_pipe_create (svz_t_handle, 
+						     svz_t_handle);
+SERVEEZ_API int svz_pipe_create_pair (svz_t_handle pipe_desc[2]);
+SERVEEZ_API svz_socket_t *svz_pipe_connect (svz_pipe_t *, 
+						      svz_pipe_t *);
+SERVEEZ_API int svz_pipe_listener (svz_socket_t *, 
+					     svz_pipe_t *, svz_pipe_t *);
+SERVEEZ_API int svz_pipe_check_user (svz_pipe_t *);
+SERVEEZ_API int svz_pipe_check_group (svz_pipe_t *);
+SERVEEZ_API svz_pipe_t *svz_pipe_alloc (void);
+SERVEEZ_API void svz_pipe_destroy (svz_pipe_t *);
 
 __END_DECLS
 
