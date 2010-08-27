@@ -1,0 +1,7 @@
+AC_INIT([libserveez], [0.2])
+AC_CONFIG_AUX_DIR([.])
+AM_INIT_AUTOMAKE([foreign])
+AC_PROG_CC
+LT_INIT
+AC_CONFIG_FILES([Makefile version.h])
+AC_OUTPUT

@@ -30,7 +30,7 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Initialize autoconf and automake
 dnl
-AC_INIT([Serveez-MG],[0.1.8],[spk121@yahoo.com])
+AC_INIT([Serveez-MG],[0.2],[spk121@yahoo.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([src/config.h])
