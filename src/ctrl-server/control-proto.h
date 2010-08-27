@@ -26,6 +26,7 @@
 #define __CONTROL_PROTO_H__
 
 #include <config.h>
+#include "libserveez.h"
 
 #define STAT_BUFFER_SIZE 256
 

@@ -27,15 +27,13 @@
 
 #define _XOPEN_SOURCE           /* to get crypt in unistd.h */
 #define _GNU_SOURCE 1           /* to get snprintf */
-#include <stdio.h>              /* snprintf */
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <stdio.h>              /* fgets, sscanf, sprintf, snprintf */
+#include <stdlib.h>             /* strtol */
+#include <string.h>             /* memcmp, memcopy, strlen, strcpy, memmove */
+#include <time.h>               /* time */
 #include <unistd.h>             /* crypt */
-#include <sys/times.h>
-
-#include <sys/types.h>
-#include <netinet/in.h>
+#include <errno.h>              /* errno */
+#include <sys/times.h>          /* times, struct tms */
 
 #include "libserveez.h"
 #include "control-proto.h"
@@ -253,7 +251,13 @@ ctrl_stat_id (svz_socket_t *sock, int flag, char *arg)
   svz_coserver_t *coserver;
 
   /* Find the appropriate client or server connection. */
-  id = atoi (arg);
+  errno = 0;
+  id = strtol (arg, NULL, 0);
+  if (errno)
+    {
+      svz_sock_printf (sock, "no such connection: %s\r\n", arg);
+      return flag;
+    }
   if ((xsock = svz_sock_find (id, -1)) == NULL)
     {
       svz_sock_printf (sock, "no such connection: %d\r\n", id);
@@ -427,7 +431,7 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 		   svz_time (svz_config.start));
 
   /* display compile time feature list */
-  svz_sock_printf (sock, "Features  : FOO"
+  svz_sock_printf (sock, "Features  : "
 		   " HTTP"
 		   " CTRL"
 		   " PROG"
@@ -623,7 +627,13 @@ ctrl_kill_id (svz_socket_t *sock, int flag, char *arg)
   int id;
   svz_socket_t *xsock;
 
-  id = atoi (arg);
+  errno = 0;
+  id = strtol (arg, NULL, 0);
+  if (errno)
+    {
+      svz_sock_printf (sock, "no such connection: %s\r\n", arg);
+      return flag;
+    }
   if ((xsock = svz_sock_find (id, -1)) == NULL)
     {
       svz_sock_printf (sock, "no such connection: %d\r\n", id);
