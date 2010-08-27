@@ -26,6 +26,26 @@
 ;;
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
+(define-module (serveez lib)
+  #:export (println
+            printsln
+            interface-add!
+            loadpath-add!
+            bind-servers!
+            create-tcp-port!
+            bind-tcp-port-range!
+            create-udp-port!
+            bind-udp-port-range!
+            getrpcent
+            getrpcbyname
+            getrpcbynumber
+            setrpcent
+            endrpcent
+            subbytevector
+            bytevector-contains
+            bytevector-search
+            serveez-doc-add!))
+
 (define (println . args)
   (for-each display args) (newline))
 (define (printsln spacer . args)

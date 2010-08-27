@@ -31,7 +31,7 @@ pkgsysconfdir = ${sysconfdir}/${PACKAGE}
 pkgsysconf_DATA = serveez.cfg
 
 pkgguilesitedir = ${GUILE_SITEDIR}/${PACKAGE}
-pkgguilesite_DATA = serveez.scm
+pkgguilesite_DATA = lib.scm
 
 #
 # Add your server subdirectory here
