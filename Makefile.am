@@ -26,7 +26,6 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src data test doc
+SUBDIRS = src data test doc m4
 
 EXTRA_DIST = THANKS
-

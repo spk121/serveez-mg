@@ -107,6 +107,7 @@ AC_CONFIG_FILES([
     src/Makefile 
     data/Makefile
     test/Makefile
+    m4/Makefile
     src/version.h])
 AC_OUTPUT
 
