@@ -1,3 +1,0 @@
-#define SVZ_PKGDATADIR "/gnu/share/serveez"
-#define SVZ_BINDIR "/gnu/bin"
-#define SVZ_LIBDIR "/gnu/lib"
