@@ -61,9 +61,9 @@ svz_mutex_destroy (svz_mutex_t *mutex)
 int
 svz_mutex_lock (svz_mutex_t *mutex)
 {
-  if (pthread_mutex_lock (mutex) != 0)
+  if (errno != EINTR && pthread_mutex_lock (mutex) != 0)
     {
-      svz_log (LOG_ERROR, "pthread_mutex_lock: %s\n", SYS_ERROR);
+      fprintf (stderr, "pthread_mutex_lock: %s\n", SYS_ERROR);
       return -1;
     }
   return 0;

@@ -23,7 +23,7 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-TESTS = vector-test array-test hash-test spvec-test
+TESTS = vector-test array-test hash-test spvec-test test-http-get
 
 EXTRA_DIST = prog-test.cfg test-suite.scm binary-test.scm server-test.scm \
 	guile-server-test.scm

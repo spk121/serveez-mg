@@ -65,7 +65,6 @@ AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt
 
-
 # If Guile's sitedir isn't under this package's $(prefix), distcheck
 # will fail.  This is pretty common.  So, for distcheck, Guile's
 # sitedir is always under $(prefix).

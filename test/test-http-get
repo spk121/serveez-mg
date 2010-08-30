@@ -1,0 +1,31 @@
+#!/usr/local/bin/guile \
+--debug -e main -s
+!#
+
+;; Start serveez in its own thread
+(define (main args)
+  (format #t "Starting test 1~%")
+  (let ((pid (primitive-fork)))
+    (cond
+     ((= pid 0)
+      (format #t "I am the child~%")
+      (write (execlp "libtool"
+                     "serveez"
+                     "--mode=execute"
+                     "../src/serveez" 
+                     "--cfg-file=test-http-get.cfg"))
+      )
+     (else
+      (format #t "The child's PID is ~S~%" pid)
+      (sleep 1)
+      (format #t "3...~%")
+      (sleep 1)
+      (format #t "2...~%")
+      (sleep 1)
+      (format #t "1...~%")
+      (sleep 1)
+      (system* "curl" "--head" "http://localhost:10080/test-http-get")
+      (sleep 1)
+      (kill pid SIGQUIT)
+      (kill pid SIGKILL)))))
+

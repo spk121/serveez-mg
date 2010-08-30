@@ -53,13 +53,19 @@ This manual is for Serveez-MG, version @value{VERSION}
 * Concept::                     
 * Server::                      
 * Coserver::                    
-* Bibliography::                 
+* Bibliography::                
 * License::                     
 
 @detailmenu
  --- The Detailed Node Listing ---
 
-Configuring Serveez
+Command line options
+
+* Serveez Configuration Concepts::  
+* Configuring the HTTP Server::  
+* Setup the Control Protocol Server::  
+
+Serveez Configuration Concepts
 
 * Define ports::                Port configuration definition
 * Define servers::              Server definition
@@ -79,7 +85,6 @@ Writing servers
 Existing servers
 
 * HTTP Server::                 Integrated Web Server description
-* Control Protocol Server::     Serveez control center
 * Passthrough Server::          Description of the program passthrough server
 * Mandel Server::               Distributed Mandelbrot server
 
@@ -185,7 +190,14 @@ Start as daemon in background.
 Use standard input as configuration file.
 @end table
 
-@section Configuring Serveez
+@menu
+* Serveez Configuration Concepts::  
+* Configuring the HTTP Server::  
+* Setup the Control Protocol Server::  
+@end menu
+
+@node Serveez Configuration Concepts, Configuring the HTTP Server, Using Serveez, Using Serveez
+@section Serveez Configuration Concepts
 
 As noted above Serveez is configured via a configuration file which is
 by default @file{serveez.cfg} and can be set by passing the @samp{-f}
@@ -207,7 +219,20 @@ configuration file (other applications usually just read them and remember
 the settings) and finally enters its main loop doing the things you wanted 
 it to.
 
-There are three things you have to do in the configuration file.
+There are three things you have to do in the configuration file:
+
+@itemize @bullet
+@item
+define your ports
+@item
+define your servers
+@item
+and, bind your servers to the ports
+@end itemize
+
+In the next three sections, this process will be described in a
+general sense.  Afterwards, we'll describe specifically how to set up
+the webserver and the control server.
 
 @menu
 * Define ports::                Port configuration definition
@@ -215,7 +240,7 @@ There are three things you have to do in the configuration file.
 * Bind servers to ports::       How to bind servers to port configurations
 @end menu
 
-@node Define ports, Define servers, Using Serveez, Using Serveez
+@node Define ports, Define servers, Serveez Configuration Concepts, Serveez Configuration Concepts
 @subsection Define ports
 
 A @code{port} (in Serveez) is a transport endpoint. You might know them
@@ -229,7 +254,20 @@ The following examples show how you setup different types of port
 configurations. You start to define such a port using the Guile function
 @code{(define-port!)}. The first argument to this functions specifies the
 name of the port configuration. The remaining argument describes the
-port in detail.
+port in detail. A definition of the http-port could be like the following.
+
+@example
+(define-port! 'http-port '(("proto"  . "tcp")
+                           ("port"   . 80)
+                           ("ipaddr" . "*")))
+@end example
+
+In this example, @code{define-port!} is a command that you are asking
+Serveez to do; @code{http-port} is the name you're assigning to the
+port you're making. Following that is a list of configuration items
+that are being set: the port protocol is set to TCP; the port number
+is set to 80, which is customary for the HTTP port, and the port will
+accept connections from the whole range of possible IP addresses.
 
 @subsubsection Port configuration items
 This table describes each configuration item for a port in Serveez.  Note 
@@ -243,10 +281,12 @@ type of port.  Valid values are @samp{tcp}, @samp{udp}, @samp{icmp},
 remaining configuration items apply and which do not.
 
 @item port (integer in the range 0..65535)
-The @code{port} item determines the network port number on which TCP and UDP
-servers will listen.  Thus it does not make sense for ICMP and named pipes.
-If you pass @samp{0} Serveez will determine a free port in the range 
-between 1 and 65535.
+The @code{port} item determines the network port number on which TCP
+and UDP servers will listen.  Thus it does not make sense for ICMP and
+named pipes.  If you pass @samp{0} Serveez will determine a free port
+in the range between 1 and 65535.  Remember that port numbers below
+1024 are privileged ports and only privileged processes, such as those
+run as root, can bind to them.
 
 @item recv (string or associative list)
 This item describes the receiving (listening) end of a named pipe
@@ -351,11 +391,12 @@ be refused and shut down immediately.  It applies to TCP ports.
 @end table
 
 @subsubsection TCP port definition
-Definition of a TCP port configuration with the name "foo-tcp-port". The
-enhanced settings are all optional including the @var{ipaddr} property
-which defaults to @samp{*}. The @var{ipaddr} item can contain any form
-of a dotted decimal internet address, a @samp{*}, @samp{any} or an
-interface description which you can obtain by running @samp{serveez -i}.
+As another example, here is a definition of a TCP port configuration
+with the name "foo-tcp-port". The enhanced settings are all optional
+including the @var{ipaddr} property which defaults to @samp{*}. The
+@var{ipaddr} item can contain any form of a dotted decimal internet
+address, a @samp{*}, @samp{any} or an interface description which you
+can obtain by running @samp{serveez -i}.
 
 @example
 (define-port! 'foo-tcp-port '(
@@ -420,7 +461,7 @@ Simple definition of a UDP port configuration with the name "foo-udp-port".
                               (port  . 27952)))
 @end example
 
-@node Define servers, Bind servers to ports, Define ports, Using Serveez
+@node Define servers, Bind servers to ports, Define ports, Serveez Configuration Concepts
 @subsection Define servers
 
 A @code{server} (in Serveez) is a snippet of code that implements some
@@ -434,17 +475,22 @@ webserver on a different port publishing something else. Every server
 has a unique name you assign to it. The name of the server is later used
 to bind it to a port.
 
-The following example instantiates a server with the short name "foo". Each
-server in Serveez has got a short name. @xref{Existing servers}, for the 
-details. This example demonstrates everything which is possible in server
-configurations. You start a definition of a server with the guile function 
-@code{(define-server!)}. The following argument specifies the name of the
-server instance (in this case "foo-server") which starts with the short 
-name. The second argument describes the server in detail. Each 
-configuration item is setup with a @code{(key . value)} pair where "key" is
-the name of the configuration item and "value" is the value which depends
-on the type of the item. @xref{Configuring servers}, for a detailed 
-description of each type of value.
+Each type of port will have its own specific list of configuration
+parameters.  The HTTP server has a different set of configuration
+parameters than another type of server.
+
+The following example instantiates a server with the short name
+"foo". Each server in Serveez has got a short name. @xref{Existing
+servers}, for the details. This example demonstrates everything which
+is possible in server configurations. You start a definition of a
+server with the guile function @code{(define-server!)}. The following
+argument specifies the name of the server instance (in this case
+"foo-server") which starts with the short name. The second argument
+describes the server in detail. Each configuration item is setup with
+a @code{(key . value)} pair where "key" is the name of the
+configuration item and "value" is the value which depends on the type
+of the item. @xref{Configuring servers}, for a detailed description of
+each type of value.
 
 @example
 (define-server! 'foo-server '(
@@ -466,7 +512,7 @@ The name of the server instance has to begin with this short name followed
 by a dash (-). You can append any suffix then. In the example above "foo" 
 is the short name and "foo-server" the name of the server instance.
 
-@node Bind servers to ports,  , Define servers, Using Serveez
+@node Bind servers to ports,  , Define servers, Serveez Configuration Concepts
 @subsection Bind servers to ports
 
 Finally you can bind servers to ports. When you do so the server you
@@ -495,7 +541,321 @@ share the same port (e.g. the tunnel server) and some protocols simply won't
 work on 'wrong' ports. Additionally, you will not get error messages when
 that happens. The server just will not work then.
 
-@subsection Additional configuration possibilities
+@node Configuring the HTTP Server, Setup the Control Protocol Server, Serveez Configuration Concepts, Using Serveez
+@section Configuring the HTTP Server
+
+The integrated HTTP server was originally meant to be a simple but
+fast document server. It can also execute CGI scripts. The GET, HEAD
+and POST methods are fully functional. Additionally Serveez produces
+directory listings when no standard document file
+(e.g. @file{index.html}) has been found at the requested document node
+(directory).  Furthermore it implements a file cache for speeding up
+repetitive HTTP request.
+
+The basic setup of the HTTP server requires that the serveez.cfg file
+contains something like the following:
+
+@example
+(define-port! 'http-port '(
+                           ("proto"  . "tcp")
+                           ("port"   . 80)
+                           ("ipaddr" . "*")))
+
+(define-server! 'http-server '(
+              ;; standard properties
+              ("admin"        . "nobody@@gmail.com")
+              ("host"         . "yourdomain.net")
+              ("logfile"      . "http-access.log")
+              ("logformat"    . "%h %i %u [%t] \"%R\" %c %l")
+              ("indexfile"    . "index.html")
+              ("docs"         . "/var/www/html")
+              ("userdir"      . "public_html")
+              ("type-file"    . "/etc/mime.types")
+              ("default-type" . "text/plain")
+              ("nslookup"     . on)
+              ("ident"        . yes)
+
+              ;; cgi interface
+              ("cgi-url"         . "/cgi-bin")
+              ("cgi-dir"         . "/var/www/cgi-bin")
+              ("cgi-application" . (("pl"  . "perl")
+                                    ("py"  . "python")))
+            ))
+
+(bind-server! 'http-port 'http-server)
+
+Remember that port numbers below 1024 are privileged ports and only
+privileged processes, such as those run as root, can bind to them.
+
+@end example
+
+@subsection Configuration
+
+The following options for the HTTP server can be set from the
+configuration file.
+
+@table @code
+@item indexfile (string, default: index.html)
+The @code{indexfile} parameter is the default file served by the HTTP 
+server when the user does not specify a file but a document node
+(e.g. @uref{http://www.lkcc.org/}).
+
+@item docs (string, default: ../show)
+The @code{docs} parameter is the document root where the server finds its
+web documents.
+
+@item userdir (string, default: public_html)
+Each @samp{~user} request gets converted into the given users home
+directory. The string will be appended to this directory. Its default
+value is @samp{public_html}.
+
+@item cgi-url (string, default: /cgi-bin)
+This parameter is the first part of the URL the HTTP server identifies a
+CGI request. For instance if you specify here @file{/cgi-bin} and the
+user requests @uref{http://www.lkcc.org/cgi-bin/test.pl} then the
+HTTP server tries to execute the program @file{test.pl} within the
+@code{cgi-dir} (see below) and pipes its output to the user.
+
+@item cgi-dir (string, default: ./cgibin)
+The @code{cgi-dir} is the CGI document root (on the server).
+
+@item cgi-application (hash, default: empty)
+You can use this hash to associate certain file suffices with
+applications on your computer (e.g. "pl" with "perl").
+
+@item cache-size (integer, default: 200 kb)
+This specifies the size of the document cache in bytes for each cache
+entry.
+
+@item cache-entries (integer, default: 64)
+This parameter specifies the maximum number of HTTP file cache entries
+(files). When you instantiate more than one HTTP server the biggest value
+wins. The HTTP file cache is shared by all HTTP servers.@*
+@strong{Please note}: If your harddrive/filesystem combination proves to 
+be faster than the HTTP file cache you should disable it by setting both
+@code{cache-size} and @code{cache-entries} to zero.
+
+@item timeout (integer, default: 15)
+The @code{timeout} value is the amount of time in seconds after which 
+a keep-alive connection (this is a HTTP/1.1 feature) will be closed when
+it has been idle.
+
+@item keepalive (integer, default: 10)
+On one keep-alive connection can be served the number of @code{keepalive}
+documents at all. Then the connection will be closed.
+Both this and the @code{timeout} value are just to be on the safe side. 
+They protect against idle and high traffic connections.
+
+@item default-type (string, default: text/plain)
+The @code{default-type} is the default content type the HTTP server
+assumes if it can not identify a served file by the @code{types} hash
+and the @code{type-file} (see below).
+
+@item type-file (string, default: /etc/mime.types)
+This should be a file like the @file{/etc/mime.types} on Unix systems.
+It associates file suffices with MIME types.
+
+@item types (hash, default: empty)
+If you want to specify special content types do it here. This parameter
+is a hash map associating file suffices with HTTP content types (MIME types).
+
+@item admin (string, default: root@@localhost)
+Your address, where problems with the server should be e-mailed.
+This address appears on some server-generated pages, such as error
+documents.
+
+@item host (string, default: localhost)
+This is the native host name of your web server. Sometimes the server has
+to send back its own name to the client. It will use this value.
+Be aware that you cannot invent such a name.
+
+@item nslookup (boolean, default: false)
+If this is true the HTTP server invokes a reverse DNS lookup
+for each client connection in order to replace the remote ip address with
+the remote host name in the access logfile.
+
+@item ident (boolean, default: false)
+If this is true the HTTP server processes identd requests
+for each client connection for logging purposes.
+
+@item logfile (string, default: http-access.log)
+The location of the access logfile. For each HTTP request a line gets
+appended to this file.
+
+@item logformat (string, default: CLF)
+The format of the access logfile. There are special placeholders for
+different kinds of logging information. The default log format is the
+Common Log Format (CLF). It contains a separate line for each request. A 
+line is composed of several tokens separated by spaces.
+@example
+CLF = host ident authuser date request status bytes 
+@end example
+If a token does not have a value then it is represented by a hyphen (-). 
+The meanings and values of these tokens are as follows: 
+
+@table @code
+@item %h (host)
+The fully-qualified domain name of the client, or its IP number if the name 
+is not available.
+@item %i (ident)
+This is the identity information reported by the client. Not active, so 
+we will see a hyphen (-).
+@item %u (authuser)
+If the request was for an password protected document, then this is the 
+userid used in the request. 
+@item %t (date)
+The date and time of the request, in the following format:
+@example
+date   = [day/month/year:hour:minute:second zone] 
+day    = 2*digit 
+month  = 3*letter 
+year   = 4*digit 
+hour   = 2*digit 
+minute = 2*digit 
+second = 2*digit 
+zone   = (`+' | `-') 4*digit 
+@end example
+@item %R (request)
+The request line from the client, enclosed in double quotes (").
+@item %r (referrer)
+Which document referred to this document.
+@item %a (agent)
+What kind of web browser did the remote client use.
+@item %c (status)
+The three digit status code returned to the client. 
+@item %l (bytes)
+The number of bytes in the object returned to the client, not including 
+any headers. 
+@end table
+@end table
+
+@node  Setup the Control Protocol Server,  , Configuring the HTTP Server, Using Serveez
+@section Setup the Control Protocol Server
+
+Now that you've added the configuration for the HTTP server to the
+@file{serveez.cfg} configuration file, the next step is to set up the
+Control Protocol Server, which allows you to do some administration on
+the server process without having to stop and restart it.
+
+To this end, Serveez implements something like a telnet protocol for
+administrative purposes. You just need to start a telnet session like:
+@example
+$ telnet www.yourdomain.org 42420
+@end example
+After pressing @key{RET} you will be asked for a password which you
+might setup passing Serveez the -P argument. 
+@xref{Using Serveez}. 
+
+@subsection Configuration of the Control Protocol Server
+
+The control protocol server doesn't have many options to configure.
+But, in the @file{serveez.cfg} file, you need to bind it to a TCP
+port, like so:
+
+@example
+(define-port! 'control-port `(
+			      (proto . tcp)
+			      (port . 42420)
+			      (ipaddr . *)
+			      ))
+
+(define-server! 'control-server)
+
+(bind-server! 'control-port 'control-server)
+@end example
+
+This example has it bound to port 42420, so you would telnet to that
+port.
+
+The password that the Control Protocol Server will expect can be set
+in a couple of ways.  It can be specified on the command line when
+Serveez is invoked.  It can also be set in the @file{serveez.cfg} file
+by using the @code{serveez-passwd} procedure.
+
+@subsection Using the Control Protocol
+
+Once you've connected to the Control Protocl Server via telnet, you'll
+be given a prompt at which you can enter the following commands.
+
+@table @samp
+@item help
+This command will give you a very short help screen of all available
+commands.
+
+@item quit
+This command closes the connection to Serveez.
+
+@item restart ident
+Restarts the internal ident coserver. This is useful if you just want
+to start a new one if the old one died or is otherwise unusable.
+
+@item restart dns
+Restarts the internal dns lookup server.
+
+@item restart reverse dns
+Restarts the internal reverse dns lookup server.
+
+@item killall
+This might be useful if Serveez seems to be unstable but you do not
+want to restart it. With @samp{killall} you disconnect all client
+network connections except the control protocol connections.
+
+@item kill id NUM
+Disconnects a specific connection identified by its ID. These IDs will
+be stated when you type @samp{stat con} (see below).
+
+@item stat
+General statistics about Serveez. This will show you some useful
+information about the computer Serveez is running on and about the
+state of Serveez in general.
+
+@item stat coserver
+Statistics about all running coserver instances.
+
+@item stat SERVER
+This command is for selecting certain server instances to be listed.
+SERVER is one of server names you specified in the configuration file.
+
+@item stat id NUM
+Show statistics about a specific connection. This will give you all
+available information about every connection you specified.
+@xref{Writing servers}, for more information about how to provide these
+information.
+
+@item stat con
+Connection statistics. This will give a list of all socket structures
+within Serveez. If you want more detailed information about specific
+connections, coservers or servers you need to request these information
+with @samp{stat id NUM} or @samp{stat all}.
+
+@item stat all
+Server and coserver instance statistics. This command lists all
+the information about instantiated servers and coservers.
+@xref{Writing servers}, for more information about how to provide these
+information.
+
+@item stat cache
+HTTP cache statistics. This command produces an output something like the 
+following where @samp{File} is the short name of the cache entry, 
+@samp{Size} the cache size, @samp{Usage} the amount of connections 
+currently using this entry, @samp{Hits} the amount of cache hits, 
+@samp{Recent} the cache strategy flag (newer entries have larger numbers) 
+and @samp{Ready} is the current state of the cache entry.
+
+@example
+File                      Size  Usage  Hits Recent Ready
+zlib-1.1.3-20000531.zip  45393      0     0      1 Yes
+texinfo.tex             200531      0     0      2 Yes
+shayne.txt                2534      0     1      1 Yes
+
+Total : 248458 byte in 3 cache entries
+@end example
+
+@item kill cache
+Reinitialize the HTTP file cache. Flushes all files from the cache.
+@end table
+
+@section Additional configuration possibilities
 
 The three functions @code{(define-port!)}, @code{(define-server!)} and
 @code{(bind-server!)} return @code{#t} on success and @code{#f} on
@@ -770,266 +1130,14 @@ example for an easy start.
 
 @menu
 * HTTP Server::                 Integrated Web Server description
-* Control Protocol Server::     Serveez control center
 * Passthrough Server::          Description of the program passthrough server
 * Mandel Server::               Distributed Mandelbrot server
 @end menu
 
-@node HTTP Server, Control Protocol Server, Existing servers, Existing servers
+@node HTTP Server, Passthrough Server, Existing servers, Existing servers
 @subsection HTTP Server
 
-@subsubsection General description
-
-The integrated HTTP server was originally meant to be a simple but fast
-document server. But now it can even execute CGI scripts. The GET, HEAD and
-POST methods are fully functional. Additionally Serveez produces 
-directory listings when no standard document file 
-(e.g. @file{index.html}) has been found at the requested document node
-(directory).  Furthermore it implements a file cache for speeding up
-repetitive HTTP request.
-
-
-@subsubsection Configuration
-
-The following options can be set from the configuration file.
-
-@table @code
-@item indexfile (string, default: index.html)
-The @code{indexfile} parameter is the default file served by the HTTP 
-server when the user does not specify a file but a document node
-(e.g. @uref{http://www.lkcc.org/}).
-
-@item docs (string, default: ../show)
-The @code{docs} parameter is the document root where the server finds its
-web documents.
-
-@item userdir (string, default: public_html)
-Each @samp{~user} request gets converted into the given users home
-directory. The string will be appended to this directory. Its default
-value is @samp{public_html}.
-
-@item cgi-url (string, default: /cgi-bin)
-This parameter is the first part of the URL the HTTP server identifies a
-CGI request. For instance if you specify here @file{/cgi-bin} and the
-user requests @uref{http://www.lkcc.org/cgi-bin/test.pl} then the
-HTTP server tries to execute the program @file{test.pl} within the
-@code{cgi-dir} (see below) and pipes its output to the user.
-
-@item cgi-dir (string, default: ./cgibin)
-The @code{cgi-dir} is the CGI document root (on the server).
-
-@item cgi-application (hash, default: empty)
-Within the MinGW32 and native port you can use this hash to associate
-certain file suffices with applications on your computer (e.g. "pl" with
-"perl"). This is necessary because there is no possibility to check whether
-a file is executable on Win32.
-
-@item cache-size (integer, default: 200 kb)
-This specifies the size of the document cache in bytes for each cache
-entry.
-
-@item cache-entries (integer, default: 64)
-This parameter specifies the maximum number of HTTP file cache entries
-(files). When you instantiate more than one HTTP server the biggest value
-wins. The HTTP file cache is shared by all HTTP servers.@*
-@strong{Please note}: If your harddrive/filesystem combination proves to 
-be faster than the HTTP file cache you should disable it by setting both
-@code{cache-size} and @code{cache-entries} to zero.
-
-@item timeout (integer, default: 15)
-The @code{timeout} value is the amount of time in seconds after which 
-a keep-alive connection (this is a HTTP/1.1 feature) will be closed when
-it has been idle.
-
-@item keepalive (integer, default: 10)
-On one keep-alive connection can be served the number of @code{keepalive}
-documents at all. Then the connection will be closed.
-Both this and the @code{timeout} value are just to be on the safe side. 
-They protect against idle and high traffic connections.
-
-@item default-type (string, default: text/plain)
-The @code{default-type} is the default content type the HTTP server
-assumes if it can not identify a served file by the @code{types} hash
-and the @code{type-file} (see below).
-
-@item type-file (string, default: /etc/mime.types)
-This should be a file like the @file{/etc/mime.types} on Unix systems.
-It associates file suffices with MIME types.
-
-@item types (hash, default: empty)
-If you want to specify special content types do it here. This parameter
-is a hash map associating file suffices with HTTP content types (MIME types).
-
-@item admin (string, default: root@@localhost)
-Your address, where problems with the server should be e-mailed.
-This address appears on some server-generated pages, such as error
-documents.
-
-@item host (string, default: localhost)
-This is the native host name of your web server. Sometimes the server has
-to send back its own name to the client. It will use this value.
-Be aware that you cannot invent such a name.
-
-@item nslookup (boolean, default: false)
-If this is true the HTTP server invokes a reverse DNS lookup
-for each client connection in order to replace the remote ip address with
-the remote host name in the access logfile.
-
-@item ident (boolean, default: false)
-If this is true the HTTP server processes identd requests
-for each client connection for logging purposes.
-
-@item logfile (string, default: http-access.log)
-The location of the access logfile. For each HTTP request a line gets
-appended to this file.
-
-@item logformat (string, default: CLF)
-The format of the access logfile. There are special placeholders for
-different kinds of logging information. The default log format is the
-Common Log Format (CLF). It contains a separate line for each request. A 
-line is composed of several tokens separated by spaces.
-@example
-CLF = host ident authuser date request status bytes 
-@end example
-If a token does not have a value then it is represented by a hyphen (-). 
-The meanings and values of these tokens are as follows: 
-
-@table @code
-@item %h (host)
-The fully-qualified domain name of the client, or its IP number if the name 
-is not available.
-@item %i (ident)
-This is the identity information reported by the client. Not active, so 
-we will see a hyphen (-).
-@item %u (authuser)
-If the request was for an password protected document, then this is the 
-userid used in the request. 
-@item %t (date)
-The date and time of the request, in the following format:
-@example
-date   = [day/month/year:hour:minute:second zone] 
-day    = 2*digit 
-month  = 3*letter 
-year   = 4*digit 
-hour   = 2*digit 
-minute = 2*digit 
-second = 2*digit 
-zone   = (`+' | `-') 4*digit 
-@end example
-@item %R (request)
-The request line from the client, enclosed in double quotes (").
-@item %r (referrer)
-Which document referred to this document.
-@item %a (agent)
-What kind of web browser did the remote client use.
-@item %c (status)
-The three digit status code returned to the client. 
-@item %l (bytes)
-The number of bytes in the object returned to the client, not including 
-any headers. 
-@end table
-@end table
-
-@node Control Protocol Server, Passthrough Server, HTTP Server, Existing servers
-@subsection Control Protocol Server
-
-@subsubsection General description
-
-Serveez implements something like a telnet protocol for 
-administrative purposes. You just need to start a telnet session like:
-@example
-$ telnet www.lkcc.org 42420
-@end example
-After pressing @key{RET} you will be asked for a password which you
-might setup passing Serveez the -P argument. 
-@xref{Using Serveez}. The next section describes the interactive commands
-available.
-
-@subsubsection Using the Control Protocol
-
-@table @samp
-@item help
-This command will give you a very short help screen of all available
-commands.
-
-@item quit
-This command closes the connection to Serveez.
-
-@item restart ident
-Restarts the internal ident coserver. This is useful if you just want
-to start a new one if the old one died or is otherwise unusable.
-
-@item restart dns
-Restarts the internal dns lookup server.
-
-@item restart reverse dns
-Restarts the internal reverse dns lookup server.
-
-@item killall
-This might be useful if Serveez seems to be unstable but you do not
-want to restart it. With @samp{killall} you disconnect all client
-network connections except the control protocol connections.
-
-@item kill id NUM
-Disconnects a specific connection identified by its ID. These IDs will
-be stated when you type @samp{stat con} (see below).
-
-@item stat
-General statistics about Serveez. This will show you some useful
-information about the computer Serveez is running on and about the
-state of Serveez in general.
-
-@item stat coserver
-Statistics about all running coserver instances.
-
-@item stat SERVER
-This command is for selecting certain server instances to be listed.
-SERVER is one of server names you specified in the configuration file.
-
-@item stat id NUM
-Show statistics about a specific connection. This will give you all
-available information about every connection you specified.
-@xref{Writing servers}, for more information about how to provide these
-information.
-
-@item stat con
-Connection statistics. This will give a list of all socket structures
-within Serveez. If you want more detailed information about specific
-connections, coservers or servers you need to request these information
-with @samp{stat id NUM} or @samp{stat all}.
-
-@item stat all
-Server and coserver instance statistics. This command lists all
-the information about instantiated servers and coservers.
-@xref{Writing servers}, for more information about how to provide these
-information.
-
-@item stat cache
-HTTP cache statistics. This command produces an output something like the 
-following where @samp{File} is the short name of the cache entry, 
-@samp{Size} the cache size, @samp{Usage} the amount of connections 
-currently using this entry, @samp{Hits} the amount of cache hits, 
-@samp{Recent} the cache strategy flag (newer entries have larger numbers) 
-and @samp{Ready} is the current state of the cache entry.
-
-@example
-File                      Size  Usage  Hits Recent Ready
-zlib-1.1.3-20000531.zip  45393      0     0      1 Yes
-texinfo.tex             200531      0     0      2 Yes
-shayne.txt                2534      0     1      1 Yes
-
-Total : 248458 byte in 3 cache entries
-@end example
-
-@item kill cache
-Reinitialize the HTTP file cache. Flushes all files from the cache.
-@end table
-
-@subsubsection Configuration
-
-There is nothing to be configured yet.
-
-@node Passthrough Server, Mandel Server, Control Protocol Server, Existing servers
+@node Passthrough Server, Mandel Server, HTTP Server, Existing servers
 @subsection Passthrough Server
 
 @subsubsection General description
