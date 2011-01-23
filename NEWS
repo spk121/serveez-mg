@@ -1,6 +1,7 @@
 -- 
 -- NEWS
 -- 
+-- Copyright (C) 2011 Michael Gran <spk121@yahoo.com>
 -- Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
 -- Copyright (C) 2000, 2002 Raimund Jacob <raimi@lkcc.org>
 -- Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
@@ -28,7 +29,7 @@ files.
 The following are releases of Serveez-MG, a hack and fork of the original
 GNU Serveez.
 
-Version 0.1.8-mg
+Version 0.2-mg
 -------------
  * remove support for Windows, Solaris, HP, Cygwin and various other
    platforms
