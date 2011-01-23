@@ -2,6 +2,7 @@
 ;;
 ;; (serveez lib) - convenience functions
 ;;
+;; Copyright 2010, 2011 Michael Gran <spk121@yahoo.com>
 ;; Copyright (C) 2001 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
 ;; Copyright (C) 2001 Stefan Jahn <stefan@lkcc.org>
 ;;
@@ -20,13 +21,13 @@
 ;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 ;; Boston, MA 02111-1307, USA.
 ;;
-;; $Id: serveez.scm,v 1.7 2002/07/29 18:32:09 ela Exp $
 ;;
 
 ;;
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
 (define-module (serveez-mg lib)
+  #:use-module (rnrs bytevectors)
   #:export (println
             printsln
             interface-add!
