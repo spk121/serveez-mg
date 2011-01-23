@@ -1,0 +1,2275 @@
+Table of Contents
+*****************
+
+Serveez-MG
+1 Preface
+2 Introduction
+3 Installation
+  3.1 Install Dependencies
+  3.2 Getting Serveez-MG
+  3.3 Building and Installation
+  3.4 Testing
+4 Running and Managing
+  4.1 Configuration is Code
+  4.2 Trying Serveez
+5 An example Guile server
+  5.1 The "hello" protocol
+  5.2 The "hello world" server
+    5.2.1 The callback functions
+6 Deploying
+  6.1 Command line options
+  6.2 Serveez Configuration Concepts
+    6.2.1 Define ports
+      6.2.1.1 Port configuration items
+      6.2.1.2 TCP port definition
+      6.2.1.3 Pipe port definition
+      6.2.1.4 UDP port definition
+    6.2.2 Define servers
+    6.2.3 Bind servers to ports
+  6.3 Configuring the HTTP Server
+    6.3.1 Configuration
+  6.4 Setup the Control Protocol Server
+    6.4.1 Configuration of the Control Protocol Server
+    6.4.2 Using the Control Protocol
+  6.5 Additional configuration possibilities
+    6.5.1 Passthrough Server
+      6.5.1.1 General description
+      6.5.1.2 Configuration
+7 Concept
+  7.1 Overall concept
+  7.2 I/O Strategy
+    7.2.1 Limits on open filehandles
+8 Server
+  8.1 Introduction to servers
+  8.2 Writing servers in Guile
+    8.2.1 Guile server functions reference manual
+      8.2.1.1 Special Data Types
+      8.2.1.2 Passing Binary Data
+      8.2.1.3 Server Definition
+      8.2.1.4 Callback Prototypes
+      8.2.1.5 Predefined Procedures
+  8.3 Some words about server configuration
+9 Coserver
+  9.1 What are coservers
+  9.2 Existing coservers
+    9.2.1 Identification (Ident) coserver
+    9.2.2 Domain Name Server (DNS) coserver
+    9.2.3 Reverse Domain Name Server (reverse DNS) coserver
+10 Bibliography
+11 License
+
+
+Serveez-MG
+**********
+
+This manual is for Serveez-MG, version 0.2
+
+1 Preface
+*********
+
+There was once a great server framework named GNU Serveez.  It was
+basically a tutorial on how to implement an IP-based server as well as
+a library and a framework to help you get things done.  It was amazing:
+it supported dozens of platforms and many different ways of serving
+content over the 'nets.
+
+   The code for it is still around, of course, on the GNU website, but,
+the project appears to be dead, or mostly dead anyway.
+
+   Anyone that decided to pick up and update GNU Serveez would have a
+Promethean task: with all those many operating systems laboriously
+supported and with all those special cases for various libraries, it
+would be a trial just to keep it from bitrotting.  It might actually be
+impossible to keep it up to date without a huge community behind it.
+But it never really got that huge community it deserved.
+
+   When I (Mike Gran) wanted to make a Guile webservice, I decided to
+dust GNU Serveez off and make it work for me, on my one specific
+platform.  Serveez has built-in support for the Guile dialect of
+Scheme, which makes it rather unique.  It is also unmaintained GNU
+code, which makes me sad.
+
+   For now I call it "Serveez-MG" because the code is mostly GNU
+Serveez, but, this is really a fork of the true GNU Serveez.  Don't
+confuse the two.  This port is targeted to only work on my machines,
+and it only implements a handful of the servers that GNU Serveez does.
+As a one person project, I needed to strip it down to something I could
+understand.
+
+2 Introduction
+**************
+
+One function of Serveez-MG is as a web server.  It listens for HTTP
+requests and then acts on them.  That part of it is boring.  In fact,
+right now, is isn't a very modern webserver, since it requires scripts
+to be in the `cgi-bin' directory.  This may soon change.
+
+   The other function of Serveez-MG is to provide a platform for
+programming webservices in Guile.  It helps you write a webservice by
+implementing a callback and event based server that will call your Guile
+routines.  You won't have to worry about writing your own main poll or
+select loop.
+
+3 Installation
+**************
+
+You can skip this section if you are familiar with the GNU'ish way of
+configuring, compiling and installing a GNU package.
+
+3.1 Install Dependencies
+========================
+
+This program depends on other programs that depend on other programs.
+Yadda yadda yadda.  It is "turtles all the way down."
+
+   The most important dependencies are
+
+   * GNU Make for the building
+
+   * Guile 2.0 for the Scheme interpreter
+
+   * libcrypt for some trivial use of encryption
+
+   * libdl for some dynamic loading action
+
+   Of the four, only Guile 2.0 is uncommon and is not part of the Linux
+Standards Base.  It, in turn, depends on `libunistring', which is also
+uncommon.
+
+3.2 Getting Serveez-MG
+======================
+
+Serveez-MG can be found on `http://github.com/spk121/serveez-mg'.  It
+might just be in a Git repo, or there might be a download in the
+Download's directory.
+
+3.3 Building and Installation
+=============================
+
+If you're building this from the source code, then you will find a file
+named 'INSTALL' in the source code package.  It has helpful information
+on getting Serveez-MG to compile.  But, compiling from source is a
+trial for the unfamiliar.  Maybe someday some GNU or Linux distribution
+will package this, but, probably not.
+
+3.4 Testing
+===========
+
+Once the code is all built, you should run its built-in test to see if
+it is working by calling `make check'.  This check is not
+comprehensive, but, does indicate that *something* is at least sort of
+working.
+
+4 Running and Managing
+**********************
+
+Before you can run Serveez-MG, you need to configure it for your
+situation.  Serveez-MG is configured by writing a configuration file,
+named `serveez.cfg' in Scheme that gets read by Serveez-MG on startup.
+
+   In this chapter, I'm going to explain the format for the
+configuration file and all its options.  It is all based on the Scheme
+language, so if you don't know Scheme, you might want to learn.  All
+the kids are using it these days, if your definition of  "kids" is
+academics, GNU enthusiasts, and fans of parentheses.
+
+4.1 Configuration is Code
+=========================
+
+This configuration file, `serveez.cfg', is actually a program in the
+Scheme language.  Serveez-MG kicks off its Scheme interpreter when it
+starts up.  It then adds several Serveez-specific procedures to the
+Scheme interpreter: there are functions to define ports and servers,
+and other networking functions that aren't normally available when
+Guile starts up.  After this, it tries to run `serveez.cfg'.
+
+   Since the configuration is code, you could put anything you liked in
+there.  You could make you configuration file delete all the files on
+your hard drive if you wished, though this is not recommended.  So note
+that there is great versatility and great security risk to this.
+
+4.2 Trying Serveez
+==================
+
+Just to keep you from getting bored, let's run Serveez now before we
+dive into the complexities of the configuration file.
+
+   First, well add a minimal `serveez.cfg' configuration file.
+
+     (serveez-verbosity 2)
+
+     (define-port! 'http-port '(
+                                ("proto"  . "tcp")
+                                ("port"   . 10080)
+                                ("ipaddr" . "*")))
+
+     (define-server! 'http-server '(
+                   ;; standard properties
+                   ("admin"        . "nobody@gmail.com")
+                   ("host"         . "yourdomain.net")
+                   ("logfile"      . "http-access.log")
+                   ("logformat"    . "%h %i %u [%t] \"%R\" %c %l")
+                   ("docs"         . ".")
+                   ("type-file"    . "/etc/mime.types")
+                 ))
+
+     (bind-server! 'http-port 'http-server)
+
+   You'll also need to put an html file in this directory.  If you don't
+have one, you can use this one: `hello.html'
+
+     <?xml version="1.0" encoding="US-ASCII"?>
+     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+     <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+       <title>Blammo!</title>
+      </head>
+      <body>
+       <h1>Blammo is the word</h1>
+      </body>
+     </html>
+
+   You can kick off the server by typing `serveez' on the command line.
+In this state, it will run in the foreground.
+
+   You then should be able to point your web browser to
+`http://localhost:10080/hello.html'.
+
+   Once you are done messing about, you can kill the webserver with
+<CTRL-C>.  It should have generated a `http-access.log' file, which you
+can now peruse.
+
+5 An example Guile server
+*************************
+
+But, like I said, the `http' server is not that special.  Now I'll give
+a description of the "hello world" of Guile webservices.  If you have
+actually read this document from the beginning, you won't understand
+the specifics of the commands; but, I find that it is easier to scan
+this example, and then look at the specifics, and then re-read the
+example, then it is to wade through reference material with no frame of
+reference.
+
+   Now we'll describe an example server written in Guile.  The "hello
+world" server.
+
+5.1 The "hello" protocol
+========================
+
+The first step in making our server is to define a protocol.  The
+"hello world" server's protocol will be very simple.
+
+   First, when a client connects to the server, it needs to identify
+itself by sending the ASCII string "HELLO".
+
+   The server will respond by sending the string "HELLO, WORLD!"
+
+   Then, if the client sends the ASCII string "WHAT TIME IS IT?", the
+server will respond with an ASCII string representation of the time.
+
+   If the client sends any other data than that string, the server will
+respond with the ASCII string "ERROR".
+
+5.2 The "hello world" server
+============================
+
+The "hello world" server is an Internet server completely written in
+Guile with the help of the API provided by the underlying Serveez
+application.  The reader will not see any occurrence of the networking
+API of Guile.
+
+   This server is going to be a TCP server assigned to port 3003.
+
+   For the purposes of this example, imagine that all the following code
+is in a file named `serveez.cfg'.
+
+5.2.1 The callback functions
+----------------------------
+
+The first callback that needs to be defined in the `detect-proto'
+callback.  It will scan for the client's initial string "HELLO", which
+is how the client identifies that it is trying to communicate to the
+hello world server.
+
+   For TCP and PIPE servers this step is mandatory since there can be
+multiple servers of different protocols listening to the same socket.
+
+   First, we need a couple of libraries
+     (use-modules (rnrs bytevectors)
+     	     (serveez-mg lib))
+
+   The `detect-proto' callback goes something like this:
+
+     ;; The protocol detection function: this function is called the
+     ;; first time a client connects.  The client is expected to
+     ;; identify itself by sending the string "HELLO".
+     (define (hello-detect-proto server socket)
+       (let ((input-bytes (svz:sock:receive-buffer socket)))
+
+         (if (bytevector-contains (svz:sock:receive-buffer socket)
+     			     (string->utf8 "HELLO"))
+     	;; If true, allow connection
+             1
+     	;; Otherwise, ignore
+     	0)))
+
+   When the client connects to the server, whatever it has sent is
+stored in the _receive buffer_.  The procedure
+`svz:sock:receive-buffer' returns a bytevector containing everything
+received so far from the client.  Note that this procedure does not
+then erase the data from the receive buffer.
+
+   Next, we need the 'connect-socket' callback.  This is called once per
+connection that has a valid protocol.  This procedure is used to set up
+the socket and then connect a request handler to it.
+
+     ;; The connect socket function: after a client has been detected by
+     ;; detect-proto, this function handles each request
+     (define (hello-connect-socket server socket)
+       ;; Each packet is going to be delimited by CR/LF
+       (svz:sock:boundary socket "\r\n")
+       ;; Connect to the request handler
+       (svz:sock:handle-request socket hello-handle-request)
+       ;; Zero indicates success
+       0)
+
+   This procedure tells the socket to chop input data into packets
+delimited by the carriage-return / linefeed pair.  Each set of input
+that ends with CR/LF will be considered its own packet and will be
+processed as a single request.
+
+   Then, it connects the procedure `hello-handle-request' to the socket
+as its request handler.  It will get called once per packet.  So now,
+of course, we need a request handler.
+
+     ;; The request handler.
+     ;; If it receives "HELLO", return "HELLO, WORLD!".
+     ;; If it receives "WHAT TIME IT IS?", return the time.
+     ;; Otherwise, return ERROR.
+     (define (hello-handle-request socket request len)
+       (let ((command (strip-boundary (utf8->string request))))
+         (cond
+          ((string=? command "HELLO")
+           (svz:sock:print socket "HELLO, WORLD!\r\n"))
+          ((string=? command "WHAT TIME IS IT?")
+           (svz:sock:print socket (strftime "%c" (localtime (current-time))))
+           (svz:sock:print socket "\r\n"))
+          (else
+           (svz:sock:print socket "ERROR\r\n")))
+         ;; Return zero to indicate success
+         0))
+
+     (define (strip-boundary str)
+       (string-trim-right str (string->char-set "\r\n")))
+
+   This request handler does all the heavy lifting.  If it receives a
+"HELLO" or "WHAT TIME IS IT?" command, it will respond appropriately.
+
+   Now that the callbacks are out of the way, we need to create the port
+and server.  The port is a TCP port on port number 3003.
+
+     ;; Port configuration
+     (define-port! 'hello-port '((proto . tcp)
+     			    (port . 3003))
+
+   The hello server is defined and the callbacks are connect to it like
+so:
+
+     (define-servertype!
+       '((prefix  . "hello")
+         (description . "guile hello world server")
+         (detect-proto . hello-detect-proto)
+         (connect-socket . hello-connect-socket)
+         (configuration . ())
+         ))
+
+   The prefix is used to create a name for the new server type: the
+`hello-server'.  Then its two main callbacks, `hello-detect-proto' and
+`hello-connect-socket', are connected to this server type.  The
+`hello-handle-request' callback is not mentioned here because it needs
+to be connected to a socket once it has been opened.  That is why it is
+connected to a socket in the `hello-connect-socket' callback routine.
+
+   Lastly, an instance of the server is created and bound to the port.
+
+     ;; Server instantiation
+     (define-server! 'hello-server '())
+
+     (bind-server! 'hello-port 'hello-server)
+
+   With all this in place, running `serveez' like so
+
+     serveez
+
+   should start up the server.  If your `serveez.cfg' file isn't in
+this directory, you'll have to call `serveez -f <path>/serveez.cfg'.
+
+   We used CR/LF as packet boundaries, which means that we can test this
+using a telnet program.  If you telnet to port 3003, you should be able
+to type in the commands `HELLO' and `WHAT TIME IS IT?' and see the
+response from the server.
+
+6 Deploying
+***********
+
+When Serveez-MG is started it reads its configuration from a file
+called `serveez.cfg' in the current directory and runs the server loop
+afterwards. Press <^C> to abort the execution of this program.
+Serveez-MG is not interactive and does not automatically detach from
+the terminal.
+
+6.1 Command line options
+========================
+
+`-h, --help'
+     Display this help and exit.
+
+`-V, --version'
+     Display version information and exit.
+
+`-i, --iflist'
+     List local network interfaces and exit.
+
+`-f, --cfg-file=FILENAME'
+     File to use as configuration file (serveez.cfg).
+
+`-v, --verbose=LEVEL'
+     Set level of logging verbosity.
+
+`-l, --log-file=FILENAME'
+     Use `FILENAME' for logging (default is stderr).
+
+`-P, --password=STRING'
+     Set the password for control connections.
+
+`-m, --max-sockets=COUNT'
+     Set the maximum number of socket descriptors.
+
+`-d, --daemon'
+     Start as daemon in background.
+
+`-c, --stdin'
+     Use standard input as configuration file.
+
+6.2 Serveez Configuration Concepts
+==================================
+
+As noted above Serveez is configured via a configuration file which is
+by default `serveez.cfg' and can be set by passing the `-f' command
+line argument.  When you pipe a file into Serveez or pass the `-c'
+argument on the command line the input stream will be used as
+configuration file no matter whether you passed a `-f' command line
+switch or not.
+
+   The idea of the configuration file is this: Serveez starts, the
+configuration file (which is Scheme code) is run, and then it enters its
+main loop and waits for connections.  If your configuration file
+contained Serveez commands to set up the http server to create a Guile
+webservice, then they will be available.  If your configuration file
+does neither of those things, Serveez will have no servers available.
+
+   There are three things you have to do in the configuration file to
+make a server available:
+
+   * define your ports
+
+   * define your servers
+
+   * and, bind your servers to the ports
+
+   In the next three sections, this process will be described in a
+general sense.  Afterwards, we'll describe specifically how to set up
+the webserver and the control server.
+
+6.2.1 Define ports
+------------------
+
+A `port' (in Serveez) is a transport endpoint. You might know them from
+other TCP or UDP server applications. For example: web servers (HTTP)
+usually listen on TCP port 80. However, there is more than TCP ports:
+we have UDP, ICMP and named pipes each with different options to set.
+Every port has a unique name you assign to it. The name of the port is
+later used to bind servers to it.
+
+   The following examples show how you setup different types of port
+configurations. You start to define such a port using the Guile function
+`(define-port!)'. The first argument to this functions specifies the
+name of the port configuration. The remaining argument describes the
+port in detail. A definition of the http-port could be like the
+following.
+
+     (define-port! 'http-port '(("proto"  . "tcp")
+                                ("port"   . 80)
+                                ("ipaddr" . "*")))
+
+   In this example, `define-port!' is a command that you are asking
+Serveez to do; `http-port' is the name you're assigning to the port
+you're making. Following that is a list of configuration items that are
+being set: the port protocol is set to TCP; the port number is set to
+80, which is customary for the HTTP port, and the port will accept
+connections from the whole range of possible IP addresses.
+
+6.2.1.1 Port configuration items
+................................
+
+This table describes each configuration item for a port in Serveez.
+Note that not each item applies to every kind of port configuration.
+
+`proto (string)'
+     This is the main configuration item for a port configuration
+     setting up the type of port.  Valid values are `tcp', `udp',
+     `icmp', `raw' and `pipe'.  This configuration item decides which
+     of the remaining configuration items apply and which do not.
+
+`port (integer in the range 0..65535)'
+     The `port' item determines the network port number on which TCP
+     and UDP servers will listen.  Thus it does not make sense for ICMP
+     and named pipes.  If you pass `0' Serveez will determine a free
+     port in the range between 1 and 65535.  Remember that port numbers
+     below 1024 are privileged ports and only privileged processes,
+     such as those run as root, can bind to them.
+
+`recv (string or associative list)'
+     This item describes the receiving (listening) end of a named pipe
+     connection, i.e. the filename of a fifo node to which a client can
+     connect by opening it for writing.  Both the `recv' and `send'
+     item apply to named pipes only.  The value can either be an
+     associative list or a simple filename. Using a simple filename
+     leaves additional options to use default values. They deal mainly
+     with file permissions and are described below.
+
+`send (string or associative list)'
+     This item is the sending end of a named pipe connection. It is
+     used to send data when the receiving (listening) end has detected
+     a connection.  The following table enumerates the additional
+     options you can setup if you pass an associative list and not a
+     simple filename.
+
+    `name (string)'
+          The filename of the named pipe.
+
+    `permission (octal integer)'
+          This specifies the file permissions a named pipe should be
+          created with.  The given number is interpreted in a Unix'ish
+          style (e.g. `#o0666' is a permission field for reading and
+          writing for the creating user, all users in the same group
+          and all other users).
+
+    `user (string)'
+          The file owner (username) of the named pipe in textual form.
+
+    `group (string)'
+          The file owner group (groupname) of the named pipe in textual
+          form.  If this item is left it defaults to the file owner's
+          primary group.
+
+    `uid (integer)'
+          The file owner of the named pipe as a user id.  You are meant
+          to specify either the `uid' item or the `user' item.  Serveez
+          will complain about conflicting values.
+
+    `gid (integer)'
+          The file owner group of the named pipe as a group id.  This
+          item defaults to the file owner's primary group id.  You are
+          meant to specify either the `gid' item or the `group' item.
+          Serveez will croak about conflicting values.
+
+`ipaddr (string)'
+     This configuration item specifies the IP address (either in dotted
+     decimal form e.g. `192.168.2.1' or as a device description which
+     can be obtained via `serveez -i') to which a server is bound to.
+     The `*' keyword for all known IP addresses and the `any' keyword
+     for any IP address are also valid values.  The default value is
+     `*'.  The configuration item applies to network ports (TCP, UDP
+     and ICMP) only.
+
+`device (string)'
+     The `device' configuration item also refers to the IP address a
+     server can be bound to.  It overrides the `ipaddr' item.  Valid
+     values are network device descriptions (probably no aliases and no
+     loopback devices).  It applies to network ports (TCP, UDP and
+     ICMP) only.
+
+`backlog (integer)'
+     The `backlog' parameter defines the maximum length the queue of
+     pending connections may grow to.  If a connection request arrives
+     with the queue full the client may receive an error.  This
+     parameter applies to TCP ports only.
+
+`type (integer in the range 0..255)'
+     This item applies to ICMP ports only.  It defines the message type
+     identifier used to send ICMP packets (e.g. `8' is an echo message
+     i.e. PING).
+
+`send-buffer-size (integer)'
+     The `send-buffer-size' configuration item defines the maximum
+     number of bytes the send queue of a client is allowed to grow to.
+     The item influences the "send buffer overrun error condition".
+     For packet oriented protocols (UDP and ICMP) you need to specify
+     at least the maximum number of bytes a single packets can have.
+     For UDP and ICMP this is 64 KByte.  The value specified here is an
+     initial value. It is used unless the server bound to this port
+     changes it.
+
+`recv-buffer-size (integer)'
+     The `recv-buffer-size' configuration item defines the maximum
+     number of bytes the receive queue of a client is allowed to grow
+     to.  The item influences the "receive buffer underrun error
+     condition".  The value specified here is an initial value. It is
+     used unless the server bound to this port changes it.
+
+`connect-frequency (integer)'
+     This item determines the maximum number of connections per second
+     the port will accept.  It is a kind of "hammer protection".  The
+     item is evaluated for each remote client machine separately.  It
+     applies to TCP ports.
+
+`allow (list of strings)'
+     Both the `allow' and `deny' lists are lists of IP addresses in
+     dotted decimal form (e.g. `192.168.2.1'). The `allow' list defines
+     the remote machines which are allowed to connect to the port.  It
+     applies to TCP ports.
+
+`deny (list of strings)'
+     The `deny' list defines the remote machines which are not allowed
+     to connect to the port.  Each connection from one of these IP
+     addresses will be refused and shut down immediately.  It applies
+     to TCP ports.
+
+6.2.1.2 TCP port definition
+...........................
+
+As another example, here is a definition of a TCP port configuration
+with the name "foo-tcp-port". The enhanced settings are all optional
+including the IPADDR property which defaults to `*'. The IPADDR item
+can contain any form of a dotted decimal internet address, a `*', `any'
+or an interface description which you can obtain by running `serveez
+-i'.
+
+     (define-port! 'foo-tcp-port '(
+         ;; usual settings
+         (proto  . tcp)              ;; protocol is tcp
+         (port   . 42421)            ;; network port 42421
+         (ipaddr . *)                ;; bind to all known interfaces
+         (device . eth0)             ;; bind to network card
+
+         ;; enhanced settings
+         (backlog           . 5)     ;; enqueue max. 5 connections
+         (connect-frequency . 1)     ;; allow 1 connect per second
+         (send-buffer-size  . 1024)  ;; initial send buffer size in bytes
+         (recv-buffer-size  . 1024)  ;; initial receive buffer size in bytes
+
+         ;; allow connections from these ip addresses
+         (allow             . (127.0.0.1 127.0.0.2))
+
+         ;; refuse connections from this ip address
+         (deny              . (192.168.2.7))
+       ))
+
+6.2.1.3 Pipe port definition
+............................
+
+Definition of a pipe port configuration with the name "foo-pipe-port".
+When bound to a server it creates the receiving end and listens on that.
+If some client accesses this named pipe the server opens the sending end
+which the client has to open for reading previously.
+
+   The only mandatory item is the file name of each pipe.  If you want
+to specify a user creating the named pipe (file ownership) use either
+the USER or the UID setting.  Same goes for the items GROUP and GID.
+
+     (define-port! 'foo-pipe-port `(
+         (proto . pipe)                   ;; protocol is named pipe
+
+         ;; specify the receiving endpoint
+         (recv . ((name . ".foo-recv")    ;; name of the pipe
+                  (permissions . #o0666)  ;; create it with these permissions
+                  (user . "calvin")       ;; as user "calvin"
+                  (uid . 50)              ;; with the user id 50
+                  (group . "heros")       ;; which is in the group "heros"
+                  (gid . 100)))           ;; with the group id 100
+
+         ;; specify the sending endpoint
+         (send . ((name . ".foo-send")
+                  (permissions . #o0666)
+                  (user . "hobbes")
+                  (uid . 51)
+                  (group . "stuffed")
+                  (gid . 101)))
+        ))
+
+6.2.1.4 UDP port definition
+...........................
+
+Simple definition of a UDP port configuration with the name
+"foo-udp-port".
+
+     (define-port! 'foo-udp-port `((proto . udp)
+                                   (port  . 27952)))
+
+6.2.2 Define servers
+--------------------
+
+A `server' (in Serveez) is code that implements some protocol. There is
+an HTTP server built into Serveez - and a control server and a
+'passthrough' server that we'll describe later - but you can implement
+your own, too. Each server - either serveez's http server, passthrough
+server, or control server or any servers you implement yourself in
+Scheme - has a different set of options you can change. You can have
+many instances of every server, each with a different set of options.
+For example: You can create a webserver on TCP port 42420 publishing
+the Serveez documentation and also have another webserver on a
+different port publishing something else. Every server has a unique
+name you assign to it. The name of the server is later used to bind it
+to a port.
+
+   Each type of port will have its own specific list of configuration
+parameters.  The HTTP server has a different set of configuration
+parameters than another type of server.
+
+   The following example instantiates a server with the short name
+"foo". This example demonstrates all the different data types that might
+appear in server configurations. You start a definition of a server with
+the guile function `(define-server!)'. The following argument specifies
+the name of the server instance (in this case "foo-server") which
+starts with the short name. The second argument describes the server in
+detail. Each configuration item is setup with a `(key . value)' pair
+where "key" is the name of the configuration item and "value" is the
+value which depends on the type of the item. *Note Configuring
+servers::, for a detailed description of each type of value.
+
+     (define-server! 'foo-server '(
+         (bar . 100)                             ;; number
+         (reply . "Booo")                        ;; character string
+         (messages .                             ;; list of strings
+           ("Welcome to the foo test server."
+            "This one echos your lines."))
+         (ports . (5 6 7 8 9))                   ;; list of numbers
+         (port . foo-tcp-port)                   ;; a port configuration
+         (assoc . (( "GNU" . "great" )           ;; associative list
+                   ( "Tree" . "tall" )))
+         (truth . #f)                            ;; boolean value
+       ))
+
+6.2.3 Bind servers to ports
+---------------------------
+
+Finally you can bind servers to ports. When you do so the server you
+created listens on the port, accepts connections and serves clients. It
+does so as soon as Serveez enters its main loop right after running the
+configuration file. Serveez won't stop until you interrupt it (e.g. by
+pressing <^C> in the terminal you started it in).
+
+   This example binds the server "foo-server" (s.a.) to the port
+"foo-tcp-port" which was described above. Therefore you need to call
+the guile function `(bind-server!)' which takes two arguments
+specifying the name of a port configuration and a server instance. Both
+need to be defined before you can write this statement.
+
+     (bind-server! 'foo-tcp-port 'foo-server)
+
+   One of the main features of Serveez is that you can bind multiple
+servers to the same port. This for example is useful to pass braindead
+firewall configurations or proxy servers. It is also possible to bind
+servers to ports they are actually not designed for. This might be used
+for debugging servers or other funny things (again, think about the
+firewall). This is the point we have to warn you: Some protocols cannot
+share the same port (e.g. the tunnel server) and some protocols simply
+won't work on 'wrong' ports. Additionally, you will not get error
+messages when that happens. The server just will not work then.
+
+6.3 Configuring the HTTP Server
+===============================
+
+The integrated HTTP server was originally meant to be a simple but fast
+document server. It can also execute CGI scripts. The GET, HEAD and
+POST methods are fully functional. Additionally Serveez produces
+directory listings when no standard document file (e.g. `index.html')
+has been found at the requested document node (directory).  Furthermore
+it implements a file cache for speeding up repetitive HTTP request.
+
+   For now, this HTTP server uses old concepts of web content.  It
+assumes that everything that is to be served is either static content
+like webpages and images, or is a CGI (Common Gateway Interface) script
+that is placed in the CGI directory.  This will change in the future so
+that any URI can be used to serve dynamic content, instead of just
+scripts in the CGI directory.
+
+   The basic setup of the HTTP server requires that the serveez.cfg file
+contains something like the following:
+
+     (define-port! 'http-port '(
+                                ("proto"  . "tcp")
+                                ("port"   . 80)
+                                ("ipaddr" . "*")))
+
+     (define-server! 'http-server '(
+                   ;; standard properties
+                   ("admin"        . "nobody@gmail.com")
+                   ("host"         . "yourdomain.net")
+                   ("logfile"      . "http-access.log")
+                   ("logformat"    . "%h %i %u [%t] \"%R\" %c %l")
+                   ("indexfile"    . "index.html")
+                   ("docs"         . "/var/www/html")
+                   ("userdir"      . "public_html")
+                   ("type-file"    . "/etc/mime.types")
+                   ("default-type" . "text/plain")
+                   ("nslookup"     . on)
+                   ("ident"        . yes)
+
+                   ;; cgi interface
+                   ("cgi-url"         . "/cgi-bin")
+                   ("cgi-dir"         . "/var/www/cgi-bin")
+                   ("cgi-application" . (("pl"  . "perl")
+                                         ("py"  . "python")))
+                 ))
+
+     (bind-server! 'http-port 'http-server
+
+   Remember that port numbers below 1024 are privileged ports and only
+privileged processes, such as those run as root, can bind to them.
+
+6.3.1 Configuration
+-------------------
+
+The following options for the HTTP server can be set from the
+configuration file.
+
+`indexfile (string, default: index.html)'
+     The `indexfile' parameter is the default file served by the HTTP
+     server when the user does not specify a file but a document node
+     (e.g. `http://www.lkcc.org/').
+
+`docs (string, default: ../show)'
+     The `docs' parameter is the document root where the server finds
+     its web documents.
+
+`userdir (string, default: public_html)'
+     Each `~user' request gets converted into the given users home
+     directory. The string will be appended to this directory. Its
+     default value is `public_html'.
+
+`cgi-url (string, default: /cgi-bin)'
+     This parameter is the first part of the URL the HTTP server
+     identifies a CGI request. For instance if you specify here
+     `/cgi-bin' and the user requests
+     `http://www.lkcc.org/cgi-bin/test.pl' then the HTTP server tries
+     to execute the program `test.pl' within the `cgi-dir' (see below)
+     and pipes its output to the user.
+
+`cgi-dir (string, default: ./cgibin)'
+     The `cgi-dir' is the CGI document root (on the server).
+
+`cgi-application (hash, default: empty)'
+     You can use this hash to associate certain file suffices with
+     applications on your computer (e.g. "pl" with "perl").
+
+`cache-size (integer, default: 200 kb)'
+     This specifies the size of the document cache in bytes for each
+     cache entry.
+
+`cache-entries (integer, default: 64)'
+     This parameter specifies the maximum number of HTTP file cache
+     entries (files). When you instantiate more than one HTTP server
+     the biggest value wins. The HTTP file cache is shared by all HTTP
+     servers.
+     *Please note*: If your harddrive/filesystem combination proves to
+     be faster than the HTTP file cache you should disable it by
+     setting both `cache-size' and `cache-entries' to zero.
+
+`timeout (integer, default: 15)'
+     The `timeout' value is the amount of time in seconds after which a
+     keep-alive connection (this is a HTTP/1.1 feature) will be closed
+     when it has been idle.
+
+`keepalive (integer, default: 10)'
+     On one keep-alive connection can be served the number of
+     `keepalive' documents at all. Then the connection will be closed.
+     Both this and the `timeout' value are just to be on the safe side.
+     They protect against idle and high traffic connections.
+
+`default-type (string, default: text/plain)'
+     The `default-type' is the default content type the HTTP server
+     assumes if it can not identify a served file by the `types' hash
+     and the `type-file' (see below).
+
+`type-file (string, default: /etc/mime.types)'
+     This should be a file like the `/etc/mime.types' on Unix systems.
+     It associates file suffices with MIME types.
+
+`types (hash, default: empty)'
+     If you want to specify special content types do it here. This
+     parameter is a hash map associating file suffices with HTTP
+     content types (MIME types).
+
+`admin (string, default: root@localhost)'
+     Your address, where problems with the server should be e-mailed.
+     This address appears on some server-generated pages, such as error
+     documents.
+
+`host (string, default: localhost)'
+     This is the native host name of your web server. Sometimes the
+     server has to send back its own name to the client. It will use
+     this value.  Be aware that you cannot invent such a name.
+
+`nslookup (boolean, default: false)'
+     If this is true the HTTP server invokes a reverse DNS lookup for
+     each client connection in order to replace the remote ip address
+     with the remote host name in the access logfile.
+
+`ident (boolean, default: false)'
+     If this is true the HTTP server processes identd requests for each
+     client connection for logging purposes.
+
+`logfile (string, default: http-access.log)'
+     The location of the access logfile. For each HTTP request a line
+     gets appended to this file.
+
+`logformat (string, default: CLF)'
+     The format of the access logfile. There are special placeholders
+     for different kinds of logging information. The default log format
+     is the Common Log Format (CLF). It contains a separate line for
+     each request. A line is composed of several tokens separated by
+     spaces.
+          CLF = host ident authuser date request status bytes
+     If a token does not have a value then it is represented by a
+     hyphen (-).  The meanings and values of these tokens are as
+     follows:
+
+    `%h (host)'
+          The fully-qualified domain name of the client, or its IP
+          number if the name is not available.
+
+    `%i (ident)'
+          This is the identity information reported by the client. Not
+          active, so we will see a hyphen (-).
+
+    `%u (authuser)'
+          If the request was for an password protected document, then
+          this is the userid used in the request.
+
+    `%t (date)'
+          The date and time of the request, in the following format:
+               date   = [day/month/year:hour:minute:second zone]
+               day    = 2*digit
+               month  = 3*letter
+               year   = 4*digit
+               hour   = 2*digit
+               minute = 2*digit
+               second = 2*digit
+               zone   = (`+' | `-') 4*digit
+
+    `%R (request)'
+          The request line from the client, enclosed in double quotes
+          (").
+
+    `%r (referrer)'
+          Which document referred to this document.
+
+    `%a (agent)'
+          What kind of web browser did the remote client use.
+
+    `%c (status)'
+          The three digit status code returned to the client.
+
+    `%l (bytes)'
+          The number of bytes in the object returned to the client, not
+          including any headers.
+
+6.4 Setup the Control Protocol Server
+=====================================
+
+Now that you've added the configuration for the HTTP server to the
+`serveez.cfg' configuration file, the next step is to set up the
+Control Protocol Server, which allows you to do some administration on
+the server process without having to stop and restart it.
+
+   To this end, Serveez implements something like a telnet protocol for
+administrative purposes. You just need to start a telnet session like:
+     $ telnet www.yourdomain.org 42420
+   After pressing <RET> you will be asked for a password which you
+might setup passing Serveez the -P argument.
+
+6.4.1 Configuration of the Control Protocol Server
+--------------------------------------------------
+
+The control protocol server doesn't have many options to configure.
+But, in the `serveez.cfg' file, you need to bind it to a TCP port, like
+so:
+
+     (define-port! 'control-port `(
+     			      (proto . tcp)
+     			      (port . 42420)
+     			      (ipaddr . *)
+     			      ))
+
+     (define-server! 'control-server)
+
+     (bind-server! 'control-port 'control-server)
+
+   This example has it bound to port 42420, so you would telnet to that
+port.
+
+   The password that the Control Protocol Server will expect can be set
+in a couple of ways.  It can be specified on the command line when
+Serveez is invoked.  It can also be set in the `serveez.cfg' file by
+using the `serveez-passwd' procedure.
+
+6.4.2 Using the Control Protocol
+--------------------------------
+
+Once you've connected to the Control Protocl Server via telnet, you'll
+be given a prompt at which you can enter the following commands.
+
+`help'
+     This command will give you a very short help screen of all
+     available commands.
+
+`quit'
+     This command closes the connection to Serveez.
+
+`restart ident'
+     Restarts the internal ident coserver. This is useful if you just
+     want to start a new one if the old one died or is otherwise
+     unusable.
+
+`restart dns'
+     Restarts the internal dns lookup server.
+
+`restart reverse dns'
+     Restarts the internal reverse dns lookup server.
+
+`killall'
+     This might be useful if Serveez seems to be unstable but you do not
+     want to restart it. With `killall' you disconnect all client
+     network connections except the control protocol connections.
+
+`kill id NUM'
+     Disconnects a specific connection identified by its ID. These IDs
+     will be stated when you type `stat con' (see below).
+
+`stat'
+     General statistics about Serveez. This will show you some useful
+     information about the computer Serveez is running on and about the
+     state of Serveez in general.
+
+`stat coserver'
+     Statistics about all running coserver instances.
+
+`stat SERVER'
+     This command is for selecting certain server instances to be
+     listed.  SERVER is one of server names you specified in the
+     configuration file.
+
+`stat id NUM'
+     Show statistics about a specific connection. This will give you all
+     available information about every connection you specified.  *Note
+     Writing servers::, for more information about how to provide these
+     information.
+
+`stat con'
+     Connection statistics. This will give a list of all socket
+     structures within Serveez. If you want more detailed information
+     about specific connections, coservers or servers you need to
+     request these information with `stat id NUM' or `stat all'.
+
+`stat all'
+     Server and coserver instance statistics. This command lists all
+     the information about instantiated servers and coservers.  *Note
+     Writing servers::, for more information about how to provide these
+     information.
+
+`stat cache'
+     HTTP cache statistics. This command produces an output something
+     like the following where `File' is the short name of the cache
+     entry, `Size' the cache size, `Usage' the amount of connections
+     currently using this entry, `Hits' the amount of cache hits,
+     `Recent' the cache strategy flag (newer entries have larger
+     numbers) and `Ready' is the current state of the cache entry.
+
+          File                      Size  Usage  Hits Recent Ready
+          zlib-1.1.3-20000531.zip  45393      0     0      1 Yes
+          texinfo.tex             200531      0     0      2 Yes
+          shayne.txt                2534      0     1      1 Yes
+
+          Total : 248458 byte in 3 cache entries
+
+`kill cache'
+     Reinitialize the HTTP file cache. Flushes all files from the cache.
+
+6.5 Additional configuration possibilities
+==========================================
+
+The three functions `(define-port!)', `(define-server!)' and
+`(bind-server!)' return `#t' on success and `#f' on failure.  For your
+convenience we provide some more Guile functions.  Some of these are
+based upon the above.  You will find the additional functions in
+`(serveez-mg lib)' library that will be copied into Guile's site
+directory.  In order to include this convenience functionality you can
+`(use-modules (serveez-mg lib))' at the top of the configuration file.
+
+`(interface-add! . interface)'
+     Add one more network interfaces to the list of known interfaces.
+     You can get the list of known interfaces by running `serveez -i'.
+     The INTERFACE argument must be in dotted decimal form (e.g.
+     127.0.0.1). Serveez provides this function for systems where it is
+     unable to detect the list of network interface automatically.
+
+`(bind-servers! . args)'
+     This function is based upon `(bind-server!)'. It takes a list of
+     port configurations and servers and binds each to another.
+
+`(bind-tcp-port-range! from to . servers)'
+     Bind the list of SERVERS to simple TCP port configurations whose
+     network ports range between FROM and TO both inclusive.
+
+`(bind-udp-port-range! from to . servers)'
+     Bind the list of SERVERS to simple UDP port configurations whose
+     network ports range between FROM and TO both inclusive.
+
+`(serveez-verbosity verbosity)'
+     Set the core library's logging verbosity to the VERBOSITY level.
+     Lesser values mean fewer logging messages. This settings gets
+     overridden by command line.
+
+`(serveez-maxsockets max)'
+     Set the number of maximum socket descriptors (number of concurrent
+     connections). When passing Serveez the -m command line argument
+     this setting gets overridden, too.
+
+`(serveez-passwd password)'
+     Set the PASSWORD for the control protocol.
+
+6.5.1 Passthrough Server
+------------------------
+
+Another way to serve information in Serveez-MG is to use the passthrough
+server.  The passthrough server lets you take a program that uses
+`stdin' and `stdout' for input and output to server content over a
+port.  Serveez-MG translates input and output from a port to the
+`stdin' and `stdout' of the program.  In this way, it functions like
+the internet daemon `inetd'.
+
+6.5.1.1 General description
+...........................
+
+The program passthrough server provides basic inetd functionality.
+Basically it can accept connections and pass this connection to the
+standard input (stdin) and standard output (stdout) handles of
+programs.  Depending on the platform (operating system) the user is
+able to configure different methods how this can be achieved.
+
+6.5.1.2 Configuration
+.....................
+
+This server has different types of configuration options specifying its
+behaviour.  Some of them are mandatory and some are optional.  The very
+least to configure is the program to be started when a new connection is
+made.
+
+`binary (string, no default)'
+     This parameter specifies the program to execute when a new
+     connection has been accepted.  The parameter is mandatory and must
+     be a fully qualified file name (including path).
+
+`directory (string, no default)'
+     This will be the working directory of the executed program.  If
+     you omit this parameter the server uses the current directory (the
+     directory is not changed).
+
+`user (string, no default)'
+     If you omit this parameter no user or group will be set for the
+     started program.  Otherwise you need to specify this information
+     in the format `user[.group]'.  If the group is omitted the user's
+     primary group will be used.
+
+`argv (string array, no default)'
+     This list of character strings is going to be the program's
+     argument list (command line).  If the first list item (which is
+     argv[0] and the program's name) is left blank it defaults to the
+     name specified in the `binary' parameter.
+
+`do-fork (boolean, default: true)'
+     This flag specifies the method used to pass the connection to the
+     program.  If it is true the server uses the Unix'ish `fork()' and
+     `exec()' method.  Otherwise it will pass the data through a
+     unnamed pair of sockets [ or two pairs of anonymous pipes ].
+
+`single-threaded (boolean, default: true)'
+     This parameter applies to servers bound to UDP and ICMP port
+     configurations only.  For programs which process all incoming
+     packets and eventually time out, the program is said to be
+     `single-threaded' and should use a true value here.  If a program
+     gets a packet and can receive further packets, it is said to be a
+     `multi-threaded' program, and should use a false value.
+
+`thread-frequency (integer, default: 40)'
+     The optional `thread-frequency' parameter specifies the maximum
+     number of program instances that may be spawned from the server
+     within an interval of 60 seconds.
+
+7 Concept
+*********
+
+We now have a closer look at the internals of Serveez. You'll need to
+understand this is you want to write your own server in Scheme.
+
+7.1 Overall concept
+===================
+
+The primary functionality Serveez provides is a framework for Internet
+services.  It can act as a kind of server collection and may even
+replace super-servers such as the inetd daemon.
+
+   Its key features and benefits are:
+
+   * support for packet and connection oriented protocols
+     Serveez currently supports two server types.  TCP and named pipe
+     servers are connection oriented servers.  This type of server
+     accepts a client's connection request and communicates with it
+     using a dedicated connection.  The format of the incoming and
+     outgoing data streams are irrelevant to Serveez.  Packet oriented
+     servers (like UDP and ICMP) receive data packets and respond to
+     the sender with data packets.  A server in Serveez can detect
+     whether it is bound to a packet or connection oriented port
+     configuration and thus can act as the expected type.
+
+   * server and client functionality
+     Besides a wide variety of server capabilities, Serveez also
+     contains some client functionality.  This may be necessary when a
+     server is meant to establish a connection to another server in
+     response to an incoming request.  For example, imagine a protocol
+     where a client tells the server "Let me be the server.  Please
+     connect to this HOST at this PORT.".  You are also able to
+     implement pure clients.
+
+   * complete lack of platform portability
+     The original GNU Serveez was a miracle of platform portability.
+     This version, Serveez-MG, is not.  It very specifically targets
+     those GNU/Linux distributions that are complient with the LSB 4.1
+     specification.
+
+   * powerful configuration capabilities
+     Server configuration has always been a complicated but very
+     important issue.  When Serveez starts up it runs the configuration
+     file using the programming language Guile.  In contradiction,
+     other (server) applications just read their configuration files
+     and remember the settings in it.  This makes them powerful enough
+     to adapt the Serveez settings dynamically.  Using the Guile
+     interpreter also means that you can split your configuration into
+     separate files and load these, perhaps conditionally, from the
+     main configuration file.
+
+   * easy server implementation
+     Serveez is a server framework.  When implementing a new server the
+     programmer need pay little or no attention to the networking code
+     but is free to direct his attention to the protocol the server is
+     meant to support.  That protocol may be an established one such as
+     HTTP, or may be a custom protocol fitting the specific
+     application's requirements.
+
+   * code reusability
+     The GNU Serveez package did come along with a core library and an
+     API for the C language which contained most of the functionality
+     necessary to write an Internet server.  Most probably, a
+     programmer could also use the library for other (network
+     programming related) purposes.  But, for this version, Serveez-MG,
+     I've stripped out some of its functionality, so the original GNU
+     version might be better if you actually wanted a core library.
+
+     This version does retain the Guile functionality, though.
+
+   * server instantiation and network port sharing
+     Once you have written a protocol server and integrated into
+     Serveez's concept of servers the user can instantiate (multiply)
+     the server.  At the first glimpse this sounds silly, but with
+     different server configurations it does not.  If, for example, an
+     administrator wishes to run multiple HTTP servers with different
+     document roots, Serveez will handle them all in a single process.
+     Also if the same administrator wants to run a HTTP server and some
+     other server on the same network port this is possible with
+     Serveez.  You can run a single server on different network ports,
+     too.
+
+7.2 I/O Strategy
+================
+
+Serveez-MG's I/O strategy is the traditional `poll()' function
+
+7.2.1 Limits on open filehandles
+--------------------------------
+
+The limits set by `ulimit()' or `setrlimit()' affect the performance of
+the servers.
+
+8 Server
+********
+
+8.1 Introduction to servers
+===========================
+
+Serveez is a kind of server server. It allows different protocol
+servers to listen on various TCP/UDP ports, on ICMP sockets and on named
+pipes. Servers are instantiated with a certain configuration. It is
+possible to run multiple different servers on the same port.
+
+   This chapter covers all questions about how to write your own
+Internet protocol server with this package. Most of the common tasks of
+such a server have got a generic solution (default routines) which
+could be "overridden" by your own routines. There are some examples
+within this package. They are showing the possibilities with this
+package and how to implement servers.
+
+   The `foo' server does not do anything at all and is of no actual use
+but could be a basis for a new protocol server. We are now going to
+describe how this specific server works. Eventually the reader might
+get an impression of what is going on.
+
+   For better understanding the text below we will use the following
+terminology:
+server definition
+     A server definition is a `#<svz-servertype>' which contains server
+     specific members like its name, different callbacks, a single
+     default configuration and a list of configuration items which
+     determines what can be configured.
+
+server configuration
+     A server configuration can be any kind of structure. The default
+     server configuration must be specified within the server
+     definition (see above).  When instantiating a server (which is
+     done via the configuration file) the configuration items specified
+     in the server definition get processed and are put into a copy of
+     the default configuration. Thus we get an instance.
+
+server instance
+     A server instance is a copy of the server definition including the
+     modified server configuration. A server gets instantiated by the
+     configuration file parser. The concept of server instances has
+     been introduced because we wanted Serveez to have the following
+     features. A single server can have multiple instances with
+     different behaviour due to different server configurations. A
+     server instance can be bound to multiple port configurations.
+     Different server instances (of the same and/or different server
+     type) can share the same port configuration.
+
+8.2 Writing servers in Guile
+============================
+
+This section describes the Guile interface to Serveez which provides
+the ability to write servers with Guile.  Of course, you could do this
+without any help from Serveez, but it makes the task a lot easier.
+This interface reduces the Guile implementation of an Internet server
+to a simple data processor.
+
+8.2.1 Guile server functions reference manual
+---------------------------------------------
+
+This section describes the Guile interface to Serveez which provides
+the ability to write servers with Guile.  Of course, you could do this
+without any help from Serveez, but it makes the task a lot easier.
+This interface reduces the Guile implementation of an Internet server
+to a simple data processor.
+
+8.2.1.1 Special Data Types
+..........................
+
+Serveez extends Guile by various new data types which represent internal
+data structures of Serveez's core API.
+
+   * `#<svz-servertype>' represents a server type.
+
+   * `#<svz-server>' represents a server (an instance of a server type).
+
+   * `#<svz-socket>' represents a socket structure.
+
+8.2.1.2 Passing Binary Data
+...........................
+
+The bytevector data type provides access to any kind of unstructured
+data.  It manages the data exchange between Guile and Serveez.
+Serveez-MG adds a few additional bytevector routines, for convenience.
+
+ -- Function: subbytevector bv start end
+     Create a new bytevector that is a copy of BV from START (inclusive)
+     to END (exclusive).
+
+     This procedure in the `(serveez-mg lib)' library.
+
+ -- Function: bytevector-contains bv1 bv2
+     Search for bytevector BV2 in bytevector BV1.  If it is found,
+     return the index in BV1 where BV2 is located.  Otherwise, return
+     #f.
+
+     This procedure in the `(serveez-mg lib)' library.
+
+8.2.1.3 Server Definition
+.........................
+
+In order to set up a new server type, you use the procedure
+`(define-servertype!)'.  This procedure takes one argument which must
+be an associative list specifying the server type in detail.  There are
+optional and mandatory elements you can set up in this alist.  Many of
+the values in this association list will be scheme callback procedures
+that will be called by Serveez-MG when needed.
+
+   The following example shows the overall syntax of this procedure:
+
+     (define-servertype! '(
+
+       ;; Mandatory: server type prefix for later use in (define-server!)
+       (prefix          . "foo")
+
+       ;; Mandatory: server type description
+       (description     . "guile foo server")
+
+       ;; Mandatory for TCP and PIPE servers: protocol detection
+       (detect-proto    . foo-detect-proto)
+
+       ;; Optional: global server type initialisation
+       (global-init     . foo-global-init)
+
+       ;; Optional: server instance initialisation
+       (init            . foo-init)
+
+       ;; Optional: server instance finalisation
+       (finalize        . foo-finalize)
+
+       ;; Optional: global server type finalisation
+       (global-finalize . foo-global-finalize)
+
+       ;; Mandatory for TCP and PIPE servers: socket connection
+       (connect-socket  . foo-connect-socket)
+
+       ;; Optional: server instance info
+       (info-server     . foo-info-server)
+
+       ;; Optional: client info
+       (info-client     . foo-info-client)
+
+       ;; Optional: server instance reset callback
+       (reset           . foo-reset)
+
+       ;; Optional: server instance notifier
+       (notify          . foo-notify)
+
+       ;; Mandatory for UDP and ICMP servers: packet handler
+       (handle-request  . foo-handle-request)
+
+       ;; Mandatory: server type configuration (may be an empty list)
+       (configuration   . (
+
+         ;; The server configuration is an alist (associative list) again.
+         ;; Each item consists of an item name and a list describing the
+         ;; item itself.
+         ;; Syntax: (key . (type defaultable default))
+         (foo-integer       . (integer  #t 0))
+         (foo-integer-array . (intarray #t (1 2 3 4 5)))
+         (foo-string        . (string   #t "default-foo-string"))
+         (foo-string-array  . (strarray #t ("guile" "foo" "server")))
+         (foo-hash          . (hash     #t (("foo" . "bar"))))
+         (foo-port          . (portcfg  #t foo-port))
+         (foo-boolean       . (boolean  #t #t))
+       ))))
+
+   So, for each Guile server you want to create, you need to write a
+few callback functions.  For a TCP or PIPE server you must write, at a
+minimum, callback procedures for
+`detect-proto'
+     A protocol detection callback procedure.  The procedure takes two
+     arguments: a `#<svz-server>' and a `#<svz-socket>'.
+
+`connect-socket'
+     A callback for the socket connection after successful detection.
+     It also takes two arguments: a `#<svz-server>' and a
+     `#<svz-socket>'.
+
+`configuration'
+     An association list of keys and values that offers an information
+     store specific to this server instance.  These values can be
+     queries later using the `svz:server:config-ref' procedure.
+
+   These elements are explained in more detail below
+
+ -- Function: define-servertype! args
+     Guile server definition: This procedure takes one argument
+     containing the information about a new server type.  If everything
+     works fine you have a freshly registered server type afterwards.
+     Return `#t' on success.
+
+8.2.1.4 Callback Prototypes
+...........................
+
+The Guile interface of Serveez is completely callback driven.
+Callbacks can be set up in the associative list passed to
+`(define-servertype!)', or by using the predefined procedures described
+in the previous section.  Each of the callbacks is passed certain
+arguments and is meant to return specific values to indicate success or
+failure.  This section describes each of these callbacks.
+
+`(global-init #<svz-servertype>)'
+     This callback is invoked once for every type of server right after
+     the `(define-servertype!)' statement.  Here you can initialise
+     resources shared between all instances of your server type.  The
+     callback is optional and can be set up in `(define-servertype!)'.
+     It should return zero to indicate success and non-zero to indicate
+     failure.  If the global initialiser fails, Serveez will refuse to
+     register the server type.
+
+`(global-finalize #<svz-servertype>)'
+     If you want to free shared resources, which were possibly allocated
+     within the global initialiser, you can do so here.  The callback is
+     invoked when Serveez shuts down (issued by `(serveez-nuke)') or the
+     server type gets unregistered for some reason.  It should return
+     zero to signal success.  The callback can be set up in
+     `(define-servertype!)' and is optional.
+
+`(init #<svz-server>)'
+     Within this callback you can initialise everything you might need
+     for a single instance of your server.  The callback is invoked for
+     each server instance which has been created by `(define-server!)'
+     and should return zero to indicate success, otherwise Serveez
+     rejects the server instance.  The callback can be set up in
+     `(define-servertype!)' and is optional.
+
+`(finalize #<svz-server>)'
+     The server instance finaliser gets its instance representation
+     passed as argument.  You need to free all resources used by this
+     server instance which might have been allocated within the server
+     instance initialiser or consumed while running.  You can set this
+     callback in the `(define-servertype!)' statement.  The callback is
+     optional and should return zero to indicate success.
+
+`(detect-proto #<svz-server> #<svz-socket>)'
+     Connection oriented protocols like TCP and PIPE allow more than one
+     server to be listening on the same network port.  Therefore, it is
+     necessary to be able to detect the type of client connecting to a
+     port.
+
+     This callback takes two arguments; the first is the server instance
+     and the second is the client socket object containing the client
+     connection information.  You can set up this callback in the
+     `(define-servertype!)' statement.
+
+     Serveez may invoke this callback several times as data becomes
+     available from the client until one of the servers recognises it.
+     The servers can retrieve the data received so far using the
+     `(svz:sock:receive-buffer)' call.
+
+     To indicate successful client detection, you need to return a
+     non-zero value.  (Note that for historical reasons, this is
+     inconsistent with other functions which return zero on successful
+     completion.)  Once the server has indicated success, Serveez
+     invokes any further callbacks for the connection only on that
+     server.
+
+     If no server has recognised the client after the first 16 bytes,
+     Serveez will close the connection.  The connection will also be
+     closed if the client has not sent enough data for a server to
+     recognise it within 30 seconds of connecting.
+
+     If multiple servers are listening on the same network port, Serveez
+     invokes this callback for each of them in an arbitrary order.
+     Only one server at most should indicate successful detection.
+
+     This callback is mandatory for servers which get bound to
+     connection oriented protocol (TCP and PIPE) port configurations by
+     `(bind-server!)'.
+
+`(connect-socket #<svz-server> #<svz-socket>)'
+     If the client detection signalled success, this callback is
+     invoked to assign the client connection to a server instance.  The
+     arguments are the same as the detection callback.  In this
+     callback you can assign all the connection specific callbacks for
+     your server and perform some initial tasks.  Basically you should
+     specify the `handle-request' and/or `check-request' callback.
+     This can be achieved by calling `(svz:sock:handle-request)' and
+     `(svz:sock:check-request)'.  The `connect-socket' callback is also
+     mandatory for connection oriented protocols and must be defined in
+     `(define-servertype!)'.  On success you should return zero,
+     otherwise the connection will be shutdown by Serveez.
+
+`(info-server #<svz-server>)'
+     This callback gets invoked when requested by the builtin `Control
+     Protocol Server'.  The callback is optional and can be set up in
+     `(define-servertype!)'.  The returned character string can be
+     multiple lines separated by `\r\n' (but without a trailing
+     separator).  Usually you will return information about the server
+     instance configuration and/or state.
+
+`(info-client #<svz-server> #<svz-socket>)'
+     This callback is optional.  You can set it up in the
+     `(define-servertype!)' procedure.  It is meant to provide socket
+     structure specific information.  (The socket structure is a
+     client/child of the given server instance.)  You need to return a
+     single line character string without trailing newlines.  The
+     information provided can be requested by the builtin `Control
+     Protocol Server'.
+
+`(notify #<svz-server>)'
+     The server instance notifier callback will be invoked whenever
+     there is idle time available.  In practice, it is run
+     approximately once a second.  A server instance can use it to
+     perform periodic tasks.  The callback is optional and can be set
+     up in `(define-servertype!)'.
+
+`(reset #<svz-server>)'
+     This callback is invoked when the Serveez process receives a
+     `SIGHUP' signal which can be issued via `killall -HUP serveez'
+     from user land.  If the underlying operating system does not
+     provide `SIGHUP' there is no use for this callback.  It provides
+     the possibility to perform asynchronous tasks scheduled from
+     outside Serveez.  You can optionally set it up in the
+     `(define-servertype!)' procedure.
+
+`(handle-request #<svz-socket> #<bytevector> size)'
+     This callback is invoked whenever a complete packet has been
+     detected in the receive buffer.  The packet data is passed to the
+     callback as a `bytevector'.  The SIZE argument is passed for
+     convenience and specifies the length of the packet in bytes.
+
+     The detection, and therefore the invocation, can be made in one of
+     two ways.  When Serveez can determine itself when a packet is
+     complete, the callback will be invoked directly.  Serveez can make
+     this determination for connections with packet oriented protocols
+     such as UDP and ICMP, or if you tell Serveez how to parse the
+     packet using `(svz:sock:boundary sock delimiter)' or
+     `(svz:sock:boundary sock size)' and do not specify a
+     `check-request' callback.
+
+     Whenever you specify a `check-request' callback to determine when
+     a packet is complete, it becomes the responsiblity of that
+     callback to invoke `handle-request' itself.
+
+     Serveez recognises two different return value meanings.  For
+     connection oriented protocols (TCP and PIPE), zero indicates
+     success and non-zero failure; on failure, Serveez will shutdown
+     the connection.  For packet oriented protocols (UDP and ICMP), a
+     non-zero return value indicates that your server was able to
+     process the passed packet data, otherwise (zero return value) the
+     packet can be passed to other servers listening on the same port
+     configuration.
+
+     This callback must be specified in `(define-servertype!)' for
+     packet oriented protocols (UDP and ICMP) but is optional otherwise.
+     You can modify the callback by calling `(svz:sock:handle-request)'.
+
+`(check-request #<svz-socket>)'
+     This callback is invoked whenever new data has arrived in the
+     receive buffer.  The receive buffer of the given `#<svz-socket>'
+     can be obtained using `(svz:sock:receive-buffer)'.  The callback
+     is initially not set and can be set up with
+     `(svz:sock:check-request)'.  Its purpose is to check whether a
+     complete request was received.  If so, it should be handled (by
+     running the `handle-request' callback) and removed from the
+     receive buffer (using `(svz:sock:receive-buffer-reduce)').  The
+     callback is for connection oriented protocols (TCP and PIPE) only.
+     You should return zero to indicate success and non-zero to indicate
+     failure.  On failure Serveez shuts the connection down.
+
+`(disconnected #<svz-socket>)'
+     The `disconnected' callback gets invoked whenever the socket is
+     lost for some external reason and is going to be shutdown by
+     Serveez.  It can be set up with `(svz:sock:disconnected)'.
+
+`(kicked #<svz-socket> reason)'
+     This callback gets invoked whenever the socket gets closed by
+     Serveez intentionally.  It can be set up with `(svz:sock:kicked)'.
+     The REASON argument can be either `KICK_FLOOD', indicating the
+     socket is a victim of the builtin flood protection, or `KICK_QUEUE'
+     which indicates a send buffer overflow.
+
+`(idle #<svz-socket>)'
+     The `idle' callback gets invoked from the periodic task scheduler,
+     which maintains a `idle-counter' for each socket structure.  This
+     counter is decremented whenever Serveez becomes idle and the
+     callback is invoked when it drops to zero.  The `idle' callback can
+     set its socket's `idle-counter' to some value with the procedure
+     `(svz:sock:idle-counter)' and thus re-schedule itself for a later
+     task.  You can set up this callback with `(svz:sock:idle)'.
+
+`(trigger-condition #<svz-socket>)'
+     This callback is invoked once every server loop for the socket
+     structure.  If you return `#f' nothing else is happening.
+     Otherwise the `trigger' callback will be invoked immediately.  You
+     can set up the callback using the procedure
+     `(svz:sock:trigger-condition)'.
+
+`(trigger #<svz-socket>)'
+     The `trigger' callback is invoked when the `trigger-condition'
+     returns `#t'.  The callback can be set up with the procedure
+     `(svz:sock:trigger)'.  Returning a non-zero value shuts the
+     connection down.  A zero return value indicates success.  This
+     callback can be used to perform connection related updates, e.g.
+     you can ensure a certain send buffer fill.
+
+`(check-oob-request #<svz-socket> oob-byte)'
+     This callback is invoked whenever urgent data (out-of-band) has
+     been detected on a socket.  Initially this event is ignored and
+     the callback can be set up with the procedure
+     `(svz:sock:check-oob-request)'.  The OOB-BYTE argument is a number
+     containing the received out-of-band data byte ranging from 0 to
+     255.  If the callback returns non-zero the connection will be
+     shutdown.  A zero return value indicates success.  You can use
+     `(svz:sock:send-oob)' to send a single out-of-band data byte.
+
+8.2.1.5 Predefined Procedures
+.............................
+
+The following set of procedures may be useful for implementing a Guile
+server.  They should be used within the callbacks defined in the
+`(define-servertype!)' procedure.  Each of these callbacks gets passed
+the appropriate arguments needed to stuff into the following procedures.
+
+ -- Function: svz:sock? sock
+     Returns `#t' if the given cell SOCK is an instance of a valid
+     `#<svz-socket>', otherwise `#f'.
+
+ -- Function: svz:sock:check-request sock proc
+     Set the `check-request' member of the socket structure SOCK to the
+     Guile procedure PROC.  Returns the previously handler if there is
+     any.
+
+ -- Function: svz:sock:check-oob-request sock proc
+     With this procedure you can setup the `check-oob-request' callback
+     of the given socket structure SOCK.  The previous callback is
+     replaced by the PROC procedure and will be returned if there was
+     set any before.  The callback is run whenever urgent data
+     (out-of-band) has been detected on the socket.
+
+ -- Function: svz:sock:send-oob sock oob
+     This procedure expects a TCP `#<svz-socket>' in SOCK and an exact
+     number or single character in OOB.  The byte in OOB is sent as
+     urgent (out-of-band) data through the underlying TCP stream.  The
+     procedure returns `#t' on successful completion and otherwise
+     (either it failed to send the byte or the passed socket is not a
+     TCP socket) `#f'.
+
+ -- Function: svz:sock:handle-request sock proc
+     Set the `handle-request' member of the socket structure SOCK to
+     the Guile procedure PROC.  The procedure returns the previously
+     set handler if there is any.
+
+ -- Function: svz:sock:boundary sock boundary
+     Setup the packet boundary of the socket SOCK.  The given string
+     value BOUNDARY can contain any kind of data.  If you pass an exact
+     number value the socket is setup to parse fixed sized packets.  In
+     fact this procedure sets the `check-request' callback of the given
+     socket structure SOCK to a predefined routine which runs the
+     `handle-request' callback of the same socket when it detected a
+     complete packet specified by BOUNDARY.  For instance you can setup
+     Serveez to pass your `handle-request' procedure text lines by
+     calling `(svz:sock:boundary sock "\n")'.
+
+ -- Function: svz:sock:floodprotect sock flag
+     Set or unset the flood protection bit of the given socket SOCK.
+     Returns the previous value of this bit (#t or #f).  The FLAG
+     argument must be either boolean or an exact number and is optional.
+
+ -- Function: svz:sock:print sock buffer
+     Write the string buffer BUFFER to the socket SOCK.  The procedure
+     accepts binary smobs too.  Return `#t' on success and `#f' on
+     failure.
+
+ -- Function: svz:sock:final-print sock
+     This procedure schedules the socket SOCK for shutdown after all
+     data within the send buffer queue has been sent.  The user should
+     issue this procedure call right *before* the last call to
+     `(svz:sock:print)'.
+
+ -- Function: svz:sock:no-delay sock enable
+     Turns the Nagle algorithm for the TCP socket SOCK on or off
+     depending on the optional ENABLE argument.  Returns the previous
+     state of this flag (`#f' if Nagle is active, `#t' otherwise).  By
+     default this flag is switched off.  This socket option is useful
+     when dealing with small packet transfer in order to disable
+     unnecessary delays.
+
+ -- Function: svz:sock:send-buffer sock
+     Return the send buffer of the socket SOCK as a binary smob.
+
+ -- Function: svz:sock:send-buffer-size sock size
+     This procedure returns the current send buffer size and fill
+     status in bytes of the socket SOCK as a pair of exact numbers.  If
+     the optional argument SIZE is given the send buffer will be set to
+     the specified size in bytes.
+
+ -- Function: svz:sock:receive-buffer sock
+     Return the receive buffer of the socket SOCK as a bytevector.
+
+ -- Function: svz:sock:receive-buffer-size sock size
+     Returns the current receive buffers size and fill status in bytes
+     of the socket SOCK as a pair of exact numbers.  If the optional
+     argument SIZE is given the receive buffer will be set to the
+     specified size in bytes.
+
+ -- Function: svz:sock:receive-buffer-reduce sock length
+     Dequeue LENGTH bytes from the receive buffer of the socket SOCK
+     which must be a valid `#<svz-socket>'.  If the user omits the
+     optional LENGTH argument, all of the data in the receive buffer
+     gets dequeued.  Returns the number of bytes actually shuffled away.
+
+ -- Function: svz:sock:connect host proto port
+     Establishes a network connection to the given HOST [ :PORT ].  If
+     PROTO equals `PROTO_ICMP' the PORT argument is ignored.  Valid
+     identifiers for PROTO are `PROTO_TCP', `PROTO_UDP' and
+     `PROTO_ICMP'.  The HOST argument must be either a string in dotted
+     decimal form, a valid hostname or an exact number in host byte
+     order.  When giving a hostname this operation might be blocking.
+     The PORT argument must be an exact number in the range from 0 to
+     65535, also in host byte order.  Returns a valid `#<svz-socket>'
+     or `#f' on failure.
+
+ -- Function: svz:sock:disconnected sock proc
+     Set the `disconnected-socket' member of the socket structure SOCK
+     to the Guile procedure PROC.  The given callback runs whenever the
+     socket is lost for some external reason.  The procedure returns
+     the previously set handler if there is one.
+
+ -- Function: svz:sock:kicked sock proc
+     Sets the `kicked-socket' callback of the given socket structure
+     SOCK to the Guile procedure PROC and returns any previously set
+     procedure.  This callback gets called whenever the socket gets
+     closed by Serveez intentionally.
+
+ -- Function: svz:sock:trigger sock proc
+     Sets the `trigger' callback of the socket structure SOCK to the
+     Guile procedure PROC and returns any previously set procedure.
+     The callback is run when the `trigger-condition' callback returned
+     `#t'.
+
+ -- Function: svz:sock:trigger-condition sock proc
+     This procedure sets the `trigger-condition' callback for the socket
+     structure SOCK to the Guile procedure PROC.  It returns the
+     previously set procedure if available.  The callback is run once
+     every server loop indicating whether the `trigger' callback should
+     be run or not.
+
+ -- Function: svz:sock:idle sock proc
+     This procedure sets the `idle' callback of the socket structure
+     SOCK to the Guile procedure PROC.  It returns any previously set
+     procedure.  The callback is run by the periodic task scheduler
+     when the `idle-counter' of the socket structure drops to zero.  If
+     this counter is not zero it gets decremented once a second.  The
+     `idle' callback can reset `idle-counter' to some value and thus can
+     re-schedule itself for a later task.
+
+ -- Function: svz:sock:idle-counter sock counter
+     This functions returns the socket structure SOCK's current
+     `idle-counter' value.  If the optional argument COUNTER is given,
+     the function sets the `idle-counter'.  Please have a look at the
+     `(svz:sock:idle)' procedure for the exact meaning of this value.
+
+ -- Function: svz:sock:data sock data
+     Associate any kind of data (any Guile object) given in the argument
+     DATA with the socket SOCK.  The DATA argument is optional.  The
+     procedure always returns a previously stored value or an empty
+     list.
+
+ -- Function: svz:sock:parent sock parent
+     Return the given socket's SOCK parent and optionally set it to the
+     socket PARENT.  The procedure returns either a valid
+     `#<svz-socket>' object or an empty list.
+
+ -- Function: svz:sock:referrer sock referrer
+     Return the given socket's SOCK referrer and optionally set it to
+     the socket REFERRER.  The procedure returns either a valid
+     `#<svz-socket>' or an empty list.
+
+ -- Function: svz:sock:server sock server
+     This procedure returns the `#<svz-server>' object associated with
+     the given argument SOCK.  The optional argument SERVER can be used
+     to redefine this association and must be a valid `#<svz-server>'
+     object.  For a usual socket callback like `connect-socket' or
+     `handle-request', the association is already in place.  But for
+     sockets created by `(svz:sock:connect)', you can use it in order
+     to make the returned socket object part of a server.
+
+ -- Function: svz:sock:local-address sock address
+     This procedure returns the current local address as a pair like
+     `(host .  port)' with both entries in network byte order.  If you
+     pass the optional argument ADDRESS, you can set the local address
+     of the socket SOCK.
+
+ -- Function: svz:sock:remote-address sock address
+     This procedure returns the current remote address as a pair like
+     `(host .  port)' with both entries in network byte order.  If you
+     pass the optional argument ADDRESS, you can set the remote address
+     of the socket SOCK.
+
+ -- Function: svz:sock:find ident
+     The given argument IDENT must be a pair of numbers where the car
+     is a `#<svz-socket>''s identification number and the cdr the
+     version number.  The procedure returns either the identified
+     `#<svz-socket>' or `#f' if the given combination is not valid
+     anymore.
+
+ -- Function: svz:sock:ident sock
+     This procedure returns a pair of numbers identifying the given
+     `#<svz-socket>' SOCK which can be passed to `(svz:sock:find)'.
+     This may be necessary when you are passing a `#<svz-socket>'
+     through coserver callback arguments in order to verify that the
+     passed `#<svz-socket>' is still valid when the coserver callback
+     runs.
+
+ -- Function: svz:sock:protocol sock
+     Returns one of the `PROTO_TCP', `PROTO_UDP', `PROTO_ICMP',
+     `PROTO_RAW' or `PROTO_PIPE' constants indicating the type of the
+     socket structure SOCK.  If there is no protocol information
+     available the procedure returns `#f'.
+
+ -- Function: svz:read-file port size
+     This procedure returns either a bytevector containing a data block
+     read from the open input port PORT with a maximum number of SIZE
+     bytes or the end-of-file object if the underlying ports end has
+     been reached.  The size of the returned bytevector may be less
+     than the requested size SIZE if it exceed the current size of the
+     given port PORT.  The procedure throws an exception if an error
+     occurred while reading from the port.
+
+ -- Function: svz:server? server
+     Returns `#t' if the given cell SERVER is an instance of a valid
+     `#<svz-server>', otherwise `#f'.
+
+ -- Function: svz:server:listeners server
+     Returns a list of listening `#<svz-socket>' smobs to which the
+     given server instance SERVER is currently bound, or an empty list
+     if there is no such binding yet.
+
+ -- Function: svz:server:clients server
+     Returns a list of `#<svz-socket>' client smobs associated with the
+     given server instance SERVER in arbitrary order, or an empty list
+     if there is no such client.
+
+ -- Function: svz:server:config-ref server key
+     This procedure returns the configuration item specified by KEY of
+     the given server instance SERVER.  You can pass this function a
+     socket too.  In this case the procedure will lookup the
+     appropriate server instance itself.  If the given string KEY is
+     invalid (not defined in the configuration alist in
+     `(define-servertype!)') then it returns an empty list.
+
+ -- Function: svz:server:state-set! server key value
+     Associates the Guile object VALUE with the string KEY.  The given
+     SERVER argument can be both, a `#<svz-server>' or a
+     `#<svz-socket>'.  Returns the previously associated object or an
+     empty list if there was no such association.  This procedure is
+     useful for server instance state savings.
+
+ -- Function: svz:server:state-ref server key
+     Returns the Guile object associated with the string value KEY which
+     needs to be set via `(svz:server:state-set!)' previously.
+     Otherwise the return value is an empty list.  The given SERVER
+     argument must be either a valid `#<svz-server>' object or a
+     `#<svz-socket>'.
+
+ -- Function: svz:server:state->hash server
+     Converts the SERVER instance's state into a Guile hash.  Returns
+     an empty list if there is no such state yet.
+
+ -- Function: serveez-port? name
+     Returns `#t' if the given string NAME corresponds with a
+     registered port configuration, otherwise the procedure returns
+     `#f'.
+
+ -- Function: serveez-server? name
+     Checks whether the given string NAME corresponds with an
+     instantiated server name and returns `#t' if so.
+
+ -- Function: serveez-servertype? name
+     This procedure checks whether the given string NAME is a valid
+     server type prefix known in Serveez and returns `#t' if so.
+     Otherwise it returns `#f'.
+
+ -- Function: serveez-exceptions enable
+     Controls the use of exceptions handlers for the Guile procedure
+     calls of Guile server callbacks.  If the optional argument ENABLE
+     set to `#t' exception handling is enabled and if set to `#f'
+     exception handling is disabled.  The procedure always returns the
+     current value of this behaviour.
+
+ -- Function: serveez-nuke
+     This procedure can be used to schedule Serveez for shutdown within
+     Guile.  Serveez will shutdown all network connections and
+     terminate after the next event loop.  You should use this instead
+     of issuing `(quit)'.
+
+ -- Function: serveez-interfaces args
+     Returns the local interfaces as a list of ip addresses in dotted
+     decimal form.  If another list is given in ARGS it should contain
+     the new list of local interfaces. It will make the list of local
+     interfaces accessible for Guile.
+
+ -- Function: portmap prognum versnum protocol port
+     A user interface to the portmap service, which establishes a
+     mapping between the triple [PROGNUM,VERSNUM,PROTOCOL] and PORT on
+     the machine's portmap service.  The value of PROTOCOL is most
+     likely `IPPROTO_UDP' or `IPPROTO_TCP'.  If the user omits PROTOCOL
+     and PORT, the procedure destroys all mapping between the triple
+     [PROGNUM,VERSNUM,*] and ports on the machine's portmap service.
+
+ -- Function: svz:coserver:dns host callback arg
+     This procedure enqueues the HOST string argument into the internal
+     DNS coserver queue.  When the coserver responds, the Guile
+     procedure CALLBACK is run as `(callback addr arg)'.  The ADDR
+     argument passed to the callback is a string representing the
+     appropriate IP address for the given hostname HOST.  If you omit
+     the optional argument ARG it is run as `(callback addr)' only.
+     The ARG argument may be necessary if you need to have the callback
+     procedure in a certain context.
+
+ -- Function: svz:coserver:reverse-dns addr callback arg
+     This Guile procedure enqueues the given ADDR argument which must be
+     an IP address in network byte order into the internal reverse DNS
+     coserver queue.  When the coserver responds, the Guile procedure
+     CALLBACK is run as `(callback host arg)' where HOST is the
+     hostname of the requested IP address ADDR.  The last argument ARG
+     is optional.
+
+ -- Function: svz:coserver:ident sock callback arg
+     This procedure enqueues the given `#<svz-socket>' SOCK into the
+     internal ident coserver queue.  When the coserver responds, it
+     runs the Guile procedure CALLBACK as `(callback user arg)' where
+     USER is the corresponding username for the client connection SOCK.
+     The ARG argument is optional.
+
+8.3 Some words about server configuration
+=========================================
+
+If you define a server you basically pass an instance name and a list of
+items to the `(define-server!)' function. Each item has a name and a
+value. A value has a type. We provide several types: integers (numbers),
+integer arrays, strings, string arrays, booleans (yes/no-values), hashes
+(associations) and port configurations.
+
+   The following table shows how each kind of value is set up in the
+configuration file. ITEM is the name of the item to be configured.
+
+Integer
+     Example: (item . 42)
+
+Integer array
+     Example: (item . (0 1 2 3))
+
+String
+     Example: (item . "a character string")
+
+String array
+     Example: (item . ("abc" "cba" "bca" "acb"))
+
+Boolean
+     A normal boolean in guile is represented by #t or #f. But the
+     configuration file parser additional understand some bare words
+     and numbers.
+     Example: (item . #f)
+
+Hash
+     Hash maps associate keys with values. Both must be character
+     strings.
+     Example: (item . (key1 . "value1") (key2 . "value2"))
+
+Port configuration
+     *Note Define ports::, for more information on this. When
+     configuring a port configuration you need to define it via
+     `(define-port!)' previously and put its symbolic name into the
+     configuration.
+     Example: (item . foo-tcp-port)
+
+9 Coserver
+**********
+
+9.1 What are coservers
+======================
+
+If it is necessary to complete blocking tasks in Serveez you have to use
+coservers.  Serveez comes with three useful coservers.  Using these
+coservers keeps a these blocking tasks from hanging the server.
+
+9.2 Existing coservers
+======================
+
+9.2.1 Identification (Ident) coserver
+-------------------------------------
+
+The Identification protocol is briefly documented in RFC1413. It
+provides a means to determine the identity of a user of a particular
+TCP connection. Given a TCP port number pair, it returns a character
+string which identifies the owner of that connection on the server's
+(that is the client's) system.
+
+   This is a connection based application on TCP. A server listens for
+TCP connections on TCP port 113 (decimal). Once a connection is
+established, the server reads a line of data which specifies the
+connection of interest. If it exists, the system dependent user
+identifier of the connection of interest is sent as the reply. The
+server may then either shut down the connection or it may continue to
+read/respond to more queries.
+
+   The Ident coserver is a client to this kind of service. For every
+established network connection you can use this service by calling the
+appropriate procedure `svz:coserver:ident' with an appropriate callback
+function.
+
+     (svz:coserver:ident sock my-callback arg)
+
+   In this context `sock' is of type `#<svz-socket>' and `my-callback'
+is something like the following example. `arg' is any Guile value and
+it gets passed verbatim to the callback procedure.  A simple callback
+procedure that just prints out the user could look something like the
+following.
+
+     (define (my-callback user args)
+       (format #t "Identified user ~a~%" user))
+
+9.2.2 Domain Name Server (DNS) coserver
+---------------------------------------
+
+The DNS coserver uses `gethostbyname' to translate a given hostname to
+the associated IP address. It is passed a hostname and, when it has
+received a response from the Domain Name Server identifying the
+hostname, it calls a callback function to return the internet address
+corresponding to that hostname.
+
+     (svz:coserver:dns "www.gnu.org" coserver-callback args)
+
+   Callback:
+     (define (coserver-callback ip args)
+       (format #t "The ip address is ~a~%" ip))
+
+9.2.3 Reverse Domain Name Server (reverse DNS) coserver
+-------------------------------------------------------
+
+As easily guessed from the name this coserver is just doing the reverse
+as the DNS coserver. It translates a given IP address into a hostname
+using `gethostbyaddr'. In the procedure call, the IP address is given
+as a positive integer in host byte order. The Reverse DNS coserver
+itself takes something like `192.168.2.1'.
+
+     (svz:coserver:reverse-dns (inet-pton AF_INET "192.168.1.255")
+       reverse-callback args)
+
+   Callback:
+     (define (reverse-callback hostname args)
+       (format #t "Hostname is ~a~%" hostname))
+
+10 Bibliography
+***************
+
+This section contain some of the documents and resources we read and
+used to implement various parts of this package. They appear in no
+specific order.
+
+  1. RFC 760
+     The Internet Protocol
+
+  2. RFC 1071
+     Computing the Internet Checksum
+
+  3. RFC 1413
+     Identification Protocol
+
+  4. RFC 1459
+     Internet Relay Chat Protocol
+
+  5. RFC 1945
+     Hypertext Transfer Protocol - HTTP/1.0
+
+  6. RFC 2068
+     Hypertext Transfer Protocol - HTTP/1.1
+
+  7. RFC 2616
+     Hypertext Transfer Protocol - HTTP/1.1
+
+  8. RFC 768
+     User Datagram Protocol
+
+  9. RFC 791
+     Internet Protocol
+
+11 License
+**********
+
+GNU General Public License Version 2, June 1991
+Serveez is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or any later version.
+
+   This software is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+along with this package; see the file COPYING.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+02111-1307, USA.
+
+Copyright (C) 2010, 2011 Michael Gran <spk121@yahoo.com>
+Copyright (C) 1999, 2000, 2001, 2002 Martin Grabmueller
+<mgrabmue@cs.tu-berlin.de>
+Copyright (C) 2000, 2001, 2002 Raimund Jacob <raimi@lkcc.org>
+Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
+Verbatim copying and distribution of this entire document is permitted
+in any medium, provided this notice is preserved.
+
+Table of Contents
+*****************
+
+Serveez-MG
+1 Preface
+2 Introduction
+3 Installation
+  3.1 Install Dependencies
+  3.2 Getting Serveez-MG
+  3.3 Building and Installation
+  3.4 Testing
+4 Running and Managing
+  4.1 Configuration is Code
+  4.2 Trying Serveez
+5 An example Guile server
+  5.1 The "hello" protocol
+  5.2 The "hello world" server
+    5.2.1 The callback functions
+6 Deploying
+  6.1 Command line options
+  6.2 Serveez Configuration Concepts
+    6.2.1 Define ports
+      6.2.1.1 Port configuration items
+      6.2.1.2 TCP port definition
+      6.2.1.3 Pipe port definition
+      6.2.1.4 UDP port definition
+    6.2.2 Define servers
+    6.2.3 Bind servers to ports
+  6.3 Configuring the HTTP Server
+    6.3.1 Configuration
+  6.4 Setup the Control Protocol Server
+    6.4.1 Configuration of the Control Protocol Server
+    6.4.2 Using the Control Protocol
+  6.5 Additional configuration possibilities
+    6.5.1 Passthrough Server
+      6.5.1.1 General description
+      6.5.1.2 Configuration
+7 Concept
+  7.1 Overall concept
+  7.2 I/O Strategy
+    7.2.1 Limits on open filehandles
+8 Server
+  8.1 Introduction to servers
+  8.2 Writing servers in Guile
+    8.2.1 Guile server functions reference manual
+      8.2.1.1 Special Data Types
+      8.2.1.2 Passing Binary Data
+      8.2.1.3 Server Definition
+      8.2.1.4 Callback Prototypes
+      8.2.1.5 Predefined Procedures
+  8.3 Some words about server configuration
+9 Coserver
+  9.1 What are coservers
+  9.2 Existing coservers
+    9.2.1 Identification (Ident) coserver
+    9.2.2 Domain Name Server (DNS) coserver
+    9.2.3 Reverse Domain Name Server (reverse DNS) coserver
+10 Bibliography
+11 License
+
+
