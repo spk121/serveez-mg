@@ -25,4 +25,4 @@
 #
 
 info_TEXINFOS = serveez-mg.texi
-serveez_TEXINFOS = guile-api.texi
+serveez_mg_TEXINFOS = guile-api.texi
