@@ -24,5 +24,5 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-info_TEXINFOS = serveez.texi
+info_TEXINFOS = serveez-mg.texi
 serveez_TEXINFOS = guile-api.texi

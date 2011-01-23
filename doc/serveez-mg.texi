@@ -1,6 +1,6 @@
 \input texinfo
 @c %**start of header
-@setfilename serveez.info
+@setfilename serveez-mg.info
 @settitle Serveez-MG Documentation
 @c %** end of header
 
