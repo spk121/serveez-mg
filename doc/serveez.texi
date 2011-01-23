@@ -10,7 +10,7 @@
 @copying
 This manual is for Serveez-MG @value{VERSION}.
 
-Copyright @copyright{} 2010 Michael Gran <spk121@@yahoo.com>@*
+Copyright @copyright{} 2010, 2011 Michael Gran <spk121@@yahoo.com>@*
 Copyright @copyright{} 2000, 2001, 2002 Stefan Jahn <stefan@@lkcc.org>@*
 Copyright @copyright{} 2000, 2001, 2002 Raimund Jacob <raimi@@lkcc.org>@*
 Copyright @copyright{} 1999 Martin Grabmueller <mgrabmue@@cs.tu-berlin.de>@*
@@ -41,15 +41,19 @@ Free Documentation License".
 @contents
 
 @ifnottex
-@node Top, Introduction, (dir), (dir)
+@node Top, Preface, (dir), (dir)
 @top Serveez-MG
 
 This manual is for Serveez-MG, version @value{VERSION}
 @end ifnottex
 
 @menu
+* Preface::                     
 * Introduction::                
-* Using Serveez::               
+* Installation::                
+* Running and Managing::        
+* An example Guile server::     
+* Deploying::                   
 * Concept::                     
 * Server::                      
 * Coserver::                    
@@ -58,6 +62,15 @@ This manual is for Serveez-MG, version @value{VERSION}
 
 @detailmenu
  --- The Detailed Node Listing ---
+
+An example Guile server
+
+* The HELLO protocol::          
+* The hello world server::      
+
+The ``hello world'' server
+
+* The callback functions::      
 
 Command line options
 
@@ -76,17 +89,10 @@ Server
 * Introduction to servers::     Protocol servers in Serveez
 * Writing servers::             How to write Internet protocol servers
 * Configuring servers::         How do I configure an existing server ?
-* Existing servers::            Which kind of servers do we have already ?
 
-Writing servers
+Writing servers in Guile
 
 * Guile servers::               Servers using Serveez's guile interface
-
-Existing servers
-
-* HTTP Server::                 Integrated Web Server description
-* Passthrough Server::          Description of the program passthrough server
-* Mandel Server::               Distributed Mandelbrot server
 
 Coserver
 
@@ -96,68 +102,380 @@ Coserver
 @end detailmenu
 @end menu
 
-@node Introduction, Using Serveez, Top, Top
-@chapter Introduction
-
-There once was a great server framework named GNU Serveez.  It
-provided routines and help for implementing IP based servers
-(currently TCP, UDP and ICMP).  And it was amazing.  In its library
-were routines that worked on dozens of platforms, and it was a great
-platform for writing your own webservice.
+@node Preface, Introduction, Top, Top
+@chapter Preface
+There was once a great server framework named GNU Serveez.  It was
+basically a tutorial on how to implement an IP-based server as well as
+a library and a framework to help you get things done.  It was
+amazing: it supported dozens of platforms and many different ways of
+serving content over the 'nets.
 
 The code for it is still around, of course, on the GNU website, but,
 the project appears to be dead, or mostly dead anyway.
 
 Anyone that decided to pick up and update GNU Serveez would have a
-hell of a task: with all those many operating systems laboriously
-supported and with all those special cases for various libraries,it
+Promethean task: with all those many operating systems laboriously
+supported and with all those special cases for various libraries, it
 would be a trial just to keep it from bitrotting.  It might actually
 be impossible to keep it up to date without a huge community behind
-it.  But it never really got that huge community it needed.
+it.  But it never really got that huge community it deserved.
 
-When I, Mike Gran, wanted to make a Guile webservice, I decided to
-dust Serveez off and make it work for me, on my one specific
-platform.  Serveez has built-in support for the Guile dialect of
-Scheme, which makes it rather unique.
+When I (Mike Gran) wanted to make a Guile webservice, I decided to dust
+GNU Serveez off and make it work for me, on my one specific platform.
+Serveez has built-in support for the Guile dialect of Scheme, which
+makes it rather unique.  It is also unmaintained GNU code, which makes
+me sad.
 
 For now I call it ``Serveez-MG'' because the code is mostly GNU
 Serveez, but, this is really a fork of the true GNU Serveez.  Don't
 confuse the two.  This port is targeted to only work on my machines,
 and it only implements a handful of the servers that GNU Serveez does.
 As a one person project, I needed to strip it down to something I
-could understand. 
+could understand.
 
-@node Using Serveez, Concept, Introduction, Top
-@chapter Using Serveez
+@node Introduction, Installation, Preface, Top
+@chapter Introduction
 
-We know, you usually don't read the documentation.  Who does.  But
-please, read at the very least this chapter.  It contains information on
-the basic concepts.  Larger parts of the manual can be used as a
-reference manual for the various servers.
+One function of Serveez-MG is as a web server.  It listens for HTTP
+requests and then acts on them.  That part of it is boring.  In fact,
+right now, is isn't a very modern webserver, since it requires
+scripts to be in the @code{cgi-bin} directory.  This may soon change.
 
-@section Building and installing
+The other function of Serveez-MG is to provide a platform for
+programming webservices in Guile.  It helps you write a webservice by
+implementing a callback and event based server that will call your Guile
+routines.  You won't have to worry about writing your own main poll or
+select loop.
 
-@subsection Rebuild the package from the sources
+@node Installation, Running and Managing, Introduction, Top
+@chapter Installation
+
 You can skip this section if you are familiar with the GNU'ish way of 
 configuring, compiling and installing a GNU package.
 
-@subsubsection Getting the source
+@section Install Dependencies
+
+This program depends on other programs that depend on other programs.
+Yadda yadda yadda.  It is ``turtles all the way down.''
+
+The most important dependencies are
+
+@itemize @bullet
+@item
+GNU Make for the building
+@item
+Guile 2.0 for the Scheme interpreter
+@item
+libcrypt for some trivial use of encryption
+@item
+libdl for some dynamic loading action
+@end itemize
+
+Of the four, only Guile 2.0 is uncommon and is not part of the Linux
+Standards Base.  It, in turn, depends on @file{libunistring}, which is
+also uncommon.
+
+@section Getting Serveez-MG
 Serveez-MG can be found on
 @uref{http://github.com/spk121/serveez-mg}.  It might just be in a Git
 repo, or there might be a download in the Download's directory.
 
-@subsubsection Requirements
-Serveez needs GNU Guile 2.0 or later.  Guile itself has many
-dependencies, so beware.
-
-@subsubsection Installation
+@section Building and Installation
 If you're building this from the source code, then you will find a
 file named 'INSTALL' in the source code package.  It has helpful
 information on getting Serveez-MG to compile.  But, compiling from
 source is a trial for the unfamiliar.  Maybe someday some GNU or Linux
 distribution will package this, but, probably not.
 
-@section Starting Serveez
+@section Testing
+Once the code is all built, you should run its built-in test to see if
+it is working by calling @code{make check}.  This check is not
+comprehensive, but, does indicate that *something* is at least sort of
+working.
+
+@node Running and Managing, An example Guile server, Installation, Top
+@chapter Running and Managing
+
+Before you can run Serveez-MG, you need to configure it for your
+situation.  Serveez-MG is configured by writing a configuration file,
+named @file{serveez.cfg} in Scheme that gets read by Serveez-MG on
+startup.
+
+In this chapter, I'm going to explain the format for the configuration
+file and all its options.  It is all based on the Scheme language, so
+if you don't know Scheme, you might want to learn.  All the kids are
+using it these days, if your definition of  ``kids'' is academics,
+GNU enthusiasts, and fans of parentheses.
+
+@section Configuration is Code
+
+This configuration file, @file{serveez.cfg}, is actually a program in
+the Scheme language.  Serveez-MG kicks off its Scheme interpreter when
+it starts up.  It then adds several Serveez-specific procedures to the
+Scheme interpreter: there are functions to define ports and servers,
+and other networking functions that aren't normally available when
+Guile starts up.  After this, it tries to run @file{serveez.cfg}.
+
+Since the configuration is code, you could put anything you liked in
+there.  You could make you configuration file delete all the files on
+your hard drive if you wished, though this is not recommended.  So
+note that there is great versatility and great security risk to this.
+
+@section Trying Serveez
+
+Just to keep you from getting bored, let's run Serveez now before we
+dive into the complexities of the configuration file.
+
+First, well add a minimal @file{serveez.cfg} configuration file.
+
+@example
+(serveez-verbosity 2)
+
+(define-port! 'http-port '(
+                           ("proto"  . "tcp")
+                           ("port"   . 10080)
+                           ("ipaddr" . "*")))
+
+(define-server! 'http-server '(
+              ;; standard properties
+              ("admin"        . "nobody@@gmail.com")
+              ("host"         . "yourdomain.net")
+              ("logfile"      . "http-access.log")
+              ("logformat"    . "%h %i %u [%t] \"%R\" %c %l")
+              ("docs"         . ".")
+              ("type-file"    . "/etc/mime.types")
+            ))
+
+(bind-server! 'http-port 'http-server)
+@end example
+
+You'll also need to put an html file in this directory.  If you don't
+have one, you can use this one: @file{hello.html}
+
+@example
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Blammo!</title>
+ </head>
+ <body>
+  <h1>Blammo is the word</h1>
+ </body>
+</html>
+@end example
+
+You can kick off the server by typing @code{serveez} on the command
+line.  In this state, it will run in the foreground.
+
+You then should be able to point your web browser to
+@code{http://localhost:10080/hello.html}.
+
+Once you are done messing about, you can kill the webserver with
+@key{CTRL-C}.  It should have generated a @file{http-access.log}
+file, which you can now peruse.
+
+
+@node  An example Guile server, Deploying, Running and Managing, Top
+@chapter An example Guile server
+
+But, like I said, the @code{http} server is not that special.  Now I'll
+give a description of the ``hello world'' of Guile webservices.  If you
+have actually read this document from the beginning, you won't
+understand the specifics of the commands; but, I find that it is easier
+to scan this example, and then look at the specifics, and then re-read
+the example, then it is to wade through reference material with no frame
+of reference.
+
+Now we'll describe an example server written in Guile.  The ``hello
+world'' server.
+
+@menu
+* The HELLO protocol::          
+* The hello world server::      
+@end menu
+
+@node The HELLO protocol, The hello world server, An example Guile server, An example Guile server
+@section The ``hello'' protocol
+
+The first step in making our server is to define a protocol.  The
+``hello world'' server's protocol will be very simple.
+
+First, when a client connects to the server, it needs to identify itself
+by sending the ASCII string ``HELLO''.
+
+The server will respond by sending the string ``HELLO, WORLD!''
+
+Then, if the client sends the ASCII string ``WHAT TIME IS IT?'', the server
+will respond with an ASCII string representation of the time.
+
+If the client sends any other data than that string, the server will
+respond with the ASCII string ``ERROR''.
+
+@node  The hello world server,  , The HELLO protocol, An example Guile server
+@section The ``hello world'' server
+
+The ``hello world'' server is an Internet server completely written in
+Guile with the help of the API provided by the underlying Serveez
+application.  The reader will not see any occurrence of the networking
+API of Guile.
+
+This server is going to be a TCP server assigned to port 3003.
+
+For the purposes of this example, imagine that all the following code
+is in a file named @code{serveez.cfg}.
+
+@menu
+* The callback functions::      
+@end menu
+
+@node The callback functions,  , The hello world server, The hello world server
+@subsection The callback functions
+
+The first callback that needs to be defined in the @code{detect-proto}
+callback.  It will scan for the client's initial string ``HELLO'', which
+is how the client identifies that it is trying to communicate to the
+hello world server.  
+
+For TCP and PIPE servers this step is mandatory since there can be
+multiple servers of different protocols listening to the same socket.
+
+First, we need a couple of libraries
+@lisp
+(use-modules (rnrs bytevectors)
+	     (serveez-mg lib))
+@end lisp
+
+The @code{detect-proto} callback goes something like this:
+
+@lisp
+;; The protocol detection function: this function is called the 
+;; first time a client connects.  The client is expected to
+;; identify itself by sending the string "HELLO".
+(define (hello-detect-proto server socket)
+  (let ((input-bytes (svz:sock:receive-buffer socket)))
+
+    (if (bytevector-contains (svz:sock:receive-buffer socket) 
+			     (string->utf8 "HELLO"))
+	;; If true, allow connection
+        1
+	;; Otherwise, ignore
+	0)))
+@end lisp  
+
+When the client connects to the server, whatever
+it has sent is stored in the @emph{receive buffer}.  The procedure
+@code{svz:sock:receive-buffer} returns a bytevector containing
+everything received so far from the client.  Note that this procedure
+does not then erase the data from the receive buffer.
+
+Next, we need the 'connect-socket' callback.  This is called once per
+connection that has a valid protocol.  This procedure is used to set up
+the socket and then connect a request handler to it.
+
+@lisp
+;; The connect socket function: after a client has been detected by
+;; detect-proto, this function handles each request
+(define (hello-connect-socket server socket)
+  ;; Each packet is going to be delimited by CR/LF
+  (svz:sock:boundary socket "\r\n")
+  ;; Connect to the request handler
+  (svz:sock:handle-request socket hello-handle-request)
+  ;; Zero indicates success
+  0)
+@end lisp
+
+This procedure tells the socket to chop input data into packets
+delimited by the carriage-return / linefeed pair.  Each set of
+input that ends with CR/LF will be considered its own packet and will be
+processed as a single request.
+
+Then, it connects the procedure @code{hello-handle-request} to the
+socket as its request handler.  It will get called once per packet.  So
+now, of course, we need a request handler.
+
+@lisp
+;; The request handler.
+;; If it receives "HELLO", return "HELLO, WORLD!".
+;; If it receives "WHAT TIME IT IS?", return the time.
+;; Otherwise, return ERROR.
+(define (hello-handle-request socket request len)
+  (let ((command (strip-boundary (utf8->string request))))
+    (cond
+     ((string=? command "HELLO")
+      (svz:sock:print socket "HELLO, WORLD!\r\n"))
+     ((string=? command "WHAT TIME IS IT?")
+      (svz:sock:print socket (strftime "%c" (localtime (current-time))))
+      (svz:sock:print socket "\r\n"))
+     (else
+      (svz:sock:print socket "ERROR\r\n")))
+    ;; Return zero to indicate success
+    0))
+
+(define (strip-boundary str)
+  (string-trim-right str (string->char-set "\r\n")))
+@end lisp
+
+This request handler does all the heavy lifting.  If it receives
+a ``HELLO'' or ``WHAT TIME IS IT?'' command, it will respond
+appropriately. 
+
+Now that the callbacks are out of the way, we need to create the port
+and server.  The port is a TCP port on port number 3003.
+
+@lisp
+;; Port configuration
+(define-port! 'hello-port '((proto . tcp)
+			    (port . 3003))
+@end lisp
+
+The hello server is defined and the callbacks are connect to it like so:
+
+@lisp
+(define-servertype! 
+  '((prefix  . "hello")
+    (description . "guile hello world server")
+    (detect-proto . hello-detect-proto)
+    (connect-socket . hello-connect-socket)
+    (configuration . ())
+    ))
+@end lisp
+
+The prefix is used to create a name for the new server type: the
+@code{hello-server}.  Then its two main callbacks,
+@code{hello-detect-proto} and @code{hello-connect-socket}, are connected
+to this server type.  The @code{hello-handle-request} callback is not
+mentioned here because it needs to be connected to a socket once it has
+been opened.  That is why it is connected to a socket in the
+@code{hello-connect-socket} callback routine.
+
+Lastly, an instance of the server is created and bound to the port.
+
+@lisp
+;; Server instantiation
+(define-server! 'hello-server '())
+
+(bind-server! 'hello-port 'hello-server)
+@end lisp
+
+With all this in place, running @code{serveez} like so
+
+@example
+serveez
+@end example
+
+should start up the server.  If your @code{serveez.cfg} file isn't in
+this directory, you'll have to call @code{serveez -f
+<path>/serveez.cfg}.
+
+We used CR/LF as packet boundaries, which means that we can test this
+using a telnet program.  If you telnet to port 3003, you should be able
+to type in the commands @code{HELLO} and @code{WHAT TIME IS IT?} and see
+the response from the server.
+
+@node Deploying, Concept, An example Guile server, Top
+@chapter Deploying
 
 When Serveez-MG is started it reads its configuration from a file
 called @file{serveez.cfg} in the current directory and runs the server
@@ -196,7 +514,7 @@ Use standard input as configuration file.
 * Setup the Control Protocol Server::  
 @end menu
 
-@node Serveez Configuration Concepts, Configuring the HTTP Server, Using Serveez, Using Serveez
+@node Serveez Configuration Concepts, Configuring the HTTP Server, Deploying, Deploying
 @section Serveez Configuration Concepts
 
 As noted above Serveez is configured via a configuration file which is
@@ -206,20 +524,15 @@ command line argument.  When you pipe a file into Serveez or pass the
 as configuration file no matter whether you passed a @samp{-f} command
 line switch or not.
 
-To make configuring more fun we did not invent yet another configuration 
-file format.  Instead we use a dialect of the Scheme programming language 
-called GNU Guile (@uref{http://www.gnu.org/software/guile/}).  There is no 
-need to be worried if you are not a programmer.  What you have to do is 
-really simple and this document shows you everything you need to know.  We 
-also provide many examples.  However there are some simple concepts you 
-have to understand.  The following paragraphs will explain them.
+The idea of the configuration file is this: Serveez starts, the
+configuration file (which is Scheme code) is run, and then it enters its
+main loop and waits for connections.  If your configuration file
+contained Serveez commands to set up the http server to create a Guile
+webservice, then they will be available.  If your configuration file
+does neither of those things, Serveez will have no servers available.
 
-The idea of the configuration file is this: Serveez starts, runs the 
-configuration file (other applications usually just read them and remember 
-the settings) and finally enters its main loop doing the things you wanted 
-it to.
-
-There are three things you have to do in the configuration file:
+There are three things you have to do in the configuration file to make
+a server available:
 
 @itemize @bullet
 @item
@@ -464,13 +777,15 @@ Simple definition of a UDP port configuration with the name "foo-udp-port".
 @node Define servers, Bind servers to ports, Define ports, Serveez Configuration Concepts
 @subsection Define servers
 
-A @code{server} (in Serveez) is a snippet of code that implements some
-protocol. There are a few servers built into Serveez but you can implement
-your own, too. For example we provide a webserver implementing the
-Hypertext Transfer Protocol (HTTP). Each server has a different set of
-options you can change. You can have many instances of every server, each
-with a different set of options. For example: You can create a webserver
-on TCP port 42420 publishing the Serveez documentation and also have another
+A @code{server} (in Serveez) is code that implements some
+protocol. There is an HTTP server built into Serveez -- and a control
+server and a 'passthrough' server that we'll describe later -- but you
+can implement your own, too. Each server -- either serveez's http
+server, passthrough server, or control server or any servers you
+implement yourself in Scheme -- has a different set of options you can
+change. You can have many instances of every server, each with a
+different set of options. For example: You can create a webserver on TCP
+port 42420 publishing the Serveez documentation and also have another
 webserver on a different port publishing something else. Every server
 has a unique name you assign to it. The name of the server is later used
 to bind it to a port.
@@ -480,17 +795,16 @@ parameters.  The HTTP server has a different set of configuration
 parameters than another type of server.
 
 The following example instantiates a server with the short name
-"foo". Each server in Serveez has got a short name. @xref{Existing
-servers}, for the details. This example demonstrates everything which
-is possible in server configurations. You start a definition of a
-server with the guile function @code{(define-server!)}. The following
-argument specifies the name of the server instance (in this case
-"foo-server") which starts with the short name. The second argument
-describes the server in detail. Each configuration item is setup with
-a @code{(key . value)} pair where "key" is the name of the
-configuration item and "value" is the value which depends on the type
-of the item. @xref{Configuring servers}, for a detailed description of
-each type of value.
+"foo". This example demonstrates all the different data types that might
+appear in server configurations. You start a definition of a server with
+the guile function @code{(define-server!)}. The following argument
+specifies the name of the server instance (in this case "foo-server")
+which starts with the short name. The second argument describes the
+server in detail. Each configuration item is setup with a @code{(key
+. value)} pair where "key" is the name of the configuration item and
+"value" is the value which depends on the type of the
+item. @xref{Configuring servers}, for a detailed description of each
+type of value.
 
 @example
 (define-server! 'foo-server '(
@@ -506,11 +820,6 @@ each type of value.
     (truth . #f)                            ;; boolean value
   ))
 @end example
-
-Serveez provides a number of server types. Each of them has a short name.
-The name of the server instance has to begin with this short name followed
-by a dash (-). You can append any suffix then. In the example above "foo" 
-is the short name and "foo-server" the name of the server instance.
 
 @node Bind servers to ports,  , Define servers, Serveez Configuration Concepts
 @subsection Bind servers to ports
@@ -541,7 +850,7 @@ share the same port (e.g. the tunnel server) and some protocols simply won't
 work on 'wrong' ports. Additionally, you will not get error messages when
 that happens. The server just will not work then.
 
-@node Configuring the HTTP Server, Setup the Control Protocol Server, Serveez Configuration Concepts, Using Serveez
+@node Configuring the HTTP Server, Setup the Control Protocol Server, Serveez Configuration Concepts, Deploying
 @section Configuring the HTTP Server
 
 The integrated HTTP server was originally meant to be a simple but
@@ -551,6 +860,13 @@ directory listings when no standard document file
 (e.g. @file{index.html}) has been found at the requested document node
 (directory).  Furthermore it implements a file cache for speeding up
 repetitive HTTP request.
+
+For now, this HTTP server uses old concepts of web content.  It assumes
+that everything that is to be served is either static content like
+webpages and images, or is a CGI (Common Gateway Interface) script that
+is placed in the CGI directory.  This will change in the future so that
+any URI can be used to serve dynamic content, instead of just scripts in
+the CGI directory.
 
 The basic setup of the HTTP server requires that the serveez.cfg file
 contains something like the following:
@@ -582,12 +898,12 @@ contains something like the following:
                                     ("py"  . "python")))
             ))
 
-(bind-server! 'http-port 'http-server)
+(bind-server! 'http-port 'http-server
+@end example
 
 Remember that port numbers below 1024 are privileged ports and only
 privileged processes, such as those run as root, can bind to them.
 
-@end example
 
 @subsection Configuration
 
@@ -729,7 +1045,7 @@ any headers.
 @end table
 @end table
 
-@node  Setup the Control Protocol Server,  , Configuring the HTTP Server, Using Serveez
+@node  Setup the Control Protocol Server,  , Configuring the HTTP Server, Deploying
 @section Setup the Control Protocol Server
 
 Now that you've added the configuration for the HTTP server to the
@@ -744,7 +1060,6 @@ $ telnet www.yourdomain.org 42420
 @end example
 After pressing @key{RET} you will be asked for a password which you
 might setup passing Serveez the -P argument. 
-@xref{Using Serveez}. 
 
 @subsection Configuration of the Control Protocol Server
 
@@ -868,11 +1183,11 @@ of the configuration file.
 
 @table @code
 @item (interface-add! . interface)
-Add one more network interface to the list of known interfaces. You can get
-the list of known interfaces by running @samp{serveez -i}. The @var{interface}
-argument must be in dotted decimal form (e.g. 127.0.0.1). Serveez provides
-this function for systems where it is unable to detect the list of network
-interface automatically.
+Add one more network interfaces to the list of known interfaces. You can
+get the list of known interfaces by running @samp{serveez -i}. The
+@var{interface} argument must be in dotted decimal form
+(e.g. 127.0.0.1). Serveez provides this function for systems where it is
+unable to detect the list of network interface automatically.
 
 @c @item (loadpath-add! . path)
 @c Extends the load path for server modules by the path name @var{path}.
@@ -903,242 +1218,14 @@ gets overridden, too.
 Set the @var{password} for the control protocol.
 @end table
 
-We now have a closer look at the internals of Serveez. If you
-are not interested in that have a look at the existing
-servers (@xref{Existing servers}.).
-
-@node Concept, Server, Using Serveez, Top
-@chapter Concept
-
-@section Overall concept
-The primary functionality Serveez provides is a framework for Internet
-services.  It can act as a kind of server collection and may even
-replace super-servers such as the inetd daemon.
-
-Its key features and benefits are:
-
-@itemize @bullet
-@item support for packet and connection oriented protocols@*
-Serveez currently supports two server types.  TCP and named pipe servers
-are connection oriented servers.  This type of server accepts a client's
-connection request and communicates with it using a dedicated
-connection.  The format of the incoming and outgoing data streams are
-irrelevant to Serveez.  Packet oriented servers (like UDP and ICMP)
-receive data packets and respond to the sender with data packets.  A
-server in Serveez can detect whether it is bound to a packet or
-connection oriented port configuration and thus can act as the expected
-type.
-
-@item server and client functionality@*
-Besides a wide variety of server capabilities, Serveez also contains
-some client functionality.  This may be necessary when a server is meant
-to establish a connection to another server in response to an incoming
-request.  For example, imagine a protocol where a client tells the
-server "Let me be the server.  Please connect to this @var{host} at this
-@var{port}.".  You are also able to implement pure clients.
-
-@item complete lack of platform portability@*
-The original GNU Serveez was a miracle of platform portability.  This
-version, Serveez-MG, is not.  It very specifically targets those
-GNU/Linux distributions that are complient with the LSB 4.1
-specification.
-
-@item powerful configuration capabilities@*
-Server configuration has always been a complicated but very important
-issue.  When Serveez starts up it runs the configuration file using the
-programming language Guile.  In contradiction, other (server)
-applications just read their configuration files and remember the
-settings in it.  This makes them powerful enough to adapt the Serveez
-settings dynamically.  Using the Guile interpreter also means that you
-can split your configuration into separate files and load these, perhaps
-conditionally, from the main configuration file.
-
-@item easy server implementation@*
-Serveez is a server framework.  When implementing a new server the
-programmer need pay little or no attention to the networking code but is
-free to direct his attention to the protocol the server is meant to
-support.  That protocol may be an established one such as HTTP, or may
-be a custom protocol fitting the specific application's requirements.
-The @ref{Writing servers} section describes this process in detail.
-
-@item code reusability@*
-The GNU Serveez package did come along with a core library and an API
-for the C language which contained most of the functionality necessary
-to write an Internet server.  Most probably, a programmer could also
-use the library for other (network programming related) purposes.
-But, for this version, Serveez-MG, I've stripped out some of its
-functionality, so the original GNU version might be better if you
-actually wanted a core library.
-
-This version does retain the Guile functionality, though.
-
-@item server instantiation and network port sharing@*
-Once you have written a protocol server and integrated into Serveez's
-concept of servers the user can instantiate (multiply) the server.  At
-the first glimpse this sounds silly, but with different server
-configurations it does not.  If, for example, an administrator wishes to
-run multiple HTTP servers with different document roots, Serveez will
-handle them all in a single process.  Also if the same administrator
-wants to run a HTTP server and some other server on the same network
-port this is possible with Serveez.  You can run a single server on
-different network ports, too.
-@end itemize
-
-@section I/O Strategy
-Serveez-MG's I/O strategy is the traditional @code{poll()} function
-
-@subsection Limits on open filehandles
-
-The limits set by @code{ulimit()} or @code{setrlimit()} affect the
-performance of the servers.
-
-@node Server, Coserver, Concept, Top
-@chapter Server
-
-@menu
-* Introduction to servers::     Protocol servers in Serveez
-* Writing servers::             How to write Internet protocol servers
-* Configuring servers::         How do I configure an existing server ?
-* Existing servers::            Which kind of servers do we have already ?
-@end menu
-
-@node Introduction to servers, Writing servers, Server, Server
-@section Introduction to servers
-
-Serveez is a kind of server server. It allows different protocol
-servers to listen on various TCP/UDP ports, on ICMP sockets and on named
-pipes. Servers are instantiated with a certain configuration. It is
-possible to run multiple different servers on the same port.
-
-This chapter covers all questions about how to write your own Internet
-protocol server with this package. Most of the common tasks of
-such a server have got a generic solution (default routines) which could be 
-"overridden" by your own routines. There are some examples within this 
-package. They are showing the possibilities with this package and how to
-implement servers.
-
-The @samp{foo} server does not do anything at all and is of no actual use
-but could be a basis for a new protocol server. We are now going to describe
-how this specific server works. Eventually the reader might get an 
-impression of what is going on.
-
-For better understanding the text below we will use the following
-terminology:
-@table @asis
-
-@item server definition
-A server definition is a @code{#<svz-servertype>} which contains
-server specific members like its name, different callbacks, a single
-default configuration and a list of configuration items which
-determines what can be configured.
-
-@item server configuration
-A server configuration can be any kind of structure. The default server
-configuration must be specified within the server definition (see above).
-When instantiating a server (which is done via the configuration file) the
-configuration items specified in the server definition get processed and
-are put into a copy of the default configuration. Thus we get an instance.
-
-@item server instance
-A server instance is a copy of the server definition including the modified
-server configuration. A server gets instantiated by the configuration file
-parser. The concept of server instances has been introduced because we 
-wanted Serveez to have the following features. A single server can have
-multiple instances with different behaviour due to different server
-configurations. A server instance can be bound to multiple port
-configurations. Different server instances (of the same and/or different
-server type) can share the same port configuration.
-@end table
-
-@node Writing servers, Configuring servers, Introduction to servers, Server
-@section Writing servers
-
-Serveez is meant to be a server framework. That is why it supports various
-ways to implement Internet servers. First of all there are some servers
-already included in the main serveez package. (@xref{Existing servers}.)
-These are called @samp{Builtin servers}. Another possibility to add a new
-server are @samp{Embedded servers} which are shared libraries (or DLL's)
-containing the server implementation. These can be dynamically loaded by
-Serveez at runtime. This kind of server is also called @samp{Server modules}.
-A third possibility are the @samp{Guile servers} which allow even
-unexperienced schemers to write an Internet server.
-
-This section describes each of the above possibilities in detail.
-
-@menu
-* Guile servers::               Servers using Serveez's guile interface
-@end menu
-
-@node Guile servers,  , Writing servers, Writing servers
-@subsection Guile servers
-
-@include guile-api.texi
-
-@node Configuring servers, Existing servers, Writing servers, Server
-@section Some words about server configuration
-
-If you define a server you basically pass an instance name and a list of
-items to the @code{(define-server!)} function. Each item has a name and a
-value. A value has a type. We provide several types: integers (numbers),
-integer arrays, strings, string arrays, booleans (yes/no-values), hashes
-(associations) and port configurations.
-
-The following table shows how each kind of value is set up in the 
-configuration file. @var{item} is the name of the item to be configured.
-
-@table @asis
-@item Integer@*
-Example: (item . 42)
-@item Integer array@*
-Example: (item . (0 1 2 3))
-@item String@*
-Example: (item . "a character string")
-@item String array@*
-Example: (item . ("abc" "cba" "bca" "acb"))
-@item Boolean@*
-A normal boolean in guile is represented by #t or #f. But the configuration
-file parser additional understand some bare words and numbers.@*
-Example: (item . #f)
-@item Hash@*
-Hash maps associate keys with values. Both must be character strings.@*
-Example: (item . (key1 . "value1") (key2 . "value2"))
-@item Port configuration@*
-@xref{Define ports}, for more information on this. When configuring a port
-configuration you need to define it via @code{(define-port!)} previously and
-put its symbolic name into the configuration.@*
-Example: (item . foo-tcp-port)
-@end table
-
-The next chapter describes the servers currently implemented using 
-Serveez. The configuration items used by each of them are described in the 
-following format:
-
-@table @code
-@item NameOfTheItem (Type, default: DefaultValue, Comments)
-Description of the configuration item named @samp{NameOfTheItem} (case 
-sensitive). @samp{Type} can be either @samp{integer}, @samp{integer array}, 
-@samp{string}, @samp{string array}, @samp{boolean}, @samp{hash} or 
-@samp{port configuration}. The @samp{Comments} is an optional text.
-@end table
-
-The example configuration file @file{data/serveez.cfg} contains an example 
-definition of each server already implemented. You can copy and modify the 
-example for an easy start.
-
-@node Existing servers,  , Configuring servers, Server
-@section Existing servers
-
-@menu
-* HTTP Server::                 Integrated Web Server description
-* Passthrough Server::          Description of the program passthrough server
-* Mandel Server::               Distributed Mandelbrot server
-@end menu
-
-@node HTTP Server, Passthrough Server, Existing servers, Existing servers
-@subsection HTTP Server
-
-@node Passthrough Server, Mandel Server, HTTP Server, Existing servers
 @subsection Passthrough Server
+
+Another way to serve information in Serveez-MG is to use the passthrough
+server.  The passthrough server lets you take a program that uses
+@code{stdin} and @code{stdout} for input and output to server content
+over a port.  Serveez-MG translates input and output from a port to the
+@code{stdin} and @code{stdout} of the program.  In this way, it
+functions like the internet daemon @code{inetd}.
 
 @subsubsection General description
 The program passthrough server provides basic inetd functionality.
@@ -1195,62 +1282,203 @@ of program instances that may be spawned from the server within an interval
 of 60 seconds.
 @end table
 
-@node Mandel Server,  , Passthrough Server, Existing servers
-@subsection Mandel Server
+@node Concept, Server, Deploying, Top
+@chapter Concept
 
-@html
-<pre>[ Example Mandelbrot picture. ]</pre>
-<img src="mandel.jpg" border="0" width="320" height="240" 
-     alt="Mandelbrot Set">
-@end html
+We now have a closer look at the internals of Serveez. You'll need
+to understand this is you want to write your own server in Scheme.
 
-@subsubsection General description
-The distributed Mandelbrot server is an Internet server completely written
-in Guile with the help of the API provided by the underlying Serveez
-application.  The reader will not see any occurrence of the networking API
-of Guile.
+@section Overall concept
+The primary functionality Serveez provides is a framework for Internet
+services.  It can act as a kind of server collection and may even
+replace super-servers such as the inetd daemon.
 
-It implements a protocol called @samp{dnc}.  @samp{dnc} - short for 
-"Distributed Number Cruncher".  The Mandelbrot server manages the 
-computation of a graphic visualization of the Mandelbrot set fractal.  
-Each client can connect to the server and ask for something to calculate 
-and is meant to send its result back to the server.  Finally the server
-produces a bitmap in the XPM format and uses a specified viewer 
-application to bring it onto your screen.
+Its key features and benefits are:
 
-@subsubsection Configuration
-The server can be setup to manage the calculation of the Mandelbrot set at
-various locations (rectangular region in the complex plane), in a specific
-pixel resolution and colour depth.  Moreover you can define the name of the
-final output file and the viewer application the output file is displayed
-with.
+@itemize @bullet
+@item support for packet and connection oriented protocols@*
+Serveez currently supports two server types.  TCP and named pipe servers
+are connection oriented servers.  This type of server accepts a client's
+connection request and communicates with it using a dedicated
+connection.  The format of the incoming and outgoing data streams are
+irrelevant to Serveez.  Packet oriented servers (like UDP and ICMP)
+receive data packets and respond to the sender with data packets.  A
+server in Serveez can detect whether it is bound to a packet or
+connection oriented port configuration and thus can act as the expected
+type.
 
-@table @code
-@item start (string, default: -2.0-1.5i)
-Specifies the upper left corner of the final bitmap in the complex plane.
+@item server and client functionality@*
+Besides a wide variety of server capabilities, Serveez also contains
+some client functionality.  This may be necessary when a server is meant
+to establish a connection to another server in response to an incoming
+request.  For example, imagine a protocol where a client tells the
+server "Let me be the server.  Please connect to this @var{host} at this
+@var{port}.".  You are also able to implement pure clients.
 
-@item end (string, default: +1.1+1.5i)
-Specifies the lower right corner of the final bitmap in the complex plane.
+@item complete lack of platform portability@*
+The original GNU Serveez was a miracle of platform portability.  This
+version, Serveez-MG, is not.  It very specifically targets those
+GNU/Linux distributions that are complient with the LSB 4.1
+specification.
 
-@item x-res (integer, default: 320)
-The real part pixel resolution.
+@item powerful configuration capabilities@*
+Server configuration has always been a complicated but very important
+issue.  When Serveez starts up it runs the configuration file using the
+programming language Guile.  In contradiction, other (server)
+applications just read their configuration files and remember the
+settings in it.  This makes them powerful enough to adapt the Serveez
+settings dynamically.  Using the Guile interpreter also means that you
+can split your configuration into separate files and load these, perhaps
+conditionally, from the main configuration file.
 
-@item y-res (integer, default: 240)
-The imaginary part pixel resolution.
+@item easy server implementation@*
+Serveez is a server framework.  When implementing a new server the
+programmer need pay little or no attention to the networking code but is
+free to direct his attention to the protocol the server is meant to
+support.  That protocol may be an established one such as HTTP, or may
+be a custom protocol fitting the specific application's requirements.
 
-@item colors (integer, default: 256)
-Number of maximum colours used in the bitmap.  Also determines the maximum
-iteration depth.
+@item code reusability@*
+The GNU Serveez package did come along with a core library and an API
+for the C language which contained most of the functionality necessary
+to write an Internet server.  Most probably, a programmer could also
+use the library for other (network programming related) purposes.
+But, for this version, Serveez-MG, I've stripped out some of its
+functionality, so the original GNU version might be better if you
+actually wanted a core library.
 
-@item outfile (string, default: mandel.xpm)
-When the Mandel server has managed to calculate the whole bitmap it produces
-an output file in the XPM format.  You can specify the name and location of
-this output file.
+This version does retain the Guile functionality, though.
 
-@item viewer (string, default: xv)
-Here you can setup your favourite bitmap viewer application.  It should be
-able to parse and display the XPM format.
+@item server instantiation and network port sharing@*
+Once you have written a protocol server and integrated into Serveez's
+concept of servers the user can instantiate (multiply) the server.  At
+the first glimpse this sounds silly, but with different server
+configurations it does not.  If, for example, an administrator wishes to
+run multiple HTTP servers with different document roots, Serveez will
+handle them all in a single process.  Also if the same administrator
+wants to run a HTTP server and some other server on the same network
+port this is possible with Serveez.  You can run a single server on
+different network ports, too.
+@end itemize
+
+@section I/O Strategy
+Serveez-MG's I/O strategy is the traditional @code{poll()} function
+
+@subsection Limits on open filehandles
+
+The limits set by @code{ulimit()} or @code{setrlimit()} affect the
+performance of the servers.
+
+@node Server, Coserver, Concept, Top
+@chapter Server
+
+@menu
+* Introduction to servers::     Protocol servers in Serveez
+* Writing servers::             How to write Internet protocol servers
+* Configuring servers::         How do I configure an existing server ?
+@end menu
+
+@node Introduction to servers, Writing servers, Server, Server
+@section Introduction to servers
+
+Serveez is a kind of server server. It allows different protocol
+servers to listen on various TCP/UDP ports, on ICMP sockets and on named
+pipes. Servers are instantiated with a certain configuration. It is
+possible to run multiple different servers on the same port.
+
+This chapter covers all questions about how to write your own Internet
+protocol server with this package. Most of the common tasks of
+such a server have got a generic solution (default routines) which could be 
+"overridden" by your own routines. There are some examples within this 
+package. They are showing the possibilities with this package and how to
+implement servers.
+
+The @samp{foo} server does not do anything at all and is of no actual use
+but could be a basis for a new protocol server. We are now going to describe
+how this specific server works. Eventually the reader might get an 
+impression of what is going on.
+
+For better understanding the text below we will use the following
+terminology:
+@table @asis
+
+@item server definition
+A server definition is a @code{#<svz-servertype>} which contains
+server specific members like its name, different callbacks, a single
+default configuration and a list of configuration items which
+determines what can be configured.
+
+@item server configuration
+A server configuration can be any kind of structure. The default server
+configuration must be specified within the server definition (see above).
+When instantiating a server (which is done via the configuration file) the
+configuration items specified in the server definition get processed and
+are put into a copy of the default configuration. Thus we get an instance.
+
+@item server instance
+A server instance is a copy of the server definition including the modified
+server configuration. A server gets instantiated by the configuration file
+parser. The concept of server instances has been introduced because we 
+wanted Serveez to have the following features. A single server can have
+multiple instances with different behaviour due to different server
+configurations. A server instance can be bound to multiple port
+configurations. Different server instances (of the same and/or different
+server type) can share the same port configuration.
 @end table
+
+@node Writing servers, Configuring servers, Introduction to servers, Server
+@section Writing servers in Guile
+
+This section describes the Guile interface to Serveez which provides
+the ability to write servers with Guile.  Of course, you could do this
+without any help from Serveez, but it makes the task a lot easier.
+This interface reduces the Guile implementation of an Internet server
+to a simple data processor.
+
+@menu
+* Guile servers::               Servers using Serveez's guile interface
+@end menu
+
+@node Guile servers,  , Writing servers, Writing servers
+@subsection Guile server functions reference manual
+
+@include guile-api.texi
+
+@node Configuring servers,  , Writing servers, Server
+@section Some words about server configuration
+
+If you define a server you basically pass an instance name and a list of
+items to the @code{(define-server!)} function. Each item has a name and a
+value. A value has a type. We provide several types: integers (numbers),
+integer arrays, strings, string arrays, booleans (yes/no-values), hashes
+(associations) and port configurations.
+
+The following table shows how each kind of value is set up in the 
+configuration file. @var{item} is the name of the item to be configured.
+
+@table @asis
+@item Integer@*
+Example: (item . 42)
+@item Integer array@*
+Example: (item . (0 1 2 3))
+@item String@*
+Example: (item . "a character string")
+@item String array@*
+Example: (item . ("abc" "cba" "bca" "acb"))
+@item Boolean@*
+A normal boolean in guile is represented by #t or #f. But the configuration
+file parser additional understand some bare words and numbers.@*
+Example: (item . #f)
+@item Hash@*
+Hash maps associate keys with values. Both must be character strings.@*
+Example: (item . (key1 . "value1") (key2 . "value2"))
+@item Port configuration@*
+@xref{Define ports}, for more information on this. When configuring a port
+configuration you need to define it via @code{(define-port!)} previously and
+put its symbolic name into the configuration.@*
+Example: (item . foo-tcp-port)
+@end table
+
 
 @node Coserver, Bibliography, Server, Top
 @chapter Coserver
@@ -1263,8 +1491,9 @@ able to parse and display the XPM format.
 @node What are coservers, Existing coservers, Coserver, Coserver
 @section What are coservers
 
-If it is necessary to complete blocking tasks in Serveez you have 
-to use coservers.  Serveez comes with three useful coservers.
+If it is necessary to complete blocking tasks in Serveez you have to use
+coservers.  Serveez comes with three useful coservers.  Using these
+coservers keeps a these blocking tasks from hanging the server.
 
 @node Existing coservers,  , What are coservers, Coserver
 @section Existing coservers
@@ -1285,85 +1514,61 @@ identifier of the connection of interest is sent as the reply. The
 server may then either shut down the connection or it may continue to
 read/respond to more queries.
 
-The Ident coserver is a client to this kind of service. For
-every established network connection you can use this service by calling
-the appropriate macro from @file{coserver.h}. But you could also use the
-Ident coserver as is without this macro.
-The messages from Serveez to this coserver are formatted this way:
+The Ident coserver is a client to this kind of service. For every
+established network connection you can use this service by calling the
+appropriate procedure @code{svz:coserver:ident} with an appropriate
+callback function.
 
 @example
-Format:
-RemoteAddressInDottedDecimals ":" RemotePort ":" LocalPort
-
-Macro:
-svz_coserver_ident (sock, MyIdentCallback, sock->id, sock->version);
+(svz:coserver:ident sock my-callback arg)
 @end example
 
-In this context @code{sock} is of type @code{svz_socket_t} and 
-@code{MyIdentCallback} is something like the following example. Both
-of the last two (optional) arguments identify a valid socket structure
-and @code{user} can be @code{NULL} if there is no ident daemon running on the 
-foreign machine. The last two argument within the above macro will be the 
-last two arguments in the callback below. Thus you will know what kind of 
-data the invocation of the callback is related to.
+In this context @code{sock} is of type @code{#<svz-socket>} and 
+@code{my-callback} is something like the following example. @code{arg} is
+any Guile value and it gets passed verbatim to the callback procedure.
+A simple callback procedure that just prints out the user could look
+something like the following.
 
-@example
-Callback:
-int
-MyIdentCallback (char *user, int id, int version)
-@{
-  printf ("Identified user: %s\n", user);
-  return 0;
-@}
-@end example
+@lisp    
+(define (my-callback user args)
+  (format #t "Identified user ~a~%" user))
+@end lisp  
 
 @subsection Domain Name Server (DNS) coserver
 
-The DNS coserver is using @code{gethostbyname()} to translate a given
-hostname to the associated IP address. The format of the coserver input
-line and the macro from @file{coserver.h} is shown below. The IRC server is
-currently using this coserver for resolving its @samp{?-Lines}.
-@xref{Existing servers}, for more information. In the example below
-@code{realhost} is something like @samp{www.lkcc.org}.
+The DNS coserver uses @code{gethostbyname} to translate a given
+hostname to the associated IP address. It is passed a hostname and,
+when it has received a response from the Domain Name Server identifying
+the hostname, it calls a callback function to return the internet
+address corresponding to that hostname.
 
 @example
-Format:
-RemoteHostname
-
-Macro:
-svz_coserver_dns (realhost, irc_connect_server, ircserver, NULL);
+(svz:coserver:dns "www.gnu.org" coserver-callback args)
+@end example
 
 Callback:
-int
-irc_connect_server (char *ip, irc_server_t *server)
-@{
-  printf ("The ip address is: %s\n", ip);
-  return 0;
-@}
+@example
+(define (coserver-callback ip args)
+  (format #t "The ip address is ~a~%" ip))
 @end example
 
 @subsection Reverse Domain Name Server (reverse DNS) coserver
 
 As easily guessed from the name this coserver is just doing the reverse
 as the DNS coserver. It translates a given IP address into a hostname
-using @code{gethostbyaddr()}. In the macro the ip address is given
-as an @code{unsigned long} in host byte order. The Reverse DNS 
-coserver itself takes something like @samp{192.168.2.1}.
+using @code{gethostbyaddr}. In the procedure call, the IP address is
+given as a positive integer in host byte order. The Reverse DNS coserver
+itself takes something like @samp{192.168.2.1}.
 
 @example
-Format:
-RemoteAddressInDottedDecimals
-
-Macro:
-svz_coserver_reverse (addr, MyReverseCallback, sock->id, sock->version);
+(svz:coserver:reverse-dns (inet-pton AF_INET "192.168.1.255") 
+  reverse-callback args)
+@end example
 
 Callback:
-int
-MyReverseCallback (char *host, int id, int version)
-@{
-  printf ("Hostname is: %s\n", host);
-  return 0;
-@}
+@example
+(define (reverse-callback hostname args)
+  (format #t "Hostname is ~a~%" hostname))
 @end example
 
 
@@ -1402,24 +1607,6 @@ User Datagram Protocol
 @item 
 RFC 791@*
 Internet Protocol
-@item 
-RFC 777@*
-Internet Control Message Protocol
-@item
-@uref{http://www.mingw.org/}@*
-Home of the MinGW (Minimal GNU for Windows) project
-@item 
-@uref{http://gnutelladev.wego.com/}@*
-The Gnutella Protocol
-@item 
-@uref{http://www.efnet.org/}@*
-The official EFNet site (includes Hybrid IRC server)
-@item 
-@uref{http://www.sockets.com/}@*
-Winsock Development Information
-@item 
-@uref{http://tangentsoft.net/wskfaq/}@*
-Winsock Programmer's FAQ
 @end enumerate
 
 @node License,  , Bibliography, Top
@@ -1442,7 +1629,7 @@ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
 
 @*
-Copyright @copyright{} 2010 Michael Gran <spk121@@yahoo.com>@*
+Copyright @copyright{} 2010, 2011 Michael Gran <spk121@@yahoo.com>@*
 Copyright @copyright{} 1999, 2000, 2001, 2002 Martin Grabmueller <mgrabmue@@cs.tu-berlin.de>@*
 Copyright @copyright{} 2000, 2001, 2002 Raimund Jacob <raimi@@lkcc.org>@*
 Copyright @copyright{} 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@@lkcc.org>@*
