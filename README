@@ -26,25 +26,31 @@
 Description
 ===========
 
-Serveez-MG is a server framework.  It provides routines and help for
-implementing IP based servers (currently TCP, UDP and ICMP).  It is also
-possible to use named pipes for all connection oriented protocols.
+Serveez-MG is a Guile server framework.  It provides routines and help
+for implementing IP based servers (currently TCP, UDP and ICMP).  It
+is also possible to use named pipes for all connection oriented
+protocols.
 
-We think it is worth the effort because many people need server functionality 
-within their applications.  However, many people experience problems 
-with select()- or poll()-loops, and with non-blocking operations.
+Many people need server functionality within their applications.
+However, many people experience problems with select()- or
+poll()-loops, and with non-blocking operations.
 
 This application demonstrates various aspects of advanced network
-programming in a portable manner.  
+programming.
 
 You can use it for implementing your own servers or for understanding how
 certain network services and operations work.
 
-The package includes a number of servers that work already: an HTTP
+The package includes a couple of servers that work already: an HTTP
 server, for example.  One of the highlights is that you can run
 multiple protocols on the same port.  The application itself is single
 threaded but it uses helper processes for concurrent name resolution
 and ident lookups.
+
+Serveez-MG was based on a much grander effort called GNU Serveez, which
+aimed to be a generic server framework for multiple architectures.  It
+can still be found on the http://www.gnu.org/software/serveez .
+Unfortunately, it has not been updated in many years.
 
 
 Requirements
