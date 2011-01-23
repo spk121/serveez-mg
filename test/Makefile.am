@@ -4,7 +4,7 @@
 #
 # Automake input file for the test directory.
 #
-# Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
+# Copyright (C) 2010, 2011 Michael Gran <spk121@yahoo.com>
 # Copyright (C) 2000, 2001, 2002, 2003 Stefan Jahn <stefan@lkcc.org>
 #
 # This is free software; you can redistribute it and/or modify
@@ -23,13 +23,16 @@
 # Boston, MA 02111-1307, USA.  
 #
 
-TESTS = vector-test array-test hash-test spvec-test test-http-get
+TESTS = vector-test array-test hash-test spvec-test 
+# test-http-get
 
 EXTRA_DIST = prog-test.cfg test-suite.scm binary-test.scm server-test.scm \
-	guile-server-test.scm
+	guile-server-test.scm test-http-get test-http-get.cfg
 
 noinst_PROGRAMS = hash-test spvec-test array-test vector-test codec-test \
 	prog-test
+
+noinst_SCRIPTS = test-http-get
 
 hash_test_SOURCES = hash-test.c test.c test.h
 hash_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
