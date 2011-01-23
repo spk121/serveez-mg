@@ -96,13 +96,13 @@ For further information on installing the package, please consult the
 file INSTALL included in this distribution.
 
 
-Getting the latest CVS snapshot
+Getting the latest Git snapshot
 ===============================
 
-You can always get the latest Serveez-MG version from our Git
-repository.  Please use an official release if you want to work with
-Serveez-MG.  The Git version might not even compile.
+You can always get the latest Serveez-MG version from its Git
+repository.  The Git version is not guaranteed to work and might
+not even compile.
 
-The current repository is at git:git@github.com:spk121/serveez-mg.git
+The current repository is at git://github.com/spk121/serveez-mg.git
 
 You can browse it at http://github.com/spk121/serveez-mg
