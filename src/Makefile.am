@@ -60,6 +60,8 @@ serveez_SOURCES = \
 LDADD = libserveez/libserveez.la \
 	$(GUILE_LIBS)
 
+EXTRA_DIST guile-server/hello.scm
+
 AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
 
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
