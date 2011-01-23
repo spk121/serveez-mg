@@ -38,6 +38,18 @@ Free Documentation License".
 
 @end titlepage
 
+@c also add a titlepage for plain text
+@ifplaintext
+@verbatim
+
+                               Serveez-MG
+
+                      A Server Framework for Guile
+
+
+@end verbatim
+@end ifplaintext
+
 @contents
 
 @ifnottex
@@ -318,8 +330,11 @@ respond with the ASCII string ``ERROR''.
 
 The ``hello world'' server is an Internet server completely written in
 Guile with the help of the API provided by the underlying Serveez
-application.  The reader will not see any occurrence of the networking
-API of Guile.
+application.  Since the underlying Serveez application takes care of
+the low-level details of networks and internet connections, all of the
+code in this example deals with what to do after a client has connected
+to our server, and none of the code deals with how a client connects
+to our server.
 
 This server is going to be a TCP server assigned to port 3003.
 
@@ -333,18 +348,23 @@ is in a file named @code{serveez.cfg}.
 @node The callback functions,  , The hello world server, The hello world server
 @subsection The callback functions
 
-The first callback that needs to be defined in the @code{detect-proto}
+The first callback that needs to be defined is the @code{detect-proto}
 callback.  It will scan for the client's initial string ``HELLO'', which
 is how the client identifies that it is trying to communicate to the
-hello world server.  
+hello world server.
 
-For TCP and PIPE servers this step is mandatory since there can be
-multiple servers of different protocols listening to the same socket.
+For TCP and PIPE sockets, multiple servers of different protocols can
+listen to the same socket.  If you have multiple servers listening to
+the same socket, these @code{detect-proto} callbacks are what parcel the
+incoming requests to the appropriate server.  In this example, we don't
+really need a @code{detect-proto} callback, since there is only one
+server, but, we do it anyway because it is good practice.
 
-First, we need a couple of libraries
+First, we need a couple of libraries:
+
 @lisp
 (use-modules (rnrs bytevectors)
-	     (serveez-mg lib))
+             (serveez-mg lib))
 @end lisp
 
 The @code{detect-proto} callback goes something like this:
@@ -353,20 +373,22 @@ The @code{detect-proto} callback goes something like this:
 ;; The protocol detection function: this function is called the 
 ;; first time a client connects.  The client is expected to
 ;; identify itself by sending the string "HELLO".
+
 (define (hello-detect-proto server socket)
   (let ((input-bytes (svz:sock:receive-buffer socket)))
 
     (if (bytevector-contains (svz:sock:receive-buffer socket) 
-			     (string->utf8 "HELLO"))
-	;; If true, allow connection
+                             (string->utf8 "HELLO"))
+        ;; If true, allow connection
         1
-	;; Otherwise, ignore
-	0)))
+        ;; Otherwise, ignore
+        0)))
 @end lisp  
 
-When the client connects to the server, whatever
-it has sent is stored in the @emph{receive buffer}.  The procedure
-@code{svz:sock:receive-buffer} returns a bytevector containing
+When the client connects to the server, whatever it has sent is stored
+in the @emph{receive buffer}.  The program examines the receive buffer
+to decide if it has the right protocol for the hello world server.  The
+procedure @code{svz:sock:receive-buffer} returns a bytevector containing
 everything received so far from the client.  Note that this procedure
 does not then erase the data from the receive buffer.
 
@@ -376,12 +398,16 @@ the socket and then connect a request handler to it.
 
 @lisp
 ;; The connect socket function: after a client has been detected by
-;; detect-proto, this function handles each request
+;; detect-proto, this function handles each request.
+
 (define (hello-connect-socket server socket)
+
   ;; Each packet is going to be delimited by CR/LF
   (svz:sock:boundary socket "\r\n")
+
   ;; Connect to the request handler
   (svz:sock:handle-request socket hello-handle-request)
+
   ;; Zero indicates success
   0)
 @end lisp
@@ -400,16 +426,21 @@ now, of course, we need a request handler.
 ;; If it receives "HELLO", return "HELLO, WORLD!".
 ;; If it receives "WHAT TIME IT IS?", return the time.
 ;; Otherwise, return ERROR.
+
 (define (hello-handle-request socket request len)
   (let ((command (strip-boundary (utf8->string request))))
+
     (cond
      ((string=? command "HELLO")
       (svz:sock:print socket "HELLO, WORLD!\r\n"))
+
      ((string=? command "WHAT TIME IS IT?")
       (svz:sock:print socket (strftime "%c" (localtime (current-time))))
       (svz:sock:print socket "\r\n"))
+
      (else
       (svz:sock:print socket "ERROR\r\n")))
+
     ;; Return zero to indicate success
     0))
 
@@ -417,9 +448,10 @@ now, of course, we need a request handler.
   (string-trim-right str (string->char-set "\r\n")))
 @end lisp
 
-This request handler does all the heavy lifting.  If it receives
-a ``HELLO'' or ``WHAT TIME IS IT?'' command, it will respond
-appropriately. 
+This request handler does all the heavy lifting.  If it receives a
+``HELLO'' or ``WHAT TIME IS IT?'' command, it will respond
+appropriately.  It uses the @code{svz:sock:print} command to send text
+back to the client connected on this socket.
 
 Now that the callbacks are out of the way, we need to create the port
 and server.  The port is a TCP port on port number 3003.
@@ -427,7 +459,7 @@ and server.  The port is a TCP port on port number 3003.
 @lisp
 ;; Port configuration
 (define-port! 'hello-port '((proto . tcp)
-			    (port . 3003))
+                            (port . 3003))
 @end lisp
 
 The hello server is defined and the callbacks are connect to it like so:
@@ -1069,10 +1101,10 @@ port, like so:
 
 @example
 (define-port! 'control-port `(
-			      (proto . tcp)
-			      (port . 42420)
-			      (ipaddr . *)
-			      ))
+                              (proto . tcp)
+                              (port . 42420)
+                              (ipaddr . *)
+                              ))
 
 (define-server! 'control-server)
 
