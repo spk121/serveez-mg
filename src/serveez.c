@@ -1,7 +1,7 @@
 /*
  * serveez.c - main module
  *
- * Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
+ * Copyright (C) 2010, 2011 Michael Gran <spk121@yahoo.com>
  * Copyright (C) 2000, 2001, 2003 Stefan Jahn <stefan@lkcc.org>
  * Copyright (C) 2000 Raimund Jacob <raimi@lkcc.org>
  * Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
@@ -84,11 +84,17 @@ guile_entry (int argc __attribute__ ((unused)),
       svz_config.password = svz_strdup (options->pass);
     }
 
+  if (!svz_config.password)
+    {
+      svz_config.password = svz_malloc (1);
+      svz_config.password[0] = '\0';
+    }
+
   svz_log (LOG_NOTICE, "serveez starting, debugging enabled\n");
 
   svz_openfiles (svz_config.max_sockets);
   svz_log (LOG_NOTICE, "using %d socket descriptors\n",
-	   svz_config.max_sockets);
+           svz_config.max_sockets);
 
   /* Startup the internal coservers here. */
   if (svz_coserver_init () == -1)
@@ -117,7 +123,7 @@ guile_entry (int argc __attribute__ ((unused)),
   svz_halt ();
 
   svz_log (LOG_DEBUG, "%d byte(s) of memory in %d block(s) wasted\n", 
-	   svz_allocated_bytes, svz_allocated_blocks);
+           svz_allocated_bytes, svz_allocated_blocks);
 
 #if DEBUG_MEMORY_LEAKS
   svz_heap ();
@@ -161,24 +167,24 @@ main (int argc, char *argv[])
       int pid;
 
       if ((pid = fork ()) == -1)
-	{
-	  svz_log (LOG_ERROR, "fork: %s\n", SYS_ERROR);
-	  exit (1);
-	}
+        {
+          svz_log (LOG_ERROR, "fork: %s\n", SYS_ERROR);
+          exit (1);
+        }
       else if (pid != 0)
-	{
-	  exit (0);
-	}
+        {
+          exit (0);
+        }
       /* Close the log file if necessary. */
       if (options->loghandle == stderr)
-	svz_log_setfile (NULL);
+        svz_log_setfile (NULL);
       /* Close stdin, stdout and stderr. */
       if (isatty (fileno (stdin)))
-	close (fileno (stdin));
+        close (fileno (stdin));
       if (isatty (fileno (stdout)))
-	close (fileno (stdout));
+        close (fileno (stdout));
       if (isatty (fileno (stderr)))
-	close (fileno (stderr));
+        close (fileno (stderr));
     }
 
   /* Initialize the static server types. */
