@@ -7,21 +7,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: option.c,v 1.12 2003/06/15 17:30:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <config.h>
@@ -39,7 +34,7 @@
 /*
  * Print program version.
  */
-static void 
+static void
 version (void)
 {
   fprintf (stdout, "%s %s\n", svz_library, svz_version);
@@ -48,7 +43,7 @@ version (void)
 /*
  * Display program command line options.
  */
-static void 
+static void
 usage (void)
 {
   fprintf (stdout, "Usage: serveez [OPTION]...\n\n"
@@ -85,7 +80,7 @@ static struct option serveez_options[] = {
 #define SERVEEZ_OPTIONS "l:hViv:f:P:m:dc"
 
 /*
- * Parse the command line options. If these have been correct the function
+ * Parse the command line options.  If these have been correct the function
  * either terminates the program with exit code 0 or returns an option
  * structure containing information about the command line arguments or it
  * leaves the program with exit code 1 if the command line has been wrong.
@@ -109,91 +104,91 @@ handle_options (int argc, char **argv)
 
   /* go through the command line itself */
   while ((arg = getopt_long (argc, argv, SERVEEZ_OPTIONS, serveez_options,
-			     &index)) != EOF)
+                             &index)) != EOF)
     {
       switch (arg)
-	{
-	case 'h':
-	  usage ();
-	  exit (0);
-	  break;
+        {
+        case 'h':
+          usage ();
+          exit (0);
+          break;
 
-	case 'V':
-	  version ();
-	  exit (0);
-	  break;
+        case 'V':
+          version ();
+          exit (0);
+          break;
 
-	case 'i':
-	  svz_interface_list ();
-	  exit (0);
-	  break;
+        case 'i':
+          svz_interface_list ();
+          exit (0);
+          break;
 
-	case 'c':
-	  if (options.cfgfile != cfgfile)
-	    {
-	      usage ();
-	      exit (1);
-	    }
-	  options.cfgfile = NULL;
-	  break;
+        case 'c':
+          if (options.cfgfile != cfgfile)
+            {
+              usage ();
+              exit (1);
+            }
+          options.cfgfile = NULL;
+          break;
 
-	case 'f':
-	  if (!optarg || options.cfgfile == NULL)
-	    {
-	      usage ();
-	      exit (1);
-	    }
-	  options.cfgfile = optarg;
-	  break;
+        case 'f':
+          if (!optarg || options.cfgfile == NULL)
+            {
+              usage ();
+              exit (1);
+            }
+          options.cfgfile = optarg;
+          break;
 
-	case 'v':
-	  if (optarg)
-	    {
-	      options.verbosity = atoi (optarg);
-	      if (options.verbosity < LOG_FATAL)
-		options.verbosity = LOG_FATAL;
-	      else if (options.verbosity > LOG_DEBUG)
-		options.verbosity = LOG_DEBUG;
-	    }
-	  else
-	    options.verbosity = LOG_DEBUG;
-	  break;
+        case 'v':
+          if (optarg)
+            {
+              options.verbosity = atoi (optarg);
+              if (options.verbosity < LOG_FATAL)
+                options.verbosity = LOG_FATAL;
+              else if (options.verbosity > LOG_DEBUG)
+                options.verbosity = LOG_DEBUG;
+            }
+          else
+            options.verbosity = LOG_DEBUG;
+          break;
 
-	case 'l':
-	  if (!optarg)
-	    {
-	      usage ();
-	      exit (1);
-	    }
-	  options.logfile = optarg;
-	  break;
+        case 'l':
+          if (!optarg)
+            {
+              usage ();
+              exit (1);
+            }
+          options.logfile = optarg;
+          break;
 
-	case 'P':
-	  if (!optarg || strlen (optarg) < 2)
-	    {
-	      usage ();
-	      exit (1);
-	    }
-	  options.pass = svz_pstrdup (crypt (optarg, optarg));
-	  break;
+        case 'P':
+          if (!optarg || strlen (optarg) < 2)
+            {
+              usage ();
+              exit (1);
+            }
+          options.pass = svz_pstrdup (crypt (optarg, optarg));
+          break;
 
-	case 'm':
-	  if (!optarg)
-	    {
-	      usage ();
-	      exit (1);
-	    }
-	  options.sockets = atoi (optarg);
-	  break;
+        case 'm':
+          if (!optarg)
+            {
+              usage ();
+              exit (1);
+            }
+          options.sockets = atoi (optarg);
+          break;
 
-	case 'd':
-	  options.daemon = 1;
-	  break;
+        case 'd':
+          options.daemon = 1;
+          break;
 
-	default:
-	  usage ();
-	  exit (1);
-	}
+        default:
+          usage ();
+          exit (1);
+        }
     }
 
   return &options;

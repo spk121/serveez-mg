@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: iphlpapi.h,v 1.1 2001/02/02 11:30:34 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __IPHLPAPI_H__
@@ -64,7 +59,7 @@ typedef struct _MIB_IFROW
   DWORD dwOutQLen;
   DWORD dwDescrLen;
   BYTE  bDescr[MAXLEN_IFDESCR];
-} 
+}
 MIB_IFROW, *PMIB_IFROW;
 
 /*
@@ -74,7 +69,7 @@ typedef struct _MIB_IFTABLE
 {
   DWORD     dwNumEntries;
   MIB_IFROW table[ANY_SIZE];
-} 
+}
 MIB_IFTABLE, *PMIB_IFTABLE;
 
 /*
@@ -89,7 +84,7 @@ typedef struct _MIB_IPADDRROW
   DWORD          dwReasmSize;
   unsigned short unused1;
   unsigned short unused2;
-} 
+}
 MIB_IPADDRROW, *PMIB_IPADDRROW;
 
 /*
@@ -99,7 +94,7 @@ typedef struct _MIB_IPADDRTABLE
 {
   DWORD         dwNumEntries;
   MIB_IPADDRROW table[ANY_SIZE];
-} 
+}
 MIB_IPADDRTABLE, *PMIB_IPADDRTABLE;
 
 /*

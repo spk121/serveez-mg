@@ -6,21 +6,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-core.c,v 1.45 2003/06/14 14:57:59 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <config.h>
@@ -43,9 +38,6 @@
 /* the current http header structure */
 http_header_t http_header;
 
-/*
- * In Win32 OS's both of these defines are necessary for portability.
- */
 
 /*
  * If the given request has a leading `~' we try to get the appropriate
@@ -63,22 +55,22 @@ http_userdir (svz_socket_t *sock, char *uri)
     {
       /* parse onto end of user name */
       while (*p && *p != '/')
-	p++;
+        p++;
       if (p - uri <= 2)
-	return NULL;
+        return NULL;
 
       user = svz_malloc (p - uri - 1);
       memcpy (user, uri + 2, p - uri - 2);
       user[p - uri - 2] = '\0';
-      
+
       if ((entry = getpwnam (user)) != NULL)
-	{
-	  file = svz_malloc (strlen (entry->pw_dir) + strlen (cfg->userdir) + 
-			     strlen (p) + 2);
-	  sprintf (file, "%s/%s%s", entry->pw_dir, cfg->userdir, p);
-	  svz_free (user);
-	  return file;
-	}
+        {
+          file = svz_malloc (strlen (entry->pw_dir) + strlen (cfg->userdir) + 
+                             strlen (p) + 2);
+          sprintf (file, "%s/%s%s", entry->pw_dir, cfg->userdir, p);
+          svz_free (user);
+          return file;
+        }
       svz_free (user);
     }
   return NULL;
@@ -99,8 +91,8 @@ http_identification (char *ident, int id, int version)
     {
       http = sock->data;
       if (!http->ident)
-	http->ident = svz_strdup (ident);
-    } 
+        http->ident = svz_strdup (ident);
+    }
 
   return 0;
 }
@@ -118,15 +110,15 @@ http_remotehost (char *host, int id, int version)
     {
       http = sock->data;
       if (!http->host)
-	http->host = svz_strdup (host);
-    } 
+        http->host = svz_strdup (host);
+    }
 
   return 0;
 }
 
 /*
  * When the localhost has been resolved to a hostname this callback is
- * invoked by the main loop. Put the result into the http configuration.
+ * invoked by the main loop.  Put the result into the http configuration.
  */
 int
 http_localhost (char *host, http_config_t *cfg)
@@ -155,93 +147,93 @@ http_log (svz_socket_t *sock)
       referrer = http_find_property (http, "Referer");
       agent = http_find_property (http, "User-Agent");
 
-      /* access logging format given ? */
+      /* access logging format given?  */
       if (cfg->logformat && *cfg->logformat)
-	start = cfg->logformat;
+        start = cfg->logformat;
       else
-	start = HTTP_CLF;
+        start = HTTP_CLF;
 
       memset (line, 0, sizeof (line));
       while (*start)
-	{
-	  /* parse until next format character */
-	  p = start;
-	  while (*p && *p != '%')
-	    p++;
-	  strncat (line, start, p - start);
-	  if (!*p)
-	    break;
-	  p++;
-	  switch (*p)
-	    {
-	      /* %i - identity information */
-	    case 'i':
-	      strcat (line, http->ident ? http->ident : "-");
-	      p++;
-	      break;
-	      /* %u - user authentication */
-	    case 'u':
-	      strcat (line, http->auth ? http->auth : "-");
-	      p++;
-	      break;
-	      /* %l - delivered content length */
-	    case 'l':
-	      strcat (line, svz_itoa (http->length));
-	      p++;
-	      break;
-	      /* %c - http response code */
-	    case 'c':
-	      strcat (line, svz_itoa (http->response));
-	      p++;
-	      break;
-	      /* %h - host name */
-	    case 'h':
-	      strcat (line, http->host ? http->host :
-		      svz_inet_ntoa (sock->remote_addr));
-	      p++;
-	      break;
-	      /* %t - request time stamp */
-	    case 't':
-	      strcat (line, http_clf_date (http->timestamp));
-	      p++;
-	      break;
-	      /* end of string */
-	    case '\0':
-	      break;
-	      /* %R - original http request uri */
-	    case 'R':
-	      strcat (line, http->request ? http->request : "-");
-	      p++;
-	      break;
-	      /* %r - referrer document */
-	    case 'r':
-	      strcat (line, referrer ? referrer : "-");
-	      p++;
-	      break;
-	      /* %a - user agent */
-	    case 'a':
-	      strcat (line, agent ? agent : "-");
-	      p++;
-	      break;
-	    default:
-	      p++;
-	      break;
-	    }
-	  start = p;
-	}
+        {
+          /* parse until next format character */
+          p = start;
+          while (*p && *p != '%')
+            p++;
+          strncat (line, start, p - start);
+          if (!*p)
+            break;
+          p++;
+          switch (*p)
+            {
+              /* %i - identity information */
+            case 'i':
+              strcat (line, http->ident ? http->ident : "-");
+              p++;
+              break;
+              /* %u - user authentication */
+            case 'u':
+              strcat (line, http->auth ? http->auth : "-");
+              p++;
+              break;
+              /* %l - delivered content length */
+            case 'l':
+              strcat (line, svz_itoa (http->length));
+              p++;
+              break;
+              /* %c - http response code */
+            case 'c':
+              strcat (line, svz_itoa (http->response));
+              p++;
+              break;
+              /* %h - host name */
+            case 'h':
+              strcat (line, http->host ? http->host :
+                      svz_inet_ntoa (sock->remote_addr));
+              p++;
+              break;
+              /* %t - request time stamp */
+            case 't':
+              strcat (line, http_clf_date (http->timestamp));
+              p++;
+              break;
+              /* end of string */
+            case '\0':
+              break;
+              /* %R - original http request uri */
+            case 'R':
+              strcat (line, http->request ? http->request : "-");
+              p++;
+              break;
+              /* %r - referrer document */
+            case 'r':
+              strcat (line, referrer ? referrer : "-");
+              p++;
+              break;
+              /* %a - user agent */
+            case 'a':
+              strcat (line, agent ? agent : "-");
+              p++;
+              break;
+            default:
+              p++;
+              break;
+            }
+          start = p;
+        }
       strcat (line, "\n");
 
       if (!ferror (cfg->log) && !feof (cfg->log))
-	{
-	  fprintf (cfg->log, line);
-	  fflush (cfg->log);
-	}
+        {
+          fprintf (cfg->log, line);
+          fflush (cfg->log);
+        }
       else
-	{
-	  svz_log (LOG_ERROR, "http: access logfile died\n");
-	  svz_fclose (cfg->log);
-	  cfg->log = NULL;
-	}
+        {
+          svz_log (LOG_ERROR, "http: access logfile died\n");
+          svz_fclose (cfg->log);
+          cfg->log = NULL;
+        }
     }
 }
 
@@ -265,7 +257,7 @@ http_add_header (const char *fmt, ...)
   va_list args;
   int len = strlen (http_header.field);
   char *p = http_header.field + len;
-  
+
   if (len >= HTTP_HEADER_SIZE)
     return;
   va_start (args, fmt);
@@ -282,13 +274,13 @@ http_send_header (svz_socket_t *sock)
   int ret = 0;
 
   /* send first part of header including response field and static texts */
-  ret = svz_sock_printf (sock, 
-			 "%s"
-			 "Date: %s\r\n"
-			 "Server: %s/%s\r\n",
-			 http_header.response,
-			 http_asc_date (time (NULL)),
-			 svz_library, svz_version);
+  ret = svz_sock_printf (sock,
+                         "%s"
+                         "Date: %s\r\n"
+                         "Server: %s/%s\r\n",
+                         http_header.response,
+                         http_asc_date (time (NULL)),
+                         svz_library, svz_version);
   if (ret)
     return ret;
 
@@ -296,7 +288,7 @@ http_send_header (svz_socket_t *sock)
   ret = svz_sock_printf (sock, "%s\r\n", http_header.field);
   if (ret)
     return ret;
-  
+
   return 0;
 }
 
@@ -321,8 +313,8 @@ http_check_range (http_range_t *range, off_t filesize)
       (range->last >= filesize || range->length > filesize))
     {
       svz_log (LOG_DEBUG,
-	       "http: invalid content range (%ld-%ld/%ld not in %ld) \n",
-	       range->first, range->last, range->length, filesize);
+               "http: invalid content range (%ld-%ld/%ld not in %ld) \n",
+               range->first, range->last, range->length, filesize);
       return -1;
     }
   return 0;
@@ -346,7 +338,7 @@ http_get_range (char *line, http_range_t *range)
     return -1;
 
   /* check identifier */
-  if (strlen (p) >= HTTP_BYTES_LENGTH && 
+  if (strlen (p) >= HTTP_BYTES_LENGTH &&
       memcmp (p, HTTP_BYTES, HTTP_BYTES_LENGTH))
     {
       svz_log (LOG_DEBUG, "http: invalid byte-range specifier (%s)\n", p);
@@ -360,36 +352,36 @@ http_get_range (char *line, http_range_t *range)
   if (*p != '=')
     return 0;
   p++;
-  n = 0; 
+  n = 0;
   while (*p >= '0' && *p <= '9')
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->first = n;
 
   if (*p != '-')
-    return 0; 
+    return 0;
   p++;
-  n = 0; 
-  while (*p >= '0' && *p <= '9') 
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+  n = 0;
+  while (*p >= '0' && *p <= '9')
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->last = n;
 
-  if (*p != '/') 
-    return 0; 
+  if (*p != '/')
+    return 0;
   p++;
-  n = 0; 
-  while (*p >= '0' && *p <= '9') 
-    { 
-      n *= 10; 
-      n += (*p - '0'); 
-      p++; 
+  n = 0;
+  while (*p >= '0' && *p <= '9')
+    {
+      n *= 10;
+      n += (*p - '0');
+      p++;
     }
   range->length = n;
 
@@ -399,7 +391,7 @@ http_get_range (char *line, http_range_t *range)
 /*
  * Send an error message response body to the http client connection.
  * This is not actually necessary, because an appropriate response header
- * should work out fine. But most browsers indicate "document contained
+ * should work out fine.  But most browsers indicate "document contained
  * not data." if this occurs.
  */
 int
@@ -409,7 +401,7 @@ http_error_response (svz_socket_t *sock, int response)
   http_socket_t *http = sock->data;
   char *txt;
 
-  /* Convert error code to text. */
+  /* Convert error code to text.  */
   switch (response)
     {
     case 400:
@@ -484,29 +476,29 @@ http_error_response (svz_socket_t *sock, int response)
     case 505:
       txt = "HTTP Version Not Supported";
       break;
-    default: 
-      txt = "Bad Request"; 
+    default:
+      txt = "Bad Request";
     }
   http->response = response;
 
-  /* Send some standard error message. */
-  return svz_sock_printf (sock, 
-			  "<html><body bgcolor=white text=black><br>"
-			  "<h1>%d %s</h1>"
-			  "<hr noshade><i>%s/%s server at %s port %d, "
-			  "please send email to <a href=\"mailto:%s\">%s</a> "
-			  "for reporting errors</i>"
-			  "</body></html>",
-			  response, txt, 
-			  svz_library, svz_version,
-			  cfg->host ? cfg->host : 
-			  svz_inet_ntoa (sock->local_addr),
-			  ntohs (sock->local_port), cfg->admin, cfg->admin);
+  /* Send some standard error message.  */
+  return svz_sock_printf (sock,
+                          "<html><body bgcolor=white text=black><br>"
+                          "<h1>%d %s</h1>"
+                          "<hr noshade><i>%s/%s server at %s port %d, "
+                          "please send email to <a href=\"mailto:%s\">%s</a> "
+                          "for reporting errors</i>"
+                          "</body></html>",
+                          response, txt,
+                          svz_library, svz_version,
+                          cfg->host ? cfg->host :
+                          svz_inet_ntoa (sock->local_addr),
+                          ntohs (sock->local_port), cfg->admin, cfg->admin);
 }
 
 /*
  * This function is used to re-initialize a HTTP connection for
- * Keep-Alive connections. Return -1 if it is not 'Keep'able.
+ * Keep-Alive connections.  Return -1 if it is not 'Keep'able.
  */
 int
 http_keep_alive (svz_socket_t *sock)
@@ -515,7 +507,7 @@ http_keep_alive (svz_socket_t *sock)
     {
       http_free_socket (sock);
 
-      sock->userflags &= ~HTTP_FLAG; 
+      sock->userflags &= ~HTTP_FLAG;
       sock->read_socket = svz_tcp_read_socket;
       sock->check_request = http_check_request;
       sock->write_socket = http_default_write;
@@ -541,8 +533,8 @@ http_check_keepalive (svz_socket_t *sock)
     {
       sock->idle_counter = cfg->timeout;
       http_add_header ("Connection: Keep-Alive\r\n");
-      http_add_header ("Keep-Alive: timeout=%d, max=%d\r\n", 
-		       sock->idle_counter, cfg->keepalive);
+      http_add_header ("Keep-Alive: timeout=%d, max=%d\r\n",
+                       sock->idle_counter, cfg->keepalive);
       http->keepalive--;
     }
   /* tell HTTP/1.1 clients that the connection is closed after delivery */
@@ -554,7 +546,7 @@ http_check_keepalive (svz_socket_t *sock)
 }
 
 /*
- * Create a date format used within the Common Log Format. That is as
+ * Create a date format used within the Common Log Format.  That is as
  * follows: [DD/MMM/YYYY:HH:MM:SS +ZZZZ]
  */
 char *
@@ -562,18 +554,18 @@ http_clf_date (time_t t)
 {
   static char date[64];
   static char months[12][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
   struct tm *tm;
 
   tm = localtime (&t);
   sprintf (date, "%02d/%s/%04d:%02d:%02d:%02d %c%02ld%02ld",
-	   tm->tm_mday, months[tm->tm_mon], tm->tm_year + 1900,
-	   tm->tm_hour, tm->tm_min, tm->tm_sec,
-	   timezone > 0 ? '+' : '-',
-	   timezone > 0 ? timezone / 3600 : -timezone / 3600,
-	   timezone > 0 ? (timezone / 60) % 60 : -(timezone / 60) % 60);
+           tm->tm_mday, months[tm->tm_mon], tm->tm_year + 1900,
+           tm->tm_hour, tm->tm_min, tm->tm_sec,
+           timezone > 0 ? '+' : '-',
+           timezone > 0 ? timezone / 3600 : -timezone / 3600,
+           timezone > 0 ? (timezone / 60) % 60 : -(timezone / 60) % 60);
   return date;
 }
 
@@ -593,7 +585,7 @@ http_asc_date (time_t t)
 }
 
 /*
- * Extract a date information from a given string and return a 
+ * Extract a date information from a given string and return a
  * UTC time (time_t) as time() does.
  */
 time_t
@@ -606,7 +598,7 @@ http_parse_date (char *date)
   time_t ret;
 
   static char month[12][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   };
 
@@ -615,28 +607,28 @@ http_parse_date (char *date)
       /* ASCTIME-Date */
     case ' ':
       sscanf (date, "%3s %3s %2d %02d:%02d:%02d %04d",
-	      _wkday, _month, &parse_time.tm_mday, &parse_time.tm_hour, 
-	      &parse_time.tm_min, &parse_time.tm_sec, &parse_time.tm_year);
-      
+              _wkday, _month, &parse_time.tm_mday, &parse_time.tm_hour,
+              &parse_time.tm_min, &parse_time.tm_sec, &parse_time.tm_year);
+
       break;
       /* RFC1123-Date */
     case ',':
-      sscanf (date, "%3s, %02d %3s %04d %02d:%02d:%02d GMT", 
-	      _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
-	      &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
+      sscanf (date, "%3s, %02d %3s %04d %02d:%02d:%02d GMT",
+              _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
+              &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
 
       break;
       /* RFC850-Date */
     default:
-      sscanf (date, "%s, %02d-%3s-%02d %02d:%02d:%02d GMT", 
-	      _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
-	      &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
+      sscanf (date, "%s, %02d-%3s-%02d %02d:%02d:%02d GMT",
+              _wkday, &parse_time.tm_mday, _month, &parse_time.tm_year,
+              &parse_time.tm_hour, &parse_time.tm_min, &parse_time.tm_sec);
 
       parse_time.tm_mon += parse_time.tm_mon >= 70 ? 1900 : 2000;
 
       break;
     }
-    
+
   /* find the month identifier */
   for (n = 0; n < 12; n++)
     if (!memcmp (_month, month[n], 3))
@@ -653,7 +645,7 @@ http_parse_date (char *date)
 
 /*
  * Parse part of the receive buffer for HTTP request properties
- * and store it in the socket structure SOCK. Return the amount of
+ * and store it in the socket structure SOCK.  Return the amount of
  * properties found in the request.
  */
 int
@@ -677,9 +669,9 @@ http_parse_property (svz_socket_t *sock, char *request, char *end)
       /* get property entity identifier */
       p = request;
       while (*p != ':' && p < end)
-	p++;
+        p++;
       if (p == end)
-	break;
+        break;
       http->property[n] = svz_malloc (p - request + 1);
       strncpy (http->property[n], request, p - request);
       http->property[n][p - request] = 0;
@@ -688,9 +680,9 @@ http_parse_property (svz_socket_t *sock, char *request, char *end)
 
       /* get property entity body */
       while (SVZ_INT16 (p) != CRLF && p < end)
-	p++;
+        p++;
       if (p == end || p <= request)
-	break;
+        break;
       http->property[n] = svz_malloc (p - request + 1);
       strncpy (http->property[n], request, p - request);
       http->property[n][p - request] = 0;
@@ -699,8 +691,8 @@ http_parse_property (svz_socket_t *sock, char *request, char *end)
       request = p + 2;
 
 #if 0
-      printf ("http header: {%s} = {%s}\n", 
-	      http->property[n - 2], http->property[n - 1]);
+      printf ("http header: {%s} = {%s}\n",
+              http->property[n - 2], http->property[n - 1]);
 #endif
     }
 
@@ -728,9 +720,9 @@ http_find_property (http_socket_t *http, char *key)
   while (http->property[n])
     {
       if (!strcasecmp (http->property[n], key))
-	{
-	  return http->property[n + 1];
-	}
+        {
+          return http->property[n + 1];
+        }
       n += 2;
     }
   return NULL;
@@ -742,8 +734,8 @@ http_find_property (http_socket_t *http, char *key)
   else if (c >= 'A' && c <= 'F') c -= ('A' - 10);
 
 /*
- * Convert hexadecimal encoded characters within the URI. This is 
- * necessary for some special characters. The URI is a Uniform Resource 
+ * Convert hexadecimal encoded characters within the URI.  This is
+ * necessary for some special characters.  The URI is a Uniform Resource
  * Identifier meaning the requested file.
  */
 void
@@ -752,27 +744,27 @@ http_process_uri (char *uri)
   char *p;
   char h, l;
 
-  /* Test if there is any occurrence of the special character encoding. */
+  /* Test if there is any occurrence of the special character encoding.  */
   while ((p = strchr (uri, '%')) != NULL)
     {
       if ((h = *(p + 1)) != 0 && (l = *(p + 2)) != 0)
-	{
-	  /* Convert to byte. */
-	  ASC_TO_HEX (h);
-	  ASC_TO_HEX (l);
-	  *p = (char) ((h << 4) | l);
+        {
+          /* Convert to byte.  */
+          ASC_TO_HEX (h);
+          ASC_TO_HEX (l);
+          *p = (char) ((h << 4) | l);
 
-	  /* Copy rest of URI. */
-	  uri = ++p;
-	  while (*(p + 2))
-	    {
-	      *p = *(p + 2);
-	      p++;
-	    }
-	  *p = '\0';
-	}
+          /* Copy rest of URI.  */
+          uri = ++p;
+          while (*(p + 2))
+            {
+              *p = *(p + 2);
+              p++;
+            }
+          *p = '\0';
+        }
       else
-	break;
+        break;
     }
 }
 
@@ -809,9 +801,9 @@ http_read_types (http_config_t *cfg)
       /* delete all trailing newline characters, skip empty lines */
       p = line + strlen (line) - 1;
       while (p != line && (*p == '\r' || *p == '\n'))
-	p--;
+        p--;
       if (p == line)
-	continue;
+        continue;
       *(p + 1) = 0;
 
       p = line;
@@ -820,30 +812,30 @@ http_read_types (http_config_t *cfg)
       /* parse content type */
       content = line;
       while (p < end && (*p != ' ' && *p != '\t'))
-	p++;
+        p++;
       *p++ = 0;
 
       /* parse all file suffixes associated with this content type */
       while (p < end)
-	{
-	  while (p < end && (*p == ' ' || *p == '\t'))
-	    p++;
-	  if (p == end)
-	    break;
-	  suffix = p;
-	  while (p < end && (*p != ' ' && *p != '\t'))
-	    p++;
-	  *p++ = 0;
-	  if (strlen (suffix))
-	    {
-	      /* 
-	       * add the given content type to the hash if it does not
-	       * contain it already
-	       */
-	      if (!svz_hash_get (cfg->types, suffix))
-		svz_hash_put (cfg->types, suffix, svz_strdup (content));
-	    }
-	}
+        {
+          while (p < end && (*p == ' ' || *p == '\t'))
+            p++;
+          if (p == end)
+            break;
+          suffix = p;
+          while (p < end && (*p != ' ' && *p != '\t'))
+            p++;
+          *p++ = 0;
+          if (strlen (suffix))
+            {
+              /*
+               * add the given content type to the hash if it does not
+               * contain it already
+               */
+              if (!svz_hash_get (cfg->types, suffix))
+                svz_hash_put (cfg->types, suffix, svz_strdup (content));
+            }
+        }
     }
   svz_fclose (f);
   svz_free (line);
@@ -879,7 +871,7 @@ http_find_content_type (svz_socket_t *sock, char *file)
 
 /*
  * This routine converts a relative file/path name into an
- * absolute file/path name. The given argument will be reallocated
+ * absolute file/path name.  The given argument will be reallocated
  * if necessary.
  */
 char *
@@ -906,8 +898,8 @@ http_absolute_file (char *file)
 
   /* get current work directory */
   savedir = svz_getcwd ();
-  
-  /* 
+
+  /*
    * If there was no path separator in the filename then just concate
    * current work directory and filename.
    */

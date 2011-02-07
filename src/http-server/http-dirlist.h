@@ -6,21 +6,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: http-dirlist.h,v 1.5 2000/11/10 11:24:05 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __HTTP_DIRLIST_H__
@@ -29,14 +24,14 @@
 #include <config.h>
 
 /*
- * Create a directory listing of the directory given as dirname. If the
+ * Create a directory listing of the directory given as dirname.  If the
  * name contains a trailing slash it is removed (not if it is '/' though).
- * docroot is a document root. The output suppresses this part of
+ * docroot is a document root.  The output suppresses this part of
  * the directory name.
  * The return value is a string containing a directory listing in some
- * hard coded way. The global variable http_dirlist_size is set
+ * hard coded way.  The global variable http_dirlist_size is set
  * to the actual size of this buffer (for debugging/memory counting).
- * If NULL is returned, something was wrong with the directory. You may
+ * If NULL is returned, something was wrong with the directory.  You may
  * check errno for details.
  * ...and don't forget too free() the data somewhere somewhen...
  */

@@ -6,21 +6,16 @@
 ;;
 ;; This is free software; you can redistribute it and/or modify it
 ;; under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
+;; the Free Software Foundation; either version 3, or (at your option)
 ;; any later version.
-;; 
+;;
 ;; This software is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 ;; General Public License for more details.
-;; 
+;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this package; see the file COPYING.  If not, write to
-;; the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-;; Boston, MA 02111-1307, USA.
-;;
-;; $Id: echo-server.scm,v 1.2 2002/07/30 22:39:08 ela Exp $
-;;
+;; along with this package.  If not, see <http://www.gnu.org/licenses/>.
 
 (serveez-load "serveez.scm")
 
@@ -49,26 +44,26 @@
   (println "Running echo server info " server ".")
   (set! ret " This is the echo server.")
   (println " echo-integer: "
-	   (svz:server:config-ref server "echo-integer"))
+           (svz:server:config-ref server "echo-integer"))
   (println " echo-integer-array: "
-	   (svz:server:config-ref server "echo-integer-array"))
+           (svz:server:config-ref server "echo-integer-array"))
   (println " echo-string: "
-	   (svz:server:config-ref server "echo-string"))
+           (svz:server:config-ref server "echo-string"))
   (println " echo-string-array: "
-	   (svz:server:config-ref server "echo-string-array"))
+           (svz:server:config-ref server "echo-string-array"))
   (println " echo-hash: "
-	   (svz:server:config-ref server "echo-hash"))
+           (svz:server:config-ref server "echo-hash"))
   (println " echo-port: "
-	   (svz:server:config-ref server "echo-port"))
+           (svz:server:config-ref server "echo-port"))
   (println " echo-boolean: "
-	   (svz:server:config-ref server "echo-boolean"))
+           (svz:server:config-ref server "echo-boolean"))
   ret)
 
 (define (echo-handle-request sock request len)
   (define ret '())
   (let ((idx (bytevector-search request "quit")))
     (if (and idx (= idx 0))
-	(set! ret -1)
+        (set! ret -1)
     (begin
       (svz:sock:print sock (bytevector-concat! (string->utf8 "Echo: ") request))
       (set! ret 0)))
@@ -84,7 +79,7 @@
 
 ;; Port configuration.
 (define-port! 'echo-port '((proto . tcp)
-			   (port  . 2000)))
+                           (port  . 2000)))
 
 ;; Servertype definitions.
 (define-servertype! '(
@@ -110,19 +105,19 @@
 
 ;; Server instantiation.
 (define-server! 'echo-server '(
-			       (echo-integer       . 42)
-			       (echo-integer-array . (5 4 3 2 1))
-			       ))
+                               (echo-integer       . 42)
+                               (echo-integer-array . (5 4 3 2 1))
+                               ))
 
 ;; Bind server to port.
 (bind-server! 'echo-port 'echo-server)
 
 ;; Control protocol server for remote control.
 (define-port! 'control-port `(
-			      (proto . tcp)
-			      (port . 42420)
-			      (ipaddr . *)
-			      ))
+                              (proto . tcp)
+                              (port . 42420)
+                              (ipaddr . *)
+                              ))
 
 (define-server! 'control-server)
 

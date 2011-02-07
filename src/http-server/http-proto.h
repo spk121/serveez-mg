@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
+ * GNU General Public License for more details.  
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-proto.h,v 1.22 2001/06/27 20:38:36 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __HTTP_PROTO_H__
@@ -57,10 +52,10 @@ typedef struct
   char *logfile;        /* log file name */
   char *logformat;      /* custom log file format string */
   FILE *log;            /* log file stream */
-} 
+}
 http_config_t;
 
-/* Export the http server definition to `server.c'. */
+/* Export the http server definition to `server.c'.  */
 extern svz_servertype_t http_server_definition;
 
 /* server functions */

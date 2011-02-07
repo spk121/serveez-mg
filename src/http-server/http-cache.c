@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-cache.c,v 1.36 2004/03/20 10:43:32 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <config.h>
@@ -54,7 +49,7 @@ http_alloc_cache (int entries)
   if (entries > http_cache_entries || http_cache == NULL)
     {
       if (http_cache)
-	http_free_cache ();
+        http_free_cache ();
       http_cache = svz_hash_create (entries, NULL);
       http_cache_entries = entries;
       svz_log (LOG_DEBUG, "cache: created %d cache entries\n", entries);
@@ -105,16 +100,16 @@ http_cache_consistency (void)
 
       /* cache entry must be completely unused if not ready */
       if (!cache[o]->ready)
-	{
-	  assert (cache[o]->size == 0 &&
-		  cache[o]->buffer == NULL && cache[o]->hits == 0);
-	}
+        {
+          assert (cache[o]->size == 0 &&
+                  cache[o]->buffer == NULL && cache[o]->hits == 0);
+        }
       /* if ready a cache entry must contain something */
       else
-	{
-	  assert (cache[o]->size >= 0 && 
-		  cache[o]->buffer && cache[o]->hits >= 0);
-	}
+        {
+          assert (cache[o]->size >= 0 &&
+                  cache[o]->buffer && cache[o]->hits >= 0);
+        }
     }
 }
 
@@ -128,7 +123,7 @@ http_cache_print (void)
   for (n = 0, entry = http_cache_first; entry; entry = entry->next, n++)
     {
       printf ("cache entry: %p, prev: %p, next: %p\n",
-	      (void *) entry, (void *) entry->prev, (void *) entry->next);
+              (void *) entry, (void *) entry->prev, (void *) entry->next);
     }
   printf ("cache last: %p\n", (void *) http_cache_last);
 }
@@ -160,9 +155,9 @@ http_urgent_cache (http_cache_entry_t *cache)
     {
       cache->prev->next = cache->next;
       if (cache->next)
-	cache->next->prev = cache->prev;
+        cache->next->prev = cache->prev;
       else
-	http_cache_last = cache->prev;
+        http_cache_last = cache->prev;
       http_cache_first->prev = cache;
       cache->next = http_cache_first;
       cache->prev = NULL;
@@ -171,11 +166,11 @@ http_urgent_cache (http_cache_entry_t *cache)
 }
 
 /*
- * This routine checks if a certain FILE is already within the HTTP file 
- * cache. It returns HTTP_CACHE_COMPLETE if it is already cached and fills 
- * in the CACHE entry. This entry will be additionally the most recent 
- * afterwards. If the given FILE is going to be in the cache then return 
- * HTTP_CACHE_INCOMPLETE, return HTTP_CACHE_NO if it is not at all in the 
+ * This routine checks if a certain FILE is already within the HTTP file
+ * cache.  It returns HTTP_CACHE_COMPLETE if it is already cached and fills
+ * in the CACHE entry.  This entry will be additionally the most recent
+ * afterwards.  If the given FILE is going to be in the cache then return
+ * HTTP_CACHE_INCOMPLETE, return HTTP_CACHE_NO if it is not at all in the
  * cache.
  */
 int
@@ -189,16 +184,16 @@ http_check_cache (char *file, http_cache_t *cache)
       http_urgent_cache (cachefile);
       http_cache_consistency ();
 
-      /* is this entry fully read by the cache reader ? */
+      /* is this entry fully read by the cache reader?  */
       if (cachefile->ready)
-	{
-	  /* fill in the cache entry for the cache writer */
-	  cache->entry = cachefile;
-	  cache->buffer = cachefile->buffer;
-	  cache->size = cachefile->size;
-	  return HTTP_CACHE_COMPLETE;
-	}
-      /* not but is going to be ... */
+        {
+          /* fill in the cache entry for the cache writer */
+          cache->entry = cachefile;
+          cache->buffer = cachefile->buffer;
+          cache->size = cachefile->size;
+          return HTTP_CACHE_COMPLETE;
+        }
+      /* not but is going to be ...  */
       return HTTP_CACHE_INCOMPLETE;
     }
   return HTTP_CACHE_NO;
@@ -218,18 +213,18 @@ http_cache_create_entry (void)
 }
 
 /*
- * Destroy an existing http cache entry and remove it from the cache hash. 
+ * Destroy an existing http cache entry and remove it from the cache hash.
  */
 static void
 http_cache_destroy_entry (http_cache_entry_t *cache)
 {
   http_cache_consistency ();
 
-  /* Delete cache entry from hash. */
+  /* Delete cache entry from hash.  */
   if (svz_hash_delete (http_cache, cache->file) != cache)
     svz_log (LOG_FATAL, "cache: inconsistent http hash\n");
 
-  /* Update the double chained list of entries. */
+  /* Update the double chained list of entries.  */
   if (cache->prev)
     cache->prev->next = cache->next;
   else
@@ -258,7 +253,7 @@ http_cache_reset (http_cache_t *cache)
 
 /*
  * This is a extended callback for the sock->disconnected_socket entry
- * of a socket structure. You should assign it if the socket reads a
+ * of a socket structure.  You should assign it if the socket reads a
  * cache entry.
  */
 int
@@ -270,26 +265,26 @@ http_cache_disconnect (svz_socket_t *sock)
     {
       /* if the cache entry has not been fully read then free it */
       if (!http->cache->entry->ready)
-	{
-	  http_cache_destroy_entry (http->cache->entry);
-	  svz_free (http->cache->buffer);
-	  http_cache_reset (http->cache);
-	}
+        {
+          http_cache_destroy_entry (http->cache->entry);
+          svz_free (http->cache->buffer);
+          http_cache_reset (http->cache);
+        }
     }
   return http_disconnect (sock);
 }
 
 /*
- * Find a free slot in the http file cache entries. If necessary
- * delete the least recent. Return zero if there was a free slot.
+ * Find a free slot in the http file cache entries.  If necessary
+ * delete the least recent.  Return zero if there was a free slot.
  */
 int
 http_init_cache (char *file, http_cache_t *cache)
 {
   http_cache_entry_t *entry, *slot = NULL;
 
-  /* 
-   * If there are still empty cache entries then create a 
+  /*
+   * If there are still empty cache entries then create a
    * new cache entry.
    */
   if (svz_hash_size (http_cache) < http_cache_entries)
@@ -304,19 +299,19 @@ http_init_cache (char *file, http_cache_t *cache)
   else
     {
       for (entry = http_cache_last; entry; entry = entry->prev)
-	if (!entry->usage && entry->ready)
-	  {
-	    slot = entry;
-	    break;
-	  }
+        if (!entry->usage && entry->ready)
+          {
+            slot = entry;
+            break;
+          }
 
       /* not a "reinitialable" cache entry found */
-      if (!slot) 
-	{
-	  http_cache_reset (cache);
-	  http_cache_consistency ();
-	  return -1;
-	}
+      if (!slot)
+        {
+          http_cache_reset (cache);
+          http_cache_consistency ();
+          return -1;
+        }
 
       /* is currently used, so free the entry previously */
       http_cache_destroy_entry (slot);
@@ -332,7 +327,7 @@ http_init_cache (char *file, http_cache_t *cache)
   http_cache_first = slot;
 
   /*
-   * initialize the cache entry for the cache file reader: cachebuffer 
+   * initialize the cache entry for the cache file reader: cachebuffer
    * is not allocated yet and current cache length is zero
    */
   http_cache_reset (cache);
@@ -343,7 +338,7 @@ http_init_cache (char *file, http_cache_t *cache)
 }
 
 /*
- * Refresh a certain cache entry for reusing it afterwards. So we do not
+ * Refresh a certain cache entry for reusing it afterwards.  So we do not
  * destroy the entry, but the actual cache content.
  */
 void
@@ -389,10 +384,10 @@ http_cache_write (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "cache: send: %s\n", NET_ERROR);
       if (errno == EAGAIN)
-	{
-	  sock->unavailable = time (NULL) + RELAX_FD_TIME;
-	  num_written = 0;
-	}
+        {
+          sock->unavailable = time (NULL) + RELAX_FD_TIME;
+          num_written = 0;
+        }
     }
 
   /*
@@ -443,32 +438,32 @@ http_cache_read (svz_socket_t *sock)
    * Try to read as much data as possible from the file.
    */
   num_read = read (sock->file_desc,
-		   sock->send_buffer + sock->send_buffer_fill, do_read);
+                   sock->send_buffer + sock->send_buffer_fill, do_read);
 
-  /* Read error occurred. */
+  /* Read error occurred.  */
   if (num_read < 0)
     {
       svz_log (LOG_ERROR, "cache: read: %s\n", SYS_ERROR);
 
       /* release the actual cache entry previously reserved */
-      if (cache->size > 0) 
-	{
-	  svz_free (cache->buffer);
-	  http_cache_reset (cache);
-	}
+      if (cache->size > 0)
+        {
+          svz_free (cache->buffer);
+          http_cache_reset (cache);
+        }
       return -1;
     }
 
-  /* Data has been read. */
+  /* Data has been read.  */
   else if (num_read > 0)
     {
-      /* 
+      /*
        * Reserve some more memory and then copy the gained data
        * to the cache entry.
        */
       cache->buffer = svz_realloc (cache->buffer, cache->size + num_read);
       memcpy (cache->buffer + cache->size,
-	      sock->send_buffer + sock->send_buffer_fill, num_read);
+              sock->send_buffer + sock->send_buffer_fill, num_read);
       cache->size += num_read;
 
       sock->send_buffer_fill += num_read;
@@ -476,7 +471,7 @@ http_cache_read (svz_socket_t *sock)
       http->length += num_read;
     }
 
-  /* Bogus file. File size from stat() was not true. */
+  /* Bogus file.  File size from stat() was not true.  */
   if (num_read == 0 && http->filelength != 0)
     {
       cache->entry->size = cache->size;
@@ -489,8 +484,8 @@ http_cache_read (svz_socket_t *sock)
   /* EOF reached and set the appropriate flags */
   if (http->filelength <= 0)
     {
-      svz_log (LOG_DEBUG, "cache: `%s' successfully read\n", 
-	       cache->entry->file);
+      svz_log (LOG_DEBUG, "cache: `%s' successfully read\n",
+               cache->entry->file);
 
       /* fill in the actual cache entry */
       cache->entry->size = cache->size;

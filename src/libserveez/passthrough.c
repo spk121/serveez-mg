@@ -6,21 +6,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: passthrough.c,v 1.21 2004/03/20 10:43:32 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>              /* fileno, stderr */
@@ -47,8 +42,8 @@
 #include "passthrough.h"
 
 /*
- * This variable is meant to hold the @code{environ} variable of the 
- * application using the Serveez core API. It must be setup via the macro
+ * This variable is meant to hold the @code{environ} variable of the
+ * application using the Serveez core API.  It must be setup via the macro
  * @code{svz_envblock_setup()}.
  */
 char **svz_environ = NULL;
@@ -58,27 +53,27 @@ char **svz_environ = NULL;
  * socket or pipe descriptor(s) in the socket structure @var{sock} to its
  * stdin and stdout.
  *
- * The @var{bin} argument has to contain a fully qualified executable file 
- * name and the @var{dir} argument contains the working directory of the 
- * new process. The directory is not changed when this argument is 
+ * The @var{bin} argument has to contain a fully qualified executable file
+ * name and the @var{dir} argument contains the working directory of the
+ * new process.  The directory is not changed when this argument is
  * @code{NULL}.
  *
- * The program arguments and the environment of the new process can be 
- * passed in @var{argv} and @var{envp}. Please note that @code{argv[0]} has 
- * to be set to the program's name, otherwise it defaults to @var{bin} if 
+ * The program arguments and the environment of the new process can be
+ * passed in @var{argv} and @var{envp}.  Please note that @code{argv[0]} has
+ * to be set to the program's name, otherwise it defaults to @var{bin} if
  * it contains @code{NULL}.
  *
- * The @var{flag} argument specifies the method used to passthrough the 
- * connection. It can be either @code{SVZ_PROCESS_FORK} (in order to pass 
- * the pipe descriptors or the socket descriptor directly through 
+ * The @var{flag} argument specifies the method used to passthrough the
+ * connection.  It can be either @code{SVZ_PROCESS_FORK} (in order to pass
+ * the pipe descriptors or the socket descriptor directly through
  * @code{fork()} and @code{exec()}) or @code{SVZ_PROCESS_SHUFFLE_PIPE} /
  * @code{SVZ_PROCESS_SHUFFLE_SOCK} (in order to pass the socket transactions
  * via a pair of pipes or sockets).
  *
- * You can pass the user and group identifications in the format 
+ * You can pass the user and group identifications in the format
  * @samp{user[.group]} (group is optional), as @code{SVZ_PROCESS_NONE}
- * or @code{SVZ_PROCESS_OWNER} in the @var{user} argument. This specifies the 
- * permissions of the new child process. If @code{SVZ_PROCESS_OWNER} is 
+ * or @code{SVZ_PROCESS_OWNER} in the @var{user} argument.  This specifies the
+ * permissions of the new child process.  If @code{SVZ_PROCESS_OWNER} is
  * passed the permissions are set to the executable file @var{bin} owner;
  * @code{SVZ_PROCESS_NONE} does not change user or group.
  *
@@ -86,19 +81,19 @@ char **svz_environ = NULL;
  */
 int
 svz_sock_process (svz_socket_t *sock, char *bin, char *dir,
-		  char **argv, svz_envblock_t *envp, int flag, char *user)
+                  char **argv, svz_envblock_t *envp, int flag, char *user)
 {
   svz_process_t proc;
   int ret = -1;
 
-  /* Check arguments. */
+  /* Check arguments.  */
   if (sock == NULL || bin == NULL || argv == NULL)
     {
       svz_log (LOG_ERROR, "passthrough: invalid argument\n");
       return -1;
     }
 
-  /* Setup descriptors depending on the type of socket structure. */
+  /* Setup descriptors depending on the type of socket structure.  */
   if (sock->flags & SOCK_FLAG_PIPE)
     {
       proc.in = sock->pipe_desc[READ];
@@ -109,11 +104,11 @@ svz_sock_process (svz_socket_t *sock, char *bin, char *dir,
       proc.in = proc.out = (svz_t_handle) sock->sock_desc;
     }
 
-  /* Check executable. */
+  /* Check executable.  */
   if (svz_process_check_executable (bin, &proc.app) < 0)
     return -1;
 
-  /* Fill in rest of process structure. */
+  /* Fill in rest of process structure.  */
   proc.sock = sock;
   proc.bin = bin;
   proc.dir = dir;
@@ -123,7 +118,7 @@ svz_sock_process (svz_socket_t *sock, char *bin, char *dir,
   proc.flag = flag;
 
   /* Depending on the given flag use different methods to passthrough
-     the connection. */
+     the connection.  */
   switch (flag)
     {
     case SVZ_PROCESS_FORK:
@@ -138,13 +133,13 @@ svz_sock_process (svz_socket_t *sock, char *bin, char *dir,
       ret = -1;
       break;
     }
-  
+
   return ret;
 }
 
 /*
- * Disconnection routine for the socket connection @var{sock} which is 
- * connected with a process's stdin/stdout via the referring passthrough 
+ * Disconnection routine for the socket connection @var{sock} which is
+ * connected with a process's stdin/stdout via the referring passthrough
  * socket structure which gets also scheduled for shutdown if possible.
  */
 int
@@ -156,8 +151,8 @@ svz_process_disconnect (svz_socket_t *sock)
     {
       svz_sock_setreferrer (sock, NULL);
       svz_sock_setreferrer (xsock, NULL);
-      svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n", 
-	       xsock->id);
+      svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n",
+               xsock->id);
       svz_sock_schedule_for_shutdown (xsock);
     }
   return 0;
@@ -165,7 +160,7 @@ svz_process_disconnect (svz_socket_t *sock)
 
 /*
  * Disconnection routine for the passthrough socket structure @var{sock}
- * connected with a process's stdin/stdout. Schedules the referring socket
+ * connected with a process's stdin/stdout.  Schedules the referring socket
  * connection for shutdown if necessary and possible.
  */
 int
@@ -178,14 +173,14 @@ svz_process_disconnect_passthrough (svz_socket_t *sock)
       svz_sock_setreferrer (sock, NULL);
       svz_sock_setreferrer (xsock, NULL);
       if (sock->flags & (PROTO_TCP | PROTO_PIPE))
-	{
-	  svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n", 
-		   xsock->id);
-	  svz_sock_schedule_for_shutdown (xsock);
-	}
+        {
+          svz_log (LOG_DEBUG, "passthrough: shutting down referring id %d\n",
+                   xsock->id);
+          svz_sock_schedule_for_shutdown (xsock);
+        }
     }
 
-  /* Clean up receive and send buffer. */
+  /* Clean up receive and send buffer.  */
   sock->recv_buffer = sock->send_buffer = NULL;
   sock->recv_buffer_fill = sock->recv_buffer_size = 0;
   sock->send_buffer_fill = sock->send_buffer_size = 0;
@@ -209,9 +204,9 @@ svz_process_check_request (svz_socket_t *sock)
 }
 
 /*
- * Idle function for the passthrough shuffle connection @var{sock}. The 
+ * Idle function for the passthrough shuffle connection @var{sock}.  The
  * routine checks whether the spawned child process is still valid.  If not
- * it schedules the connection for shutdown. The routine schedules itself
+ * it schedules the connection for shutdown.  The routine schedules itself
  * once a second.
  */
 int
@@ -221,8 +216,8 @@ svz_process_idle (svz_socket_t *sock)
   /* Test if the passthrough child is still running. */
   if (waitpid (sock->pid, NULL, WNOHANG) == -1 && errno == ECHILD)
     {
-      svz_log (LOG_NOTICE, "passthrough: shuffle pid %d died\n", 
-	       (int) sock->pid);
+      svz_log (LOG_NOTICE, "passthrough: shuffle pid %d died\n",
+               (int) sock->pid);
       sock->pid = INVALID_HANDLE;
       return -1;
     }
@@ -234,7 +229,7 @@ svz_process_idle (svz_socket_t *sock)
 /*
  * If the argument @var{set} is zero this routine makes the receive buffer
  * of the socket structure's referrer @var{sock} the send buffer of @var{sock}
- * itself, otherwise the other way around. Return non-zero if the routine
+ * itself, otherwise the other way around.  Return non-zero if the routine
  * failed to determine a referrer.
  */
 static int

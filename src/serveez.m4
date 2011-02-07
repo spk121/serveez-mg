@@ -2,8 +2,8 @@ dnl
 dnl Autoconf macros for configuring the Serveez package.
 dnl
 dnl AC_SERVEEZ([USEFLAG]) -- Locate the Serveez core library.
-dnl When USEFLAG is given (optional argument) the variables SERVEEZ_CFLAGS 
-dnl and SERVEEZ_LDFLAGS are set. Otherwise the macro adds these flags to 
+dnl When USEFLAG is given (optional argument) the variables SERVEEZ_CFLAGS
+dnl and SERVEEZ_LDFLAGS are set. Otherwise the macro adds these flags to
 dnl the overall linker and compiler flags produced by the ./configure script.
 dnl
 
@@ -31,7 +31,7 @@ AC_DEFUN([AC_SERVEEZ], [
 	    -f "$SVZDIR/bin/libserveez.dll" -o \
 	    -f "$SVZDIR/bin/cygserveez.dll" \
 	    ; then
-      if test "x$1" = "x" ; then 
+      if test "x$1" = "x" ; then
         CFLAGS="$CFLAGS -I$SVZDIR/include"
         LDFLAGS="$LDFLAGS -L$SVZDIR/lib"
         LIBS="$LIBS -lserveez"

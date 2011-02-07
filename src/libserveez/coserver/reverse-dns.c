@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: reverse-dns.c,v 1.6 2003/06/14 14:58:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -82,36 +77,36 @@ reverse_dns_handle_request (char *inbuf)
        * look up the ip->host cache first
        */
       for (n = 0; n < reverse_dns_cache.entries; n++)
-	{
-	  if (reverse_dns_cache.ip[n] == addr[0])
-	    {
-	      sprintf (resolved, "%s", reverse_dns_cache.resolved[n]);
-	      return resolved;
-	    }
-	}
+        {
+          if (reverse_dns_cache.ip[n] == addr[0])
+            {
+              sprintf (resolved, "%s", reverse_dns_cache.resolved[n]);
+              return resolved;
+            }
+        }
 
       if ((host = gethostbyaddr ((char *) addr, sizeof (addr[0]), AF_INET))
-	  == NULL)
-	{
+          == NULL)
+        {
           svz_log (LOG_ERROR, "reverse dns: gethostbyaddr: %s (%s)\n",
                    strerror (errno), ip);
-	  return NULL;
-	} 
-      else 
-	{
-	  if (n < MAX_CACHE_ENTRIES)
-	    {
-	      strcpy (reverse_dns_cache.resolved[n], host->h_name);
-	      reverse_dns_cache.ip[n] = addr[0];
-	      reverse_dns_cache.entries++;
-	    }
+          return NULL;
+        }
+      else
+        {
+          if (n < MAX_CACHE_ENTRIES)
+            {
+              strcpy (reverse_dns_cache.resolved[n], host->h_name);
+              reverse_dns_cache.ip[n] = addr[0];
+              reverse_dns_cache.entries++;
+            }
 
-	  svz_log (LOG_DEBUG, "reverse dns: %s is %s\n", ip, host->h_name);
-	  sprintf (resolved, "%s", host->h_name);
-	  return resolved;
-	}
-    } 
-  else 
+          svz_log (LOG_DEBUG, "reverse dns: %s is %s\n", ip, host->h_name);
+          sprintf (resolved, "%s", host->h_name);
+          return resolved;
+        }
+    }
+  else
     {
       svz_log (LOG_ERROR, "reverse dns: protocol error\n");
       return NULL;

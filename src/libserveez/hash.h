@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: hash.h,v 1.15 2002/07/30 22:39:08 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __HASH_H__
@@ -46,7 +41,7 @@ typedef struct
 svz_hash_entry_t;
 
 /*
- * The hash table consists of different hash buckets. This contains the
+ * The hash table consists of different hash buckets.  This contains the
  * bucket's size and the entry array.
  */
 typedef struct
@@ -99,7 +94,7 @@ __END_DECLS
 
 
 /*
- * Iterator macro for walking over the values of a hash. Use like:
+ * Iterator macro for walking over the values of a hash.  Use like:
  * @example
  *   type_t **values; int i;
  *   svz_hash_foreach_value (hash, values, i) @{
@@ -109,7 +104,7 @@ __END_DECLS
  * Be sure you pass real variables and no expressions to this macro !
  * Warning: Relatively slow implementation, builds up temporary array.
  * Do not @code{break} or @code{return} from inside the loop or your program
- * starts leaking memory ! Loop has to end normally.
+ * starts leaking memory!  Loop has to end normally.
  */
 #define svz_hash_foreach_value(hash, iterarray, i)                           \
  for (                                                                       \
@@ -121,7 +116,7 @@ __END_DECLS
  )
 
 /*
- * Iterator macro for walking over the keys of a hash. Use like:
+ * Iterator macro for walking over the keys of a hash.  Use like:
  * @example
  *   char **allkeys; int i;
  *   svz_hash_foreach_key (hash, allkeys, i) @{
@@ -131,7 +126,7 @@ __END_DECLS
  * Be sure you pass real variables and no expressions to this macro !
  * Warning: Relatively slow implementation, builds up temporary array.
  * Do not @code{break} or @code{return} from inside the loop or your program
- * starts leaking memory ! Loop has to end normally.
+ * starts leaking memory!  Loop has to end normally.
  */
 #define svz_hash_foreach_key(hash, iterarray, i)                             \
  for (                                                                       \

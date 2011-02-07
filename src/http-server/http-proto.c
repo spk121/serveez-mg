@@ -6,22 +6,21 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-proto.c,v 1.82 2004/03/20 10:43:32 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+
+
 
 #include <config.h>
 
@@ -85,16 +84,16 @@ svz_key_value_pair_t http_config_prototype[] =
   SVZ_REGISTER_STR ("cgi-url", http_config.cgiurl, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_STR ("cgi-dir", http_config.cgidir, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_INT ("cache-size", http_config.cachesize, SVZ_ITEM_DEFAULTABLE),
-  SVZ_REGISTER_INT ("cache-entries", http_config.cacheentries, 
-		    SVZ_ITEM_DEFAULTABLE),
+  SVZ_REGISTER_INT ("cache-entries", http_config.cacheentries,
+                    SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_INT ("timeout", http_config.timeout, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_INT ("keepalive", http_config.keepalive, SVZ_ITEM_DEFAULTABLE),
-  SVZ_REGISTER_STR ("default-type", http_config.default_type, 
-		    SVZ_ITEM_DEFAULTABLE),
+  SVZ_REGISTER_STR ("default-type", http_config.default_type,
+                    SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_STR ("type-file", http_config.type_file, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_HASH ("types", http_config.types, SVZ_ITEM_DEFAULTABLE),
-  SVZ_REGISTER_HASH ("cgi-application", http_config.cgiapps, 
-		     SVZ_ITEM_DEFAULTABLE),
+  SVZ_REGISTER_HASH ("cgi-application", http_config.cgiapps,
+                     SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_STR ("admin", http_config.admin, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_STR ("host", http_config.host, SVZ_ITEM_DEFAULTABLE),
   SVZ_REGISTER_STR ("logfile", http_config.logfile, SVZ_ITEM_DEFAULTABLE),
@@ -128,7 +127,7 @@ svz_servertype_t http_server_definition =
 
 /*
  * HTTP request types, their identification string (including its length)
- * and the appropriate callback routine itself. This array is used in
+ * and the appropriate callback routine itself.  This array is used in
  * the HTTP_HANDLE_REQUEST function.
  */
 struct
@@ -136,8 +135,8 @@ struct
   char *ident;                                  /* identification string */
   int len;                                      /* the length of this string */
   int (*response)(svz_socket_t *, char *, int); /* the callback routine */
-} 
-http_request [HTTP_REQUESTS] = 
+}
+http_request [HTTP_REQUESTS] =
 {
 
   { "GET",     3, http_get_response     },
@@ -188,13 +187,13 @@ http_init (svz_server_t *server)
   if (!cfg->host)
     {
       if ((ports = svz_server_portcfgs (server)) != NULL)
-	{
-	  addr = svz_portcfg_addr ((svz_portcfg_t *) svz_array_get (ports, 0));
-	  host = addr->sin_addr.s_addr;
-	  svz_array_destroy (ports);
-	}
+        {
+          addr = svz_portcfg_addr ((svz_portcfg_t *) svz_array_get (ports, 0));
+          host = addr->sin_addr.s_addr;
+          svz_array_destroy (ports);
+        }
       if (host == INADDR_ANY)
-	host = htonl (INADDR_LOOPBACK);
+        host = htonl (INADDR_LOOPBACK);
       svz_coserver_rdns (host, http_localhost, cfg, NULL);
     }
 
@@ -202,22 +201,22 @@ http_init (svz_server_t *server)
   if (cfg->logfile)
     {
       if ((cfg->log = svz_fopen (cfg->logfile, "at")) == NULL)
-	{
-	  svz_log (LOG_ERROR, "http: cannot open access logfile %s\n",
-		   cfg->logfile);
-	}
+        {
+          svz_log (LOG_ERROR, "http: cannot open access logfile %s\n",
+                   cfg->logfile);
+        }
     }
-  
+
   /* create content type hash */
   if (cfg->types)
     types = svz_hash_size (cfg->types);
-  
+
   if (http_read_types (cfg))
     {
       svz_log (LOG_ERROR, "http: unable to load %s\n", cfg->type_file);
     }
   svz_log (LOG_NOTICE, "http: %d+%d known content types\n",
-	   types, svz_hash_size (cfg->types) - types);
+           types, svz_hash_size (cfg->types) - types);
 
   /* check user directory path, snip trailing '/' or '\' */
   if (!cfg->userdir || !strlen (cfg->userdir))
@@ -236,7 +235,7 @@ http_init (svz_server_t *server)
       return -1;
     }
 
-  /* checking whether http doc root path ends in '/' or '\'. */
+  /* checking whether http doc root path ends in '/' or '\'.  */
   p = cfg->docs + strlen (cfg->docs) - 1;
   if (*p == '/' || *p == '\\')
     *p = '\0';
@@ -246,7 +245,7 @@ http_init (svz_server_t *server)
 
   /* generate cgi associations */
   http_gen_cgi_apps (cfg);
-  
+
   return 0;
 }
 
@@ -266,7 +265,7 @@ http_finalize (svz_server_t *server)
 
 /*
  * This function frees all HTTP request properties previously reserved
- * and frees the cache structure if necessary. Nevertheless the 
+ * and frees the cache structure if necessary.  Nevertheless the
  * socket structure SOCK should still be usable for keep-alive connections.
  */
 void
@@ -286,16 +285,16 @@ http_free_socket (svz_socket_t *sock)
   http->response = 0;
   http->length = 0;
 
-  /* any property at all ? */
+  /* any property at all?  */
   if (http->property)
     {
       /* go through all properties */
       n = 0;
       while (http->property[n])
-	{
-	  svz_free (http->property[n]);
-	  n++;
-	}
+        {
+          svz_free (http->property[n]);
+          n++;
+        }
       svz_free (http->property);
       http->property = NULL;
     }
@@ -306,7 +305,7 @@ http_free_socket (svz_socket_t *sock)
       http->cache->entry->usage--;
     }
 
-  /* is the cache entry used ? */
+  /* is the cache entry used?  */
   if (http->cache)
     svz_free_and_zero (http->cache);
 
@@ -314,13 +313,13 @@ http_free_socket (svz_socket_t *sock)
   if (sock->file_desc != -1)
     {
       if (svz_close (sock->file_desc) == -1)
-	svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
+        svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
       sock->file_desc = -1;
     }
 }
 
 /*
- * Disconnects a HTTP connection. Callback routine for the
+ * Disconnects a HTTP connection.  Callback routine for the
  * socket structure entry "disconnected_socket".
  */
 int
@@ -335,9 +334,9 @@ http_disconnect (svz_socket_t *sock)
   if (http)
     {
       if (http->host)
-	svz_free (http->host);
+        svz_free (http->host);
       if (http->ident)
-	svz_free (http->ident);
+        svz_free (http->ident);
       svz_free (http);
       sock->data = NULL;
     }
@@ -346,7 +345,7 @@ http_disconnect (svz_socket_t *sock)
 }
 
 /*
- * Idle function for HTTP Keep-Alive connections. It simply returns -1
+ * Idle function for HTTP Keep-Alive connections.  It simply returns -1
  * if a certain time has elapsed and the main server loop will shutdown
  * the connection therefore.
  */
@@ -367,8 +366,8 @@ http_idle (svz_socket_t *sock)
 
 /*
  * This routine is using sendfile() to transport large file's content
- * to a network socket. It is replacing HTTP_DEFAULT_WRITE on systems where
- * this function is implemented. Furthermore you do not need to set
+ * to a network socket.  It is replacing HTTP_DEFAULT_WRITE on systems where
+ * this function is implemented.  Furthermore you do not need to set
  * the READ_SOCKET callback HTTP_FILE_READ.
  */
 int
@@ -377,37 +376,37 @@ http_send_file (svz_socket_t *sock)
   http_socket_t *http = sock->data;
   int num_written, do_write;
 
-  /* Limitate the number of bytes to write at once. */
-  do_write = http->filelength > SOCK_MAX_WRITE 
+  /* Limitate the number of bytes to write at once.  */
+  do_write = http->filelength > SOCK_MAX_WRITE
     ? SOCK_MAX_WRITE : http->filelength;
 
-  /* Try sending throughout file descriptor to socket. */
+  /* Try sending throughout file descriptor to socket.  */
   num_written = svz_sendfile (sock->sock_desc, sock->file_desc,
-			      &http->fileoffset, do_write);
+                              &http->fileoffset, do_write);
 
-  /* Some error occurred. */
+  /* Some error occurred.  */
   if (num_written < 0)
     {
       svz_log (LOG_ERROR, "http: sendfile: %s\n", SYS_ERROR);
       return -1;
     }
 
-  /* Bogus file. File size from stat() was not true. */
+  /* Bogus file.  File size from stat() was not true.  */
   if (num_written == 0 && http->filelength != 0)
     {
       return -1;
     }
 
-  /* Data has been read or EOF reached, set the appropriate flags. */
+  /* Data has been read or EOF reached, set the appropriate flags.  */
   http->filelength -= num_written;
   http->length += num_written;
 
-  /* Read all file data ? */
+  /* Read all file data?  */
   if (http->filelength <= 0)
     {
       svz_log (LOG_DEBUG, "http: file successfully sent\n");
-      /* 
-       * no further read()s from the file descriptor, signaling 
+      /*
+       * no further read()s from the file descriptor, signaling
        * the writers there will not be additional data from now on
        */
       sock->read_socket = svz_tcp_read_socket;
@@ -423,9 +422,9 @@ http_send_file (svz_socket_t *sock)
 }
 
 /*
- * HTTP_DEFAULT_WRITE will shutdown the connection immediately when 
+ * HTTP_DEFAULT_WRITE will shutdown the connection immediately when
  * the whole response has been sent (indicated by the HTTP_FLAG_DONE
- * flag) with two exceptions. It will keep the connection if the
+ * flag) with two exceptions.  It will keep the connection if the
  * actual file is within the cache and if this is a keep-alive connection.
  */
 int
@@ -433,12 +432,12 @@ http_default_write (svz_socket_t *sock)
 {
   int num_written;
 
-  /* 
+  /*
    * Write as many bytes as possible, remember how many
    * were actually sent.
    */
   num_written = send (sock->sock_desc, sock->send_buffer,
-		      sock->send_buffer_fill, 0);
+                      sock->send_buffer_fill, 0);
 
   /* some data has been written */
   if (num_written > 0)
@@ -446,11 +445,11 @@ http_default_write (svz_socket_t *sock)
       sock->last_send = time (NULL);
 
       if (sock->send_buffer_fill > num_written)
-	{
-	  memmove (sock->send_buffer, 
-		   sock->send_buffer + num_written,
-		   sock->send_buffer_fill - num_written);
-	}
+        {
+          memmove (sock->send_buffer,
+                   sock->send_buffer + num_written,
+                   sock->send_buffer_fill - num_written);
+        }
       sock->send_buffer_fill -= num_written;
     }
 
@@ -459,10 +458,10 @@ http_default_write (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "http: send: %s\n", NET_ERROR);
       if (errno == EAGAIN)
-	{
-	  sock->unavailable = time (NULL) + RELAX_FD_TIME;
-	  num_written = 0;
-	}
+        {
+          sock->unavailable = time (NULL) + RELAX_FD_TIME;
+          num_written = 0;
+        }
     }
 
   /*
@@ -477,21 +476,21 @@ http_default_write (svz_socket_t *sock)
     }
 
   /*
-   * If the requested file is within the cache then start now the 
-   * cache writer. Set SEND_BUFFER_FILL to something greater than zero.
+   * If the requested file is within the cache then start now the
+   * cache writer.  Set SEND_BUFFER_FILL to something greater than zero.
    */
   if (sock->send_buffer_fill == 0)
     {
       if (sock->userflags & HTTP_FLAG_CACHE)
-	{
-	  sock->send_buffer_fill = 42;
-	  sock->write_socket = http_cache_write;
-	}
+        {
+          sock->send_buffer_fill = 42;
+          sock->write_socket = http_cache_write;
+        }
       else if (sock->userflags & HTTP_FLAG_SENDFILE)
-	{
-	  sock->send_buffer_fill = 42;
-	  sock->write_socket = http_send_file;
-	}
+        {
+          sock->send_buffer_fill = 42;
+          sock->write_socket = http_send_file;
+        }
     }
 
   /*
@@ -502,8 +501,8 @@ http_default_write (svz_socket_t *sock)
 
 /*
  * The HTTP_FILE_READ reads as much data from a file as possible directly
- * into the send buffer of the socket SOCK. It returns a non-zero value 
- * on read errors. When all the file has been read then the socket flag 
+ * into the send buffer of the socket SOCK.  It returns a non-zero value
+ * on read errors.  When all the file has been read then the socket flag
  * HTTP_FLAG_DONE is set.
  */
 int
@@ -516,8 +515,8 @@ http_file_read (svz_socket_t *sock)
   http = sock->data;
   do_read = sock->send_buffer_size - sock->send_buffer_fill;
 
-  /* 
-   * This means the send buffer is currently full, we have to 
+  /*
+   * This means the send buffer is currently full, we have to
    * wait until some data has been send via the socket.
    */
   if (do_read <= 0)
@@ -525,20 +524,20 @@ http_file_read (svz_socket_t *sock)
       return 0;
     }
 
-#  /*
+  /*
    * Try to read as much data as possible from the file.
    */
   num_read = read (sock->file_desc,
-		   sock->send_buffer + sock->send_buffer_fill, do_read);
+                   sock->send_buffer + sock->send_buffer_fill, do_read);
 
-  /* Read error occurred. */
+  /* Read error occurred.  */
   if (num_read < 0)
     {
       svz_log (LOG_ERROR, "http: read: %s\n", SYS_ERROR);
       return -1;
     }
 
-  /* Bogus file. File size from stat() was not true. */
+  /* Bogus file. File size from stat() was not true.  */
   if (num_read == 0 && http->filelength != 0)
     {
       return -1;
@@ -549,12 +548,12 @@ http_file_read (svz_socket_t *sock)
   http->filelength -= num_read;
   http->length += num_read;
 
-  /* Read all file data ? */
+  /* Read all file data?  */
   if (http->filelength <= 0)
     {
       svz_log (LOG_DEBUG, "http: file successfully read\n");
-      /* 
-       * no further read()s from the file descriptor, signaling 
+      /*
+       * no further read()s from the file descriptor, signaling
        * the writers there will not be additional data from now on
        */
       sock->read_socket = svz_tcp_read_socket;
@@ -580,14 +579,14 @@ http_detect_proto (svz_server_t *server __attribute__ ((unused)),
   for (n = 0; n < HTTP_REQUESTS; n++)
     {
       if (sock->recv_buffer_fill >= http_request[n].len)
-	{
-	  if (!memcmp (sock->recv_buffer, http_request[n].ident, 
-		       http_request[n].len))
-	    {
-	      svz_log (LOG_DEBUG, "http client detected\n");
-	      return -1;
-	    }
-	}
+        {
+          if (!memcmp (sock->recv_buffer, http_request[n].ident, 
+                       http_request[n].len))
+            {
+              svz_log (LOG_DEBUG, "http client detected\n");
+              return -1;
+            }
+        }
     }
 
   return 0;
@@ -615,8 +614,8 @@ http_connect_socket (svz_server_t *server, svz_socket_t *sock)
   /* start reverse dns lookup for logging purposes if necessary */
   if (cfg->nslookup)
     {
-      svz_coserver_rdns (sock->remote_addr, http_remotehost, 
-			 sock->id, sock->version);
+      svz_coserver_rdns (sock->remote_addr, http_remotehost,
+                         sock->id, sock->version);
     }
   /* start user identification if necessary */
   if (cfg->ident)
@@ -624,7 +623,7 @@ http_connect_socket (svz_server_t *server, svz_socket_t *sock)
       svz_coserver_ident (sock, http_identification, sock->id, sock->version);
     }
 
-  /* 
+  /*
    * set the socket flag, disable flood protection and
    * set all the callback routines
    */
@@ -652,7 +651,7 @@ http_handle_request (svz_socket_t *sock, int len)
   char *uri;
   int flag;
   int version[2];
-  
+
   line = sock->recv_buffer;
   end = sock->recv_buffer + len;
   p = line;
@@ -683,12 +682,12 @@ http_handle_request (svz_socket_t *sock, int len)
   while (*p != ' ' && *p)
     p--;
 
-  /* is this a HTTP/0.9 request ? */
+  /* is this a HTTP/0.9 request?  */
   if (!memcmp (request, "GET", 3) && memcmp (p + 1, "HTTP/", 5))
     {
       flag |= HTTP_FLAG_SIMPLE;
       while (*p != '\r')
-	p++;
+        p++;
       uri = svz_malloc (p - line + 1);
       strncpy (uri, line, p - line);
       uri[p - line] = 0;
@@ -700,22 +699,22 @@ http_handle_request (svz_socket_t *sock, int len)
   else
     {
       if (p <= line)
-	{
-	  svz_free (request);
-	  return -1;
-	}
+        {
+          svz_free (request);
+          return -1;
+        }
       *p = 0;
       uri = svz_malloc (p - line + 1);
       strcpy (uri, line);
       line = p + 1;
-  
+
       /* scan the version string of the HTTP request */
       if (memcmp (line, "HTTP/", 5))
-	{
-	  svz_free (request);
-	  svz_free (uri);
-	  return -1;
-	}
+        {
+          svz_free (request);
+          svz_free (uri);
+          return -1;
+        }
       line += 5;
       version[MAJOR_VERSION] = *line - '0';
       line += 2;
@@ -725,7 +724,7 @@ http_handle_request (svz_socket_t *sock, int len)
 
   /* check the remaining part of the first line the version */
   if (((version[MAJOR_VERSION] != HTTP_MAJOR_VERSION ||
-	version[MINOR_VERSION] > 1 || *(line - 2) != '.') && !flag) || 
+        version[MINOR_VERSION] > 1 || *(line - 2) != '.') && !flag) ||
       SVZ_INT16 (line) != CRLF)
     {
       svz_free (request);
@@ -744,20 +743,20 @@ http_handle_request (svz_socket_t *sock, int len)
   http->timestamp = time (NULL);
   http->request = svz_malloc (strlen (request) + strlen (uri) + 11);
   sprintf (http->request, "%s %s HTTP/%d.%d",
-	   request, uri, version[MAJOR_VERSION], version[MINOR_VERSION]);
+          request, uri, version[MAJOR_VERSION], version[MINOR_VERSION]);
 
   /* find an appropriate request callback */
   for (n = 0; n < HTTP_REQUESTS; n++)
     {
       if (!memcmp (request, http_request[n].ident, http_request[n].len))
-	{
-	  svz_log (LOG_DEBUG, "http: %s received\n", request);
-	  http_request[n].response (sock, uri, flag);
-	  break;
-	}
+        {
+          svz_log (LOG_DEBUG, "http: %s received\n", request);
+          http_request[n].response (sock, uri, flag);
+          break;
+        }
     }
 
-  /* Return a "404 Bad Request" if the request type is unknown. */
+  /* Return a "404 Bad Request" if the request type is unknown.  */
   if (n == HTTP_REQUESTS)
     {
       http_default_response (sock, uri, 0);
@@ -772,7 +771,7 @@ http_handle_request (svz_socket_t *sock, int len)
  * Check in the receive buffer of socket SOCK for full
  * http request and call http_handle_request if necessary.
  */
-int 
+int
 http_check_request (svz_socket_t *sock)
 {
   char *p;
@@ -780,22 +779,22 @@ http_check_request (svz_socket_t *sock)
 
   p = sock->recv_buffer;
 
-  while (p < sock->recv_buffer + sock->recv_buffer_fill - 3 && 
-	 SVZ_INT32 (p) != CRLF2)
+  while (p < sock->recv_buffer + sock->recv_buffer_fill - 3 &&
+         SVZ_INT32 (p) != CRLF2)
     p++;
-  
-  if (SVZ_INT32 (p) == CRLF2 && 
+
+  if (SVZ_INT32 (p) == CRLF2 &&
       p < sock->recv_buffer + sock->recv_buffer_fill - 3)
     {
       len = p - sock->recv_buffer + 4;
       if (http_handle_request (sock, len))
-	return -1;
+        return -1;
 
       if (sock->recv_buffer_fill > len)
-	{
-	  memmove (sock->recv_buffer, sock->recv_buffer + len,
-		   sock->recv_buffer_fill - len);
-	}
+        {
+          memmove (sock->recv_buffer, sock->recv_buffer + len,
+                   sock->recv_buffer_fill - len);
+        }
       sock->recv_buffer_fill -= len;
     }
 
@@ -803,7 +802,7 @@ http_check_request (svz_socket_t *sock)
 }
 
 /*
- * Server info callback for the http protocol. We are currently using 
+ * Server info callback for the http protocol.  We are currently using
  * it for displaying the server configuration within the control protocol.
  */
 char *
@@ -811,32 +810,32 @@ http_info_server (svz_server_t *server)
 {
   http_config_t *cfg = server->cfg;
   static char info[80 * 12];
-  
+
   sprintf (info,
-	   " tcp bindings    : %s\r\n"
-	   " index file      : %s\r\n"
-	   " document root   : %s/\r\n"
-	   " cgi url         : %s/\r\n"
-	   " cgi directory   : %s/\r\n"
-	   " cache file size : %d byte\r\n"
-	   " cache entries   : %d files\r\n"
-	   " timeout         : after %d secs\r\n"
-	   " keep alive      : for %d requests\r\n"
-	   " default type    : %s\r\n"
-	   " type file       : %s\r\n"
-	   " content types   : %d",
-	   svz_server_bindings (server),
-	   cfg->indexfile,
-	   cfg->docs,
-	   cfg->cgiurl,
-	   cfg->cgidir,
-	   cfg->cachesize,
-	   cfg->cacheentries,
-	   cfg->timeout,
-	   cfg->keepalive,
-	   cfg->default_type,
-	   cfg->type_file,
-	   svz_hash_size (cfg->types));
+           " tcp bindings    : %s\r\n"
+           " index file      : %s\r\n"
+           " document root   : %s/\r\n"
+           " cgi url         : %s/\r\n"
+           " cgi directory   : %s/\r\n"
+           " cache file size : %d byte\r\n"
+           " cache entries   : %d files\r\n"
+           " timeout         : after %d secs\r\n"
+           " keep alive      : for %d requests\r\n"
+           " default type    : %s\r\n"
+           " type file       : %s\r\n"
+           " content types   : %d",
+           svz_server_bindings (server),
+           cfg->indexfile,
+           cfg->docs,
+           cfg->cgiurl,
+           cfg->cgidir,
+           cfg->cachesize,
+           cfg->cacheentries,
+           cfg->timeout,
+           cfg->keepalive,
+           cfg->default_type,
+           cfg->type_file,
+           svz_hash_size (cfg->types));
 
   return info;
 }
@@ -857,35 +856,35 @@ http_info_client (svz_server_t *server __attribute__ ((unused)),
   if (sock->userflags & HTTP_FLAG_SENDFILE)
     {
       sprintf (text, "  * delivering via sendfile() (offset: %lu)\r\n",
-	       (unsigned long) http->fileoffset);
+               (unsigned long) http->fileoffset);
       strcat (info, text);
     }
   if (sock->userflags & HTTP_FLAG_KEEP)
     {
-      sprintf (text, 
-	       "  * keeping connection alive, "
-	       "%d requests and %d secs left\r\n",
-	       http->keepalive, sock->idle_counter);
+      sprintf (text,
+               "  * keeping connection alive, "
+               "%d requests and %d secs left\r\n",
+               http->keepalive, sock->idle_counter);
       strcat (info, text);
     }
   if (sock->userflags & HTTP_FLAG_CACHE)
     {
-      sprintf (text, 
-	       "  * sending cache entry\r\n"
-	       "    file    : %s\r\n"
-	       "    size    : %d of %d bytes sent\r\n"
-	       "    usage   : %d\r\n"
-	       "    hits    : %d\r\n"
-	       "    urgency : %d\r\n"
-	       "    ready   : %s\r\n"
-	       "    date    : %s\r\n",
-	       cache->entry->file,
-	       cache->entry->size - cache->size, cache->entry->size,
-	       cache->entry->usage,
-	       cache->entry->hits,
-	       http_cache_urgency (cache->entry) + 1,
-	       cache->entry->ready ? "yes" : "no",
-	       http_asc_date (cache->entry->date));
+      sprintf (text,
+               "  * sending cache entry\r\n"
+               "    file    : %s\r\n"
+               "    size    : %d of %d bytes sent\r\n"
+               "    usage   : %d\r\n"
+               "    hits    : %d\r\n"
+               "    urgency : %d\r\n"
+               "    ready   : %s\r\n"
+               "    date    : %s\r\n",
+               cache->entry->file,
+               cache->entry->size - cache->size, cache->entry->size,
+               cache->entry->usage,
+               cache->entry->hits,
+               http_cache_urgency (cache->entry) + 1,
+               cache->entry->ready ? "yes" : "no",
+               http_asc_date (cache->entry->date));
       strcat (info, text);
     }
   if (sock->userflags & HTTP_FLAG_CGI)
@@ -895,15 +894,15 @@ http_info_client (svz_server_t *server __attribute__ ((unused)),
     }
   if (sock->userflags & HTTP_FLAG_POST)
     {
-      sprintf (text, 
-	       "  * receiving cgi input\r\n"
-	       "    pid            : %d\r\n"
-	       "    content-length : %d bytes left\r\n", 
-	       (int) http->pid, http->contentlength);
+      sprintf (text,
+               "  * receiving cgi input\r\n"
+               "    pid            : %d\r\n"
+               "    content-length : %d bytes left\r\n",
+               (int) http->pid, http->contentlength);
       strcat (info, text);
     }
   sprintf (text, "  * %d bytes left of original file size\r\n",
-	   http->filelength);
+           http->filelength);
   strcat (info, text);
 
   /* append http header properties is possible */
@@ -912,19 +911,19 @@ http_info_client (svz_server_t *server __attribute__ ((unused)),
       strcat (info, "  * request property list:\r\n");
       n = 0;
       while (http->property[n])
-	{
-	  sprintf (text, "    %s => %s\r\n",
-		   http->property[n], http->property[n + 1]);
-	  n += 2;
-	  strcat (info, text);
-	}
+        {
+          sprintf (text, "    %s => %s\r\n",
+                   http->property[n], http->property[n + 1]);
+          n += 2;
+          strcat (info, text);
+        }
     }
 
   return info;
 }
 
 /*
- * Respond to a http GET request. This could be either a usual file
+ * Respond to a http GET request.  This could be either a usual file
  * request or a CGI request.
  */
 int
@@ -958,8 +957,8 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
   /* this is a usual file request */
   else
     {
-      size = 
-	strlen (cfg->docs) + strlen (request) + strlen (cfg->indexfile) + 4;
+      size =
+        strlen (cfg->docs) + strlen (request) + strlen (cfg->indexfile) + 4;
 
       file = svz_malloc (size);
       strcpy (file, cfg->docs);
@@ -975,29 +974,29 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 
       /* get directory listing if there is no index file */
       if ((fd = open (file, O_RDONLY)) == -1)
-	{
-	  *p = '\0';
-	  if ((dir = http_dirlist (file, cfg->docs, 
-				   status ? request : NULL)) == NULL)
-	    {
-	      svz_log (LOG_ERROR, "http: dirlist: %s: %s\n", file, SYS_ERROR);
-	      svz_sock_printf (sock, HTTP_FILE_NOT_FOUND "\r\n");
-	      http_error_response (sock, 404);
-	      sock->userflags |= HTTP_FLAG_DONE;
-	      svz_free (file);
-	      return -1;
-	    }
-	  /* send the directory listing */
-	  http->response = 200;
-	  http->length = strlen (dir);
-	  svz_free (sock->send_buffer);
-	  sock->send_buffer = dir;
-	  sock->send_buffer_size = http_dirlist_size;
-	  sock->send_buffer_fill = strlen (dir);
-	  sock->userflags |= HTTP_FLAG_DONE;
-	  svz_free (file);
-	  return 0;
-	}
+        {
+          *p = '\0';
+          if ((dir = http_dirlist (file, cfg->docs,
+                                   status ? request : NULL)) == NULL)
+            {
+              svz_log (LOG_ERROR, "http: dirlist: %s: %s\n", file, SYS_ERROR);
+              svz_sock_printf (sock, HTTP_FILE_NOT_FOUND "\r\n");
+              http_error_response (sock, 404);
+              sock->userflags |= HTTP_FLAG_DONE;
+              svz_free (file);
+              return -1;
+            }
+          /* send the directory listing */
+          http->response = 200;
+          http->length = strlen (dir);
+          svz_free (sock->send_buffer);
+          sock->send_buffer = dir;
+          sock->send_buffer_size = http_dirlist_size;
+          sock->send_buffer_fill = strlen (dir);
+          sock->userflags |= HTTP_FLAG_DONE;
+          svz_free (file);
+          return 0;
+        }
       close (fd);
     }
 
@@ -1024,8 +1023,8 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 
   /* make sure we do not send any devices or strange files */
   if (!(S_ISREG (buf.st_mode) ||
-	S_ISLNK (buf.st_mode) ||
-	S_ISDIR (buf.st_mode)))
+        S_ISLNK (buf.st_mode) ||
+        S_ISDIR (buf.st_mode)))
     {
       svz_log (LOG_ERROR, "http: %s is not a regular file\n", file);
       svz_sock_printf (sock, HTTP_ACCESS_DENIED "\r\n");
@@ -1063,9 +1062,9 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
   if ((p = http_find_property (http, "Connection")) != NULL)
     {
       if (strstr (p, "Keep-Alive"))
-	{
-	  sock->userflags |= HTTP_FLAG_KEEP;
-	}
+        {
+          sock->userflags |= HTTP_FLAG_KEEP;
+        }
     }
 
   /* check if this a If-Modified-Since request */
@@ -1073,65 +1072,65 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
     {
       date = http_parse_date (p);
       if (date >= buf.st_mtime)
-	{
-	  svz_log (LOG_DEBUG, "http: %s not changed\n", file);
-	  http->response = 304;
-	  http_set_header (HTTP_NOT_MODIFIED);
-	  http_check_keepalive (sock);
-	  http_send_header (sock);
-	  svz_close (fd);
-	  sock->userflags |= HTTP_FLAG_DONE;
-	  svz_free (file);
-	  return 0;
-	}
+        {
+          svz_log (LOG_DEBUG, "http: %s not changed\n", file);
+          http->response = 304;
+          http_set_header (HTTP_NOT_MODIFIED);
+          http_check_keepalive (sock);
+          http_send_header (sock);
+          svz_close (fd);
+          sock->userflags |= HTTP_FLAG_DONE;
+          svz_free (file);
+          return 0;
+        }
     }
 
   /* check content range requests */
   if ((p = http_find_property (http, "Range")) != NULL)
     {
       if (http_get_range (p, &http->range) != -1)
-	flags |= HTTP_FLAG_PARTIAL;
+        flags |= HTTP_FLAG_PARTIAL;
     }
   else if ((p = http_find_property (http, "Request-Range")) != NULL)
     {
       if (http_get_range (p, &http->range) != -1)
-	flags |= HTTP_FLAG_PARTIAL;
+        flags |= HTTP_FLAG_PARTIAL;
     }
 
   /* check if partial content can be delivered or not */
   if (flags & HTTP_FLAG_PARTIAL)
     {
       if (http_check_range (&http->range, buf.st_size))
-	flags &= ~HTTP_FLAG_PARTIAL;
+        flags &= ~HTTP_FLAG_PARTIAL;
       else
-	{
-	  /* recheck content range */
-	  http->range.length = buf.st_size;
-	  if (http->range.last == 0)
-	    http->range.last = http->range.length - 1;
+        {
+          /* recheck content range */
+          http->range.length = buf.st_size;
+          if (http->range.last == 0)
+            http->range.last = http->range.length - 1;
 
-	  svz_log (LOG_DEBUG, "http: partial content: %ld-%ld/%ld\n",
-		   http->range.first, http->range.last, http->range.length);
+          svz_log (LOG_DEBUG, "http: partial content: %ld-%ld/%ld\n",
+                   http->range.first, http->range.last, http->range.length);
 
-	  /* setup file descriptor and size */
-	  buf.st_size = http->range.last - http->range.first + 1;
-	  if (lseek (fd, http->range.first, SEEK_SET) != http->range.first)
-	    {
-	      svz_log (LOG_ERROR, "http: lseek: %s\n", SYS_ERROR);
-	      flags &= ~HTTP_FLAG_PARTIAL;
-	    }
-	}
+          /* setup file descriptor and size */
+          buf.st_size = http->range.last - http->range.first + 1;
+          if (lseek (fd, http->range.first, SEEK_SET) != http->range.first)
+            {
+              svz_log (LOG_ERROR, "http: lseek: %s\n", SYS_ERROR);
+              flags &= ~HTTP_FLAG_PARTIAL;
+            }
+        }
 
       /* return an error reponse if necessary */
       if (!(flags & HTTP_FLAG_PARTIAL))
-	{
-	  svz_sock_printf (sock, HTTP_INVALID_RANGE "\r\n");
-	  http_error_response (sock, 416);
-	  sock->userflags |= HTTP_FLAG_DONE;
-	  svz_close (fd);
-	  svz_free (file);
-	  return -1;
-	}
+        {
+          svz_sock_printf (sock, HTTP_INVALID_RANGE "\r\n");
+          http_error_response (sock, 416);
+          sock->userflags |= HTTP_FLAG_DONE;
+          svz_close (fd);
+          svz_free (file);
+          return -1;
+        }
     }
 
   /* send a http header to the client */
@@ -1139,30 +1138,30 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
     {
       /* repond via partial or full content */
       if (flags & HTTP_FLAG_PARTIAL)
-	{
-	  http->response = 206;
-	  http_set_header (HTTP_PARTIAL);
-	}
+        {
+          http->response = 206;
+          http_set_header (HTTP_PARTIAL);
+        }
       else
-	{
-	  http->response = 200;
-	  http_set_header (HTTP_OK);
-	}
+        {
+          http->response = 200;
+          http_set_header (HTTP_OK);
+        }
 
       http_add_header ("Content-Type: %s\r\n",
-		       http_find_content_type (sock, file));
+                       http_find_content_type (sock, file));
 
       /* set content range if possible */
       if (flags & HTTP_FLAG_PARTIAL)
-	{
-	  http_add_header ("Content-Length: %ld\r\n",
-			   http->range.last - http->range.first + 1);
-	  http_add_header ("Content-Range: bytes %ld-%ld/%ld\r\n",
-			   http->range.first, http->range.last,
-			   http->range.length);
-	}
+        {
+          http_add_header ("Content-Length: %ld\r\n",
+                           http->range.last - http->range.first + 1);
+          http_add_header ("Content-Range: bytes %ld-%ld/%ld\r\n",
+                           http->range.first, http->range.last,
+                           http->range.length);
+        }
       else if (buf.st_size > 0)
-	http_add_header ("Content-Length: %ld\r\n", buf.st_size);
+        http_add_header ("Content-Length: %ld\r\n", buf.st_size);
 
       http_add_header ("Last-Modified: %s\r\n", http_asc_date (buf.st_mtime));
       http_add_header ("Accept-Ranges: bytes\r\n");
@@ -1194,35 +1193,35 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
       status = http_check_cache (file, cache);
     }
 
-  /* is the requested file already fully in the cache ? */
+  /* is the requested file already fully in the cache?  */
   if (status == HTTP_CACHE_COMPLETE)
     {
       if (buf.st_mtime > cache->entry->date ||
-	  buf.st_size != cache->entry->size)
-	{
-	  /* the file on disk has changed ? */
-	  svz_log (LOG_DEBUG, "cache: %s has changed\n", file);
-	  http_refresh_cache (cache);
-	  cache->entry->date = buf.st_mtime;
-	  sock->flags |= SOCK_FLAG_FILE;
-	  sock->file_desc = fd;
-	  http->filelength = buf.st_size;
-	  sock->read_socket = http_cache_read;
-	  sock->disconnected_socket = http_cache_disconnect;
-	}
+          buf.st_size != cache->entry->size)
+        {
+          /* the file on disk has changed?  */
+          svz_log (LOG_DEBUG, "cache: %s has changed\n", file);
+          http_refresh_cache (cache);
+          cache->entry->date = buf.st_mtime;
+          sock->flags |= SOCK_FLAG_FILE;
+          sock->file_desc = fd;
+          http->filelength = buf.st_size;
+          sock->read_socket = http_cache_read;
+          sock->disconnected_socket = http_cache_disconnect;
+        }
       else
-	{
-	  /* no, initialize the cache routines */
-	  cache->entry->hits++;
-	  cache->entry->usage++;
-	  sock->userflags |= HTTP_FLAG_CACHE;
-	  if (flags & HTTP_FLAG_SIMPLE)
-	    {
-	      sock->send_buffer_fill = 42;
-	      sock->write_socket = http_cache_write;
-	    }
-	  svz_close (fd);
-	}
+        {
+          /* no, initialize the cache routines */
+          cache->entry->hits++;
+          cache->entry->usage++;
+          sock->userflags |= HTTP_FLAG_CACHE;
+          if (flags & HTTP_FLAG_SIMPLE)
+            {
+              sock->send_buffer_fill = 42;
+              sock->write_socket = http_cache_write;
+            }
+          svz_close (fd);
+        }
     }
   /* the file is not in the cache structures yet */
   else
@@ -1231,29 +1230,29 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
       http->filelength = buf.st_size;
       sock->flags |= SOCK_FLAG_FILE;
 
-      /* 
+      /*
        * find a free slot for the new file if it is not larger
        * than a certain size and is not "partly" in the cache
        */
-      if (status == HTTP_CACHE_NO && 
-	  buf.st_size > 0 && buf.st_size < cfg->cachesize &&
-	  http_init_cache (file, cache) != -1)
-	{
-	  sock->read_socket = http_cache_read;
-	  sock->disconnected_socket = http_cache_disconnect;
-	  cache->entry->date = buf.st_mtime;
-	}
+      if (status == HTTP_CACHE_NO &&
+          buf.st_size > 0 && buf.st_size < cfg->cachesize &&
+          http_init_cache (file, cache) != -1)
+        {
+          sock->read_socket = http_cache_read;
+          sock->disconnected_socket = http_cache_disconnect;
+          cache->entry->date = buf.st_mtime;
+        }
       /*
        * either the file is not cacheable or it is currently
        * going to be in the http cache (not yet cache->ready)
        */
       else
-	{
-	  sock->read_socket = NULL;
-	  sock->flags &= ~SOCK_FLAG_FILE;
-	  sock->userflags |= HTTP_FLAG_SENDFILE;
-	  svz_tcp_cork (sock->sock_desc, 1);
-	}
+        {
+          sock->read_socket = NULL;
+          sock->flags &= ~SOCK_FLAG_FILE;
+          sock->userflags |= HTTP_FLAG_SENDFILE;
+          svz_tcp_cork (sock->sock_desc, 1);
+        }
     }
 
   svz_free (file);
@@ -1261,7 +1260,7 @@ http_get_response (svz_socket_t *sock, char *request, int flags)
 }
 
 /*
- * Respond to a http HEAD request. This is in particular the same as
+ * Respond to a http HEAD request.  This is in particular the same as
  * GET but you do not respond with the file but with the header and all
  * the file info.
  */

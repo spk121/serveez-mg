@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: spvec-test.c,v 1.4 2003/06/14 14:58:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #if HAVE_CONFIG_H
@@ -59,7 +54,7 @@ main (int argc __attribute__ ((unused)),
 
   test_init ();
   test_print ("sparse vector function test suite\n");
-  
+
   /* sparse vector creation */
   test_print ("         create: ");
   test ((list = svz_spvec_create ()) == NULL);
@@ -70,7 +65,7 @@ main (int argc __attribute__ ((unused)),
     {
       svz_spvec_add (list, (void *) 0xdeadbeef);
       if (svz_spvec_get (list, n) != (void *) 0xdeadbeef)
-	error++;
+        error++;
     }
   if (svz_spvec_size (list) != REPEAT || svz_spvec_length (list) != REPEAT)
     error++;
@@ -107,7 +102,7 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT; n++)
     {
       if (svz_spvec_delete (list, 0) != (void *) 0xdeadbeef)
-	error++;
+        error++;
     }
   if (svz_spvec_length (list) || svz_spvec_size (list))
     error++;
@@ -120,13 +115,13 @@ main (int argc __attribute__ ((unused)),
     {
       svz_spvec_insert (list, 0, (void *) 0xeabceabc);
       if (svz_spvec_get (list, 0) != (void *) 0xeabceabc)
-	error++;
+        error++;
       if (svz_spvec_delete (list, 0) != (void *) 0xeabceabc)
-	error++;
+        error++;
 
       svz_spvec_insert (list, n, (void *) 0xdeadbeef);
       if (svz_spvec_get (list, n) != (void *) 0xdeadbeef)
-	error++;
+        error++;
     }
   if (svz_spvec_length (list) != REPEAT || svz_spvec_size (list) != REPEAT)
     error++;
@@ -139,20 +134,20 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT / GAP; n++)
     {
       if (svz_spvec_set (list, n * GAP, (void *) (n * GAP)) != NULL)
-	error++;
+        error++;
       if (svz_spvec_unset (list, n * GAP) != (void *) (n * GAP))
-	error++;
+        error++;
 
       for (i = GAP - 1; i > 0; i--)
-	{ 
-	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) != 
-	      NULL)
-	    error++;
-	  if (svz_spvec_unset (list, n * GAP + i) != (void *) ((n * GAP) + i))
-	    error++;
-	}
+        {
+          if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) !=
+              NULL)
+            error++;
+          if (svz_spvec_unset (list, n * GAP + i) != (void *) ((n * GAP) + i))
+            error++;
+        }
     }
-  
+
   if (svz_spvec_length (list) != 0 || svz_spvec_size (list) != 0)
     error++;
   for (n = 0; n < REPEAT; n++)
@@ -160,9 +155,9 @@ main (int argc __attribute__ ((unused)),
   for (n = REPEAT; n != 0; n--)
     {
       if (svz_spvec_unset (list, n - 1) != (void *) (n - 1))
-	error++;
+        error++;
       if (svz_spvec_size (list) != (unsigned) n - 1)
-	error++;
+        error++;
     }
 
   test (error);
@@ -174,26 +169,26 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT / GAP; n++)
     {
       if (svz_spvec_set (list, n * GAP, (void *) (n * GAP)) != NULL)
-	error++;
+        error++;
       if (svz_spvec_get (list, n * GAP) != (void *) (n * GAP))
-	error++;
+        error++;
 
       for (i = GAP - 1; i > 0; i--)
-	{ 
-	  if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) != 
-	      NULL)
-	    error++;
-	  if (svz_spvec_get (list, n * GAP + i) != (void *) ((n * GAP) + i))
-	    error++;
-	}
+        {
+          if (svz_spvec_set (list, n * GAP + i, (void *) ((n * GAP) + i)) !=
+              NULL)
+            error++;
+          if (svz_spvec_get (list, n * GAP + i) != (void *) ((n * GAP) + i))
+            error++;
+        }
     }
-  
+
   if (svz_spvec_length (list) != REPEAT || svz_spvec_size (list) != REPEAT)
     error++;
   for (n = 0; n < REPEAT; n++)
     {
       if (svz_spvec_get (list, n) != (void *) n)
-	error++;
+        error++;
     }
   test (error);
 
@@ -203,10 +198,10 @@ main (int argc __attribute__ ((unused)),
   if ((values = svz_spvec_values (list)) != NULL)
     {
       for (n = 0; n < REPEAT; n++)
-	{
-	  if (values[n] != (void *) n)
-	    error++;
-	}
+        {
+          if (values[n] != (void *) n)
+            error++;
+        }
       svz_free (values);
     }
   else
@@ -220,9 +215,9 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT; n++)
     {
       if (svz_spvec_set (list, n * GAP, (void *) n) != NULL)
-	error++;
+        error++;
     }
-  if (svz_spvec_length (list) != REPEAT * GAP - GAP + 1 || 
+  if (svz_spvec_length (list) != REPEAT * GAP - GAP + 1 ||
       svz_spvec_size (list) != REPEAT)
     error++;
   svz_spvec_pack (list);
@@ -231,7 +226,7 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT; n++)
     {
       if (svz_spvec_get (list, n) != (void *) n)
-	error++;
+        error++;
     }
   test (error);
 
@@ -242,19 +237,19 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; (unsigned) n < svz_spvec_length (list) - GAP; n++)
     {
       if (svz_spvec_delete_range (list, n, n + GAP) != GAP)
-	error++;
+        error++;
       n += GAP;
     }
   n++;
-  if (svz_spvec_size (list) != (unsigned) n || 
+  if (svz_spvec_size (list) != (unsigned) n ||
       svz_spvec_length (list) != (unsigned) n)
     error++;
   for (i = GAP, n = 0; (unsigned) n < svz_spvec_length (list) - 1; n++, i++)
     {
       if (svz_spvec_get (list, n) != (void *) i)
-	error++;
+        error++;
       if (((n + 1) % (GAP + 1)) == 0)
-	i += GAP;
+        i += GAP;
     }
   n = svz_spvec_length (list);
   if (svz_spvec_delete_range (list, 0, n) != (unsigned) n)
@@ -273,9 +268,9 @@ main (int argc __attribute__ ((unused)),
     {
       n = test_value (SIZE);
       if (svz_spvec_get (list, n) != (void *) (n + SIZE))
-	{
-	  svz_spvec_set (list, n, (void *) (n + SIZE));
-	}
+        {
+          svz_spvec_set (list, n, (void *) (n + SIZE));
+        }
     }
 
   /* check for final size and length */
@@ -287,11 +282,11 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < SIZE; n++)
     {
       if (svz_spvec_contains (list, (void *) (n + SIZE)) != 1)
-	error++;
+        error++;
       if (svz_spvec_index (list, (void *) (n + SIZE)) != n)
-	error++;
+        error++;
       if (svz_spvec_get (list, n) != (void *) (n + SIZE))
-	error++;
+        error++;
     }
   test_print (error ? "?" : ".");
 
@@ -299,7 +294,7 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < SIZE; n++)
     {
       if (svz_spvec_delete (list, 0) != (void *) (n + SIZE))
-	error++;
+        error++;
     }
 
   /* check "post" size */
@@ -327,15 +322,15 @@ main (int argc __attribute__ ((unused)),
   if ((values = svz_spvec_values (list)) != NULL)
     {
       svz_spvec_pack (list);
-      if (svz_spvec_size (list) != REPEAT || 
-	  svz_spvec_length (list) != REPEAT)
-	error++;
+      if (svz_spvec_size (list) != REPEAT ||
+          svz_spvec_length (list) != REPEAT)
+        error++;
       for (n = 0; n < REPEAT; n++)
-	{
-	  if (svz_spvec_get (list, n) != values[n] || 
-	      values[n] != (void *) 0xdeadbeef)
-	    error++;
-	}
+        {
+          if (svz_spvec_get (list, n) != values[n] ||
+              values[n] != (void *) 0xdeadbeef)
+            error++;
+        }
       svz_free (values);
     }
   else
@@ -347,10 +342,10 @@ main (int argc __attribute__ ((unused)),
   while (svz_spvec_size (list))
     {
       if (svz_spvec_delete (list, svz_spvec_index (list, (void *) 0xdeadbeef))
-	  != (void *) 0xdeadbeef)
-	error++;
+          != (void *) 0xdeadbeef)
+        error++;
       if (svz_spvec_contains (list, (void *) 0xdeadbeef) != (unsigned) --n)
-	error++;
+        error++;
     }
 
   /* check "post" size */
@@ -359,22 +354,22 @@ main (int argc __attribute__ ((unused)),
   test_print (error ? "?" : ".");
 
   for (i = SIZE; i < SIZE + 10; i++)
-    { 
+    {
       /* build sparse vector */
       while (svz_spvec_size (list) != (unsigned) i)
-	{
-	  n = test_value (10 * i) + 1;
-	  svz_spvec_insert (list, n, (void *) n);
-	  if (svz_spvec_get (list, n) != (void *) n)
-	    error++;
-	}
+        {
+          n = test_value (10 * i) + 1;
+          svz_spvec_insert (list, n, (void *) n);
+          if (svz_spvec_get (list, n) != (void *) n)
+            error++;
+        }
 
       /* delete all values by chance */
       while (svz_spvec_size (list))
-	{
-	  svz_spvec_delete_range (list, test_value (i), 
-				  test_value (10 * i * 5 + 1));
-	}
+        {
+          svz_spvec_delete_range (list, test_value (i),
+                                  test_value (10 * i * 5 + 1));
+        }
       test_print (error ? "?" : ".");
     }
 
@@ -383,9 +378,9 @@ main (int argc __attribute__ ((unused)),
     {
       n = test_value (i * 20 + test_value (20));
       if (svz_spvec_set (list, n, (void *) n) != NULL)
-	error++;
+        error++;
       if ((void *) n != svz_spvec_unset (list, n))
-	error++;
+        error++;
     }
   test_print (error ? "?" : ".");
 
@@ -398,7 +393,7 @@ main (int argc __attribute__ ((unused)),
   test_ok ();
 
 #if SVZ_ENABLE_DEBUG
-  /* is heap ok ? */
+  /* is heap ok?  */
   test_print ("           heap: ");
   test (svz_allocated_bytes || svz_allocated_blocks);
 #endif /* SVZ_ENABLE_DEBUG */

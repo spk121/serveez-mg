@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: vector-test.c,v 1.4 2003/06/14 14:58:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #if HAVE_CONFIG_H
@@ -58,7 +53,7 @@ main (int argc __attribute__ ((unused)),
 
   test_init ();
   test_print ("vector function test suite\n");
-  
+
   /* vector creation */
   error = 0;
   test_print ("    create: ");
@@ -74,9 +69,9 @@ main (int argc __attribute__ ((unused)),
   for (n = 0; n < REPEAT; n++)
     {
       if (svz_vector_add (vector, &n) != (unsigned long) n)
-	error++;
+        error++;
       if (svz_vector_length (vector) != (unsigned long) n + 1)
-	error++;
+        error++;
     }
   test (error);
 
@@ -86,13 +81,13 @@ main (int argc __attribute__ ((unused)),
     {
       value = svz_vector_get (vector, n);
       if (*value != n)
-	error++;
+        error++;
     }
-  if (svz_vector_get (vector, n) != NULL || 
+  if (svz_vector_get (vector, n) != NULL ||
       svz_vector_get (vector, -1) != NULL)
     error++;
   test (error);
-  
+
   /* set function */
   test_print ("       set: ");
   for (error = n = 0; n < REPEAT; n++)
@@ -100,10 +95,10 @@ main (int argc __attribute__ ((unused)),
       i = REPEAT - n;
       value = svz_vector_set (vector, n, &i);
       if (*value != REPEAT - n)
-	error++;
+        error++;
       value = svz_vector_get (vector, n);
       if (*value != REPEAT - n)
-	error++;
+        error++;
     }
   test (error);
 
@@ -112,9 +107,9 @@ main (int argc __attribute__ ((unused)),
   for (error = n = 0; n < REPEAT; n++)
     {
       if (svz_vector_del (vector, 0) != (unsigned long) REPEAT - n - 1)
-	error++;
+        error++;
       if (svz_vector_length (vector) != (unsigned long) REPEAT - n - 1)
-	error++;
+        error++;
     }
   test (error);
 
@@ -123,17 +118,17 @@ main (int argc __attribute__ ((unused)),
   for (error = n = 0; n < REPEAT; n++)
     {
       if (svz_vector_ins (vector, 0, &n) != (unsigned long) n + 1)
-	error++;
+        error++;
       if (svz_vector_length (vector) != (unsigned long) n + 1)
-	error++;
+        error++;
     }
   for (n = 0; n < REPEAT; n++)
     {
       svz_vector_del (vector, n);
       if (svz_vector_ins (vector, n, &n) != REPEAT)
-	error++;
+        error++;
       if (svz_vector_length (vector) != REPEAT)
-	error++;
+        error++;
     }
   test (error);
 
@@ -142,11 +137,11 @@ main (int argc __attribute__ ((unused)),
   for (error = n = 0; n < REPEAT; n++)
     {
       if (svz_vector_idx (vector, &n) != (unsigned long) n)
-	error++;
+        error++;
       i = 0xdeadbeef;
       svz_vector_set (vector, n, &i);
       if (svz_vector_idx (vector, &i) != 0)
-	error++;
+        error++;
     }
   test (error);
 
@@ -156,10 +151,10 @@ main (int argc __attribute__ ((unused)),
   for (error = n = 0; n < REPEAT; n++)
     {
       if (svz_vector_contains (vector, &i) != (unsigned long) REPEAT - n)
-	error++;
+        error++;
       svz_vector_set (vector, n, &n);
       if (svz_vector_contains (vector, &n) != 1)
-	error++;
+        error++;
     }
   test (error);
 
@@ -179,19 +174,19 @@ main (int argc __attribute__ ((unused)),
       value = svz_malloc (v);
       vector = svz_vector_create (v);
       for (n = 0; n < REPEAT / 5; n++)
-	{
-	  memset (value, (int) (n & 0xff), v);
-	  if (svz_vector_ins (vector, n, value) != (unsigned long) n + 1)
-	    error++;
-	  if (svz_vector_idx (vector, value) != (unsigned long) (n & 0xff))
-	    error++;
-	  if (svz_vector_length (vector) != (unsigned long) n + 1)
-	    error++;
-	  if (memcmp (svz_vector_get (vector, n), value, v))
-	    error++;
-	  if (svz_vector_contains (vector, value) < 1)
-	    error++;
-	}
+        {
+          memset (value, (int) (n & 0xff), v);
+          if (svz_vector_ins (vector, n, value) != (unsigned long) n + 1)
+            error++;
+          if (svz_vector_idx (vector, value) != (unsigned long) (n & 0xff))
+            error++;
+          if (svz_vector_length (vector) != (unsigned long) n + 1)
+            error++;
+          if (memcmp (svz_vector_get (vector, n), value, v))
+            error++;
+          if (svz_vector_contains (vector, value) < 1)
+            error++;
+        }
       svz_vector_destroy (vector);
       svz_free (value);
       test_print (error ? "?" : ".");
@@ -213,7 +208,7 @@ main (int argc __attribute__ ((unused)),
   test_ok ();
 
 #if SVZ_ENABLE_DEBUG
-  /* is heap ok ? */
+  /* is heap ok?  */
   test_print ("      heap: ");
   test (svz_allocated_bytes || svz_allocated_blocks);
 #endif /* SVZ_ENABLE_DEBUG */

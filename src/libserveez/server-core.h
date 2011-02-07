@@ -8,21 +8,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: server-core.h,v 1.18 2003/06/14 14:57:59 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __SERVER_CORE_H__
@@ -64,16 +59,16 @@ SERVEEZ_API int svz_sock_enqueue (svz_socket_t *);
 SERVEEZ_API int svz_sock_dequeue (svz_socket_t *);
 SERVEEZ_API void svz_sock_shutdown_all (void);
 SERVEEZ_API void svz_sock_setparent (svz_socket_t *, 
-					       svz_socket_t *);
+                                     svz_socket_t *);
 SERVEEZ_API svz_socket_t *svz_sock_getparent (svz_socket_t *);
-SERVEEZ_API void svz_sock_setreferrer (svz_socket_t *, 
-						 svz_socket_t *);
+SERVEEZ_API void svz_sock_setreferrer (svz_socket_t *,
+                                       svz_socket_t *);
 SERVEEZ_API svz_socket_t *svz_sock_getreferrer (svz_socket_t *);
 SERVEEZ_API svz_portcfg_t *svz_sock_portcfg (svz_socket_t *);
-SERVEEZ_API int svz_sock_check_access (svz_socket_t *, 
-						 svz_socket_t *);
-SERVEEZ_API int svz_sock_check_frequency (svz_socket_t *, 
-					       svz_socket_t *);
+SERVEEZ_API int svz_sock_check_access (svz_socket_t *,
+                                       svz_socket_t *);
+SERVEEZ_API int svz_sock_check_frequency (svz_socket_t *,
+                                          svz_socket_t *);
 SERVEEZ_API void svz_sock_check_children (void);
 SERVEEZ_API int svz_sock_child_died (svz_socket_t *);
 

@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: prog-server.h,v 1.6 2001/11/27 14:21:33 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __PROG_SERVER_H__
@@ -30,13 +25,13 @@
  */
 typedef struct
 {
-  char *bin;           /* Executable file. */
-  char *dir;           /* Working directory or NULL. */
-  char *user;          /* user[.group] or NULL. */
-  svz_array_t *argv;   /* Arguments for the executable. Watch argv[0]. */
-  int fork;            /* Flag: fork or shuffle for passthrough method. */
-  int single_threaded; /* Flag: single- or multi-threaded packet server. */
-  int frequency;       /* Maximum number of threads per minute. */
+  char *bin;           /* Executable file.  */
+  char *dir;           /* Working directory or NULL.  */
+  char *user;          /* user[.group] or NULL.  */
+  svz_array_t *argv;   /* Arguments for the executable.  Watch argv[0].  */
+  int fork;            /* Flag: fork or shuffle for passthrough method.  */
+  int single_threaded; /* Flag: single- or multi-threaded packet server.  */
+  int frequency;       /* Maximum number of threads per minute.  */
   int (* check_request) (svz_socket_t *);
   svz_array_t *accepted;
 }

@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: sparsevec.c,v 1.4 2001/09/11 15:05:48 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <assert.h>
@@ -69,26 +64,26 @@ svz_spvec_hook (svz_spvec_t *spvec, svz_spvec_chunk_t *insert)
   for (chunk = spvec->first; chunk; chunk = chunk->next)
     {
       if (insert->offset > chunk->offset)
-	{
-	  next = chunk->next;
-	  /* really insert the chunk */
-	  if (next && insert->offset <= next->offset)
-	    {
-	      insert->next = next;
-	      insert->prev = chunk;
-	      chunk->next = insert;
-	      next->prev = insert;
-	      return;
-	    }
-	  /* append at the end of chunks */
-	  else if (!next)
-	    {
-	      chunk->next = insert;
-	      insert->prev = chunk;
-	      spvec->last = insert;
-	      return;
-	    }
-	}
+        {
+          next = chunk->next;
+          /* really insert the chunk */
+          if (next && insert->offset <= next->offset)
+            {
+              insert->next = next;
+              insert->prev = chunk;
+              chunk->next = insert;
+              next->prev = insert;
+              return;
+            }
+          /* append at the end of chunks */
+          else if (!next)
+            {
+              chunk->next = insert;
+              insert->prev = chunk;
+              spvec->last = insert;
+              return;
+            }
+        }
     }
 
   /* no chunk found, thus INSERT gets the first chunk */
@@ -110,24 +105,24 @@ svz_spvec_unhook (svz_spvec_t *spvec, svz_spvec_chunk_t *delete)
     {
       spvec->first = delete->next;
       if (spvec->first)
-	spvec->first->prev = NULL;
+        spvec->first->prev = NULL;
       if (spvec->last == delete)
-	{
-	  spvec->last = NULL;
-	  spvec->length = spvec->size = 0;
-	}
+        {
+          spvec->last = NULL;
+          spvec->length = spvec->size = 0;
+        }
       return;
-    } 
+    }
   if (spvec->last == delete)
     {
       spvec->last = delete->prev;
       if (spvec->last)
-	{
-	  spvec->last->next = NULL;
-	  spvec->length = spvec->last->offset + spvec->last->size;
-	}
+        {
+          spvec->last->next = NULL;
+          spvec->length = spvec->last->offset + spvec->last->size;
+        }
       else
-	spvec->length = 0;
+        spvec->length = 0;
       return;
     }
   delete->prev->next = delete->next;
@@ -135,7 +130,7 @@ svz_spvec_unhook (svz_spvec_t *spvec, svz_spvec_chunk_t *delete)
 }
 
 /*
- * Try to find a given sparse vector chunk @var{index} in the sparse vector 
+ * Try to find a given sparse vector chunk @var{index} in the sparse vector
  * chunks as fast as possible and return it.
  */
 static svz_spvec_chunk_t *
@@ -143,42 +138,42 @@ svz_spvec_find_chunk (svz_spvec_t *spvec, unsigned long index)
 {
   svz_spvec_chunk_t *chunk = NULL;
 
-  /* index larger than list length ? */
+  /* index larger than list length?  */
   if (index >= spvec->length)
     {
-      /* is index available in last chunk ? */
+      /* is index available in last chunk?  */
       if (spvec->last && svz_spvec_range_all (spvec->last, index))
-	chunk = spvec->last;
+        chunk = spvec->last;
     }
   /* start seeking in second half */
   else if (index > spvec->length >> 1)
     {
       for (chunk = spvec->last; chunk; chunk = chunk->prev)
-	if (svz_spvec_range_all (chunk, index))
-	  break;
+        if (svz_spvec_range_all (chunk, index))
+          break;
     }
-  /* start seeking at the start of the list (usual case) */ 
+  /* start seeking at the start of the list (usual case) */
   else
     {
-      /* index lesser than offset of first chunk ? */
+      /* index lesser than offset of first chunk?  */
       chunk = spvec->first;
       if (chunk && index < chunk->offset)
-	return NULL;
+        return NULL;
 
       for (; chunk; chunk = chunk->next)
-	if (svz_spvec_range_all (chunk, index))
-	  {
-	    if (chunk->next && svz_spvec_range_all (chunk->next, index))
-	      continue;
-	    break;
-	  }
+        if (svz_spvec_range_all (chunk, index))
+          {
+            if (chunk->next && svz_spvec_range_all (chunk->next, index))
+              continue;
+            break;
+          }
     }
   return chunk;
 }
 
 /*
- * Print text representation of the sparse vector @var{spvec}. This 
- * function is for testing and debugging purposes only and should not go 
+ * Print text representation of the sparse vector @var{spvec}.  This
+ * function is for testing and debugging purposes only and should not go
  * into any distribution.
  */
 void
@@ -189,21 +184,21 @@ svz_spvec_analyse (svz_spvec_t *spvec)
 
   for (n = 0, chunk = spvec->first; chunk; n++, chunk = chunk->next)
     {
-      fprintf (stdout, 
-	       "chunk %06lu at %p, ofs: %06lu, size: %02lu, fill: %08lX, "
-	       "prev: %p, next %p\n",
-	       n + 1, (void *) chunk, chunk->offset, chunk->size, chunk->fill, 
-	       (void *) chunk->prev, (void *) chunk->next);
+      fprintf (stdout,
+               "chunk %06lu at %p, ofs: %06lu, size: %02lu, fill: %08lX, "
+               "prev: %p, next %p\n",
+               n + 1, (void *) chunk, chunk->offset, chunk->size, chunk->fill,
+               (void *) chunk->prev, (void *) chunk->next);
     }
-  fprintf (stdout, "length: %lu, size: %lu, first: %p, last: %p\n", 
-	   spvec->length, spvec->size, 
-	   (void *) spvec->first, (void *) spvec->last);
+  fprintf (stdout, "length: %lu, size: %lu, first: %p, last: %p\n",
+           spvec->length, spvec->size,
+           (void *) spvec->first, (void *) spvec->last);
 }
 
 /*
- * Validate the given sparse vector @var{spvec} and print invalid sparse 
- * vectors. Passing the @var{description} text you can figure out the stage 
- * an error occurred. Return zero if there occurred an error otherwise 
+ * Validate the given sparse vector @var{spvec} and print invalid sparse
+ * vectors.  Passing the @var{description} text you can figure out the stage
+ * an error occurred.  Return zero if there occurred an error otherwise
  * non-zero.
  */
 static int
@@ -213,7 +208,7 @@ svz_spvec_validate (svz_spvec_t *spvec, char *description)
   unsigned long n = 0, bits;
   int ok = 1;
 
-  /* any valid list ? */
+  /* any valid list?  */
   assert (spvec);
 
   /* go through all the sparse vector chunks */
@@ -224,35 +219,35 @@ svz_spvec_validate (svz_spvec_t *spvec, char *description)
 
       /* check chain first */
       if ((!next && chunk != spvec->last) || (!prev && chunk != spvec->first))
-	{
-	  fprintf (stdout, "svz_spvec_validate: invalid last or first\n");
-	  ok = 0;
-	  break;
-	}
+        {
+          fprintf (stdout, "svz_spvec_validate: invalid last or first\n");
+          ok = 0;
+          break;
+        }
       if ((next && next->prev != chunk) || (prev && prev->next != chunk))
-	{
-	  fprintf (stdout, "svz_spvec_validate: invalid next or prev\n");
-	  ok = 0;
-	  break;
-	}
+        {
+          fprintf (stdout, "svz_spvec_validate: invalid next or prev\n");
+          ok = 0;
+          break;
+        }
 
       /* check chunk size and offset */
       if (next && chunk->offset + chunk->size > next->offset)
-	{
-	  fprintf (stdout, "svz_spvec_validate: invalid size or offset\n");
-	  ok = 0;
-	  break;
-	}
+        {
+          fprintf (stdout, "svz_spvec_validate: invalid size or offset\n");
+          ok = 0;
+          break;
+        }
 
       /* check chunk chunk fill */
       bits = (1 << chunk->size) - 1;
       if (chunk->fill & ~bits || !(chunk->fill & ((bits + 1) >> 1)) ||
-	  chunk->size == 0 || chunk->fill == 0)
-	{
-	  fprintf (stdout, "svz_spvec_validate: invalid chunk fill\n");
-	  ok = 0;
-	  break;
-	}
+          chunk->size == 0 || chunk->fill == 0)
+        {
+          fprintf (stdout, "svz_spvec_validate: invalid chunk fill\n");
+          ok = 0;
+          break;
+        }
     }
 
   /* check array length */
@@ -263,19 +258,19 @@ svz_spvec_validate (svz_spvec_t *spvec, char *description)
       ok = 0;
     }
 
-  /* print out error description and sparse vector text representation 
+  /* print out error description and sparse vector text representation
      if necessary */
   if (!ok)
     {
       fprintf (stdout, "error in chunk %06lu (%s)\n", n + 1,
-	       description ? description : "unspecified");
+               description ? description : "unspecified");
       svz_spvec_analyse (spvec);
     }
   return ok;
 }
 
 /*
- * Construct an empty sparse vector without initial capacity. Return the
+ * Construct an empty sparse vector without initial capacity.  Return the
  * newly created sparse vector.
  */
 svz_spvec_t *
@@ -290,7 +285,7 @@ svz_spvec_create (void)
 }
 
 /*
- * Destroy the given sparse vector @var{spvec} completely. The argument 
+ * Destroy the given sparse vector @var{spvec} completely.  The argument
  * cannot be used afterwards because it is invalid.
  */
 void
@@ -305,7 +300,7 @@ svz_spvec_destroy (svz_spvec_t *spvec)
 }
 
 /*
- * Appends the specified element @var{value} at the end of the sparse 
+ * Appends the specified element @var{value} at the end of the sparse
  * vector @var{spvec}.
  */
 void
@@ -320,15 +315,15 @@ svz_spvec_add (svz_spvec_t *spvec, void *value)
   /* append an chunk if necessary */
   if (!last || last->size == SVZ_SPVEC_SIZE)
     {
-      chunk = 
-	svz_spvec_create_chunk (last ? last->offset + SVZ_SPVEC_SIZE : 0);
+      chunk =
+        svz_spvec_create_chunk (last ? last->offset + SVZ_SPVEC_SIZE : 0);
       if (last)
-	{
-	  last->next = chunk;
-	  chunk->prev = spvec->last;
-	}
+        {
+          last->next = chunk;
+          chunk->prev = spvec->last;
+        }
       else
-	spvec->first = chunk;
+        spvec->first = chunk;
       spvec->last = last = chunk;
     }
 
@@ -336,14 +331,14 @@ svz_spvec_add (svz_spvec_t *spvec, void *value)
   last->value[last->size] = value;
   last->fill |= (1 << last->size);
   last->size++;
-  
+
   /* adjust sparse vector properties */
   spvec->length++;
   spvec->size++;
 }
 
 /*
- * Removes all of the elements from the sparse vector @var{spvec}. The 
+ * Removes all of the elements from the sparse vector @var{spvec}.  The
  * sparse vector will be as clean as created with @code{svz_spvec_create()}
  * then.
  */
@@ -368,7 +363,7 @@ svz_spvec_clear (svz_spvec_t *spvec)
       next = chunk->next;
       length -= chunk->size;
       if (next)
-	length -= (next->offset - chunk->offset - chunk->size);
+        length -= (next->offset - chunk->offset - chunk->size);
       svz_free (chunk);
       chunk = next;
     }
@@ -381,7 +376,7 @@ svz_spvec_clear (svz_spvec_t *spvec)
 }
 
 /*
- * Returns non-zero if the sparse vector @var{spvec} contains the specified 
+ * Returns non-zero if the sparse vector @var{spvec} contains the specified
  * element @var{value}.
  */
 unsigned long
@@ -397,10 +392,10 @@ svz_spvec_contains (svz_spvec_t *spvec, void *value)
   while (chunk)
     {
       for (fill = 1, n = 0; n < chunk->size; n++, fill <<= 1)
-	{
-	  if (chunk->fill & fill && chunk->value[n] == value)
-	    found++;
-	}
+        {
+          if (chunk->fill & fill && chunk->value[n] == value)
+            found++;
+        }
       chunk = chunk->next;
     }
 
@@ -408,7 +403,7 @@ svz_spvec_contains (svz_spvec_t *spvec, void *value)
 }
 
 /*
- * Returns the element at the specified position @var{index} in the sparse 
+ * Returns the element at the specified position @var{index} in the sparse
  * vector @var{spvec} or @code{NULL} if there is no such element.
  */
 void *
@@ -424,18 +419,18 @@ svz_spvec_get (svz_spvec_t *spvec, unsigned long index)
   if (index >= spvec->length)
     return NULL;
 
-  /* start searching at first or last chunk ? */
+  /* start searching at first or last chunk?  */
   if (index > spvec->length >> 1)
     {
       for (chunk = spvec->last; chunk; chunk = chunk->prev)
-	if (svz_spvec_range (chunk, index))
-	  break;
+        if (svz_spvec_range (chunk, index))
+          break;
     }
   else
     {
       for (chunk = spvec->first; chunk; chunk = chunk->next)
-	if (svz_spvec_range (chunk, index))
-	  break;
+        if (svz_spvec_range (chunk, index))
+          break;
     }
 
   /* evaluate peeked chunk */
@@ -448,8 +443,8 @@ svz_spvec_get (svz_spvec_t *spvec, unsigned long index)
 }
 
 /*
- * Searches for the first occurrence of the given argument @var{value}. 
- * Return -1 if the value @var{value} could not be found in the sparse 
+ * Searches for the first occurrence of the given argument @var{value}.
+ * Return -1 if the value @var{value} could not be found in the sparse
  * vector @var{spvec}.
  */
 unsigned long
@@ -465,17 +460,17 @@ svz_spvec_index (svz_spvec_t *spvec, void *value)
   while (chunk)
     {
       for (fill = 1, n = 0; n < chunk->size; n++, fill <<= 1)
-	{
-	  if (chunk->fill & fill && chunk->value[n] == value)
-	    return (n + chunk->offset);
-	}
+        {
+          if (chunk->fill & fill && chunk->value[n] == value)
+            return (n + chunk->offset);
+        }
       chunk = chunk->next;
     }
   return (unsigned long) -1;
 }
 
 /*
- * Removes the element at the specified position @var{index} in the sparse 
+ * Removes the element at the specified position @var{index} in the sparse
  * vector @var{spvec} and returns its previous value.
  */
 void *
@@ -494,18 +489,18 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
   if (index >= spvec->length)
     return NULL;
 
-  /* start at first or last chunk ? */
+  /* start at first or last chunk?  */
   if (index > spvec->length >> 1)
     {
       for (chunk = spvec->last; chunk; chunk = chunk->prev)
-	if (svz_spvec_range (chunk, index))
-	  break;
+        if (svz_spvec_range (chunk, index))
+          break;
     }
   else
     {
       for (chunk = spvec->first; chunk; chunk = chunk->next)
-	if (svz_spvec_range (chunk, index))
-	  break;
+        if (svz_spvec_range (chunk, index))
+          break;
     }
 
   /* evaluate peeked chunk */
@@ -513,7 +508,7 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
     return NULL;
   idx = index - chunk->offset;
 
-  /* is there any value at the given index ? */
+  /* is there any value at the given index?  */
   if (!(chunk->fill & (1 << idx)))
     return NULL;
 
@@ -525,8 +520,8 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
   /* adjust chunk size */
   if (!(chunk->fill & ~((1 << idx) - 1)))
     {
-      for (bit = 1 << idx; bit && !(chunk->fill & bit); bit >>= 1) 
-	chunk->size--;
+      for (bit = 1 << idx; bit && !(chunk->fill & bit); bit >>= 1)
+        chunk->size--;
     }
   else
     chunk->size--;
@@ -544,12 +539,12 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
 
       /* break here if the list is empty */
       if (spvec->size == 0)
-	{
-	  svz_free (chunk);
-	  spvec->last = spvec->first = chunk = NULL;
-	  spvec->length = 0;
-	  return value;
-	}
+        {
+          svz_free (chunk);
+          spvec->last = spvec->first = chunk = NULL;
+          spvec->length = 0;
+          return value;
+        }
 
       /* rearrange sparse vector */
       svz_spvec_unhook (spvec, chunk);
@@ -566,17 +561,17 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
       fill = chunk->fill;
       chunk->fill = (fill & bit) | ((fill >> 1) & ~bit);
       assert (chunk->fill);
-	      
+
       /* delete a value */
       memmove (&chunk->value[idx], &chunk->value[idx + 1],
-	       (chunk->size - idx) * sizeof (void *));
+               (chunk->size - idx) * sizeof (void *));
     }
 
   /* reduce array index offset by one */
   while (chunk)
     {
       if (chunk->offset > index)
-	chunk->offset--;
+        chunk->offset--;
       chunk = chunk->next;
     }
 
@@ -590,13 +585,13 @@ svz_spvec_delete (svz_spvec_t *spvec, unsigned long index)
 }
 
 /*
- * Removes all of the elements whose index is between @var{from} (inclusive) 
- * and @var{to} (exclusive) from the sparse vector @var{spvec}. Returns the 
+ * Removes all of the elements whose index is between @var{from} (inclusive)
+ * and @var{to} (exclusive) from the sparse vector @var{spvec}.  Returns the
  * amount of actually deleted elements.
  */
 unsigned long
-svz_spvec_delete_range (svz_spvec_t *spvec, 
-			unsigned long from, unsigned long to)
+svz_spvec_delete_range (svz_spvec_t *spvec,
+                        unsigned long from, unsigned long to)
 {
   unsigned long idx, n = 0;
 
@@ -632,19 +627,19 @@ svz_spvec_delete_range (svz_spvec_t *spvec,
   for (idx = from; idx < to;)
     {
       if (svz_spvec_delete (spvec, idx))
-	{
-	  to--;
-	  n++;
-	}
+        {
+          to--;
+          n++;
+        }
       else
-	idx++;
+        idx++;
     }
   return n;
 }
 
 /*
- * Replaces the element at the specified position @var{index} in the sparse 
- * vector @var{spvec} by the specified element @var{value} and return its 
+ * Replaces the element at the specified position @var{index} in the sparse
+ * vector @var{spvec} by the specified element @var{value} and return its
  * previous value.
  */
 void *
@@ -658,33 +653,33 @@ svz_spvec_set (svz_spvec_t *spvec, unsigned long index, void *value)
   svz_spvec_validate (spvec, "set");
 #endif /* DEVEL */
 
-  /* start at first or last chunk ? */
+  /* start at first or last chunk?  */
   chunk = svz_spvec_find_chunk (spvec, index);
 
-  /* found a valid chunk ? */
+  /* found a valid chunk?  */
   if (chunk)
     {
       idx = index - chunk->offset;
 
-      /* already set ? */
+      /* already set?  */
       if (chunk->fill & (1 << idx))
-	{
-	  replace = chunk->value[idx];
-	  chunk->value[idx] = value;
-	  return replace;
-	}
+        {
+          replace = chunk->value[idx];
+          chunk->value[idx] = value;
+          return replace;
+        }
       /* no, just place the value there */
       else if (chunk->next == NULL || idx < chunk->size)
-	{
-	  chunk->fill |= (1 << idx);
-	  if (idx >= chunk->size)
-	    chunk->size = idx + 1;
-	  spvec->size++;
-	  if (spvec->length < chunk->offset + chunk->size)
-	    spvec->length = chunk->offset + chunk->size;
-	  chunk->value[idx] = value;
-	  return replace;
-	}
+        {
+          chunk->fill |= (1 << idx);
+          if (idx >= chunk->size)
+            chunk->size = idx + 1;
+          spvec->size++;
+          if (spvec->length < chunk->offset + chunk->size)
+            spvec->length = chunk->offset + chunk->size;
+          chunk->value[idx] = value;
+          return replace;
+        }
     }
 
   /* no chunk found, create one at the given offset */
@@ -704,9 +699,9 @@ svz_spvec_set (svz_spvec_t *spvec, unsigned long index, void *value)
 }
 
 /*
- * Delete the element at the given position @var{index} from the sparse 
- * vector @var{spvec} but leave all following elements untouched 
- * (unlike @code{svz_spvec_delete()}). Return its previous value if there 
+ * Delete the element at the given position @var{index} from the sparse
+ * vector @var{spvec} but leave all following elements untouched
+ * (unlike @code{svz_spvec_delete()}).  Return its previous value if there
  * is one otherwise return @code{NULL}.
  */
 void *
@@ -743,9 +738,9 @@ svz_spvec_unset (svz_spvec_t *spvec, unsigned long index)
   if (idx + 1 == chunk->size)
     for (bit = 1 << idx; bit && !(chunk->fill & bit); bit >>= 1)
       {
-	chunk->size--;
-	if (chunk == spvec->last)
-	  spvec->length--;
+        chunk->size--;
+        if (chunk == spvec->last)
+          spvec->length--;
       }
   if (chunk->size == 0)
     {
@@ -771,7 +766,7 @@ svz_spvec_size (svz_spvec_t *spvec)
 }
 
 /*
- * Returns the index of the last element of the sparse vector @var{spvec} 
+ * Returns the index of the last element of the sparse vector @var{spvec}
  * plus one.
  */
 unsigned long
@@ -798,59 +793,59 @@ svz_spvec_insert (svz_spvec_t *spvec, unsigned long index, void *value)
   svz_spvec_validate (spvec, "insert");
 #endif /* DEVEL */
 
-  /* start at first or last chunk ? */
+  /* start at first or last chunk?  */
   chunk = svz_spvec_find_chunk (spvec, index);
 
-  /* found a valid chunk ? */
+  /* found a valid chunk?  */
   if (chunk)
     {
       idx = index - chunk->offset;
 
-      /* can the value be inserted here ? */
+      /* can the value be inserted here?  */
       if (chunk->size < SVZ_SPVEC_SIZE)
-	{
-	  /* adjust chunk size */
-	  chunk->size++;
-	  if (idx >= chunk->size)
-	    chunk->size = idx + 1;
+        {
+          /* adjust chunk size */
+          chunk->size++;
+          if (idx >= chunk->size)
+            chunk->size = idx + 1;
 
-	  if (idx < chunk->size)
-	    {
-	      /* insert a bit */
-	      bit = (1 << idx) - 1;
-	      fill = chunk->fill;
-	      chunk->fill = (fill & bit) | ((fill << 1) & ~bit);
+          if (idx < chunk->size)
+            {
+              /* insert a bit */
+              bit = (1 << idx) - 1;
+              fill = chunk->fill;
+              chunk->fill = (fill & bit) | ((fill << 1) & ~bit);
 
-	      /* shuffle value data */
-	      memmove (&chunk->value[idx + 1], &chunk->value[idx],
-		       (chunk->size - 1 - idx) * sizeof (void *));
-	    }
-	      
-	  /* insert the value */
-	  chunk->fill |= (1 << idx);
-	  chunk->value[idx] = value;
-	  chunk = chunk->next;
-	}
+              /* shuffle value data */
+              memmove (&chunk->value[idx + 1], &chunk->value[idx],
+                       (chunk->size - 1 - idx) * sizeof (void *));
+            }
+
+          /* insert the value */
+          chunk->fill |= (1 << idx);
+          chunk->value[idx] = value;
+          chunk = chunk->next;
+        }
 
       /* no, chunk is full, need to split the chunk */
       else
-	{
-	  next = svz_spvec_create_chunk (index + 1);
+        {
+          next = svz_spvec_create_chunk (index + 1);
 
-	  /* keep less indexes in old chunk and copy greater to next */
-	  memcpy (next->value, &chunk->value[idx], 
-		  (SVZ_SPVEC_SIZE - idx) * sizeof (void *));
-	  next->fill = (chunk->fill >> idx);
-	  next->size = SVZ_SPVEC_SIZE - idx;
+          /* keep less indexes in old chunk and copy greater to next */
+          memcpy (next->value, &chunk->value[idx],
+                  (SVZ_SPVEC_SIZE - idx) * sizeof (void *));
+          next->fill = (chunk->fill >> idx);
+          next->size = SVZ_SPVEC_SIZE - idx;
 
-	  chunk->value[idx] = value;
-	  chunk->fill &= (1 << (idx + 1)) - 1;
-	  chunk->fill |= (1 << idx);
-	  chunk->size = idx + 1;
+          chunk->value[idx] = value;
+          chunk->fill &= (1 << (idx + 1)) - 1;
+          chunk->fill |= (1 << idx);
+          chunk->size = idx + 1;
 
-	  svz_spvec_hook (spvec, next);
-	  chunk = next->next;
-	}
+          svz_spvec_hook (spvec, next);
+          chunk = next->next;
+        }
     }
 
   /* add another chunk */
@@ -873,14 +868,14 @@ svz_spvec_insert (svz_spvec_t *spvec, unsigned long index, void *value)
   while (chunk)
     {
       if (chunk->offset > index)
-	chunk->offset++;
+        chunk->offset++;
       chunk = chunk->next;
     }
 }
 
 /*
- * Rearranges the given sparse vector @var{spvec}. After that there are no 
- * more gaps within the sparse vector. The index - value relationship gets 
+ * Rearranges the given sparse vector @var{spvec}.  After that there are no
+ * more gaps within the sparse vector.  The index - value relationship gets
  * totally lost by this operation.
  */
 void
@@ -902,28 +897,28 @@ svz_spvec_pack (svz_spvec_t *spvec)
     {
       next = chunk->next;
       if (next && chunk->size == SVZ_SPVEC_SIZE)
-	{
-	  if (chunk->fill != SVZ_SPVEC_MASK ||
-	      chunk->offset + SVZ_SPVEC_SIZE != next->offset)
-	    {
-	      need2pack = 1;
-	      break;
-	    }
-	}
+        {
+          if (chunk->fill != SVZ_SPVEC_MASK ||
+              chunk->offset + SVZ_SPVEC_SIZE != next->offset)
+            {
+              need2pack = 1;
+              break;
+            }
+        }
       if (next && chunk->size < SVZ_SPVEC_SIZE)
-	{
-	  need2pack = 1;
-	  break;
-	}
+        {
+          need2pack = 1;
+          break;
+        }
       if (!next)
-	{
-	  bits = (1 << (spvec->length - chunk->offset)) - 1;
-	  if ((chunk->fill & bits) != bits)
-	    {
-	      need2pack = 1;
-	      break;
-	    }
-	}
+        {
+          bits = (1 << (spvec->length - chunk->offset)) - 1;
+          if ((chunk->fill & bits) != bits)
+            {
+              need2pack = 1;
+              break;
+            }
+        }
     }
 
   /* return if packing is not necessary */
@@ -943,9 +938,9 @@ svz_spvec_pack (svz_spvec_t *spvec)
       spvec->size += SVZ_SPVEC_SIZE;
       memcpy (chunk->value, &value[n], SVZ_SPVEC_SIZE * sizeof (void *));
       if (!prev)
-	spvec->first = chunk;
+        spvec->first = chunk;
       else
-	prev->next = chunk;
+        prev->next = chunk;
       chunk->prev = prev;
       prev = chunk;
     }
@@ -958,9 +953,9 @@ svz_spvec_pack (svz_spvec_t *spvec)
       spvec->size += size;
       memcpy (chunk->value, &value[n], size * sizeof (void *));
       if (!prev)
-	spvec->first = chunk;
+        spvec->first = chunk;
       else
-	prev->next = chunk;
+        prev->next = chunk;
       chunk->prev = prev;
     }
   spvec->last = chunk;
@@ -969,8 +964,8 @@ svz_spvec_pack (svz_spvec_t *spvec)
 }
 
 /*
- * Delivers all values within the given sparse vector @var{spvec} in a 
- * single linear chunk. You have to @code{svz_free()} it after usage.
+ * Delivers all values within the given sparse vector @var{spvec} in a
+ * single linear chunk.  You have to @code{svz_free()} it after usage.
  */
 void **
 svz_spvec_values (svz_spvec_t *spvec)
@@ -983,18 +978,18 @@ svz_spvec_values (svz_spvec_t *spvec)
   svz_spvec_validate (spvec, "values");
 #endif /* DEVEL */
 
-  if (!spvec->size) 
+  if (!spvec->size)
     return NULL;
 
   value = svz_malloc (spvec->size * sizeof (void *));
-  for (index = 0, chunk = spvec->first; chunk; chunk = chunk->next) 
+  for (index = 0, chunk = spvec->first; chunk; chunk = chunk->next)
     {
       for (bit = 1, n = 0; n < chunk->size; bit <<= 1, n++)
-	{
-	  if (chunk->fill & bit)
-	    value[index++] = chunk->value[n];
-	  assert (index <= spvec->size);
-	}
+        {
+          if (chunk->fill & bit)
+            value[index++] = chunk->value[n];
+          assert (index <= spvec->size);
+        }
     }
   return value;
 }

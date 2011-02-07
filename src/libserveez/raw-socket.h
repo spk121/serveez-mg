@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: raw-socket.h,v 1.6 2001/12/13 18:00:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __RAW_SOCKET_H__
@@ -46,11 +41,11 @@
 
 /* ip header flags (part of frag_offset) */
 #define IP_HDR_FLAGS(hdr) ((hdr->frag_offset) & 0xE000)
-#define IP_FLAG_DF 0x4000 /* Don't Fragment This Datagram (DF). */
-#define IP_FLAG_MF 0x2000 /* More Fragments Flag (MF). */
+#define IP_FLAG_DF 0x4000 /* Don't Fragment This Datagram (DF).  */
+#define IP_FLAG_MF 0x2000 /* More Fragments Flag (MF).  */
 #define IP_HDR_FRAG(hdr) ((hdr->frag_offset) & 0x1FFF)
 
-/* IP header structure. */
+/* IP header structure.  */
 typedef struct
 {
   uint8_t version_length;     /* header length (in DWORDs) and ip version */

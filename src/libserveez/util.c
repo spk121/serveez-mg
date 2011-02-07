@@ -8,21 +8,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: util.c,v 1.26 2003/06/18 03:32:49 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>       /* sprintf, fflush, vfprintf, fprintf, ferror, feof */
@@ -42,7 +37,7 @@
 #include "mutex.h"
 #include "util.h"
 
-/* 
+/*
  * Level of the logging interfaces verbosity:
  * 0 - only fatal error messages
  * 1 - error messages
@@ -61,17 +56,17 @@ static char log_level[][16] = {
 };
 
 /*
- * This is the file all log messages are written to. Change it with a
- * call to @code{svz_log_setfile()}. By default, all log messages are written
+ * This is the file all log messages are written to.  Change it with a
+ * call to @code{svz_log_setfile()}.  By default, all log messages are written
  * to @code{stderr}.
  */
 static FILE *svz_logfile = NULL;
 
-/* Global definition of the logging mutex. */
+/* Global definition of the logging mutex.  */
 svz_mutex_define (svz_log_mutex)
 
 /*
- * Print a message to the log system. @var{level} specifies the prefix.
+ * Print a message to the log system.  @var{level} specifies the prefix.
  */
 void
 svz_log (int level, const char *format, ...)
@@ -88,8 +83,8 @@ svz_log (int level, const char *format, ...)
   tm = time (NULL);
   t = localtime (&tm);
   fprintf (svz_logfile, "[%4d/%02d/%02d %02d:%02d:%02d] %s: ",
-	   t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-	   t->tm_hour, t->tm_min, t->tm_sec, log_level[level]);
+           t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+           t->tm_hour, t->tm_min, t->tm_sec, log_level[level]);
   va_start (args, format);
   vfprintf (svz_logfile, format, args);
   va_end (args);
@@ -99,7 +94,7 @@ svz_log (int level, const char *format, ...)
 
 /*
  * Set the file stream @var{file} to the log file all messages are printed
- * to. Could also be @code{stdout} or @code{stderr}.
+ * to.  Could also be @code{stdout} or @code{stderr}.
  */
 void
 svz_log_setfile (FILE * file)
@@ -111,17 +106,17 @@ svz_log_setfile (FILE * file)
 
 /*
  * Dump a @var{buffer} with the length @var{len} to the file stream @var{out}.
- * You can specify a description in @var{action}. The hexadecimal text 
- * representation of the given buffer will be either cut at @var{len} or 
- * @var{max}. @var{from} is a numerical identifier of the buffers creator.
+ * You can specify a description in @var{action}.  The hexadecimal text
+ * representation of the given buffer will be either cut at @var{len} or
+ * @var{max}.  @var{from} is a numerical identifier of the buffers creator.
  */
 int
 svz_hexdump (FILE *out,    /* output FILE stream */
-	     char *action, /* hex dump description */
-	     int from,	   /* who created the dumped data */
-	     char *buffer, /* the buffer to dump */
-	     int len,	   /* length of that buffer */
-	     int max)	   /* maximum amount of bytes to dump (0 = all) */
+             char *action, /* hex dump description */
+             int from,     /* who created the dumped data */
+             char *buffer, /* the buffer to dump */
+             int len,      /* length of that buffer */
+             int max)      /* maximum amount of bytes to dump (0 = all) */
 {
   int row, col, x, max_col;
 
@@ -140,19 +135,19 @@ svz_hexdump (FILE *out,    /* output FILE stream */
       /* print hexdump */
       fprintf (out, "%04X   ", x);
       for (col = 0; col < MAX_DUMP_LINE; col++, x++)
-	{
-	  if (x < max)
-	    fprintf (out, "%02X ", (unsigned char) buffer[x]);
-	  else
-	    fprintf (out, "   ");
-	}
+        {
+          if (x < max)
+            fprintf (out, "%02X ", (unsigned char) buffer[x]);
+          else
+            fprintf (out, "   ");
+        }
       /* print character representation */
       x -= MAX_DUMP_LINE;
       fprintf (out, "  ");
       for (col = 0; col < MAX_DUMP_LINE && x < max; col++, x++)
-	{
-	  fprintf (out, "%c", buffer[x] >= ' ' ? buffer[x] : '.');
-	}
+        {
+          fprintf (out, "%c", buffer[x] >= ' ' ? buffer[x] : '.');
+        }
       fprintf (out, "\n");
     }
 
@@ -180,8 +175,8 @@ svz_time (long t)
 }
 
 /*
- * Create some kind of uptime string. It tells how long the core library
- * has been running. 
+ * Create some kind of uptime string.  It tells how long the core library
+ * has been running.
  */
 char *
 svz_uptime (long diff)
@@ -228,16 +223,16 @@ svz_tolower (char *str)
 
   while (*p)
     {
-      *p = (char) (isupper ((uint8_t) * p) ? 
-		   tolower ((uint8_t) * p) : *p);
+      *p = (char) (isupper ((uint8_t) * p) ?
+                   tolower ((uint8_t) * p) : *p);
       p++;
     }
   return str;
 }
 
 /*
- * This routine is for detecting the operating system version of Win32 
- * and all Unices at runtime. You should call it at least once at startup.
+ * This routine is for detecting the operating system version runtime.
+ * You should call it at least once at startup.
  * It saves its result in the variable @code{svz_os_version} and prints an
  * appropriate message.
  */
@@ -258,7 +253,7 @@ svz_sys_version (void)
 }
 
 /*
- * Converts an unsigned integer to its decimal string representation 
+ * Converts an unsigned integer to its decimal string representation
  * returning a pointer to an internal buffer, so copy the result.
  */
 char *
@@ -296,7 +291,7 @@ svz_atoi (char *str)
 }
 
 /*
- * Returns the current working directory. The returned pointer needs to be
+ * Returns the current working directory.  The returned pointer needs to be
  * @code{svz_free()}'ed after usage.
  */
 char *
@@ -319,8 +314,8 @@ svz_getcwd (void)
 
 /*
  * This routine checks for the current and maximum limit of open files
- * of the current process. The function heavily depends on the underlying
- * platform. It tries to set the limit to the given @var{max_sockets} 
+ * of the current process.  The function heavily depends on the underlying
+ * platform.  It tries to set the limit to the given @var{max_sockets}
  * amount.
  */
 int
@@ -343,22 +338,22 @@ svz_openfiles (int max_sockets)
       return -1;
     }
   svz_log (LOG_NOTICE, "current open file limit: %d/%d\n",
-	   rlim.rlim_cur, rlim.rlim_max);
+           rlim.rlim_cur, rlim.rlim_max);
 
-  if ((int) rlim.rlim_max < (int) max_sockets || 
+  if ((int) rlim.rlim_max < (int) max_sockets ||
       (int) rlim.rlim_cur < (int) max_sockets)
     {
       rlim.rlim_max = max_sockets;
       rlim.rlim_cur = max_sockets;
 
       if (setrlimit (RLIMIT_NOFILE, &rlim) == -1)
-	{
-	  svz_log (LOG_ERROR, "setrlimit: %s\n", SYS_ERROR);
-	  return -1;
-	}
+        {
+          svz_log (LOG_ERROR, "setrlimit: %s\n", SYS_ERROR);
+          return -1;
+        }
       getrlimit (RLIMIT_NOFILE, &rlim);
       svz_log (LOG_NOTICE, "open file limit set to: %d/%d\n",
-	       rlim.rlim_cur, rlim.rlim_max);
+               rlim.rlim_cur, rlim.rlim_max);
     }
 
   return 0;

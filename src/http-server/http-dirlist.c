@@ -7,21 +7,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-dirlist.c,v 1.24 2003/06/14 14:57:59 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <config.h>
@@ -44,9 +39,9 @@
 #include "http-core.h"
 #include "http-dirlist.h"
 
-# define FILENAME dir[n]->d_name
+#define FILENAME dir[n]->d_name
 
-/* Size of last buffer allocated. */
+/* Size of last buffer allocated.  */
 int http_dirlist_size = 0;
 
 /*
@@ -62,18 +57,18 @@ http_create_uri (char *file)
 
   p = file;
   dst = uri;
-  
+
   /* go throughout the filename */
   while (*p)
     {
       /* check if the current character is valid */
-      while (*p && 
-	     ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') ||
-	      (*p >= '0' && *p <= '9') || 
-	      *p == ' ' || *p == '/' || *p == '.' || *p == '_'))
-	*dst++ = *p++;
+      while (*p &&
+             ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') ||
+              (*p >= '0' && *p <= '9') ||
+              *p == ' ' || *p == '/' || *p == '.' || *p == '_'))
+        *dst++ = *p++;
       if (!*p)
-	break;
+        break;
       *dst++ = '%';
       sprintf (dst, "%02X", (unsigned char) *p++);
       dst += 2;
@@ -84,8 +79,8 @@ http_create_uri (char *file)
 
 /*
  * Return a buffer to a http directory listing referring to DIRNAME
- * and being part of the document root DOCROOT. Do not to forget to
- * svz_free() the return buffer. Return NULL on errors.
+ * and being part of the document root DOCROOT.  Do not to forget to
+ * svz_free() the return buffer.  Return NULL on errors.
  */
 char *
 http_dirlist (char *dirname, char *docroot, char *userdir)
@@ -109,9 +104,9 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
   memset (postamble, 0, DIRLIST_SPACE_POST);
 
   /* Remove trailing slash of dirname */
-  if (strlen (dirname) != 1 && 
+  if (strlen (dirname) != 1 &&
       (dirname[strlen (dirname) - 1] == '/' ||
-       dirname[strlen (dirname) - 1] == '\\')) 
+       dirname[strlen (dirname) - 1] == '\\'))
     {
       dirname[strlen (dirname) - 1] = 0;
     }
@@ -130,13 +125,13 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
     {
       i = 0;
       while (dirname[i] == docroot[i] && docroot[i] != 0)
-	i++;
+        i++;
       relpath = &dirname[i];
       if (!strcmp (relpath, "/"))
-	{
-	  relpath++;
-	  dirname++;
-	}
+        {
+          relpath++;
+          dirname++;
+        }
     }
   else
     relpath = userdir + 1;
@@ -213,10 +208,10 @@ http_dirlist (char *dirname, char *docroot, char *userdir)
 
       /* Append this entry's data to output buffer */
       while (datasize - strlen (dirdata) < strlen (entrystr) + 1)
-	{
-	  dirdata = svz_realloc (dirdata, datasize + DIRLIST_SPACE_GROW);
-	  datasize += DIRLIST_SPACE_GROW;
-	}
+        {
+          dirdata = svz_realloc (dirdata, datasize + DIRLIST_SPACE_GROW);
+          datasize += DIRLIST_SPACE_GROW;
+        }
       strcat (dirdata, entrystr);
     }
 

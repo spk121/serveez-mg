@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: mutex.h,v 1.3 2003/06/18 03:32:49 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __MUTEX_H__
@@ -33,11 +28,11 @@ typedef pthread_mutex_t svz_mutex_t;
 # define SVZ_MUTEX_INITIALIZER PTHREAD_MUTEX_INITIALIZER
 
 /* Declares a @var{mutex} object externally.  This is useful when the
-   @var{mutex} object is defined in another file. */
+   @var{mutex} object is defined in another file.  */
 #define svz_mutex_declare(mutex) \
   extern svz_mutex_t mutex;
 
-/* Defines a @var{mutex} object globally. */
+/* Defines a @var{mutex} object globally.  */
 #define svz_mutex_define(mutex) \
   svz_mutex_t mutex = SVZ_MUTEX_INITIALIZER;
 

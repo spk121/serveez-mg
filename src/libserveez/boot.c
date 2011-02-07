@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: boot.c,v 1.25 2003/06/18 03:32:49 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -51,21 +46,21 @@ char *svz_library = PACKAGE;
 /* The version of the core library. */
 char *svz_version = VERSION;
 
-/* Runtime flag if this is Win32 or not. */
+/* Runtime flag if this is Win32 or not.  */
 #if defined (__MINGW32__) || defined (__CYGWIN__)
 int svz_have_Win32 = 1;
 #else
 int svz_have_Win32 = 0;
 #endif
 
-/* Runtime flag if this is the debug version or not. */
+/* Runtime flag if this is the debug version or not.  */
 int svz_have_debug = 1;
 
 /* Runtime checkable flags for configuration language and code if flood
-   protection has been enabled or not. */
+   protection has been enabled or not.  */
 int svz_have_floodprotect = 1;
 
-/* Extern declaration of the logging mutex. */
+/* Extern declaration of the logging mutex.  */
 svz_mutex_declare (svz_log_mutex)
 
 /*

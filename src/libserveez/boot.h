@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: boot.h,v 1.11 2003/06/14 14:57:59 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __BOOT_H__
@@ -46,20 +41,20 @@ svz_config_t;
 
 __BEGIN_DECLS
 
-/* Core library configuration. */
+/* Core library configuration.  */
 SERVEEZ_API svz_config_t svz_config;
 
-/* Exported functions. */
+/* Exported functions.  */
 SERVEEZ_API void svz_init_config (void);
 SERVEEZ_API void svz_boot (void);
 SERVEEZ_API void svz_halt (void);
 
-/* Some static strings. */
+/* Some static strings.  */
 SERVEEZ_API char *svz_library;
 SERVEEZ_API char *svz_version;
 SERVEEZ_API char *svz_build;
 
-/* Exported from `boot.c' because it is a central point. */
+/* Exported from `boot.c' because it is a central point.  */
 SERVEEZ_API int svz_have_debug;
 SERVEEZ_API int svz_have_Win32;
 SERVEEZ_API int svz_have_floodprotect;

@@ -6,21 +6,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: http-cgi.c,v 1.54 2007/03/29 18:12:31 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <config.h>
@@ -44,7 +39,7 @@
 #include "http-cgi.h"
 
 /*
- * Extended disconnect_socket callback for CGIs. Handling CGI related
+ * Extended disconnect_socket callback for CGIs.  Handling CGI related
  * topics and afterwards we process the normal http disconnection
  * functionality.
  */
@@ -62,14 +57,14 @@ http_cgi_disconnect (svz_socket_t *sock)
   if (sock->pipe_desc[READ] != INVALID_HANDLE)
     {
       if (close (sock->pipe_desc[READ]) == -1)
-	svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
+        svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
       sock->pipe_desc[READ] = INVALID_HANDLE;
       sock->flags &= ~SOCK_FLAG_RECV_PIPE;
     }
   if (sock->pipe_desc[WRITE] != INVALID_HANDLE)
     {
       if (close (sock->pipe_desc[WRITE]) == -1)
-	svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
+        svz_log (LOG_ERROR, "close: %s\n", SYS_ERROR);
       sock->pipe_desc[WRITE] = INVALID_HANDLE;
       sock->flags &= ~SOCK_FLAG_SEND_PIPE;
     }
@@ -81,7 +76,7 @@ http_cgi_disconnect (svz_socket_t *sock)
     {
       if (kill (http->pid, SIGKILL) == -1)
         svz_log (LOG_ERROR, "kill: %s\n", SYS_ERROR);
-      /* Test if the cgi is still running and cleanup. */
+      /* Test if the cgi is still running and cleanup.  */
       else if (waitpid (http->pid, NULL, 0) == -1)
         svz_log (LOG_ERROR, "waitpid: %s\n", SYS_ERROR);
       http->pid = INVALID_HANDLE;
@@ -91,7 +86,7 @@ http_cgi_disconnect (svz_socket_t *sock)
 }
 
 /*
- * This is the default idle function for http connections. It checks 
+ * This is the default idle function for http connections.  It checks
  * whether any died child was a cgi script.
  */
 int
@@ -101,19 +96,19 @@ http_cgi_died (svz_socket_t *sock)
 
   if (sock->flags & SOCK_FLAG_PIPE)
     {
-      /* Check if a died child is this cgi. */
+      /* Check if a died child is this cgi.  */
       if (svz_child_died && http->pid == svz_child_died)
-	{
-	  svz_log (LOG_NOTICE, "cgi script pid %d died\n", 
-		   (int) svz_child_died);
-	  svz_child_died = 0;
-	}
-      /* Test if the cgi is still running. */
+        {
+          svz_log (LOG_NOTICE, "cgi script pid %d died\n",
+                   (int) svz_child_died);
+          svz_child_died = 0;
+        }
+      /* Test if the cgi is still running.  */
       if (waitpid (http->pid, NULL, WNOHANG) == http->pid)
-	{
-	  svz_log (LOG_NOTICE, "cgi script pid %d died\n", (int) http->pid);
-	  http->pid = INVALID_HANDLE;
-	}
+        {
+          svz_log (LOG_NOTICE, "cgi script pid %d died\n", (int) http->pid);
+          http->pid = INVALID_HANDLE;
+        }
     }
   
   sock->idle_counter = 1;
@@ -123,7 +118,7 @@ http_cgi_died (svz_socket_t *sock)
 /*
  * The http cgi reader gets data from the stdout of a cgi
  * program and stores the data into the send buffer of
- * the socket structure. We set the HTTP_FLAG_DONE flag
+ * the socket structure.  We set the HTTP_FLAG_DONE flag
  * to indicate there was no more data.
  */
 int
@@ -135,7 +130,7 @@ http_cgi_read (svz_socket_t *sock)
 
   /* read as much space is left in the buffer */
   do_read = sock->send_buffer_size - sock->send_buffer_fill;
-  if (do_read <= 0) 
+  if (do_read <= 0)
     {
       return 0;
     }
@@ -146,7 +141,7 @@ http_cgi_read (svz_socket_t *sock)
     {
       svz_log (LOG_ERROR, "cgi: read: %s\n", SYS_ERROR);
       if (errno == EAGAIN)
-	return 0;
+        return 0;
       num_read = -1;
     }
 
@@ -167,13 +162,13 @@ http_cgi_read (svz_socket_t *sock)
       sock->flags &= ~SOCK_FLAG_RECV_PIPE;
       return -1;
     }
-  
+
   return 0;
 }
 
 /*
- * HTTP_CGI_WRITE pipes all read data from the http socket connection 
- * into the cgi stdin. This is necessary for the so called post method.
+ * HTTP_CGI_WRITE pipes all read data from the http socket connection
+ * into the cgi stdin.  This is necessary for the so called post method.
  * It directly reads from the RECV_BUFFER of the socket structure.
  */
 int
@@ -183,17 +178,17 @@ http_cgi_write (svz_socket_t *sock)
   int num_written;
   http_socket_t *http = sock->data;
 
-  /* 
+  /*
    * Write as many bytes as possible, remember how many
-   * were actually sent. Do not write more than the content
+   * were actually sent.  Do not write more than the content
    * length of the post data.
    */
   do_write = sock->recv_buffer_fill;
   if (do_write > http->contentlength)
     do_write = http->contentlength;
 
-  if ((num_written = write (sock->pipe_desc[WRITE], 
-			    sock->recv_buffer, do_write)) == -1)
+  if ((num_written = write (sock->pipe_desc[WRITE],
+                            sock->recv_buffer, do_write)) == -1)
     {
       svz_log (LOG_ERROR, "cgi: write: %s\n", SYS_ERROR);
     }
@@ -208,16 +203,16 @@ http_cgi_write (svz_socket_t *sock)
        * new data can get stuffed into it.
        */
       if (sock->recv_buffer_fill > num_written)
-	{
-	  memmove (sock->recv_buffer, 
-		   sock->recv_buffer + num_written,
-		   sock->recv_buffer_fill - num_written);
-	}
+        {
+          memmove (sock->recv_buffer,
+                   sock->recv_buffer + num_written,
+                   sock->recv_buffer_fill - num_written);
+        }
       sock->recv_buffer_fill -= num_written;
       http->contentlength -= num_written;
     }
 
-  /* 
+  /*
    * If we have written all data to the CGI stdin, we can now start
    * reading from the CGI's stdout and write again to the http
    * connection.
@@ -240,17 +235,17 @@ http_cgi_write (svz_socket_t *sock)
 }
 
 /*
- * Create the environment block for a CGI script. Depending on the
+ * Create the environment block for a CGI script.  Depending on the
  * system the environment is a field of null terminated char pointers
  * (for Unices) followed by a null pointer or one char pointer where
  * the variables a separated by zeros and the block is terminated
- * by a further zero. It returns the amount of defined variables.
+ * by a further zero.  It returns the amount of defined variables.
  */
 static int
 http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
-		      svz_envblock_t *env, /* env block */
-		      char *script,        /* the cgi script's filename */
-		      int type)            /* the cgi type */
+                      svz_envblock_t *env, /* env block */
+                      char *script,        /* the cgi script's filename */
+                      int type)            /* the cgi type */
 {
   http_socket_t *http;
   http_config_t *cfg = sock->cfg;
@@ -258,12 +253,12 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   /* request type identifiers */
   static char request_type[2][5] = { "POST", "GET" };
 
-  /* 
-   * This data field is needed for the conversion of http request 
+  /*
+   * This data field is needed for the conversion of http request
    * properties into environment variables.
    */
-  static struct 
-  { 
+  static struct
+  {
     char *property; /* property identifier */
     char *env;      /* variable identifier */
   }
@@ -282,7 +277,7 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
     { NULL, NULL }
   };
 
-  unsigned n; 
+  unsigned n;
   int c;
 
   /* setup default environment */
@@ -295,38 +290,38 @@ http_create_cgi_envp (svz_socket_t *sock,  /* socket for this request */
   if (http->property)
     for (c = 0; env_var[c].property; c++)
       for (n = 0; http->property[n]; n += 2)
-	if (!strcasecmp (http->property[n], env_var[c].property))
-	  {
-	    svz_envblock_add (env, "%s=%s", 
-			      env_var[c].env, http->property[n + 1]);
-	    break;
-	  }
+        if (!strcasecmp (http->property[n], env_var[c].property))
+          {
+            svz_envblock_add (env, "%s=%s",
+                              env_var[c].env, http->property[n + 1]);
+            break;
+          }
 
-  /* 
-   * set up some more environment variables which might be 
+  /*
+   * set up some more environment variables which might be
    * necessary for the cgi script
    */
-  svz_envblock_add (env, "SERVER_NAME=%s", 
-		    cfg->host ? cfg->host : svz_inet_ntoa (sock->local_addr));
+  svz_envblock_add (env, "SERVER_NAME=%s",
+                    cfg->host ? cfg->host : svz_inet_ntoa (sock->local_addr));
   svz_envblock_add (env, "SERVER_PORT=%u", ntohs (sock->local_port));
   svz_envblock_add (env, "REMOTE_ADDR=%s", http->host ? http->host :
-		    svz_inet_ntoa (sock->remote_addr));
+                    svz_inet_ntoa (sock->remote_addr));
   svz_envblock_add (env, "REMOTE_PORT=%u", ntohs (sock->remote_port));
   svz_envblock_add (env, "SCRIPT_NAME=%s%s", cfg->cgiurl, script);
   svz_envblock_add (env, "GATEWAY_INTERFACE=%s", CGI_VERSION);
   svz_envblock_add (env, "SERVER_PROTOCOL=%s", HTTP_VERSION);
-  svz_envblock_add (env, "SERVER_SOFTWARE=%s/%s", 
-		    svz_library, svz_version);
+  svz_envblock_add (env, "SERVER_SOFTWARE=%s/%s",
+                    svz_library, svz_version);
   svz_envblock_add (env, "REQUEST_METHOD=%s", request_type[type]);
 
   return env->size;
 }
 
 /*
- * Check the http option (the URL) for a cgi request. This routine
+ * Check the http option (the URL) for a cgi request.  This routine
  * parses the text of the request and delivers the real file to be
- * invoked. This function makes sure that the cgi script file exists
- * and is executable. On success it delivers a pointer which must be
+ * invoked.  This function makes sure that the cgi script file exists
+ * and is executable.  On success it delivers a pointer which must be
  * svz_free()ed after use.
  */
 char *
@@ -347,7 +342,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
       return HTTP_NO_CGI;
     }
 
-  /* 
+  /*
    * skip the CGI url and concate the script file itself, then
    * check for trailing '?' which is the starting character for
    * GET variables.
@@ -388,7 +383,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
     }
 
   if (!(buf.st_mode & S_IFREG) ||
-      !(buf.st_mode & S_IXUSR) || !(buf.st_mode & S_IRUSR))  
+      !(buf.st_mode & S_IXUSR) || !(buf.st_mode & S_IRUSR))
     {
       svz_log (LOG_ERROR, "cgi: no executable: %s\n", file);
       close (fd);
@@ -414,10 +409,10 @@ http_check_cgi (svz_socket_t *sock, char *request)
  */
 char *
 http_pre_exec (svz_socket_t *sock,   /* socket structure */
-	       svz_envblock_t *envp, /* environment block to be filled */
-	       char *file,           /* plain executable name */
-	       char *request,        /* original http request */
-	       int type)             /* POST or GET ? */
+               svz_envblock_t *envp, /* environment block to be filled */
+               char *file,           /* plain executable name */
+               char *request,        /* original http request */
+               int type)             /* POST or GET?  */
 {
   char *cgidir;
   char *cgifile;
@@ -434,7 +429,7 @@ http_pre_exec (svz_socket_t *sock,   /* socket structure */
 
   /* get the current directory  */
   cgidir = svz_getcwd ();
-  
+
   /* put the directory and file together */
   cgifile = svz_malloc (strlen (cgidir) + strlen (file) + 1);
   sprintf (cgifile, "%s%s", cgidir, file);
@@ -448,7 +443,7 @@ http_pre_exec (svz_socket_t *sock,   /* socket structure */
     {
       p = request;
       while (*p != '?' && *p != 0)
-	p++;
+        p++;
       svz_envblock_add (envp, "QUERY_STRING=%s", *p ? p + 1 : "");
     }
 
@@ -466,11 +461,11 @@ http_cgi_accepted (svz_socket_t *sock)
 
   http->response = 202;
   return svz_sock_printf (sock, HTTP_OK
-			  "Date: %s\r\n"
-			  "Server: %s/%s\r\n"
-			  "Connection: close\r\n",
-			  http_asc_date (time (NULL)),
-			  svz_library, svz_version);
+                          "Date: %s\r\n"
+                          "Server: %s/%s\r\n"
+                          "Connection: close\r\n",
+                          http_asc_date (time (NULL)),
+                          svz_library, svz_version);
 }
 
 /*
@@ -487,7 +482,7 @@ http_gen_cgi_apps (http_config_t *cfg)
     cfg->cgiapps = svz_hash_create (4, svz_free);
 
   /* the associations need to be in the hash to be executed at all */
-  if ((p = svz_hash_put (cfg->cgiapps, "exe", svz_strdup (DEFAULT_CGIAPP))) 
+  if ((p = svz_hash_put (cfg->cgiapps, "exe", svz_strdup (DEFAULT_CGIAPP)))
       != NULL)
     svz_free (p);
   if ((p = svz_hash_put (cfg->cgiapps, "com", svz_strdup (DEFAULT_CGIAPP)))
@@ -499,16 +494,16 @@ http_gen_cgi_apps (http_config_t *cfg)
 }
 
 /*
- * Invoke a cgi script. In Unices we fork() us and in Win32 we
+ * Invoke a cgi script.  In Unices we fork() us and in Win32 we
  * CreateProcess().
  */
 int
 http_cgi_exec (svz_socket_t *sock, /* the socket structure */
-	       svz_t_handle in,    /* here the cgi reads from or NULL if GET */
-	       svz_t_handle out,   /* here the cgi writes to */
-	       char *file,     /* cgi script file */
-	       char *request,  /* original request (needed for GET) */
-	       int type)       /* request type (POST or GET) */
+               svz_t_handle in,    /* here the cgi reads from or NULL if GET */
+               svz_t_handle out,   /* here the cgi writes to */
+               char *file,     /* cgi script file */
+               char *request,  /* original request (needed for GET) */
+               int type)       /* request type (POST or GET) */
 {
   svz_t_handle pid; /* the pid from fork() or the process handle in Win32 */
   char *cgifile;    /* path including the name of the cgi script */
@@ -520,7 +515,7 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
   int retries;
   int oflags;
 
-  /* Assign local CGI disconnection routine. */
+  /* Assign local CGI disconnection routine.  */
   sock->disconnected_socket = http_cgi_disconnect;
 
   retries = 3;
@@ -534,111 +529,111 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
       /* create environment block */
       envp = svz_envblock_create ();
       if ((cgifile = http_pre_exec (sock, envp, file, request, type)) == NULL)
-	{
-	  exit (0);
-	}
+        {
+          exit (0);
+        }
 
       /* make the output blocking */
       if ((oflags = fcntl (out, F_GETFL)) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
+          exit (0);
+        }
       if (fcntl (out, F_SETFL, oflags & ~O_NONBLOCK) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
+          exit (0);
+        }
 
       /* duplicate the receiving pipe descriptor to stdout */
       if (dup2 (out, 1) != 1)
-	{
-	  svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
+          exit (0);
+        }
       /* duplicate stderr to the cgi output */
       if (dup2 (out, 2) != 2)
-	{
-	  svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
+          exit (0);
+        }
 
       /* handle post method */
       if (type == POST_METHOD)
-	{
-	  /* make the input blocking */
-	  if ((oflags = fcntl (in, F_GETFL)) == -1)
-	    {
-	      svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
-	      exit (0);
-	    }
-	  if (fcntl (in, F_SETFL, oflags & ~O_NONBLOCK) == -1)
-	    {
-	      svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
-	      exit (0);
-	    }
+        {
+          /* make the input blocking */
+          if ((oflags = fcntl (in, F_GETFL)) == -1)
+            {
+              svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
+              exit (0);
+            }
+          if (fcntl (in, F_SETFL, oflags & ~O_NONBLOCK) == -1)
+            {
+              svz_log (LOG_ERROR, "cgi: fcntl: %s\n", SYS_ERROR);
+              exit (0);
+            }
 
-	  /* duplicate the sending pipe descriptor to stdin */
-	  if (dup2 (in, 0) != 0)
-	    {
-	      svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
-	      exit (0);
-	    }
+          /* duplicate the sending pipe descriptor to stdin */
+          if (dup2 (in, 0) != 0)
+            {
+              svz_log (LOG_ERROR, "cgi: dup2: %s\n", SYS_ERROR);
+              exit (0);
+            }
 
-	  /* close the old file descriptors */
-	  if (close (in) < 0)
-	    svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
-	}
+          /* close the old file descriptors */
+          if (close (in) < 0)
+            svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
+        }
       /* close remaining stdin in get method */
       else
-	{
-	  close (0);
-	}
+        {
+          close (0);
+        }
 
       /* close the old file descriptors */
       if (close (out) < 0)
-	svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
+        svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
 
       /* get the cgi scripts permissions */
       if (stat (cgifile, &buf) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: stat: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: stat: %s\n", SYS_ERROR);
+          exit (0);
+        }
 
       /* set the appropriate user permissions */
       if (setgid (buf.st_gid) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: setgid: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: setgid: %s\n", SYS_ERROR);
+          exit (0);
+        }
       if (setuid (buf.st_uid) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: setuid: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: setuid: %s\n", SYS_ERROR);
+          exit (0);
+        }
 
       /* create the argv[] and envp[] pointers */
       argv[0] = cgifile;
       argv[1] = NULL;
 
-      /* 
-       * Execute the CGI script itself here. This will overwrite the 
+      /*
+       * Execute the CGI script itself here.  This will overwrite the
        * current process.
        */
       if (execve (cgifile, argv, svz_envblock_get (envp)) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: execve: %s\n", SYS_ERROR);
-	  exit (0);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: execve: %s\n", SYS_ERROR);
+          exit (0);
+        }
     }
   else if (pid == -1)
     {
       if (errno == EAGAIN && --retries)
-	{
-	  /* sleep (1); */
-	  goto retry;
-	}
+        {
+          /* sleep (1); */
+          goto retry;
+        }
 
       /* ------ error forking new process ------ */
       svz_log (LOG_ERROR, "cgi: fork: %s\n", SYS_ERROR);
@@ -672,9 +667,9 @@ http_cgi_exec (svz_socket_t *sock, /* the socket structure */
     {
       /* close the reading end of the pipe for the post data */
       if (close (in) == -1)
-	{
-	  svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
-	}
+        {
+          svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
+        }
     }
 
   return 0;
@@ -719,8 +714,8 @@ http_cgi_get_response (svz_socket_t *sock, char *request,
   sock->pipe_desc[READ] = cgi2s[READ];
   svz_fd_cloexec ((int) cgi2s[READ]);
 
-  if (http_cgi_exec (sock, INVALID_HANDLE, cgi2s[WRITE], 
-		     file, request, GET_METHOD))
+  if (http_cgi_exec (sock, INVALID_HANDLE, cgi2s[WRITE],
+                     file, request, GET_METHOD))
     {
       /* some error occurred here */
       sock->read_socket = svz_tcp_read_socket;
@@ -747,7 +742,7 @@ http_post_response (svz_socket_t *sock, char *request,
   /* get http socket structure */
   http = sock->data;
 
-  /* is this a valid POST request ? */
+  /* is this a valid POST request?  */
   file = http_check_cgi (sock, request);
   if (file == NULL || file == HTTP_NO_CGI)
     {

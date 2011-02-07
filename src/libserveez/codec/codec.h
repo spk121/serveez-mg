@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: codec.h,v 1.6 2001/12/13 18:00:01 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __CODEC_H__
@@ -28,25 +23,25 @@
 #include "defines.h"
 #include "socket.h"
 
-/* Modes of operation. */
+/* Modes of operation.  */
 #define SVZ_CODEC_INIT   0x0001
 #define SVZ_CODEC_FLUSH  0x0002
 #define SVZ_CODEC_RESET  0x0004
 #define SVZ_CODEC_FINISH 0x0008
 #define SVZ_CODEC_CODE   0x0010
 
-/* Return values of the codec callbacks. */
+/* Return values of the codec callbacks.  */
 #define SVZ_CODEC_OK       0x0001
 #define SVZ_CODEC_FINISHED 0x0002
 #define SVZ_CODEC_ERROR    0x0004
 #define SVZ_CODEC_MORE_OUT 0x0008
 #define SVZ_CODEC_MORE_IN  0x0010
 
-/* Internal state of a codec. */
+/* Internal state of a codec.  */
 #define SVZ_CODEC_NONE  0x0000
 #define SVZ_CODEC_READY 0x0001
 
-/* Codec types. */
+/* Codec types.  */
 #define SVZ_CODEC_ENCODER 0x0001
 #define SVZ_CODEC_DECODER 0x0002
 
@@ -58,39 +53,39 @@ typedef struct svz_codec_data svz_codec_data_t;
  */
 struct svz_codec_data
 {
-  /* Current codec class. */
+  /* Current codec class.  */
   svz_codec_t *codec;
 
-  /* Operation flags. */
+  /* Operation flags.  */
   int flag;
 
-  /* Current state flags. */
+  /* Current state flags.  */
   int state;
 
-  /* Input buffer description. */
+  /* Input buffer description.  */
   char *in_buffer;
   int in_fill;
   int in_size;
 
-  /* Output buffer description. */
+  /* Output buffer description.  */
   char *out_buffer;
   int out_fill;
   int out_size;
 
-  /* Configuration field (passed to each codec callback). Could be
-     used as compression level, algorithm, etc. indicator. */
+  /* Configuration field (passed to each codec callback).  Could be
+     used as compression level, algorithm, etc. indicator.  */
   void *config;
 
-  /* Arbitrary data field. Can be used by codec for internal data. */
+  /* Arbitrary data field.  Can be used by codec for internal data.  */
   void *data;
 
-  /* Saved @code{check_request} callback. Used by receiving codecs. */
+  /* Saved @code{check_request} callback.  Used by receiving codecs.  */
   int (* check_request) (svz_socket_t *sock);
 
-  /* Saved @code{write_socket} callback. Used by sending codecs. */
+  /* Saved @code{write_socket} callback.  Used by sending codecs.  */
   int (* write_socket) (svz_socket_t *sock);
 
-  /* Saved @code{disconnected_socket} callback. Used by both. */
+  /* Saved @code{disconnected_socket} callback.  Used by both.  */
   int (* disconnected_socket) (svz_socket_t *sock);
 };
 
@@ -99,31 +94,31 @@ struct svz_codec_data
  */
 struct svz_codec
 {
-  /* Name of the codec. Should be short descriptive name. */
+  /* Name of the codec.  Should be short descriptive name.  */
   char *description;
 
-  /* Codec type. */
+  /* Codec type.  */
   int type;
 
-  /* Initializer. */
+  /* Initializer.  */
   int (* init) (svz_codec_data_t *);
 
-  /* Finalizer. */
+  /* Finalizer.  */
   int (* finalize) (svz_codec_data_t *);
 
-  /* Encoding / decoding routine. */
+  /* Encoding / decoding routine.  */
   int (* code) (svz_codec_data_t *);
 
-  /* Last error description. */
+  /* Last error description.  */
   char * (* error) (svz_codec_data_t *);
 
-  /* Overall ratio request. */
+  /* Overall ratio request.  */
   int (* ratio) (svz_codec_data_t *, unsigned long *, unsigned long *);
 
-  /* Magic detection sequence. */
+  /* Magic detection sequence.  */
   char *detection;
 
-  /* Length of the above detection sequence. */
+  /* Length of the above detection sequence.  */
   int detection_size;
 };
 

@@ -6,21 +6,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
+ * GNU General Public License for more details.  
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: icmp-socket.h,v 1.9 2003/06/14 14:57:59 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __ICMP_SOCKET_H__
@@ -59,7 +54,7 @@
 #define ICMP_SERVEEZ_CLOSE   3
 #define ICMP_SERVEEZ_CONNECT 4
 
-/* ICMP header structure. */
+/* ICMP header structure.  */
 typedef struct
 {
   uint8_t type;        /* message type */
@@ -73,7 +68,7 @@ svz_icmp_header_t;
 
 __BEGIN_DECLS
 
-/* Exported ICMP socket functions. */
+/* Exported ICMP socket functions.  */
 SERVEEZ_API int svz_icmp_read_socket (svz_socket_t *);
 SERVEEZ_API int svz_icmp_lazy_read_socket (svz_socket_t *);
 SERVEEZ_API int svz_icmp_write_socket (svz_socket_t *);
@@ -83,7 +78,7 @@ SERVEEZ_API svz_socket_t *svz_icmp_connect (unsigned long,
                                             unsigned char);
 SERVEEZ_API int svz_icmp_send_control (svz_socket_t *, uint8_t);
 SERVEEZ_API int svz_icmp_write (svz_socket_t *, char *, int);
-SERVEEZ_API int svz_icmp_printf (svz_socket_t *, 
+SERVEEZ_API int svz_icmp_printf (svz_socket_t *,
                                  const char *, ...);
 
 __END_DECLS

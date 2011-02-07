@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.  
- *
- * $Id: dns.c,v 1.7 2003/06/14 14:58:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdio.h>
@@ -39,7 +34,7 @@
 #include "coserver/dns.h"
 
 /*
- * Proceed a single DNS lookup. 
+ * Proceed a single DNS lookup.
  */
 char *
 dns_handle_request (char *inbuf)
@@ -65,15 +60,15 @@ dns_handle_request (char *inbuf)
 
           svz_log (LOG_DEBUG, "dns: %s is %s\n", host->h_name, 
                    svz_inet_ntoa (addr));
-	  sprintf (resolved, "%s", svz_inet_ntoa (addr));
-	  return resolved;
-	}
-    } 
-  else 
+          sprintf (resolved, "%s", svz_inet_ntoa (addr));
+          return resolved;
+        }
+    }
+  else
     {
       svz_log (LOG_ERROR, "dns: protocol error\n");
       return NULL;
     }
-  
+
   return NULL;
 }

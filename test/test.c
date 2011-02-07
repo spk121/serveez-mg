@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: test.c,v 1.6 2002/07/23 16:39:56 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #if HAVE_CONFIG_H
@@ -30,14 +25,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-/* Initialize test suite. */
+/* Initialize test suite.  */
 void
 test_init (void)
 {
   srand (time (NULL));
 }
 
-/* Return a random string. */
+/* Return a random string.  */
 char *
 test_string (void)
 {
@@ -52,14 +47,14 @@ test_string (void)
   return text;
 }
 
-/* Return a random number between 0 and NR - 1. */
+/* Return a random number between 0 and NR - 1.  */
 unsigned long
 test_value (unsigned long nr)
 {
   return nr ? (rand () % nr) : 0;
 }
 
-/* Print any text. */
+/* Print any text.  */
 void
 test_print (char *text)
 {
@@ -67,7 +62,7 @@ test_print (char *text)
   fflush (stderr);
 }
 
-/* Print an Ok. */
+/* Print an Ok.  */
 void
 test_ok (void)
 {
@@ -75,7 +70,7 @@ test_ok (void)
   fflush (stderr);
 }
 
-/* Print a Failed. */
+/* Print a Failed.  */
 void
 test_failed (void)
 {

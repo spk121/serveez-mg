@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: portcfg.h,v 1.21 2002/01/31 18:31:50 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __PORTCFG_H__
@@ -34,7 +29,7 @@
 #include "hash.h"
 #include "pipe-socket.h"
 
-/* Port configuration items. */
+/* Port configuration items.  */
 #define PORTCFG_PORT    "port"
 #define PORTCFG_PROTO   "proto"
 #define PORTCFG_TCP     "tcp"
@@ -49,7 +44,7 @@
 #define PORTCFG_BACKLOG "backlog"
 #define PORTCFG_TYPE    "type"
 
-/* Pipe definitions. */
+/* Pipe definitions.  */
 #define PORTCFG_RECV  "recv"
 #define PORTCFG_SEND  "send"
 #define PORTCFG_NAME  "name"
@@ -59,19 +54,19 @@
 #define PORTCFG_UID   "uid"
 #define PORTCFG_GID   "gid"
 
-/* Miscellaneous definitions. */
+/* Miscellaneous definitions.  */
 #define PORTCFG_SEND_BUFSIZE "send-buffer-size"
 #define PORTCFG_RECV_BUFSIZE "recv-buffer-size"
 #define PORTCFG_FREQ         "connect-frequency"
 #define PORTCFG_ALLOW        "allow"
 #define PORTCFG_DENY         "deny"
 
-/* Port configuration flags. */
+/* Port configuration flags.  */
 #define PORTCFG_FLAG_ANY    0x0001
 #define PORTCFG_FLAG_ALL    0x0002
 #define PORTCFG_FLAG_DEVICE 0x0004
 
-/* Return values for port configuration comparisons. */
+/* Return values for port configuration comparisons.  */
 #define PORTCFG_NOMATCH  0x0001
 #define PORTCFG_EQUAL    0x0002
 #define PORTCFG_MATCH    0x0004
@@ -162,8 +157,8 @@ typedef struct svz_portcfg
 }
 svz_portcfg_t;
 
-/* 
- * Accessor definitions for each type of protocol. 
+/*
+ * Accessor definitions for each type of protocol.
  */
 #define tcp_port protocol.tcp.port
 #define tcp_addr protocol.tcp.addr
@@ -190,7 +185,7 @@ svz_portcfg_t;
 
 /*
  * Return the pointer of the @code{sockaddr_in} structure of the given
- * port configuration @var{port} if it is a network port configuration. 
+ * port configuration @var{port} if it is a network port configuration.
  * Otherwise return @code{NULL}.
  */
 #define svz_portcfg_addr(port)                               \
@@ -201,7 +196,7 @@ svz_portcfg_t;
 
 /*
  * Return the pointer to the ip address @code{ipaddr} of the given
- * port configuration @var{port} if it is a network port configuration. 
+ * port configuration @var{port} if it is a network port configuration.
  * Otherwise return @code{NULL}.
  */
 #define svz_portcfg_ipaddr(port)                            \
@@ -212,7 +207,7 @@ svz_portcfg_t;
 
 /*
  * This macro returns the network device name stored in the given port
- * configuration @var{port} if it is a network port configuration. The
+ * configuration @var{port} if it is a network port configuration.  The
  * returned pointer can be @code{NULL} if there is no such device set
  * or if the port configuration is not a network port configuration.
  */
@@ -240,10 +235,10 @@ svz_portcfg_t;
 __BEGIN_DECLS
 
 SERVEEZ_API svz_portcfg_t *svz_portcfg_create (void);
-SERVEEZ_API int svz_portcfg_equal (svz_portcfg_t *, 
-					     svz_portcfg_t *);
-SERVEEZ_API svz_portcfg_t *svz_portcfg_add (char *, 
-						      svz_portcfg_t *);
+SERVEEZ_API int svz_portcfg_equal (svz_portcfg_t *,
+                                   svz_portcfg_t *);
+SERVEEZ_API svz_portcfg_t *svz_portcfg_add (char *,
+                                            svz_portcfg_t *);
 SERVEEZ_API svz_portcfg_t *svz_portcfg_del (char *);
 SERVEEZ_API svz_portcfg_t *svz_portcfg_get (char *);
 SERVEEZ_API void svz_portcfg_destroy (svz_portcfg_t *);

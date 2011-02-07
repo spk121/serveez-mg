@@ -5,21 +5,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: hash-test.c,v 1.15 2003/06/14 14:58:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #if HAVE_CONFIG_H
@@ -70,9 +65,9 @@ main (int argc __attribute__ ((unused)),
       text = svz_strdup (test_string ());
       svz_hash_put (hash, text, (void *) 0xdeadbeef);
       if (((void *) 0xdeadbeef != svz_hash_get (hash, text)))
-	error++;
+        error++;
       if (svz_hash_exists (hash, text) == 0)
-	error++;
+        error++;
       svz_free (text);
     }
   test (error);
@@ -109,7 +104,7 @@ main (int argc __attribute__ ((unused)),
       sprintf (text, "%015lu", (unsigned long) n);
       svz_hash_put (hash, text, (void *) n);
       if (svz_hash_get (hash, text) != (void *) n)
-	error++;
+        error++;
     }
   svz_free (text);
   if (n != svz_hash_size (hash))
@@ -117,16 +112,16 @@ main (int argc __attribute__ ((unused)),
   values = svz_hash_values (hash);
   keys = svz_hash_keys (hash);
   if (keys && values)
-    { 
+    {
       for (n = 0; n < REPEAT; n++)
-	{
-	  if (atol (keys[n]) != (long) values[n])
-	    error++;
-	  if (svz_hash_get (hash, keys[n]) != values[n])
-	    error++;
-	  if (svz_hash_contains (hash, values[n]) != keys[n])
-	    error++;
-	}
+        {
+          if (atol (keys[n]) != (long) values[n])
+            error++;
+          if (svz_hash_get (hash, keys[n]) != values[n])
+            error++;
+          if (svz_hash_contains (hash, values[n]) != keys[n])
+            error++;
+        }
       svz_hash_xfree (keys);
       svz_hash_xfree (values);
     }
@@ -152,15 +147,15 @@ main (int argc __attribute__ ((unused)),
     {
       sprintf (text, "%015lu", (unsigned long) n);
       if (svz_hash_get (hash, text) != (void *) n)
-	error++;
+        error++;
       if (svz_hash_delete (hash, text) != (void *) n)
-	error++;
+        error++;
     }
   if (svz_hash_size (hash))
     error++;
   svz_free (text);
   test (error);
-  
+
   /* hash clear */
   test_print ("              clear: ");
   svz_hash_clear (hash);

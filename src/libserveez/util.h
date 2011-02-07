@@ -8,21 +8,16 @@
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
- * along with this package; see the file COPYING.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * $Id: util.h,v 1.24 2003/06/15 17:30:00 ela Exp $
- *
+ * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef __UTIL_H__
@@ -65,8 +60,8 @@ SERVEEZ_API char *svz_tolower (char *);
 SERVEEZ_API char *svz_sys_version (void);
 
 /*
- * Convert the byte array pointed to by @var{p} to a signed 32 bit integer. 
- * This is needed on aligned architectures where a plain type cast ends up 
+ * Convert the byte array pointed to by @var{p} to a signed 32 bit integer.
+ * This is needed on aligned architectures where a plain type cast ends up
  * in a fatal bus error.
  */
 #define SVZ_INT32(p) \
@@ -112,11 +107,11 @@ SERVEEZ_API char *svz_sys_version (void);
 
 /* Converts the integer value @var{n} into a pointer platform independently.
    Both of the @code{SVZ_NUM2PTR()} and @code{SVZ_PTR2NUM()} macros rely on
-   the @code{(unsigned long)} having the same size as @code{(void *)}. */
+   the @code{(unsigned long)} having the same size as @code{(void *)}.  */
 #define SVZ_NUM2PTR(n) \
   ((void *) ((unsigned long) (n)))
 
-/* Convert the pointer @var{p} into a integer value platform independently. */
+/* Convert the pointer @var{p} into a integer value platform independently.  */
 #define SVZ_PTR2NUM(p) \
   ((unsigned long) ((void *) (p)))
 
@@ -125,7 +120,7 @@ SERVEEZ_API char *svz_sys_version (void);
 
 __END_DECLS
 
-/* Definition of very system dependent routines. */
+/* Definition of very system dependent routines.  */
 #define SYS_ERROR strerror (errno)
 #define NET_ERROR strerror (errno)
 
