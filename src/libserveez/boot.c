@@ -17,9 +17,11 @@
  * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <pthread.h> 		/* pthread_mutex_t, pthread_mutex_init,
+				 pthread_mutex_destroy */
 #include <stdio.h>
-#include <time.h>
 #include <sys/types.h>
+#include <time.h>
 
 
 #include "alloc.h"
@@ -61,7 +63,7 @@ int svz_have_debug = 1;
 int svz_have_floodprotect = 1;
 
 /* Extern declaration of the logging mutex.  */
-svz_mutex_declare (svz_log_mutex)
+extern pthread_mutex_t svz_log_mutex;
 
 /*
  * Initialization of the configuration.
@@ -81,7 +83,7 @@ svz_init_config (void)
 void
 svz_boot (void)
 {
-  svz_mutex_create (&svz_log_mutex);
+  pthread_mutex_init (&svz_log_mutex, NULL);
   svz_strsignal_init ();
   svz_sock_table_create ();
   svz_signal_up ();
@@ -107,5 +109,5 @@ svz_halt (void)
   svz_signal_dn ();
   svz_sock_table_destroy ();
   svz_strsignal_destroy ();
-  svz_mutex_destroy (&svz_log_mutex);
+  pthread_mutex_destroy (&svz_log_mutex);
 }

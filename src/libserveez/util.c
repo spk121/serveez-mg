@@ -20,17 +20,19 @@
  * along with this package.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>       /* sprintf, fflush, vfprintf, fprintf, ferror, feof */
-#include <string.h>             /* strerror */
 #include <ctype.h>              /* isupper, tolower */
-#include <time.h>               /* ctime, time, localtime, struct tm */
 #include <errno.h>              /* errno */
-#include <sys/utsname.h>        /* uname */
+#include <pthread.h>  /* pthread_mutex_t, PTHREAD_MUTEX_INITIALIZER,
+                         pthread_mutex_lock, pthread_mutex_unlock*/
 #include <stdarg.h>             /* va_start */
-#include <sys/types.h>          /* time_t */
-#include <unistd.h>             /* sysconf, getcwd */
-#include <sys/resource.h>       /* RLIMIT_NOFILE, struct rlimit */
 #include <stdint.h>             /* uint8_t */
+#include <stdio.h> /* sprintf, fflush, vfprintf, fprintf, ferror, feof */
+#include <string.h>             /* strerror */
+#include <sys/resource.h>       /* RLIMIT_NOFILE, struct rlimit */
+#include <sys/types.h>          /* time_t */
+#include <sys/utsname.h>        /* uname */
+#include <time.h>               /* ctime, time, localtime, struct tm */
+#include <unistd.h>             /* sysconf, getcwd */
 
 #include "alloc.h"
 #include "boot.h"
@@ -63,7 +65,24 @@ static char log_level[][16] = {
 static FILE *svz_logfile = NULL;
 
 /* Global definition of the logging mutex.  */
-svz_mutex_define (svz_log_mutex)
+pthread_mutex_t svz_log_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/*
+ * Print the time string that precedes each logfile entry.
+ */
+
+static void
+svz_log_time (int level)
+{
+  time_t tm;
+  struct tm *t;
+
+  tm = time (NULL);
+  t = localtime (&tm);
+  fprintf (svz_logfile, "[%4d/%02d/%02d %02d:%02d:%02d] %s: ",
+           t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+           t->tm_hour, t->tm_min, t->tm_sec, log_level[level]);
+}
 
 /*
  * Print a message to the log system.  @var{level} specifies the prefix.
@@ -72,24 +91,33 @@ void
 svz_log (int level, const char *format, ...)
 {
   va_list args;
-  time_t tm;
-  struct tm *t;
+  int lock_failure;
 
   if (level > svz_config.verbosity || svz_logfile == NULL ||
       feof (svz_logfile) || ferror (svz_logfile))
     return;
 
-  svz_mutex_lock (&svz_log_mutex);
-  tm = time (NULL);
-  t = localtime (&tm);
-  fprintf (svz_logfile, "[%4d/%02d/%02d %02d:%02d:%02d] %s: ",
-           t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-           t->tm_hour, t->tm_min, t->tm_sec, log_level[level]);
+  lock_failure = (errno != EINTR && pthread_mutex_lock (&svz_log_mutex) != 0);
+  if (lock_failure && LOG_ERROR > svz_config.verbosity)
+    {
+      svz_log_time (LOG_ERROR);
+      fprintf (svz_logfile, "logfile mutex lock: %s\n", SYS_ERROR);
+      fflush (svz_logfile);
+    }
+
+  svz_log_time (level);
   va_start (args, format);
   vfprintf (svz_logfile, format, args);
   va_end (args);
   fflush (svz_logfile);
-  svz_mutex_unlock (&svz_log_mutex);
+
+  lock_failure = (pthread_mutex_unlock (&svz_log_mutex) != 0);
+  if (lock_failure && LOG_ERROR > svz_config.verbosity)
+    {
+      svz_log_time (LOG_ERROR);
+      fprintf (svz_logfile, "logfile mutex unlock: %s\n", SYS_ERROR);
+      fflush (svz_logfile);
+    }
 }
 
 /*
