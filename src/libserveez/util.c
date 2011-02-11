@@ -36,7 +36,6 @@
 
 #include "alloc.h"
 #include "boot.h"
-#include "mutex.h"
 #include "util.h"
 
 /*

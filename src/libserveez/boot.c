@@ -34,7 +34,6 @@
 #include "server.h"
 #include "dynload.h"
 #include "boot.h"
-#include "mutex.h"
 #include "server-core.h"
 #include "codec/codec.h"
 
