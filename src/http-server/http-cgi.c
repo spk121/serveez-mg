@@ -331,7 +331,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
   char *file;
   int fd;
   int size;
-  char *p;
+  char *p, *p2;
   char *saverequest;
   int len;
   http_config_t *cfg = sock->cfg;
@@ -345,7 +345,8 @@ http_check_cgi (svz_socket_t *sock, char *request)
   /*
    * skip the CGI url and concate the script file itself, then
    * check for trailing '?' which is the starting character for
-   * GET variables.
+   * GET variables.  Anything between the trailing '?' and the
+   * end of the CGI url goes in PATH_INFO.
    */
 
   /* store the request in a local variable */
@@ -353,15 +354,18 @@ http_check_cgi (svz_socket_t *sock, char *request)
   saverequest = svz_malloc (len);
   strcpy (saverequest, request + strlen (cfg->cgiurl));
 
-  /* find the actual URL */
+  /* find the actual CGI URL */
   p = saverequest;
-  while (*p != '?' && *p != 0)
+  while (*p != '?' && *p != 0
+	 && !(p > saverequest && *p == '/')) /* break on non-initial '/' */
     p++;
   *p = 0;
 
   size = strlen (cfg->cgidir) + len;
   file = svz_malloc (size);
-  sprintf (file, "%s%s", cfg->cgidir, saverequest);
+  strcpy (file, cfg->cgidir);
+  strncpy (file + strlen (cfg->cgidir), saverequest, p - saverequest);
+  file[strlen (cfg->cgidir) + p - saverequest] = '\0';
 
   /* test if the file really exists and close it again */
   if ((fd = open (file, O_RDONLY)) == -1)
@@ -395,7 +399,8 @@ http_check_cgi (svz_socket_t *sock, char *request)
     svz_log (LOG_ERROR, "cgi: close: %s\n", SYS_ERROR);
 
   /* return a pointer referring to the actual plain cgi file */
-  strcpy (file, saverequest);
+  strncpy (file, saverequest, p - saverequest);
+  file[p - saverequest] = '\0';
   file = svz_realloc (file, strlen (file) + 1);
   svz_free (saverequest);
   return file;
@@ -438,10 +443,30 @@ http_pre_exec (svz_socket_t *sock,   /* socket structure */
   /* create the environment block for the CGI script */
   http_create_cgi_envp (sock, envp, file, type);
 
-  /* put the QUERY_STRING into the env variables if necessary */
   if (type == GET_METHOD)
     {
-      p = request;
+      char *p_start;
+      p_start = strstr (request, file);
+      if (p_start == NULL)
+	{
+	  svz_log (LOG_ERROR, "cgi: file %s not found in query string %s",
+		   file, request);
+	  return NULL;
+	}
+      p_start += strlen (file);
+      p = p_start;
+      /* put the PATH_INFO into the env variables if necessary */
+      if (*p == '/')
+	{
+	  char terminator;
+	  while (*p != '?' && *p != 0)
+	    p ++;
+	  terminator = *p;
+	  *p = 0;
+	  svz_envblock_add (envp, "PATH_INFO=%s", p_start);
+	  *p = terminator;
+	}
+      /* put the QUERY_STRING into the env variables if necessary */
       while (*p != '?' && *p != 0)
         p++;
       svz_envblock_add (envp, "QUERY_STRING=%s", *p ? p + 1 : "");
