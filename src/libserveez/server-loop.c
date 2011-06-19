@@ -549,21 +549,43 @@ svz_check_sockets_poll (void)
             {
               if (sock->flags & SOCK_FLAG_CONNECTING)
                 {
-                  svz_log (LOG_ERROR, "exception connecting socket %d\n",
-                           sock->sock_desc);
+		  if (ufds[fd].revents & POLLERR)
+		    svz_log (LOG_ERROR, "output exception when connecting socket %d\n",
+			     sock->sock_desc);
+		  if (ufds[fd].revents & POLLHUP)
+		    svz_log (LOG_ERROR, "hang up exception when connecting socket %d\n",
+			     sock->sock_desc);
+		  if (ufds[fd].revents & POLLNVAL)
+		    svz_log (LOG_ERROR, "invalid file descriptor when connecting socket %d\n",
+			     sock->sock_desc);
+		  
                 }
               else
                 {
-                  svz_log (LOG_ERROR, "exception on socket %d\n",
-                           sock->sock_desc);
+		  if (ufds[fd].revents & POLLERR)
+		    svz_log (LOG_ERROR, "output exception on socket %d\n",
+			     sock->sock_desc);
+		  if (ufds[fd].revents & POLLHUP)
+		    svz_log (LOG_ERROR, "hang up exception on socket %d\n",
+			     sock->sock_desc);
+		  if (ufds[fd].revents & POLLNVAL)
+		    svz_log (LOG_ERROR, "invalid file descriptor on socket %d\n",
+			     sock->sock_desc);
                 }
               svz_sock_error_info (sock);
               svz_sock_schedule_for_shutdown (sock);
             }
           if (sock->flags & SOCK_FLAG_RECV_PIPE)
             {
-              svz_log (LOG_ERROR, "exception on receiving pipe %d \n",
-                       sock->pipe_desc[READ]);
+	      if (ufds[fd].revents & POLLERR)
+		svz_log (LOG_ERROR, "output exception on receiving pipe %d\n",
+			 sock->pipe_desc[READ]);
+	      if (ufds[fd].revents & POLLHUP)
+		svz_log (LOG_ERROR, "hang up exception on receiving pipe %d\n",
+			 sock->pipe_desc[READ]);
+	      if (ufds[fd].revents & POLLNVAL)
+		svz_log (LOG_ERROR, "invalid file descriptor on receiving pipe %d\n",
+			 sock->pipe_desc[READ]);
               svz_sock_schedule_for_shutdown (sock);
             }
           if (sock->flags & SOCK_FLAG_SEND_PIPE)
