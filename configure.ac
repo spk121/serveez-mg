@@ -42,7 +42,7 @@ dnl Check for C compiler and libtool.
 dnl
 AC_PROG_CC
 AC_C_BIGENDIAN
-LT_INIT
+LT_INIT[static disable-shared]
 
 dnl ----------------------------------------------------------------------
 

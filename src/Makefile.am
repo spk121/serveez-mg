@@ -53,14 +53,16 @@ serveez_SOURCES = \
 	http-server/http-proto.c \
 	http-server/http-proto.h \
 	prog-server/prog-server.c \
-	prog-server/prog-server.h
+	prog-server/prog-server.h 
 
-LDADD = libserveez/libserveez.la \
-	$(GUILE_LIBS)
+GUILE_LIBS_USED = -lguile-2.0 -lgc
+
+serveez_LDADD = $(GUILE_LIBS_USED) libserveez/libserveez.a -ldl -lz -lcrypt
 
 EXTRA_DIST =  guile-server/hello.scm
 
 AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
+AM_CFLAGS = -pthread -Xlinker --hash-style=both
 
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt

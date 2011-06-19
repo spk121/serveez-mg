@@ -33,16 +33,13 @@ noinst_PROGRAMS = hash-test spvec-test array-test vector-test codec-test \
 noinst_SCRIPTS = test-http-get
 
 hash_test_SOURCES = hash-test.c test.c test.h
-hash_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 spvec_test_SOURCES = spvec-test.c test.c test.h
-spvec_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 array_test_SOURCES = array-test.c test.c test.h
-array_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 vector_test_SOURCES = vector-test.c test.c test.h
-vector_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 codec_test_SOURCES = codec-test.c
-codec_test_LDADD = -L$(top_builddir)/src/libserveez -lserveez
 prog_test_SOURCES = prog-test.c
+
+LDADD = $(top_builddir)/src/libserveez/libserveez.a -ldl -lz
 
 AM_CPPFLAGS = $(SERVEEZ_CFLAGS) -I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/libserveez
