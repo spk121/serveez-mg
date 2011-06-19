@@ -52,6 +52,5 @@
 #include "dynload.h"
 #include "passthrough.h"
 #include "codec/codec.h"
-#include "mutex.h"
 
 #endif /* __LIBSERVEEZ_H__ */
