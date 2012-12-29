@@ -33,6 +33,7 @@
 
 #include "libserveez.h"
 #include "guile.h"
+#include "guile-api.h"
 #include "guile-server.h"
 
 extern scm_t_bits guile_svz_socket_tag;

@@ -68,6 +68,23 @@ SCM guile_intarray_to_guile (svz_array_t *);
 SCM guile_hash_to_guile (svz_hash_t *);
 void guile_error (char *, ...);
 int guile_load_config (char *);
+/* Guile API */
+#define EXPORT __attribute__ ((visibility("default")))
+EXPORT SCM guile_config_instantiate (SCM type, SCM name, SCM instance, SCM opts);
+EXPORT SCM guile_define_server (SCM name, SCM args);
+EXPORT SCM guile_bind_server (SCM port, SCM server);
+EXPORT SCM guile_access_interfaces (SCM args);
+EXPORT SCM guile_access_loadpath (SCM args);
+EXPORT SCM guile_check_port (SCM arg);
+EXPORT SCM guile_check_server (SCM arg);
+EXPORT SCM guile_check_stype (SCM arg);
+#undef EXPORT
+
+
+
+
+
+
 
 int optionhash_validate (svz_hash_t *, int, char *, char *);
 void optionhash_destroy (svz_hash_t *);

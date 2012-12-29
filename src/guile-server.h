@@ -35,6 +35,24 @@ int guile_func_check_request_oob (svz_socket_t *sock);
 int guile_func_trigger_func (svz_socket_t *sock);
 SCM guile_call (SCM code, int args, ...);
 
+#define EXPORT __attribute__((visibility("default")))
+SCM EXPORT guile_nuke_happened (void);
+SCM EXPORT guile_access_exceptions (SCM enable);
+SCM EXPORT guile_sock_handle_request (SCM sock, SCM proc);
+SCM EXPORT guile_sock_check_request (SCM sock, SCM proc);
+SCM EXPORT guile_sock_data (SCM sock, SCM data);
+SCM EXPORT guile_server_config_ref (SCM server, SCM key);
+SCM EXPORT guile_server_state_ref (SCM server, SCM key);
+SCM EXPORT guile_server_state_set_x (SCM server, SCM key, SCM value);
+SCM EXPORT guile_server_state_to_hash (SCM server);
+SCM EXPORT guile_define_servertype (SCM args);
+#undef EXPORT
+
+
+
+
+
+
 
 
 

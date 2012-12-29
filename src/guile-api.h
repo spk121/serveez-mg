@@ -22,8 +22,24 @@
 
 #include <libguile.h>
 
-SCM guile_lookup (const char *name);
 void guile_api_init (void);
 void guile_api_finalize (void);
+#define EXPORT __attribute__((visibility("default")))
+SCM EXPORT guile_lookup (const char *name);
+SCM EXPORT guile_sock_connect (SCM host, SCM proto, SCM port);
+SCM EXPORT guile_sock_disconnected_socket (SCM sock, SCM proc);
+SCM EXPORT guile_sock_kicked_socket (SCM sock, SCM proc);
+SCM EXPORT guile_sock_trigger_cond (SCM sock, SCM proc);
+SCM EXPORT guile_sock_trigger_func (SCM sock, SCM proc);
+SCM EXPORT guile_sock_idle_func (SCM sock, SCM proc);
+SCM EXPORT guile_sock_check_request_oob (SCM sock, SCM proc);
+SCM EXPORT scm_portmap (SCM prognum, SCM versnum, SCM protocol, SCM port);
+SCM EXPORT guile_coserver_dns (SCM host, SCM callback, SCM arg);
+SCM EXPORT guile_coserver_rdns (SCM addr, SCM callback, SCM arg);
+SCM EXPORT guile_coserver_ident (SCM sock, SCM callback, SCM arg);
+SCM EXPORT guile_sock_find (SCM ident);
+SCM EXPORT guile_sock_ident (SCM sock);
 
+
+#undef EXPORT
 #endif /* not __GUILE_API_H__ */
