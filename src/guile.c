@@ -1002,7 +1002,6 @@ guile_define_server (SCM name, SCM args)
 {
   /* Note: This function could now as well be implemented in Scheme.
      [rotty] */
-  int err = 0;
   char *servername = NULL, *servertype = NULL, *p = NULL;
   SCM retval = SCM_BOOL_F;
 
@@ -1012,7 +1011,7 @@ guile_define_server (SCM name, SCM args)
   if (NULL == (servername = guile_to_string (name)))
     {
       guile_error (FUNC_NAME ": Invalid server name (string expected)");
-      FAIL ();
+      goto out;
     }
 
   /* Separate server description.  */
@@ -1026,7 +1025,7 @@ guile_define_server (SCM name, SCM args)
   else
     {
       guile_error (FUNC_NAME ": Not a valid server name: `%s'", servername);
-      FAIL ();
+      goto out;
     }
 
   /* Instantiate and configure this server.  */

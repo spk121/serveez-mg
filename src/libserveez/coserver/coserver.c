@@ -796,7 +796,7 @@ svz_coserver_send_request (int type, char *request,
                            svz_coserver_handle_result_t handle_result,
                            svz_coserver_args_t)
 {
-  int n, busy;
+  int n;
   svz_coserver_t *coserver, *current;
   svz_coserver_callback_t *cb;
 
@@ -810,15 +810,9 @@ svz_coserver_send_request (int type, char *request,
       if (current->type == type)
         {
           if (coserver == NULL)
-            {
               coserver = current;
-              busy = coserver->busy;
-            }
           else if (current->busy <= coserver->busy)
-            {
               coserver = current;
-              busy = coserver->busy;
-            }
         }
     }
 

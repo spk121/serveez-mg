@@ -331,7 +331,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
   char *file;
   int fd;
   int size;
-  char *p, *p2;
+  char *p;
   char *saverequest;
   int len;
   http_config_t *cfg = sock->cfg;

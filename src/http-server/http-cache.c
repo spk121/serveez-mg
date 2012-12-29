@@ -89,10 +89,9 @@ http_free_cache (void)
 static void
 http_cache_consistency (void)
 {
-  int n, o;
+  int o;
   http_cache_entry_t **cache;
 
-  n = 1;
   svz_hash_foreach_value (http_cache, cache, o)
     {
       /* each cache entry must have a file name */

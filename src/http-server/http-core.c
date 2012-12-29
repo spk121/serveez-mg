@@ -696,7 +696,6 @@ http_parse_property (svz_socket_t *sock, char *request, char *end)
 #endif
     }
 
-  request += 2;
   http->property[n] = NULL;
 
   return properties;
