@@ -135,18 +135,19 @@ http_cgi_read (svz_socket_t *sock)
       return 0;
     }
 
-  if ((num_read = read (sock->pipe_desc[READ],
-			sock->send_buffer + sock->send_buffer_fill,
-			do_read)) == -1)
+  num_read = read (sock->pipe_desc[READ],
+		   sock->send_buffer + sock->send_buffer_fill,
+		   do_read);
+  if (num_read == -1)
     {
       svz_log (LOG_ERROR, "cgi: read: %s\n", SYS_ERROR);
       if (errno == EAGAIN)
         return 0;
-      num_read = -1;
+      return -1;
     }
 
   /* data has been read */
-  else if (num_read > 0)
+  if (num_read > 0)
     {
       http->length += num_read;
       sock->send_buffer_fill += num_read;
