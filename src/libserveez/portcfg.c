@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -69,7 +70,11 @@ svz_portcfg_equal (svz_portcfg_t *a, svz_portcfg_t *b)
       /* Two network ports are equal if both local port and IP address
          are equal or one of them is INADDR_ANY.  */
       a_addr = svz_portcfg_addr (a);
+      if (a_addr == NULL)
+	abort();
       b_addr = svz_portcfg_addr (b);
+      if (b_addr == NULL)
+	abort();
 
       switch (a->proto)
         {
@@ -261,6 +266,8 @@ svz_portcfg_expand (svz_portcfg_t *this)
             {
               port = svz_portcfg_dup (this);
               addr = svz_portcfg_addr (port);
+	      if (addr == NULL)
+		abort ();
               addr->sin_addr.s_addr = ifc->ipaddr;
               svz_portcfg_set_ipaddr (port,
                                       svz_strdup (svz_inet_ntoa (ifc->ipaddr)));
@@ -733,6 +740,8 @@ svz_portcfg_text (svz_portcfg_t *port)
       strcat (text, (port->proto & PROTO_TCP) ? "TCP:[" : "UDP:[");
       strcat (text, svz_portcfg_addr_text (port, addr));
       strcat (text, ":");
+      if (addr == NULL)
+	abort ();
       strcat (text, svz_itoa (ntohs (addr->sin_port)));
       strcat (text, "]");
     }
