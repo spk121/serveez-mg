@@ -92,7 +92,7 @@ guile_value_create (SCM value)
 /*!
  * Create a fresh option-hash.
  */
-svz_hash_t *
+static svz_hash_t *
 optionhash_create (void)
 {
   return svz_hash_create (4, svz_free);

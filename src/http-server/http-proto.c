@@ -370,7 +370,7 @@ http_idle (svz_socket_t *sock)
  * this function is implemented.  Furthermore you do not need to set
  * the READ_SOCKET callback HTTP_FILE_READ.
  */
-int
+static int
 http_send_file (svz_socket_t *sock)
 {
   http_socket_t *http = sock->data;
@@ -505,7 +505,7 @@ http_default_write (svz_socket_t *sock)
  * on read errors.  When all the file has been read then the socket flag
  * HTTP_FLAG_DONE is set.
  */
-int
+static int
 http_file_read (svz_socket_t *sock)
 {
   int num_read;
@@ -641,7 +641,7 @@ http_connect_socket (svz_server_t *server, svz_socket_t *sock)
  * This routine is called from http_check_request if there was
  * seen a full HTTP request (ends with a double CRLF).
  */
-int
+static int
 http_handle_request (svz_socket_t *sock, int len)
 {
   http_socket_t *http = sock->data;

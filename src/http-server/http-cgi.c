@@ -412,7 +412,7 @@ http_check_cgi (svz_socket_t *sock, char *request)
  * block. Return a NULL pointer on errors or a pointer to the full
  * cgi file (including the path). This MUST be freed afterwards.
  */
-char *
+static char *
 http_pre_exec (svz_socket_t *sock,   /* socket structure */
                svz_envblock_t *envp, /* environment block to be filled */
                char *file,           /* plain executable name */
@@ -479,7 +479,7 @@ http_pre_exec (svz_socket_t *sock,   /* socket structure */
  * Write an initial HTTP response header to the socket SOCK
  * right after the the actual CGI script has been invoked.
  */
-int
+static int
 http_cgi_accepted (svz_socket_t *sock)
 {
   http_socket_t *http = sock->data;

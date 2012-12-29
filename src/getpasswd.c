@@ -21,7 +21,7 @@
 #include <string.h>             /* strlen */
 #include <termios.h>       /* TCSAFLUSH, ISIG, ECHO, struct termios, tcgetattr */
 #include <unistd.h>
-
+#include "getpasswd.h"
 
 #define PWD_BUFFER_SIZE 256
 

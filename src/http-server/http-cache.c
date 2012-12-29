@@ -148,7 +148,7 @@ http_cache_urgency (http_cache_entry_t *cache)
  * within the whole HTTP file cache. All other used entries will be less
  * urgent afterwards.
  */
-void
+static void
 http_urgent_cache (http_cache_entry_t *cache)
 {
   if (cache->prev)
