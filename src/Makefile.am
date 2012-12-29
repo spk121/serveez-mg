@@ -25,9 +25,6 @@
 
 SUBDIRS = libserveez
 
-pkgsysconfdir = ${sysconfdir}/${PACKAGE}
-dist_pkgsysconf_DATA = serveez.cfg
-
 pkgguilesitedir = ${GUILE_SITEDIR}/${PACKAGE}
 dist_pkgguilesite_DATA = lib.scm
 
@@ -55,9 +52,7 @@ serveez_SOURCES = \
 	prog-server/prog-server.c \
 	prog-server/prog-server.h 
 
-GUILE_LIBS_USED = -lguile-2.0 -lgc
-
-serveez_LDADD = $(GUILE_LIBS_USED) libserveez/libserveez.a -ldl -lz -lcrypt
+serveez_LDADD = $(GUILE_LIBS) libserveez/libserveez.a -ldl -lz -lcrypt
 
 EXTRA_DIST =  guile-server/hello.scm
 

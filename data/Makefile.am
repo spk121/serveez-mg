@@ -18,6 +18,9 @@
 # along with this package.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+pkgsysconfdir = ${sysconfdir}/${PACKAGE}
+dist_pkgsysconf_DATA = serveez.cfg
+
 EXTRA_DIST = mime.types irc-MOTD.txt serveez.cfg \
 	serveez1.ico serveez2.ico init.serveez.in PLATFORMS
 SED = sed
