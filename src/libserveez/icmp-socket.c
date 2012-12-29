@@ -217,6 +217,7 @@ svz_icmp_read_socket (svz_socket_t *sock)
   int trunc;
 
   len = sizeof (struct sockaddr_in);
+  memset (&sender, 0, sizeof(struct sockaddr_in));
 
   /* Receive data.  */
   if (!(sock->flags & SOCK_FLAG_CONNECTED))

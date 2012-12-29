@@ -19,6 +19,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
@@ -573,6 +574,8 @@ svz_binding_filter_net (svz_socket_t *sock,
   svz_array_foreach (bindings, binding, i)
     {
       portaddr = svz_portcfg_addr (binding->port);
+      if (portaddr == NULL)
+	abort ();
 #if DEVEL
       printf ("portaddr: %s == ", svz_inet_ntoa (portaddr->sin_addr.s_addr));
       printf ("%s\n", svz_inet_ntoa (addr));

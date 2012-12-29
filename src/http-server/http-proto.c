@@ -189,6 +189,8 @@ http_init (svz_server_t *server)
       if ((ports = svz_server_portcfgs (server)) != NULL)
         {
           addr = svz_portcfg_addr ((svz_portcfg_t *) svz_array_get (ports, 0));
+	  if (addr == NULL)
+	    abort ();
           host = addr->sin_addr.s_addr;
           svz_array_destroy (ports);
         }
