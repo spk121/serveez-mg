@@ -27,6 +27,10 @@ files.
 The following are releases of Serveez-MG, a hack and fork of the original
 GNU Serveez.
 
+Version 0.3-mg
+-------------
+ * reduce drift between serveez-mg and the official GNU serveez
+
 Version 0.2-mg
 -------------
  * remove support for Windows, Solaris, HP, Cygwin and various other

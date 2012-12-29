@@ -55,7 +55,7 @@ Requirements
 ============
 
 Serveez-MG needs GNU Guile (Ubiquitous Intelligent Language for Extensions). 
-This current version is known to work with Guile 1.9.14 and later.
+This current version is known to work with Guile 2.0.6 and later.
 
 
 Installation

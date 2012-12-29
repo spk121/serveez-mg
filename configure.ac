@@ -7,7 +7,7 @@ dnl
 dnl Copyright (C) 2000, 2001, 2002, 2003, 2004 Stefan Jahn <stefan@lkcc.org>
 dnl Copyright (C) 2000, 2001 Raimund Jacob <raimi@lkcc.org>
 dnl Copyright (C) 1999 Martin Grabmueller <mgrabmue@cs.tu-berlin.de>
-dnl Copyright (C) 2010 Michael Gran <spk121@yahoo.com>
+dnl Copyright (C) 2010, 2012 Michael Gran <spk121@yahoo.com>
 dnl
 dnl This is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Initialize autoconf and automake
 dnl
-AC_INIT([Serveez-MG],[0.2],[spk121@yahoo.com])
+AC_INIT([Serveez-MG],[0.3],[spk121@yahoo.com])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_HEADERS([src/config.h])
