@@ -195,7 +195,7 @@ ctrl_connect_socket (svz_server_t *server __attribute__ ((unused)),
  * Quit command.  If the client sends this command the control protocol
  * connection will be closed immediately.
  */
-int
+static int
 ctrl_quit (svz_socket_t *sock __attribute__ ((unused)), 
            int flag, char *arg __attribute__ ((unused)))
 {
@@ -203,14 +203,14 @@ ctrl_quit (svz_socket_t *sock __attribute__ ((unused)),
 }
 
 /*
- * Help screen. Here you will get all the available commands of the
- * control protocol. These depend on the features the current version 
+ * Help screen.  Here you will get all the available commands of the
+ * control protocol.  These depend on the features the current version
  * of Serveez implements.
  */
-int
+static int
 ctrl_help (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 {
-  svz_sock_printf (sock, 
+  svz_sock_printf (sock,
     "\r\n available commands:\r\n"
     "   * help                - this help screen\r\n"
     "   * quit                - quit this control connection\r\n"
@@ -236,7 +236,7 @@ ctrl_help (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
  * ID's connection info.  This function displays a given socket id's
  * socket structure.
  */
-int
+static int
 ctrl_stat_id (svz_socket_t *sock, int flag, char *arg)
 {
   int id, n;
@@ -395,7 +395,7 @@ ctrl_stat_id (svz_socket_t *sock, int flag, char *arg)
  * Furthermore we check if the command is something about a certain
  * server and give information about it if so.
  */
-int
+static int
 ctrl_stat (svz_socket_t *sock, int flag, char *arg)
 {
   svz_server_t *server;
@@ -462,7 +462,7 @@ ctrl_stat (svz_socket_t *sock, int flag, char *arg)
  * Connection statistics.  This function displays basic information about
  * each socket structure currently within the socket list.
  */
-int
+static int
 ctrl_stat_con (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 {
   svz_socket_t *xsock;
@@ -511,7 +511,7 @@ ctrl_stat_con (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
  * HTTP cache statistics.  The following displayed information is a
  * visual representation of the http cache structures.
  */
-int
+static int
 ctrl_stat_cache (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 {
   int n, total, files;
@@ -547,7 +547,7 @@ ctrl_stat_cache (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)
 /*
  * Free all HTTP cache entries.
  */
-int
+static int
 ctrl_kill_cache (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 {
   svz_sock_printf (sock, "%d HTTP cache entries reinitialized.\r\n",
@@ -560,7 +560,7 @@ ctrl_kill_cache (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)
 /*
  * Show all Co-Server instances statistics.
  */
-int
+static int
 ctrl_stat_coservers (svz_socket_t *sock, int flag,
                      char *arg __attribute__ ((unused)))
 {
@@ -588,7 +588,7 @@ ctrl_stat_coservers (svz_socket_t *sock, int flag,
 /*
  * Server and Co-Server instance statistics.
  */
-int
+static int
 ctrl_stat_all (svz_socket_t *sock, int flag, char *arg)
 {
   int n;
@@ -612,11 +612,11 @@ ctrl_stat_all (svz_socket_t *sock, int flag, char *arg)
 }
 
 /*
- * Shutdown a specified network connection. This might even be used to
+ * Shutdown a specified network connection.  This might even be used to
  * kill your own (the control client's) connection, coservers and servers.
  * So you want to be *very* careful with this command.
  */
-int
+static int
 ctrl_kill_id (svz_socket_t *sock, int flag, char *arg)
 {
   int id;
@@ -644,7 +644,7 @@ ctrl_kill_id (svz_socket_t *sock, int flag, char *arg)
  * Shutdown all network connections except listening, control connections,
  * coservers and sockets with the priority flag set.
  */
-int
+static int
 ctrl_killall (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 {
   svz_socket_t *xsock;
@@ -668,7 +668,7 @@ ctrl_killall (svz_socket_t *sock, int flag, char *arg __attribute__ ((unused)))
 /*
  * Restart coservers.
  */
-int
+static int
 ctrl_restart (svz_socket_t *sock, int type, char *arg __attribute__ ((unused)))
 {
   svz_coserver_t *coserver;

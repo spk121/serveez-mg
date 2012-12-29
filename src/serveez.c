@@ -38,7 +38,7 @@
 option_t *options = NULL;
 
 /* Our private launch pad.  */
-void
+static void
 guile_launch_pad (void *closure, int argc, char **argv)
 {
   void (* entry) (int, char **) = (void (*) (int, char **)) closure;
