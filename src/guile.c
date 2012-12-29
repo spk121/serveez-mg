@@ -1735,7 +1735,11 @@ guile_eval_file (void *data)
     {
       SCM ret = SCM_BOOL_F, line;
       while (!SCM_EOF_OBJECT_P (line = scm_read (scm_current_input_port ())))
-        ret = scm_primitive_eval_x (line);
+	{
+	  ret = scm_primitive_eval_x (line);
+	  if (scm_is_false (ret))
+	    return SCM_BOOL_F;
+	}
       return SCM_BOOL_T;
     }
 
