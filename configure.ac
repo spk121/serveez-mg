@@ -28,11 +28,15 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Initialize autoconf and automake
 dnl
-AC_INIT([Serveez-MG],[0.3],[spk121@yahoo.com])
+AC_PREQ(2.60)
+AC_INIT([Serveez-MG],
+	[0.3],
+	[spk121@yahoo.com],
+	[serveez-mg],
+	[http://github.com/spk121/serveez-mg])
+AC_CONFIG_SRCDIR([src/serveez.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([-Wall])
-AC_CONFIG_HEADERS([src/config.h])
-AC_CONFIG_SRCDIR([src/serveez.c])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl ----------------------------------------------------------------------
@@ -40,9 +44,17 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for C compiler and libtool.
 dnl
-AC_PROG_CC
+AC_PROG_CC_STDC
 AC_C_BIGENDIAN
 LT_INIT[static disable-shared]
+my_CFLAGS="-Wall \
+-Wmissing-declarations -Wmissing-prototypes \
+-Wnested-externs -Wpointer-arith \
+-Wpointer-arith -Wsign-compare -Wchar-subscripts \
+-Wstrict-prototypes -Wshadow \
+-Wformat-security -Wtype-limits"
+AC_SUBST([my_CFLAGS])
+
 
 dnl ----------------------------------------------------------------------
 
@@ -100,6 +112,7 @@ dnl Output files.
 dnl
 AC_CONFIG_SUBDIRS([src/libserveez])
 
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([
     Makefile
     doc/Makefile

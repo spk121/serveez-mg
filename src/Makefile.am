@@ -61,8 +61,8 @@ serveez_LDADD = $(GUILE_LIBS_USED) libserveez/libserveez.a -ldl -lz -lcrypt
 
 EXTRA_DIST =  guile-server/hello.scm
 
-AM_CPPFLAGS = $(GUILE_CFLAGS) -I$(srcdir)/libserveez
-AM_CFLAGS = -pthread -Xlinker --hash-style=both
+AM_CPPFLAGS = $(GUILE_CFLAGS) -I${srcdir}/libserveez
+AM_CFLAGS = ${my_CFLAGS} -fvisibility=hidden -pthread
 
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt
