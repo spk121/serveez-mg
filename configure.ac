@@ -44,7 +44,7 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for C compiler and libtool.
 dnl
-AC_PROG_CC
+AC_PROG_CC_C99
 AC_C_BIGENDIAN
 LT_INIT([static disable-shared])
 my_CFLAGS="-Wall \
