@@ -44,9 +44,9 @@ dnl ----------------------------------------------------------------------
 dnl
 dnl Check for C compiler and libtool.
 dnl
-AC_PROG_CC_STDC
+AC_PROG_CC
 AC_C_BIGENDIAN
-LT_INIT[static disable-shared]
+LT_INIT([static disable-shared])
 my_CFLAGS="-Wall \
 -Wmissing-declarations -Wmissing-prototypes \
 -Wnested-externs -Wpointer-arith \
@@ -55,6 +55,14 @@ my_CFLAGS="-Wall \
 -Wformat-security -Wtype-limits"
 AC_SUBST([my_CFLAGS])
 
+dnl ----------------------------------------------------------------------
+dnl
+dnl Decide which guile version to use
+dnl
+PKG_CHECK_MODULES([GUILE], [guile-2.0],,
+  [PKG_CHECK_MODULES([GUILE], [guile-1.8])])
+GUILEVER=`guile -c "(display (version))"`
+AC_MSG_NOTICE([Using guile version ${GUILEVER}])
 
 dnl ----------------------------------------------------------------------
 
@@ -62,7 +70,6 @@ dnl
 dnl Check Guile installation.
 dnl
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_SUBST([GUILE_CFLAGS])
 AC_SUBST([GUILE_LIBS])
 AC_ARG_VAR([GUILE_SITEDIR],
