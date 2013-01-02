@@ -40,3 +40,4 @@ libserveez_a_SOURCES = alloc.c alloc.h array.c array.h binding.c	\
   vector.h
 
 AM_CPPFLAGS = -DDATADIR='$(datadir)'
+AM_CFLAGS = ${my_CFLAGS} -fvisibility=hidden
