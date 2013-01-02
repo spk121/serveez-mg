@@ -1778,7 +1778,9 @@ guile_load_config (char *cfgfile)
   SCM ret;
   guile_global_error = 0;
   guile_init ();
-
+  if (getenv ("SERVEEZ_PRE_CFG_DEBUG"))
+    scm_shell (0, NULL);
+  
   ret = scm_internal_catch (SCM_BOOL_T,
                             (scm_t_catch_body) guile_eval_file,
                             (void *) cfgfile,

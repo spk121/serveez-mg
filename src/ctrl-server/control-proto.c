@@ -74,7 +74,7 @@ svz_servertype_t ctrl_server_definition =
 };
 
 /*
- * Within the ctrl_idle() function this structure gets filled with
+ * Within the ‘ctrl_idle’ function this structure gets filled with
  * the appropriate data.
  */
 cpu_state_t cpu_state;
@@ -800,10 +800,10 @@ ctrl_handle_request (svz_socket_t *sock, char *request, int len)
  * Depending on the systems this routine gets the cpu load.
  * Returns -1 if an error occurred.
  * Linux   -- /proc/stat
- * HP-Unix -- pstat_getdynamic()
- * Solaris -- kstat_read()
- * Irix    -- sysget()
- * MacOS   -- host_statistics()
+ * HP-Unix -- ‘pstat_getdynamic’
+ * Solaris -- ‘kstat_read’
+ * Irix    -- ‘sysget’
+ * MacOS   -- ‘host_statistics’
  */
 static int
 ctrl_get_cpu_state (void)
@@ -855,7 +855,7 @@ ctrl_get_cpu_state (void)
 
 /*
  * Within the CTRL_IDLE function the server gets the CPU
- * load. This procedure differs on different platforms.
+ * load.  This procedure differs on different platforms.
  */
 
 #define PROC_DIFF(x) (c->proc[n][x] - c->proc[old][x])
