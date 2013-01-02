@@ -1717,6 +1717,26 @@ guile_init (void)
   scm_c_define_gsubr ("instantiate-config-type!", 3, 1, 0,
                       guile_config_instantiate);
 
+  scm_c_export ("serveez-version",
+		"guile-version",
+		"have-debug",
+		"have-Win32",
+		"have-floodprotect",
+		"serveez-verbosity",
+		"serveez-maxsockets",
+		"serveez-passwd",
+		"serveez-interfaces",
+		"serveez-loadpath",
+		"define-port!",
+		"define-server!",
+		"bind-server!",
+		"serveez-port?",
+		"serveez-server?",
+		"serveez-servertype?",
+		"serveez-load",
+		"instantiate-config-type!",
+		NULL);
+		
   guile_server_init ();
 }
 
@@ -1744,7 +1764,8 @@ guile_eval_file (void *data)
     }
 
   /* Load configuration from file.  */
-  return scm_c_primitive_load (file);
+  SCM ret = scm_c_primitive_load (file);
+  return ret;
 }
 
 /*

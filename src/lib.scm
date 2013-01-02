@@ -27,6 +27,7 @@
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
 (define-module (serveez-mg lib)
+  #:use-module (guile-user)
   #:use-module (rnrs bytevectors)
   #:export (println
             printsln
@@ -45,7 +46,8 @@
             subbytevector
             bytevector-contains
             bytevector-search
-            serveez-doc-add!))
+            serveez-doc-add!
+            ))
 
 (define (println . args)
   (for-each display args) (newline))
