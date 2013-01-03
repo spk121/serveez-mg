@@ -26,7 +26,7 @@
 SUBDIRS = libserveez
 
 pkgguilesitedir = ${GUILE_SITEDIR}/${PACKAGE}
-dist_pkgguilesite_DATA = lib.scm
+pkgguilesite_DATA = lib.scm
 
 bin_PROGRAMS = serveez mkpassword
 
@@ -37,6 +37,7 @@ serveez_SOURCES = \
 	option.c option.h \
 	guile-api.c guile-api.h \
 	guile-server.c guile-server.h \
+	guile-compat.h \
 	ctrl-server/control-proto.c \
 	ctrl-server/control-proto.h \
 	http-server/http-cache.c \
@@ -54,13 +55,23 @@ serveez_SOURCES = \
 
 serveez_LDADD = $(GUILE_LIBS) libserveez/libserveez.a -ldl -lz -lcrypt
 
-EXTRA_DIST =  guile-server/hello.scm
+EXTRA_DIST =  guile-server/hello.scm \
+	lib.scm.m4
 
 AM_CPPFLAGS = $(GUILE_CFLAGS) -I${srcdir}/libserveez
 AM_CFLAGS = ${my_CFLAGS} -fvisibility=hidden -pthread
 
 mkpassword_SOURCES = mkpassword.c getpasswd.c getpasswd.h
 mkpassword_LDADD = -lcrypt
+
+lib.scm: lib.scm.m4 Makefile
+	m4 \
+	--prefix-builtins \
+	--debug \
+	--define=GUILE_VERSION=${GUILE_VER} \
+	lib.scm.m4 > lib.scm
+CLEANFILES = lib.scm
+
 
 # If Guile's sitedir isn't under this package's $(prefix), distcheck
 # will fail.  This is pretty common.  So, for distcheck, Guile's

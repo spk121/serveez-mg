@@ -61,8 +61,9 @@ dnl Decide which guile version to use
 dnl
 PKG_CHECK_MODULES([GUILE], [guile-2.0],,
   [PKG_CHECK_MODULES([GUILE], [guile-1.8])])
-GUILEVER=`guile -c "(display (version))"`
+GUILE_VER=`guile -c "(display (string-append (major-version) \".\" (minor-version)))"`
 AC_MSG_NOTICE([Using guile version ${GUILEVER}])
+AC_SUBST([GUILE_VER])
 
 dnl ----------------------------------------------------------------------
 

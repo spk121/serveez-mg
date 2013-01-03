@@ -35,6 +35,7 @@
 #include "guile.h"
 #include "guile-api.h"
 #include "guile-server.h"
+#include "guile-compat.h"
 
 extern scm_t_bits guile_svz_socket_tag;
 extern scm_t_bits guile_svz_server_tag;

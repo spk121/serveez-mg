@@ -31,6 +31,7 @@
 #include "guile-api.h"
 #include "guile.h"
 #include "guile-server.h"
+#include "guile-compat.h"
 
 static void 
 guile_servertype_config_print (svz_servertype_t *server) __attribute ((used));

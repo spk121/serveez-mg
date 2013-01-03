@@ -23,12 +23,18 @@
 ;;
 ;;
 
+;; m4_changequote(`<<',`>>')
+;; m4_changecom(<<:M4_COMMENT_BEGIN:>>,<<:M4_COMMENT_END:>>)
+
 ;;
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
 (define-module (serveez-mg lib)
   #:use-module (guile-user)
-  #:use-module (rnrs bytevectors)
+  m4_ifelse(GUILE_VERSION,
+	    <<1.8>>,
+	    <<>>,
+	    <<#:use-module (rnrs bytevectors)>>)
   #:export (println
             printsln
             interface-add!
@@ -43,9 +49,13 @@
             getrpcbynumber
             setrpcent
             endrpcent
-            subbytevector
-            bytevector-contains
-            bytevector-search
+	    m4_ifelse(GUILE_VERSION,
+		      <<1.8>>,,
+		      <<
+ 		      subbytevector
+		      bytevector-contains
+		      bytevector-search
+		      >>)
             serveez-doc-add!
             ))
 
@@ -149,6 +159,9 @@
       (setrpc #f)))
 (define (endrpcent) (setrpc))
 
+m4_ifelse(GUILE_VERSION,
+	  <<1.8>>,,
+	  <<
 ;; Create a new bytevector that is a copy of BV from START (inclusive)
 ;; to END (exclusive)
 (define (subbytevector bv start end)
@@ -203,7 +216,7 @@
               (else
                needle))))
     (bytevector-contains bv1 bv2)))
-
+>>)
 
 ;;
 ;; === Include documentation file into Guile help system
