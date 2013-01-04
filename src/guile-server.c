@@ -1741,6 +1741,18 @@ guile_server_init (void)
   DEFINE_SOCK_CALLBACK ("svz:sock:handle-request", guile_sock_handle_request);
   DEFINE_SOCK_CALLBACK ("svz:sock:check-request", guile_sock_check_request);
 
+  scm_c_export ("define-servertype!",
+		"svz:sock:boundary",
+		"svz:sock:floodprotect",
+		"svz:sock:print",
+		"svz:sock:data",
+		"svz:server:config-ref",
+		"svz:server:state-ref",
+		"svz:server:state->hash",
+		"serveez-nuke",
+		"svz:sock:handle-request",
+		"svz:sock:check-request");
+
   guile_svz_socket_tag = scm_make_smob_type ("svz:sock", 0);
   scm_set_smob_print (guile_svz_socket_tag, guile_svz_socket_print);
 
@@ -1750,6 +1762,7 @@ guile_server_init (void)
   guile_svz_servertype_tag = scm_make_smob_type ("svz:servertype", 0);
   scm_set_smob_print (guile_svz_servertype_tag, guile_svz_servertype_print);
 
+  
   guile_api_init ();
 }
 
