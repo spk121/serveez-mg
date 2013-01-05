@@ -1761,7 +1761,6 @@ guile_server_init (void)
 
   guile_svz_servertype_tag = scm_make_smob_type ("svz:servertype", 0);
   scm_set_smob_print (guile_svz_servertype_tag, guile_svz_servertype_print);
-
   
   guile_api_init ();
 }

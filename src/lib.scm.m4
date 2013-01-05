@@ -30,6 +30,7 @@
 ;; === Miscellaneous functions - Scheme for beginners, thanks to 'mgrabmue.
 ;;
 (define-module (serveez-mg lib)
+  #:use-module (serveez-mg core)
   #:use-module (guile-user)
   m4_ifelse(GUILE_VERSION,
 	    <<1.8>>,

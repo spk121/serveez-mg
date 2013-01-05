@@ -1684,7 +1684,7 @@ guile_serveez_load (SCM file)
  * available to Guile.
  */
 static void
-guile_init (void)
+guile_init (void *dummy)
 {
   /* define some variables */
   scm_c_define ("serveez-version", scm_from_locale_string (svz_version));
@@ -1736,7 +1736,7 @@ guile_init (void)
 		"serveez-load",
 		"instantiate-config-type!",
 		NULL);
-		
+
   guile_server_init ();
 }
 
@@ -1777,8 +1777,8 @@ guile_load_config (char *cfgfile)
 {
   SCM ret;
   guile_global_error = 0;
-  guile_init ();
-  if (getenv ("SERVEEZ_PRE_CFG_DEBUG"))
+  scm_c_define_module ("serveez-mg core", guile_init, NULL);
+  if (getenv ("SERVEEZ_PRE_CONFIG_DEBUG"))
     scm_shell (0, NULL);
   
   ret = scm_internal_catch (SCM_BOOL_T,
