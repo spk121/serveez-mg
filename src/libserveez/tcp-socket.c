@@ -151,6 +151,7 @@ svz_tcp_read_socket (svz_socket_t *sock)
   else if (num_read > 0)
     {
       sock->last_recv = time (NULL);
+      svz_log (LOG_DEBUG, "received %d bytes on socket %d, %s\n", num_read, desc, sock->recv_buffer + sock->recv_buffer_fill);
 
       if (svz_sock_flood_protect (sock, num_read))
         {
